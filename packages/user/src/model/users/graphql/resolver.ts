@@ -334,6 +334,14 @@ const Mutation = {
         limit: false,
       };
 
+      if (!photo) {
+        throw new CustomApiError({
+          message: "Missing photo file in the request body",
+          name: "ERROR_FILE_MISSING",
+          statusCode: 422,
+        });
+      }
+
       const file = await service.uploadPhoto(fileToUpload, user.id, user.id);
 
       const updatedUser = await service.update(user.id, {
@@ -366,6 +374,14 @@ const Mutation = {
 
       return updatedUser;
     } catch (error) {
+      if (error instanceof CustomApiError) {
+        const mercuriusError = new mercurius.ErrorWithProps(error.name);
+
+        mercuriusError.statusCode = error.statusCode;
+
+        return mercuriusError;
+      }
+
       app.log.error(error);
 
       const mercuriusError = new mercurius.ErrorWithProps(

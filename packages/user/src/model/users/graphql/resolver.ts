@@ -325,6 +325,14 @@ const Mutation = {
       return new mercurius.ErrorWithProps("unauthorized", {}, 401);
     }
 
+    if (!photo) {
+      throw new CustomApiError({
+        message: "Missing photo file in the request body",
+        name: "ERROR_FILE_MISSING",
+        statusCode: 422,
+      });
+    }
+
     try {
       const fileData = photo.file.createReadStream();
 
@@ -333,14 +341,6 @@ const Mutation = {
         data: fileData,
         limit: false,
       };
-
-      if (!photo) {
-        throw new CustomApiError({
-          message: "Missing photo file in the request body",
-          name: "ERROR_FILE_MISSING",
-          statusCode: 422,
-        });
-      }
 
       const file = await service.uploadPhoto(fileToUpload, user.id, user.id);
 

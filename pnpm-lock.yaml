@@ -112,13 +112,13 @@ importers:
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../config
       '@prefabs.tech/fastify-graphql':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../graphql
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.2.0
@@ -206,10 +206,10 @@ importers:
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../config
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.2.0
@@ -306,7 +306,7 @@ importers:
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../config
       '@prefabs.tech/tsconfig':
         specifier: 0.2.0
@@ -418,13 +418,13 @@ importers:
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../config
       '@prefabs.tech/fastify-graphql':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../graphql
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.2.0
@@ -515,7 +515,7 @@ importers:
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../config
       '@prefabs.tech/tsconfig':
         specifier: 0.2.0
@@ -688,19 +688,19 @@ importers:
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.0(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.0(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../config
       '@prefabs.tech/fastify-graphql':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../graphql
       '@prefabs.tech/fastify-mailer':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../mailer
       '@prefabs.tech/fastify-s3':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../s3
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.88.0
+        specifier: 0.88.1
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.2.0
@@ -4250,11 +4250,6 @@ packages:
 
   mercurius-auth@6.0.0:
     resolution: {integrity: sha512-pwxoF2xrYaItu9GFpNMFzNULmC7JCC3XCRzYtUOG8TgmrCtQ5N0SSKnA92FGkt/Q/5/3FfFJIiF4GSW6iRbolQ==}
-
-  mercurius-upload@8.0.0:
-    resolution: {integrity: sha512-lKYtqo6enNHRhFa6MrGE2OLf5/G0CvaXLCFp/Wczb6vS14LxtWor1fPwayNbiHV3RCS9DsiMnqCWdWaySZxKWA==}
-    peerDependencies:
-      graphql: ^16.3.0
 
   mercurius@16.1.0:
     resolution: {integrity: sha512-foMnqtFn3Wf/3zh0IJEz30Dq0alZIlIMCoQpxpS3/GkDB12h/LfmcoZ6ASCZ8xBJIvStEIKYxOyjfDeEcYhjLQ==}
@@ -10489,12 +10484,6 @@ snapshots:
       '@fastify/error': 4.0.0
       fastify-plugin: 5.0.1
       graphql: 16.11.0
-
-  mercurius-upload@8.0.0(graphql@16.11.0):
-    dependencies:
-      fastify-plugin: 5.0.1
-      graphql: 16.11.0
-      graphql-upload-minimal: 1.6.1(graphql@16.11.0)
 
   mercurius@16.1.0(graphql@16.9.0):
     dependencies:

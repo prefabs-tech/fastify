@@ -3,7 +3,7 @@
 
 ### Features
 
-* add photo file size limit in user package ([#1000](https://github.com/prefabs-tech/fastify/issues/1000)) ([5de43a8](https://github.com/prefabs-tech/fastify/commit/5de43a8e2a588c6fba61684b1927c3dd0a3dc8a9))
+* **user:** add photo file size limit in user package ([#1000](https://github.com/prefabs-tech/fastify/issues/1000)) ([5de43a8](https://github.com/prefabs-tech/fastify/commit/5de43a8e2a588c6fba61684b1927c3dd0a3dc8a9))
 * disable email verifation validation for update me route ([de4deb9](https://github.com/prefabs-tech/fastify/commit/de4deb954dce87586bef5c77a742ec2e2ef9bdad))
 
 

@@ -1,6 +1,8 @@
 import { gql } from "@prefabs.tech/fastify-graphql";
 
 const user = gql`
+  scalar Upload
+
   type User {
     id: String!
     deletedAt: Float
@@ -74,6 +76,8 @@ const user = gql`
     updateMe(data: UserUpdateInput): User
       @auth(profileValidation: false, emailVerification: false)
     changeEmail(email: String!): ChangeEmailResponse
+      @auth(profileValidation: false, emailVerification: false)
+    uploadPhoto(photo: Upload!): User
       @auth(profileValidation: false, emailVerification: false)
     removePhoto: User @auth(profileValidation: false, emailVerification: false)
   }

@@ -4251,6 +4251,11 @@ packages:
   mercurius-auth@6.0.0:
     resolution: {integrity: sha512-pwxoF2xrYaItu9GFpNMFzNULmC7JCC3XCRzYtUOG8TgmrCtQ5N0SSKnA92FGkt/Q/5/3FfFJIiF4GSW6iRbolQ==}
 
+  mercurius-upload@8.0.0:
+    resolution: {integrity: sha512-lKYtqo6enNHRhFa6MrGE2OLf5/G0CvaXLCFp/Wczb6vS14LxtWor1fPwayNbiHV3RCS9DsiMnqCWdWaySZxKWA==}
+    peerDependencies:
+      graphql: ^16.3.0
+
   mercurius@16.1.0:
     resolution: {integrity: sha512-foMnqtFn3Wf/3zh0IJEz30Dq0alZIlIMCoQpxpS3/GkDB12h/LfmcoZ6ASCZ8xBJIvStEIKYxOyjfDeEcYhjLQ==}
     engines: {node: ^20.9.0 || >=22.0.0}
@@ -10484,6 +10489,12 @@ snapshots:
       '@fastify/error': 4.0.0
       fastify-plugin: 5.0.1
       graphql: 16.11.0
+
+  mercurius-upload@8.0.0(graphql@16.11.0):
+    dependencies:
+      fastify-plugin: 5.0.1
+      graphql: 16.11.0
+      graphql-upload-minimal: 1.6.1(graphql@16.11.0)
 
   mercurius@16.1.0(graphql@16.9.0):
     dependencies:

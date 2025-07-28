@@ -1,3 +1,4 @@
+import { GraphQLFileUpload, Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
 import EmailVerification, {
   EmailVerificationClaim,
@@ -296,6 +297,91 @@ const Mutation = {
 
       return updatedUser;
     } catch (error) {
+      app.log.error(error);
+
+      const mercuriusError = new mercurius.ErrorWithProps(
+        "Oops, Something went wrong",
+      );
+      mercuriusError.statusCode = 500;
+
+      return mercuriusError;
+    }
+  },
+  uploadPhoto: async (
+    parent: unknown,
+    arguments_: {
+      photo: {
+        file: GraphQLFileUpload;
+      };
+    },
+    context: MercuriusContext,
+  ) => {
+    const { app, config, database, dbSchema, reply, user } = context;
+    const { photo } = arguments_;
+
+    const service = getUserService(config, database, dbSchema);
+
+    if (!user) {
+      return new mercurius.ErrorWithProps("unauthorized", {}, 401);
+    }
+
+    if (!photo) {
+      throw new CustomApiError({
+        message: "Missing photo file in the request body",
+        name: "ERROR_FILE_MISSING",
+        statusCode: 422,
+      });
+    }
+
+    try {
+      const fileData = photo.file.createReadStream();
+
+      const fileToUpload: Multipart = {
+        ...photo.file,
+        data: fileData,
+        limit: false,
+      };
+
+      const file = await service.uploadPhoto(fileToUpload, user.id, user.id);
+
+      const updatedUser = await service.update(user.id, {
+        ...(file && {
+          photoId: file.id as number,
+        }),
+      });
+
+      if (user.photoId && user.photoId !== updatedUser.photoId) {
+        await service.fileService.delete(user.photoId);
+      }
+
+      const request = reply.request;
+
+      request.user = updatedUser;
+
+      if (request.config.user.features?.profileValidation?.enabled) {
+        await request.session?.fetchAndSetClaim(
+          new ProfileValidationClaim(),
+          createUserContext(undefined, request),
+        );
+      }
+
+      if (request.config.user.features?.signUp?.emailVerification) {
+        await request.session?.fetchAndSetClaim(
+          EmailVerificationClaim,
+          createUserContext(undefined, request),
+        );
+      }
+
+      return updatedUser;
+    } catch (error) {
+      if (error instanceof CustomApiError) {
+        const mercuriusError = new mercurius.ErrorWithProps(error.name);
+
+        mercuriusError.statusCode = error.statusCode;
+
+        return mercuriusError;
+      }
+
       app.log.error(error);
 
       const mercuriusError = new mercurius.ErrorWithProps(

@@ -11,8 +11,10 @@ declare module "fastify" {
 }
 
 const plugin = async (fastify: FastifyInstance) => {
-  if (!fastify.hasContentTypeParser("multipart")) {
-    fastify.addContentTypeParser("multipart", (req, _payload, done) => {
+  fastify.addContentTypeParser("*", (req, _payload, done) => {
+    const contentType = req.headers["content-type"] || "";
+
+    if (contentType.includes("multipart")) {
       if (
         req.config.graphql?.enabled &&
         req.routeOptions.url?.startsWith(req.config.graphql.path as string)
@@ -24,8 +26,8 @@ const plugin = async (fastify: FastifyInstance) => {
       } else {
         processMultipartFormData(req, _payload, done);
       }
-    });
-  }
+    }
+  });
 };
 
 export default fastifyPlugin(plugin);

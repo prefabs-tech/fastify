@@ -1,8 +1,6 @@
 import { gql } from "@prefabs.tech/fastify-graphql";
 
 const user = gql`
-  scalar Upload
-
   type User {
     id: String!
     deletedAt: Float

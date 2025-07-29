@@ -1,27 +1,11 @@
-interface AppConfig {
-  id: number;
-  name: string;
-  origin: string;
-  supportedRoles: string[];
-}
+import { StackFrame } from "./httpError";
 
-interface ApiConfig {
-  appName: string;
-  appOrigin: string[];
-  apps?: AppConfig[];
-  baseUrl: string;
-  env: string;
+type ErrorResponse = {
+  code: string;
+  message: string;
   name: string;
-  pagination?: {
-    default_limit: number;
-    max_limit: number;
-  };
-  port: number;
-  protocol: string;
-  rest: {
-    enabled: boolean;
-  };
-  version: string;
-}
+  stack?: StackFrame[];
+  statusCode: number;
+};
 
-export type { ApiConfig, AppConfig };
+export type { ErrorResponse };

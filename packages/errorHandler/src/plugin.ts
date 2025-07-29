@@ -1,23 +1,18 @@
+import fastifySensible from "@fastify/sensible";
 import FastifyPlugin from "fastify-plugin";
 
-import type { ApiConfig } from "./types";
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import { errorHandler } from "./errorHandler";
 
-const plugin = async (
-  fastify: FastifyInstance,
-  options: { config: ApiConfig },
-) => {
-  const config = options.config;
+import type { FastifyInstance } from "fastify";
 
-  // Decorate api and request with `config`
-  fastify.decorate("config", config);
-  fastify.addHook("onRequest", async (request: FastifyRequest) => {
-    request.config = config;
-  });
+const plugin = async (fastify: FastifyInstance) => {
+  fastify.log.info("Registering fastify-error-handler plugin");
 
-  const { baseUrl, port } = config;
-  const host = `${baseUrl}:${port}`;
-  fastify.decorate("hostname", host);
+  // const { config} = fastify;
+
+  await fastify.register(fastifySensible);
+
+  await fastify.setErrorHandler(errorHandler);
 };
 
 export default FastifyPlugin(plugin);

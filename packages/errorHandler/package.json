@@ -30,6 +30,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "devDependencies": {
+    "@fastify/sensible": "6.0.3",
     "@prefabs.tech/eslint-config": "0.2.0",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/node": "20.19.9",

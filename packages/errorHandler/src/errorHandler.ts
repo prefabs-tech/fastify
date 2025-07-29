@@ -12,6 +12,9 @@ export const errorHandler = (
 ) => {
   const { log: logger } = request;
 
+  const isStackTraceEnabled =
+    request.server.config.errorHandler?.stackTrace || false;
+
   const isHttpError = error instanceof HttpError;
 
   if (isHttpError) {
@@ -30,7 +33,7 @@ export const errorHandler = (
       statusCode,
     };
 
-    if (error.stack) {
+    if (isStackTraceEnabled && error.stack) {
       response.stack = parseStack(error.stack);
     }
 
@@ -50,7 +53,7 @@ export const errorHandler = (
     statusCode: 500,
   };
 
-  if (error.stack) {
+  if (isStackTraceEnabled && error.stack) {
     response.stack = parseStack(error.stack);
   }
 

@@ -2,6 +2,10 @@
 
 A [Fastify](https://github.com/fastify/fastify) plugin that defines an opinionated config for an API.
 
+## Requirements
+
+* [@prefabs.tech/fastify-config](../config/)
+
 ## Installation
 
 Install with npm:

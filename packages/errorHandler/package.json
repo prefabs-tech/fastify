@@ -32,6 +32,7 @@
   "devDependencies": {
     "@fastify/sensible": "6.0.3",
     "@prefabs.tech/eslint-config": "0.2.0",
+    "@prefabs.tech/fastify-config": "0.88.1",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/node": "20.19.9",
     "@typescript-eslint/eslint-plugin": "8.38.0",

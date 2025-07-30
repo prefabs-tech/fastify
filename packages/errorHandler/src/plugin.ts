@@ -8,8 +8,6 @@ import type { FastifyInstance } from "fastify";
 const plugin = async (fastify: FastifyInstance) => {
   fastify.log.info("Registering fastify-error-handler plugin");
 
-  // const { config} = fastify;
-
   await fastify.register(fastifySensible);
 
   await fastify.setErrorHandler(errorHandler);

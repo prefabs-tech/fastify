@@ -20,13 +20,13 @@ const plugin = async (fastify: FastifyInstance) => {
         req.routeOptions.url?.startsWith(req.config.graphql.path as string)
       ) {
         req.graphqlFileUploadMultipart = true;
-
-        // eslint-disable-next-line unicorn/no-null
-        done(null);
       } else {
         processMultipartFormData(req, _payload, done);
       }
     }
+
+    // eslint-disable-next-line unicorn/no-null
+    done(null);
   });
 };
 

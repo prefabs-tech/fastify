@@ -1,3 +1,12 @@
+## [0.88.2](https://github.com/prefabs-tech/fastify/compare/v0.88.1...v0.88.2) (2025-07-31)
+
+
+### Bug Fixes
+
+* **user/photo:** fix photo upload ([#1005](https://github.com/prefabs-tech/fastify/issues/1005)) ([f32a4e0](https://github.com/prefabs-tech/fastify/commit/f32a4e06e6947f5c1a0b3ddeb503d4660225de94))
+
+
+
 ## [0.88.1](https://github.com/prefabs-tech/fastify/compare/v0.88.0...v0.88.1) (2025-07-28)
 
 

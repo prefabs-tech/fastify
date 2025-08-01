@@ -1,9 +1,9 @@
 import { HttpError } from "@fastify/sensible";
 import { FastifyReply, FastifyRequest } from "fastify";
 
-import { parseStack, StackFrame } from "./httpError";
+import { parseStack } from "./utils/httpError";
 
-import type { ErrorResponse } from "./types";
+import type { ErrorResponse, StackFrame } from "./types";
 
 export const errorHandler = (
   error: Error,

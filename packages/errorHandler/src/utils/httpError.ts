@@ -1,9 +1,4 @@
-export interface StackFrame {
-  columnNumber: number;
-  fileName: string;
-  functionName: string;
-  lineNumber: number;
-}
+import type { StackFrame } from "../types";
 
 export const parseStack = (stack: string): StackFrame[] => {
   // split stack into lines and remove the first line (error message)
@@ -12,7 +7,6 @@ export const parseStack = (stack: string): StackFrame[] => {
   return stackLines
     .map((line) => {
       // match the stack trace line pattern
-      // Example: "    at Object.<anonymous> (/app/src/controllers/workspace.ts:42:15)"
       const match = line.match(/at\s+(.+?)\s+\((.+?):(\d+):(\d+)\)/);
 
       if (match) {
@@ -25,7 +19,6 @@ export const parseStack = (stack: string): StackFrame[] => {
       }
 
       // Handle cases where the stack trace format is different
-      // Example: "    at /app/src/controllers/workspace.ts:42:15"
       const simpleMatch = line.match(/at\s+(.+?):(\d+):(\d+)/);
 
       if (simpleMatch) {

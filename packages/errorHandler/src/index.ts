@@ -19,3 +19,5 @@ declare module "@prefabs.tech/fastify-config" {
 export { default } from "./plugin";
 
 export type { ErrorResponse } from "./types";
+
+export type { HttpErrors } from "@fastify/sensible";

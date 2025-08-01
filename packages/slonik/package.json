@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-slonik",
-  "version": "0.88.1",
+  "version": "0.88.2",
   "description": "Fastify slonik plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/slonik#readme",
   "repository": {
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
-    "@prefabs.tech/fastify-config": "0.88.1",
+    "@prefabs.tech/fastify-config": "0.88.2",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@slonik/driver": "46.8.0",
     "@types/humps": "2.0.6",
@@ -65,7 +65,7 @@
     "zod": "3.25.67"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.88.1",
+    "@prefabs.tech/fastify-config": "0.88.2",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "pg-mem": ">=3.0.2",

@@ -1,4 +1,4 @@
-import { GraphQLFileUpload, Multipart } from "@prefabs.tech/fastify-s3";
+import { GraphQLUpload, Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
 import EmailVerification, {
   EmailVerificationClaim,
@@ -310,14 +310,13 @@ const Mutation = {
   uploadPhoto: async (
     parent: unknown,
     arguments_: {
-      photo: {
-        file: GraphQLFileUpload;
-      };
+      photo: GraphQLUpload;
     },
     context: MercuriusContext,
   ) => {
     const { app, config, database, dbSchema, reply, user } = context;
-    const { photo } = arguments_;
+    const photo = await arguments_.photo;
+    const { file: photoFile } = photo;
 
     const service = getUserService(config, database, dbSchema);
 
@@ -325,7 +324,7 @@ const Mutation = {
       return new mercurius.ErrorWithProps("unauthorized", {}, 401);
     }
 
-    if (!photo) {
+    if (!photoFile) {
       throw new CustomApiError({
         message: "Missing photo file in the request body",
         name: "ERROR_FILE_MISSING",
@@ -334,10 +333,10 @@ const Mutation = {
     }
 
     try {
-      const fileData = photo.file.createReadStream();
+      const fileData = photoFile.createReadStream();
 
       const fileToUpload: Multipart = {
-        ...photo.file,
+        ...photoFile,
         data: fileData,
         limit: false,
       };

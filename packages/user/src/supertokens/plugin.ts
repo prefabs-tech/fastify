@@ -10,7 +10,12 @@ import { verifySession } from "supertokens-node/recipe/session/framework/fastify
 
 import init from "./init";
 
-import type { FastifyError, FastifyInstance } from "fastify";
+import type {
+  FastifyError,
+  FastifyInstance,
+  FastifyReply,
+  FastifyRequest,
+} from "fastify";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;
@@ -19,16 +24,16 @@ const plugin = async (fastify: FastifyInstance) => {
 
   init(fastify);
 
-  // Explicitly cast the errorHandler to the correct type
-  // [RL 2025-04-01] This should be fixed when supertokens-node is updated
-  fastify.setErrorHandler(
-    errorHandler() as unknown as (
-      this: FastifyInstance,
-      error: FastifyError,
-      request: import("fastify").FastifyRequest,
-      reply: import("fastify").FastifyReply,
-    ) => void,
-  );
+  if (config.user.supertokens.setErrorHandler !== false) {
+    fastify.setErrorHandler(
+      errorHandler() as unknown as (
+        this: FastifyInstance,
+        error: FastifyError,
+        request: FastifyRequest,
+        reply: FastifyReply,
+      ) => void,
+    );
+  }
 
   await fastify.register(cors, {
     origin: config.appOrigin,

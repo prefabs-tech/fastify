@@ -1,12 +1,5 @@
-import type { HttpErrors } from "@fastify/sensible";
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
-
-declare module "fastify" {
-  interface FastifyInstance {
-    httpErrors: HttpErrors;
-  }
-}
 
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
@@ -16,8 +9,8 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
-export { default } from "./plugin";
+export { errorHandler } from "./errorHandler";
+
+export { CustomError } from "./utils/error";
 
 export type { ErrorResponse } from "./types";
-
-export type { HttpErrors } from "@fastify/sensible";

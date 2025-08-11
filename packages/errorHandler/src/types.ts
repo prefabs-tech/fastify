@@ -1,16 +1,14 @@
-interface StackFrame {
-  columnNumber: number;
-  fileName: string;
-  functionName: string;
-  lineNumber: number;
-}
+import type { StackFrame } from "stack-trace";
 
 type ErrorResponse = {
-  code: string;
+  error?: string;
+  code?: string;
   message: string;
   name: string;
   stack?: StackFrame[];
   statusCode: number;
 };
 
-export type { ErrorResponse, StackFrame };
+export type { ErrorResponse };
+
+export { type StackFrame } from "stack-trace";

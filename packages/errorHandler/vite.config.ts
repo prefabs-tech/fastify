@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
+            "@fastify/sensible": "fastifySensible",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
           },

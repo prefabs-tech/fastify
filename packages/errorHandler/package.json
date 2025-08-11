@@ -29,12 +29,18 @@
     "sort-package": "npx sort-package-json",
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
+  "dependencies": {
+    "stack-trace":"1.0.0-pre2",
+    "statuses": "2.0.2"
+  },
   "devDependencies": {
     "@fastify/sensible": "6.0.3",
     "@prefabs.tech/eslint-config": "0.2.0",
     "@prefabs.tech/fastify-config": "0.88.2",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/node": "20.19.9",
+    "@types/stack-trace": "0.0.33",
+    "@types/statuses": "2.0.6",
     "@typescript-eslint/eslint-plugin": "8.38.0",
     "@typescript-eslint/parser": "8.38.0",
     "@vitest/coverage-istanbul": "3.2.4",
@@ -55,6 +61,7 @@
     "vitest": "3.2.4"
   },
   "peerDependencies": {
+    "@fastify/sensible": ">=6.0.3",
     "@prefabs.tech/fastify-config": "0.88.2",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1"

@@ -100,6 +100,13 @@ importers:
         version: 3.2.4(@types/node@20.19.9)(jiti@2.4.2)(yaml@2.7.1)
 
   packages/errorHandler:
+    dependencies:
+      stack-trace:
+        specifier: 1.0.0-pre2
+        version: 1.0.0-pre2
+      statuses:
+        specifier: 2.0.2
+        version: 2.0.2
     devDependencies:
       '@fastify/sensible':
         specifier: 6.0.3
@@ -116,6 +123,12 @@ importers:
       '@types/node':
         specifier: 20.19.9
         version: 20.19.9
+      '@types/stack-trace':
+        specifier: 0.0.33
+        version: 0.0.33
+      '@types/statuses':
+        specifier: 2.0.6
+        version: 2.0.6
       '@typescript-eslint/eslint-plugin':
         specifier: 8.38.0
         version: 8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
@@ -2149,6 +2162,12 @@ packages:
 
   '@types/serve-static@1.15.5':
     resolution: {integrity: sha512-PDRk21MnK70hja/YF8AHfC7yIsiQHn1rcXx7ijCFBX/k+XQJhQT/gw3xekXKJvx+5SXaMMS8oqQy09Mzvz2TuQ==}
+
+  '@types/stack-trace@0.0.33':
+    resolution: {integrity: sha512-O7in6531Bbvlb2KEsJ0dq0CHZvc3iWSR5ZYMtvGgnHA56VgriAN/AU2LorfmcvAl2xc9N5fbCTRyMRRl8nd74g==}
+
+  '@types/statuses@2.0.6':
+    resolution: {integrity: sha512-xMAgYwceFhRA2zY+XbEA7mxYbA093wdiW8Vu6gZPGWy9cmOyU9XesH1tNcEWsKFd5Vzrqx5T3D38PWx1FIIXkA==}
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
@@ -5493,6 +5512,10 @@ packages:
   stable-hash@0.0.5:
     resolution: {integrity: sha512-+L3ccpzibovGXFK+Ap/f8LOS0ahMrHTf3xu7mMLSpEGU0EO9ucaysSylKo9eRDFNhWve/y275iPmIZ4z39a9iA==}
 
+  stack-trace@1.0.0-pre2:
+    resolution: {integrity: sha512-2ztBJRek8IVofG9DBJqdy2N5kulaacX30Nz7xmkYF6ale9WBVmIy6mFBchvGX7Vx/MyjBhx+Rcxqrj+dbOnQ6A==}
+    engines: {node: '>=16'}
+
   stackback@0.0.2:
     resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
@@ -5502,6 +5525,10 @@ packages:
 
   statuses@2.0.1:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
+    engines: {node: '>= 0.8'}
+
+  statuses@2.0.2:
+    resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
     engines: {node: '>= 0.8'}
 
   std-env@3.9.0:
@@ -7998,6 +8025,10 @@ snapshots:
       '@types/http-errors': 2.0.4
       '@types/mime': 3.0.4
       '@types/node': 22.9.0
+
+  '@types/stack-trace@0.0.33': {}
+
+  '@types/statuses@2.0.6': {}
 
   '@types/tough-cookie@4.0.5':
     optional: true
@@ -11943,6 +11974,8 @@ snapshots:
 
   stable-hash@0.0.5: {}
 
+  stack-trace@1.0.0-pre2: {}
+
   stackback@0.0.2: {}
 
   stacktrace-parser@0.1.10:
@@ -11950,6 +11983,8 @@ snapshots:
       type-fest: 0.7.1
 
   statuses@2.0.1: {}
+
+  statuses@2.0.2: {}
 
   std-env@3.9.0: {}
 

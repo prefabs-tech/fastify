@@ -1,3 +1,12 @@
+# [0.89.0](https://github.com/prefabs-tech/fastify/compare/v0.88.2...v0.89.0) (2025-08-12)
+
+
+### Features
+
+* **error-handler:** Add error handler package ([#1004](https://github.com/prefabs-tech/fastify/issues/1004)) ([aae5dbd](https://github.com/prefabs-tech/fastify/commit/aae5dbdf6718bd575033df9cfda0d40e10a85aae))
+
+
+
 ## [0.88.2](https://github.com/prefabs-tech/fastify/compare/v0.88.1...v0.88.2) (2025-07-31)
 
 

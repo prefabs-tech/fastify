@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-error-handler",
-  "version": "0.88.2",
+  "version": "0.89.0",
   "description": "Fastify error-handler plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/error-handler#readme",
   "repository": {
@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@fastify/sensible": "6.0.3",
-    "stack-trace":"1.0.0-pre2"
+    "stack-trace": "1.0.0-pre2"
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",

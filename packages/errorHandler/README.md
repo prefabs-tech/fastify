@@ -27,17 +27,15 @@ pnpm add --filter "@scope/project @prefabs.tech/fastify-error-handler
 
 Register @prefabs.tech/fastify-error-handler package with your Fastify instance:
 
+Note: Register the errorHandler plugin as early as possible (Before all your routes and plugin registration).
+
 ```typescript
 import errorHandlerPlugin from "@prefabs.tech/fastify-error-handler";
 import Fastify from "fastify";
 
-import config from "./config";
-
 const start = async () => {
   // Create fastify instance
-  const fastify = Fastify({
-    logger: config.logger,
-  });
+  const fastify = Fastify();
   
   // Register fastify-error-handler plugin
   await fastify.register(errorHandlerPlugin, {});
@@ -49,4 +47,30 @@ const start = async () => {
 };
 
 start();
+```
+### Options
+
+#### stackTrace
+
+When enabled, the error handler will include the error’s stack trace in the HTTP response body.
+
+By default, it is set to false.
+
+```ts
+stackTrace?: boolean; // Default: false
+```
+
+#### preErrorHandler
+
+preErrorHandler is an optional error handler that runs before the default error handler logic.
+It allows you to intercept specific errors, handle them yourself, and prevent the default handler from running.
+
+This is especially useful when you need to integrate with other libraries that have their own error formats — for example, handling SuperTokens errors before your API’s standard error response.
+
+```ts
+preErrorHandler?: (
+  error: FastifyError,
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => void | Promise<void>;
 ```

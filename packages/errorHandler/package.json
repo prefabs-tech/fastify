@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
-    "@prefabs.tech/fastify-config": "0.88.2",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/node": "20.19.9",
     "@types/stack-trace": "0.0.33",
@@ -59,7 +58,6 @@
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.88.2",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1"
   },

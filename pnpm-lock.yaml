@@ -101,16 +101,13 @@ importers:
 
   packages/errorHandler:
     dependencies:
-      stack-trace:
-        specifier: 1.0.0-pre2
-        version: 1.0.0-pre2
-      statuses:
-        specifier: 2.0.2
-        version: 2.0.2
-    devDependencies:
       '@fastify/sensible':
         specifier: 6.0.3
         version: 6.0.3
+      stack-trace:
+        specifier: 1.0.0-pre2
+        version: 1.0.0-pre2
+    devDependencies:
       '@prefabs.tech/eslint-config':
         specifier: 0.2.0
         version: 0.2.0(@typescript-eslint/eslint-plugin@8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3))(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.3(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.8.3)
@@ -126,9 +123,6 @@ importers:
       '@types/stack-trace':
         specifier: 0.0.33
         version: 0.0.33
-      '@types/statuses':
-        specifier: 2.0.6
-        version: 2.0.6
       '@typescript-eslint/eslint-plugin':
         specifier: 8.38.0
         version: 8.38.0(@typescript-eslint/parser@8.38.0(eslint@8.57.1)(typescript@5.8.3))(eslint@8.57.1)(typescript@5.8.3)
@@ -2165,9 +2159,6 @@ packages:
 
   '@types/stack-trace@0.0.33':
     resolution: {integrity: sha512-O7in6531Bbvlb2KEsJ0dq0CHZvc3iWSR5ZYMtvGgnHA56VgriAN/AU2LorfmcvAl2xc9N5fbCTRyMRRl8nd74g==}
-
-  '@types/statuses@2.0.6':
-    resolution: {integrity: sha512-xMAgYwceFhRA2zY+XbEA7mxYbA093wdiW8Vu6gZPGWy9cmOyU9XesH1tNcEWsKFd5Vzrqx5T3D38PWx1FIIXkA==}
 
   '@types/tough-cookie@4.0.5':
     resolution: {integrity: sha512-/Ad8+nIOV7Rl++6f1BdKxFSMgmoqEoYbHRpPcx3JEfv8VRsQe9Z4mCXeJBzxs7mbHY/XOZZuXlRNfhpVPbs6ZA==}
@@ -5527,10 +5518,6 @@ packages:
     resolution: {integrity: sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==}
     engines: {node: '>= 0.8'}
 
-  statuses@2.0.2:
-    resolution: {integrity: sha512-DvEy55V3DB7uknRo+4iOGT5fP1slR8wQohVdknigZPMpMstaKJQWhwiYBACJE3Ul2pTnATihhBYnRhZQHGBiRw==}
-    engines: {node: '>= 0.8'}
-
   std-env@3.9.0:
     resolution: {integrity: sha512-UGvjygr6F6tpH7o2qyqR6QYpwraIjKSdtzyBdyytFOHmPZY917kwdwLG0RbOjWOnKmnm3PeHjaoLLMie7kPLQw==}
 
@@ -8027,8 +8014,6 @@ snapshots:
       '@types/node': 22.9.0
 
   '@types/stack-trace@0.0.33': {}
-
-  '@types/statuses@2.0.6': {}
 
   '@types/tough-cookie@4.0.5':
     optional: true
@@ -11983,8 +11968,6 @@ snapshots:
       type-fest: 0.7.1
 
   statuses@2.0.1: {}
-
-  statuses@2.0.2: {}
 
   std-env@3.9.0: {}
 

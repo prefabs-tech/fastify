@@ -1,14 +1,15 @@
+import { STATUS_CODES } from "node:http";
+
 import { HttpError } from "@fastify/sensible";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { parse } from "stack-trace";
-import status from "statuses";
 
 import { CustomError } from "./utils/error";
 
 import type { ErrorResponse } from "./types";
 
 const getHttpStatusText = (statusCode: number): string =>
-  status(statusCode) ?? "Internal Server Error";
+  STATUS_CODES[statusCode] ?? "Internal Server Error";
 
 export const errorHandler = (
   error: Error,
@@ -17,8 +18,7 @@ export const errorHandler = (
 ) => {
   const { log: logger } = request;
 
-  const isStackTraceEnabled =
-    request.server.config.errorHandler?.stackTrace || false;
+  const isStackTraceEnabled = request.server.stackTrace || false;
 
   const isHttpError = error instanceof HttpError;
 

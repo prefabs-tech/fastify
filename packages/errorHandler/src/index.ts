@@ -1,16 +1,18 @@
-/* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import type { HttpErrors } from "@fastify/sensible";
 
-declare module "@prefabs.tech/fastify-config" {
-  interface ApiConfig {
-    errorHandler: {
-      stackTrace?: boolean;
-    };
+declare module "fastify" {
+  interface FastifyInstance {
+    httpErrors: HttpErrors;
+    stackTrace: boolean;
   }
 }
+
+export { default } from "./plugin";
 
 export { errorHandler } from "./errorHandler";
 
 export { CustomError } from "./utils/error";
 
-export type { ErrorResponse } from "./types";
+export type { HttpErrors } from "@fastify/sensible";
+
+export type * from "./types";

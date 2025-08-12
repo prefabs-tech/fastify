@@ -1,4 +1,17 @@
+import { FastifyError, FastifyRequest, FastifyReply } from "fastify";
+
 import type { StackFrame } from "stack-trace";
+
+type ErrorHandler = (
+  error: FastifyError,
+  request: FastifyRequest,
+  reply: FastifyReply,
+) => void | Promise<void>;
+
+interface ErrorHandlerOptions {
+  preErrorHandler?: ErrorHandler;
+  stackTrace?: boolean;
+}
 
 type ErrorResponse = {
   error?: string;
@@ -9,6 +22,6 @@ type ErrorResponse = {
   statusCode: number;
 };
 
-export type { ErrorResponse };
+export type { ErrorHandler, ErrorHandlerOptions, ErrorResponse };
 
 export { type StackFrame } from "stack-trace";

@@ -40,7 +40,7 @@ const start = async () => {
   });
   
   // Register fastify-error-handler plugin
-  await fastify.register(errorHandlerPlugin);
+  await fastify.register(errorHandlerPlugin, {});
   
   await fastify.listen({
     port: config.port,

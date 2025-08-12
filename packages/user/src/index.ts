@@ -58,6 +58,7 @@ export { default as hasUserPermission } from "./lib/hasUserPermission";
 export { default as ProfileValidationClaim } from "./supertokens/utils/profileValidationClaim";
 export { default as createUserContext } from "./supertokens/utils/createUserContext";
 export { default as userSchema } from "./graphql/schema";
+export { errorHandler as supertokensErrorHandler } from "./supertokens/errorHandler";
 
 export * from "./migrations/queries";
 

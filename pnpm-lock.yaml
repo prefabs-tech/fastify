@@ -769,9 +769,6 @@ importers:
       '@prefabs.tech/fastify-config':
         specifier: 0.88.2
         version: link:../config
-      '@prefabs.tech/fastify-error-handler':
-        specifier: 0.88.2
-        version: link:../errorHandler
       '@prefabs.tech/fastify-graphql':
         specifier: 0.88.2
         version: link:../graphql

@@ -47,6 +47,7 @@ interface SupertokensConfig {
   resetPasswordPath?: string;
   emailVerificationPath?: string;
   sendUserAlreadyExistsWarning?: boolean;
+  setErrorHandler?: boolean;
 }
 
 export type { SupertokensConfig, SupertokensRecipes };

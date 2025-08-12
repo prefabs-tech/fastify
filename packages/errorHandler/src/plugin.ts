@@ -18,7 +18,11 @@ const plugin = async (
 
   fastify.setErrorHandler(async (error, request, reply) => {
     if (options.preErrorHandler) {
-      await options.preErrorHandler(error, request, reply);
+      try {
+        await options.preErrorHandler(error, request, reply);
+      } catch {
+        // If preErrorHandler throws an error, we can ignore it and continue
+      }
 
       if (reply.sent) {
         return;

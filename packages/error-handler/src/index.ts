@@ -15,4 +15,6 @@ export { CustomError } from "./utils/error";
 
 export type { HttpErrors } from "@fastify/sensible";
 
+export { default as StackTracey } from "stacktracey";
+
 export type * from "./types";

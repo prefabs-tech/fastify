@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
             "node:http": "NodeHttp",
-            "stack-trace": "StackTrace",
+            stacktracey: "StackTracey",
           },
         },
       },

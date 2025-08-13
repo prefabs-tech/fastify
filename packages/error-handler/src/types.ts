@@ -1,6 +1,5 @@
 import { FastifyError, FastifyRequest, FastifyReply } from "fastify";
-
-import type { StackFrame } from "stack-trace";
+import StackTracey from "stacktracey";
 
 type ErrorHandler = (
   error: FastifyError,
@@ -18,10 +17,8 @@ type ErrorResponse = {
   code?: string;
   message: string;
   name: string;
-  stack?: StackFrame[];
+  stack?: StackTracey.Entry[];
   statusCode: number;
 };
 
 export type { ErrorHandler, ErrorHandlerOptions, ErrorResponse };
-
-export { type StackFrame } from "stack-trace";

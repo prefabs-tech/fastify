@@ -2,7 +2,7 @@ import { STATUS_CODES } from "node:http";
 
 import { HttpError } from "@fastify/sensible";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { parse } from "stack-trace";
+import StackTracey from "stacktracey";
 
 import { CustomError } from "./utils/error";
 
@@ -19,6 +19,8 @@ export const errorHandler = (
   const { log: logger } = request;
 
   const isStackTraceEnabled = request.server.stackTrace || false;
+
+  const stack = new StackTracey(error);
 
   const isHttpError = error instanceof HttpError;
 
@@ -42,7 +44,7 @@ export const errorHandler = (
     };
 
     if (isStackTraceEnabled && error.stack) {
-      response.stack = parse(error);
+      response.stack = stack.items;
     }
 
     void reply.code(statusCode).send(response);
@@ -66,7 +68,7 @@ export const errorHandler = (
       statusCode: 500,
     };
 
-    response.stack = parse(error);
+    response.stack = stack.items;
 
     void reply.code(500).send(response);
 

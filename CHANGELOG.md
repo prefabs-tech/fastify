@@ -1,3 +1,12 @@
+## [0.89.1](https://github.com/prefabs-tech/fastify/compare/v0.89.0...v0.89.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* **error-handler:** replace stack-trace package with stacktracey to support commonjs ([#1009](https://github.com/prefabs-tech/fastify/issues/1009)) ([05cdb03](https://github.com/prefabs-tech/fastify/commit/05cdb03351066da193d4519183624dea4768c1ca))
+
+
+
 # [0.89.0](https://github.com/prefabs-tech/fastify/compare/v0.88.2...v0.89.0) (2025-08-12)
 
 

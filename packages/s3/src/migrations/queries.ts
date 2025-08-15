@@ -5,7 +5,9 @@ import { TABLE_FILES } from "../constants";
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { ZodTypeAny } from "zod";
 
-const queryToCreateTable = (config: ApiConfig): QuerySqlToken<ZodTypeAny> => {
+const createFilesTableQuery = (
+  config: ApiConfig,
+): QuerySqlToken<ZodTypeAny> => {
   const tableName = config.s3?.table?.name || TABLE_FILES;
 
   return sql.unsafe`
@@ -25,4 +27,4 @@ const queryToCreateTable = (config: ApiConfig): QuerySqlToken<ZodTypeAny> => {
 `;
 };
 
-export default queryToCreateTable;
+export { createFilesTableQuery };

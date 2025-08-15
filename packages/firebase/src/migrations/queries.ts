@@ -6,7 +6,9 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { QuerySqlToken } from "slonik";
 import type { ZodTypeAny } from "zod";
 
-const queryToCreateTable = (config: ApiConfig): QuerySqlToken<ZodTypeAny> => {
+const createUserDevicesTableQuery = (
+  config: ApiConfig,
+): QuerySqlToken<ZodTypeAny> => {
   const tableName =
     config.firebase.table?.userDevices?.name || TABLE_USER_DEVICES;
 
@@ -28,4 +30,4 @@ const queryToCreateTable = (config: ApiConfig): QuerySqlToken<ZodTypeAny> => {
   `;
 };
 
-export default queryToCreateTable;
+export { createUserDevicesTableQuery };

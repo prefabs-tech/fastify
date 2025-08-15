@@ -9,6 +9,7 @@ declare module "@prefabs.tech/fastify-config" {
 }
 
 export * from "./constants";
+export * from "./migrations/queries";
 
 export { default as FileService } from "./model/files/service";
 export { default as S3Client } from "./utils/s3Client";

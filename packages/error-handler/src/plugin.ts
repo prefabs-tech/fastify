@@ -2,6 +2,7 @@ import fastifySensible from "@fastify/sensible";
 import FastifyPlugin from "fastify-plugin";
 
 import { errorHandler } from "./errorHandler";
+import { errorSchema } from "./utils/errorSchema";
 
 import type { ErrorHandlerOptions } from "./types";
 import type { FastifyInstance } from "fastify";
@@ -31,6 +32,8 @@ const plugin = async (
 
     return errorHandler(error, request, reply);
   });
+
+  fastify.addSchema(errorSchema);
 };
 
 export default FastifyPlugin(plugin);

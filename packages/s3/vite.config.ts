@@ -29,6 +29,8 @@ export default defineConfig(({ mode }) => {
             "@aws-sdk/lib-storage": "AWSLibStorage",
             "@aws-sdk/s3-request-presigner": "AWSS3RequestPresigner",
             "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
+            "@prefabs.tech/fastify-error-handler":
+              "PrefabsTechFastifyErrorHandler",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@fastify/cors": "FastifyCors",

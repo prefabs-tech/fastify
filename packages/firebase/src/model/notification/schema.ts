@@ -1,14 +1,3 @@
-const errorSchema = {
-  type: "object",
-  properties: {
-    code: { type: "string" },
-    error: { type: "object" },
-    message: { type: "string" },
-    statusCode: { type: "number" },
-    status: { type: "string" },
-  },
-};
-
 export const sendNotificationSchema = {
   description: "Send a notification to a specific user",
   operationId: "sendNotification",
@@ -31,10 +20,10 @@ export const sendNotificationSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["notifications"],

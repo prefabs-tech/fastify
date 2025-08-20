@@ -29,113 +29,87 @@ const createInvitation = async (
     user,
   } = request;
 
+  if (!user) {
+    throw server.httpErrors.unauthorized("Unauthorised");
+  }
+
+  const { appId, email, expiresAt, payload, role } =
+    body as InvitationCreateInput;
+
+  //  check if the email is valid
+  const result = validateEmail(email, config);
+
+  if (!result.success) {
+    throw server.httpErrors.unprocessableEntity(
+      result.message || "Invalid email",
+    );
+  }
+
+  const userService = getUserService(config, slonik, dbSchema);
+
+  const emailFilter = {
+    key: "email",
+    operator: "eq",
+    value: email,
+  } as FilterInput;
+
+  const userCount = await userService.count(emailFilter);
+
+  // check if user of the email already exists
+  if (userCount > 0) {
+    throw server.httpErrors.unprocessableEntity(
+      `User with email ${email} already exists`,
+    );
+  }
+
+  const service = getInvitationService(config, slonik, dbSchema);
+
+  const invitationCreateInput: InvitationCreateInput = {
+    email,
+    expiresAt: computeInvitationExpiresAt(config, expiresAt),
+    invitedById: user.id,
+    role: role || config.user.role || ROLE_USER,
+  };
+
+  const app = config.apps?.find((app) => app.id == appId);
+
+  if (app) {
+    if (app.supportedRoles.includes(invitationCreateInput.role)) {
+      invitationCreateInput.appId = appId;
+    } else {
+      throw server.httpErrors.unprocessableEntity(
+        `App ${app.name} does not support role ${invitationCreateInput.role}`,
+      );
+    }
+  }
+
+  if (Object.keys(payload || {}).length > 0) {
+    invitationCreateInput.payload = JSON.stringify(payload);
+  }
+
+  let invitation: Invitation | undefined;
+
   try {
-    if (!user) {
-      return reply.status(401).send({
-        error: "Unauthorized",
-        message: "unauthorized",
-        statusCode: 401,
-      });
-    }
+    invitation = await service.create(invitationCreateInput);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw server.httpErrors.unprocessableEntity(error.message);
+  }
 
-    const { appId, email, expiresAt, payload, role } =
-      body as InvitationCreateInput;
-
-    //  check if the email is valid
-    const result = validateEmail(email, config);
-
-    if (!result.success) {
-      return reply.status(422).send({
-        statusCode: 422,
-        status: "ERROR",
-        message: result.message,
-      });
-    }
-
-    const userService = getUserService(config, slonik, dbSchema);
-
-    const emailFilter = {
-      key: "email",
-      operator: "eq",
-      value: email,
-    } as FilterInput;
-
-    const userCount = await userService.count(emailFilter);
-
-    // check if user of the email already exists
-    if (userCount > 0) {
-      return reply.status(422).send({
-        statusCode: 422,
-        status: "ERROR",
-        message: `User with email ${email} already exists`,
-      });
-    }
-
-    const service = getInvitationService(config, slonik, dbSchema);
-
-    const invitationCreateInput: InvitationCreateInput = {
-      email,
-      expiresAt: computeInvitationExpiresAt(config, expiresAt),
-      invitedById: user.id,
-      role: role || config.user.role || ROLE_USER,
-    };
-
-    const app = config.apps?.find((app) => app.id == appId);
-
-    if (app) {
-      if (app.supportedRoles.includes(invitationCreateInput.role)) {
-        invitationCreateInput.appId = appId;
-      } else {
-        return reply.status(422).send({
-          statusCode: 422,
-          status: "ERROR",
-          message: `App ${app.name} does not support role ${invitationCreateInput.role}`,
-        });
-      }
-    }
-
-    if (Object.keys(payload || {}).length > 0) {
-      invitationCreateInput.payload = JSON.stringify(payload);
-    }
-
-    let invitation: Invitation | undefined;
+  if (invitation) {
+    const url = headers.referer || headers.origin || hostname;
 
     try {
-      invitation = await service.create(invitationCreateInput);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
+      sendInvitation(server, invitation, url);
+    } catch (error) {
       log.error(error);
-
-      return reply.status(422).send({
-        statusCode: 422,
-        status: "ERROR",
-        message: error.message,
-      });
     }
 
-    if (invitation) {
-      const url = headers.referer || headers.origin || hostname;
+    const data: Partial<Invitation> = invitation;
 
-      try {
-        sendInvitation(server, invitation, url);
-      } catch (error) {
-        log.error(error);
-      }
+    delete data.token;
 
-      const data: Partial<Invitation> = invitation;
-
-      delete data.token;
-
-      reply.send(data);
-    }
-  } catch (error) {
-    log.error(error);
-
-    reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+    reply.send(data);
   }
 };
 

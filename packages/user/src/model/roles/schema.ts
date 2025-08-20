@@ -1,14 +1,3 @@
-const errorSchema = {
-  type: "object",
-  properties: {
-    code: { type: "string" },
-    error: { type: "object" },
-    message: { type: "string" },
-    statusCode: { type: "number" },
-    status: { type: "string" },
-  },
-};
-
 export const createRoleSchema = {
   description: "Create a new role with optional permissions",
   operationId: "createRole",
@@ -33,18 +22,18 @@ export const createRoleSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["roles"],
@@ -69,18 +58,18 @@ export const deleteRoleSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     422: {
       description: "Unprocessable Entity",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["roles"],
@@ -108,18 +97,18 @@ export const getRolePermissionsSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "Role not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["roles"],
@@ -149,14 +138,14 @@ export const getRolesSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["roles"],
@@ -190,18 +179,18 @@ export const updateRoleSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["roles"],

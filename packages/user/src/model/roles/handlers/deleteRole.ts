@@ -1,11 +1,13 @@
-import CustomApiError from "../../../customApiError";
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
+import { ERROR_CODES } from "../../../constants";
 import RoleService from "../service";
 
 import type { FastifyReply } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const deleteRole = async (request: SessionRequest, reply: FastifyReply) => {
-  const { log, query } = request;
+  const { query } = request;
 
   try {
     let { role } = query as { role?: string };
@@ -18,11 +20,7 @@ const deleteRole = async (request: SessionRequest, reply: FastifyReply) => {
       }
 
       if (typeof role != "string") {
-        throw new CustomApiError({
-          name: "UNKNOWN_ROLE_ERROR",
-          message: `Invalid role`,
-          statusCode: 422,
-        });
+        throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
       }
 
       const service = new RoleService();
@@ -32,28 +30,13 @@ const deleteRole = async (request: SessionRequest, reply: FastifyReply) => {
       return reply.send(deleteResponse);
     }
 
-    throw new CustomApiError({
-      name: "UNKNOWN_ROLE_ERROR",
-      message: `Invalid role`,
-      statusCode: 422,
-    });
+    throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
   } catch (error) {
-    if (error instanceof CustomApiError) {
-      reply.status(error.statusCode);
-
-      return reply.send({
-        message: error.message,
-        name: error.name,
-        statusCode: error.statusCode,
-      });
+    if (error instanceof CustomError) {
+      request.server.httpErrors.unprocessableEntity(error.message);
     }
 
-    log.error(error);
-    return reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+    throw error;
   }
 };
 

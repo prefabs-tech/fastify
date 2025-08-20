@@ -1,6 +1,7 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import UserRoles from "supertokens-node/recipe/userroles";
 
-import CustomApiError from "../../customApiError";
+import { ERROR_CODES } from "../../constants";
 
 class RoleService {
   async createRole(
@@ -10,11 +11,10 @@ class RoleService {
     const { roles } = await UserRoles.getAllRoles(role);
 
     if (roles.includes(role)) {
-      throw new CustomApiError({
-        name: "ROLE_ALREADY_EXISTS",
-        message: "Unable to create role as it already exists",
-        statusCode: 422,
-      });
+      throw new CustomError(
+        "Unable to create role as it already exists",
+        ERROR_CODES.ROLE_ALREADY_EXISTS,
+      );
     }
 
     const createRoleResponse = await UserRoles.createNewRoleOrAddPermissions(
@@ -29,20 +29,14 @@ class RoleService {
     const response = await UserRoles.getUsersThatHaveRole(role);
 
     if (response.status === "UNKNOWN_ROLE_ERROR") {
-      throw new CustomApiError({
-        name: response.status,
-        message: `Invalid role`,
-        statusCode: 422,
-      });
+      throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
     }
 
     if (response.users.length > 0) {
-      throw new CustomApiError({
-        name: "ROLE_IN_USE",
-        message:
-          "The role is currently assigned to one or more users and cannot be deleted",
-        statusCode: 422,
-      });
+      throw new CustomError(
+        "The role is currently assigned to one or more users and cannot be deleted",
+        ERROR_CODES.ROLE_IN_USE,
+      );
     }
 
     const deleteRoleResponse = await UserRoles.deleteRole(role);
@@ -91,11 +85,7 @@ class RoleService {
     const response = await UserRoles.getPermissionsForRole(role);
 
     if (response.status === "UNKNOWN_ROLE_ERROR") {
-      throw new CustomApiError({
-        name: "UNKNOWN_ROLE_ERROR",
-        message: `Invalid role`,
-        statusCode: 422,
-      });
+      throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
     }
 
     const rolePermissions = response.permissions;

@@ -8,47 +8,35 @@ import type { FastifyReply } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const changePassword = async (request: SessionRequest, reply: FastifyReply) => {
-  const { body, config, dbSchema, log, slonik, user } = request;
-  try {
-    if (!user) {
-      return reply.status(401).send({
-        error: "Unauthorised",
-        message: "unauthorised",
-      });
-    }
+  const { body, config, dbSchema, server, slonik, user } = request;
 
-    const oldPassword = (body as ChangePasswordInput).oldPassword ?? "";
-    const newPassword = (body as ChangePasswordInput).newPassword ?? "";
-
-    const service = getUserService(config, slonik, dbSchema);
-
-    const response = await service.changePassword(
-      user.id,
-      oldPassword,
-      newPassword,
-    );
-
-    if (response.status === "OK") {
-      await createNewSession(
-        request,
-        reply,
-        user.id,
-        undefined,
-        undefined,
-        createUserContext(undefined, request),
-      );
-    }
-
-    reply.send(response);
-  } catch (error) {
-    log.error(error);
-
-    reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+  if (!user) {
+    throw server.httpErrors.unauthorized("Unauthorised");
   }
+
+  const oldPassword = (body as ChangePasswordInput).oldPassword ?? "";
+  const newPassword = (body as ChangePasswordInput).newPassword ?? "";
+
+  const service = getUserService(config, slonik, dbSchema);
+
+  const response = await service.changePassword(
+    user.id,
+    oldPassword,
+    newPassword,
+  );
+
+  if (response.status === "OK") {
+    await createNewSession(
+      request,
+      reply,
+      user.id,
+      undefined,
+      undefined,
+      createUserContext(undefined, request),
+    );
+  }
+
+  reply.send(response);
 };
 
 export default changePassword;

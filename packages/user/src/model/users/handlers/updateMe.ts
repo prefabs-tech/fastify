@@ -1,7 +1,8 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
 import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
 
-import CustomApiError from "../../../customApiError";
+import { ERROR_CODES } from "../../../constants";
 import getUserService from "../../../lib/getUserService";
 import createUserContext from "../../../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
@@ -13,16 +14,13 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
-  const { body, config, dbSchema, log, slonik, user } =
+  const { body, config, dbSchema, server, slonik, user } =
     request as FastifyRequest<{
       Body: UserUpdateInput;
     }>;
 
   if (!user) {
-    return reply.status(401).send({
-      error: "Unauthorised",
-      message: "unauthorised",
-    });
+    throw server.httpErrors.unauthorized("Unauthorised");
   }
 
   try {
@@ -73,23 +71,15 @@ const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
 
     reply.send(response);
   } catch (error) {
-    if (error instanceof CustomApiError) {
-      reply.status(error.statusCode);
+    if (error instanceof CustomError) {
+      if (error.code === ERROR_CODES.PHOTO_FILE_TOO_LARGE) {
+        throw server.httpErrors.payloadTooLarge(error.message);
+      }
 
-      return reply.send({
-        message: error.message,
-        name: error.name,
-        statusCode: error.statusCode,
-      });
+      throw server.httpErrors.unprocessableEntity(error.message);
     }
 
-    log.error(error);
-
-    return reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+    throw error;
   }
 };
 

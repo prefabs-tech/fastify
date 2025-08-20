@@ -1,14 +1,3 @@
-const errorSchema = {
-  type: "object",
-  properties: {
-    code: { type: "string" },
-    error: { type: "object" },
-    message: { type: "string" },
-    statusCode: { type: "number" },
-    status: { type: "string" },
-  },
-};
-
 const userSchema = {
   type: "object",
   properties: {
@@ -46,10 +35,10 @@ export const adminSignUpSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -66,7 +55,7 @@ export const canAdminSignUpSchema = {
       },
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -92,14 +81,14 @@ export const changeEmailSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -127,14 +116,14 @@ export const changePasswordSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -160,10 +149,10 @@ export const deleteMeSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -182,10 +171,10 @@ export const uploadPhotoSchema = {
     200: userSchema,
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -198,10 +187,10 @@ export const removePhotoSchema = {
     200: userSchema,
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -226,18 +215,18 @@ export const disableUserSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "User not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -262,18 +251,18 @@ export const enableUserSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "User not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -286,10 +275,10 @@ export const getMeSchema = {
     200: userSchema,
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -309,18 +298,18 @@ export const getUserSchema = {
     200: userSchema,
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "User not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -354,14 +343,14 @@ export const getUsersSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],
@@ -378,10 +367,10 @@ export const updateMeSchema = {
     200: userSchema,
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["users"],

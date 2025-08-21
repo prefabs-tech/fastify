@@ -1,3 +1,55 @@
+# [0.90.0](https://github.com/prefabs-tech/fastify/compare/v0.89.2...v0.90.0) (2025-08-21)
+
+### Breaking changes
+
+* @prefabs.tech/fastify-firebase, @prefabs.tech/fastify-s3, @prefabs.tech/fastify-user now requires @prefabs.tech/fastify-error-handler package for handling http errors and other custom errors.
+
+### Bug Fixes
+
+* **user/photo:** fix photo upload ([#1005](https://github.com/prefabs-tech/fastify/issues/1005)) ([f32a4e0](https://github.com/prefabs-tech/fastify/commit/f32a4e06e6947f5c1a0b3ddeb503d4660225de94))
+
+* **user/invitation:** create invitaion endpoint now check if role is exists or not, if not exist throws error.
+
+* **error-handler** fix ErrorResponse fastify schema and update error handler.
+
+### Error Handling Guidelines
+
+#### Controllers must not reply with non-200 responses
+
+Do not manually send error responses from controllers.
+
+Instead, always throw an error and let the global error handler handle formatting and response.
+
+**Wrong**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  return reply.code(401).send({ message: "Unauthorized" });
+})
+```
+
+**Correct**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  throw fastify.httpErrors.unauthorized("Unauthorized");
+})
+```
+
+#### Throw `CustomError` (or subclass)
+- Modules **must throw** an instance of `CustomError` (or a class extending it).
+- This ensures errors can be consistently caught and appropriate actions taken.
+
+```ts
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
+const file = fileService.findById(1);
+
+if (!file) {
+  throw new CustomError("File not found", "FILE_NOT_FOUND_ERROR");
+}
+```
+
 ## [0.89.2](https://github.com/prefabs-tech/fastify/compare/v0.89.1...v0.89.2) (2025-08-15)
 
 

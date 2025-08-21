@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-swagger",
-  "version": "0.89.2",
+  "version": "0.90.0",
   "description": "Fastify swagger plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/swagger#readme",
   "repository": {

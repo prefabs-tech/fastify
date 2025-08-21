@@ -43,10 +43,6 @@ export const errorHandler = (
       statusCode,
     };
 
-    if (isStackTraceEnabled && error.stack) {
-      response.stack = stack.items;
-    }
-
     void reply.code(statusCode).send(response);
 
     return;

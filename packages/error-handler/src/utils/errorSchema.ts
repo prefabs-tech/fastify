@@ -12,5 +12,4 @@ export const errorSchema = {
     },
     statusCode: { type: "number" },
   },
-  required: ["message", "name", "statusCode"],
 };

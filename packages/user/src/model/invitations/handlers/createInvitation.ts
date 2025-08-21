@@ -1,8 +1,8 @@
-import { ROLE_USER } from "../../../constants";
 import computeInvitationExpiresAt from "../../../lib/computeInvitationExpiresAt";
 import getInvitationService from "../../../lib/getInvitationService";
 import getUserService from "../../../lib/getUserService";
 import sendInvitation from "../../../lib/sendInvitation";
+import areRolesExist from "../../../supertokens/utils/areRolesExist";
 import validateEmail from "../../../validator/email";
 
 import type {
@@ -62,13 +62,19 @@ const createInvitation = async (
     );
   }
 
+  if (!(await areRolesExist([role]))) {
+    throw server.httpErrors.unprocessableEntity(
+      `Role "${role}" does not exist`,
+    );
+  }
+
   const service = getInvitationService(config, slonik, dbSchema);
 
   const invitationCreateInput: InvitationCreateInput = {
     email,
     expiresAt: computeInvitationExpiresAt(config, expiresAt),
     invitedById: user.id,
-    role: role || config.user.role || ROLE_USER,
+    role: role,
   };
 
   const app = config.apps?.find((app) => app.id == appId);

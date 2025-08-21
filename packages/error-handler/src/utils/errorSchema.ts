@@ -8,8 +8,12 @@ export const errorSchema = {
     name: { type: "string" },
     stack: {
       type: "array",
-      items: { type: "object" },
+      items: {
+        type: "object",
+        additionalProperties: true,
+      },
     },
     statusCode: { type: "number" },
   },
+  additionalProperties: true,
 };

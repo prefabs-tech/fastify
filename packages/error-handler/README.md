@@ -74,3 +74,41 @@ preErrorHandler?: (
   reply: FastifyReply,
 ) => void | Promise<void>;
 ```
+
+## Error Handling Guidelines
+
+### Controllers must not reply with non-200 responses
+
+Do not manually send error responses from controllers.
+
+Instead, always throw an error and let the global error handler handle formatting and response.
+
+**Wrong**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  return reply.code(401).send({ message: "Unauthorized" });
+})
+```
+
+**Correct**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  throw fastify.httpErrors.unauthorized("Unauthorized");
+})
+```
+
+### Throw `CustomError` (or subclass)
+- Modules **must throw** an instance of `CustomError` (or a class extending it).
+- This ensures errors can be consistently caught and appropriate actions taken.
+
+```ts
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
+const file = fileService.findById(1);
+
+if (!file) {
+  throw new CustomError("File not found", "FILE_NOT_FOUND_ERROR");
+}
+```

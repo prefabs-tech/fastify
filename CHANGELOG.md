@@ -1,3 +1,7 @@
+# [0.90.0](https://github.com/prefabs-tech/fastify/compare/v0.89.2...v0.90.0) (2025-08-21)
+
+
+
 ## [0.89.2](https://github.com/prefabs-tech/fastify/compare/v0.89.1...v0.89.2) (2025-08-15)
 
 

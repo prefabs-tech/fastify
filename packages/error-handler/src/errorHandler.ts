@@ -66,9 +66,10 @@ export const errorHandler = (
       message: error.message,
       name: error.name,
       statusCode: 500,
+      stack: stack.items,
     };
 
-    response.stack = stack.items;
+    logger.error(error);
 
     void reply.code(500).send(response);
 

@@ -1,3 +1,4 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { deleteUser } from "supertokens-node";
 import EmailVerification from "supertokens-node/recipe/emailverification";
 import UserRoles from "supertokens-node/recipe/userroles";
@@ -8,7 +9,7 @@ import verifyEmail from "../../../../lib/verifyEmail";
 import areRolesExist from "../../../utils/areRolesExist";
 
 import type { User } from "../../../../types";
-import type { FastifyInstance, FastifyError } from "fastify";
+import type { FastifyInstance } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 const emailPasswordSignUp = (
@@ -21,13 +22,10 @@ const emailPasswordSignUp = (
     const roles = (input.userContext.roles || []) as string[];
 
     if (!(await areRolesExist(roles))) {
-      log.error(`At least one role from ${roles.join(", ")} does not exist.`);
-
-      throw {
-        name: "SIGN_UP_FAILED",
-        message: "Something went wrong",
-        statusCode: 500,
-      } as FastifyError;
+      throw new CustomError(
+        `At least one role from ${roles.join(", ")} does not exist.`,
+        "SIGNUP_FAILED_ERROR",
+      );
     }
 
     const originalResponse =
@@ -47,18 +45,10 @@ const emailPasswordSignUp = (
         if (!user) {
           throw new Error("User not found");
         }
-        /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      } catch (error: any) {
-        log.error("Error while creating user");
-        log.error(error);
-
+      } catch (error) {
         await deleteUser(originalResponse.user.id);
 
-        throw {
-          name: "SIGN_UP_FAILED",
-          message: "Something went wrong",
-          statusCode: 500,
-        };
+        throw error;
       }
 
       user.roles = roles;

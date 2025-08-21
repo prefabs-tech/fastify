@@ -325,11 +325,11 @@ const Mutation = {
     }
 
     if (!photoFile) {
-      throw new CustomApiError({
-        message: "Missing photo file in the request body",
-        name: "ERROR_FILE_MISSING",
-        statusCode: 422,
-      });
+      return new mercurius.ErrorWithProps(
+        "Missing photo file in the request body",
+        {},
+        422,
+      );
     }
 
     try {

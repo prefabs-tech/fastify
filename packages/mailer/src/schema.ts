@@ -2,11 +2,17 @@ const errorSchema = {
   type: "object",
   properties: {
     code: { type: "string" },
-    error: { type: "object" },
+    error: { type: "string" },
     message: { type: "string" },
+    name: { type: "string" },
+    stack: {
+      type: "array",
+      items: { type: "object" },
+    },
     statusCode: { type: "number" },
-    status: { type: "string" },
   },
+  required: ["message", "name", "statusCode"],
+  additionalProperties: true,
 };
 
 export const testEmailSchema = {

@@ -1,14 +1,3 @@
-const errorSchema = {
-  type: "object",
-  properties: {
-    code: { type: "string" },
-    error: { type: "object" },
-    message: { type: "string" },
-    statusCode: { type: "number" },
-    status: { type: "string" },
-  },
-};
-
 const invitationCreateInputSchema = {
   type: "object",
   properties: {
@@ -88,18 +77,18 @@ export const acceptInvitationSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -113,18 +102,18 @@ export const createInvitationSchema = {
     200: invitationSchema,
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -144,22 +133,22 @@ export const deleteInvitationSchema = {
     200: invitationSchema,
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "Invitation not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -182,18 +171,18 @@ export const getInvitationByTokenSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "Invitation not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -227,14 +216,14 @@ export const getInvitationsListSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -265,22 +254,22 @@ export const resendInvitationSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "Invitation not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -300,22 +289,22 @@ export const revokeInvitationSchema = {
     200: invitationSchema,
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     404: {
       description: "Invitation not found",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],
@@ -342,18 +331,18 @@ export const updateInvitationSchema = {
     },
     400: {
       description: "Bad Request",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     403: {
       description: "Forbidden",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["invitations"],

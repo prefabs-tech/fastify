@@ -1,3 +1,4 @@
+import "@prefabs.tech/fastify-error-handler";
 interface UserDevice {
   userId: string;
   deviceToken: string;

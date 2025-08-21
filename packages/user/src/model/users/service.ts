@@ -1,11 +1,14 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { File, FileService, Multipart } from "@prefabs.tech/fastify-s3";
 import { BaseService } from "@prefabs.tech/fastify-slonik";
 import Session from "supertokens-node/recipe/session";
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import UserSqlFactory from "./sqlFactory";
-import { DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB } from "../../constants";
-import CustomApiError from "../../customApiError";
+import {
+  DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB,
+  ERROR_CODES,
+} from "../../constants";
 import validatePassword from "../../validator/password";
 
 import type { User, UserCreateInput, UserUpdateInput } from "../../types";
@@ -28,7 +31,7 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     });
 
     if (response.status !== "OK") {
-      throw new Error(response.status);
+      throw new CustomError(response.status, response.status);
     }
 
     const query = this.factory.getUpdateSql(id, { email });
@@ -78,10 +81,10 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
               status: "OK",
             };
           } else {
-            throw {
-              status: "FAILED",
-              message: "Oops! Something went wrong, couldn't change password",
-            };
+            throw new CustomError(
+              "Failed to change password",
+              ERROR_CODES.CHANGE_PASSWORD,
+            );
           }
         } else {
           return {
@@ -90,10 +93,7 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
           };
         }
       } else {
-        throw {
-          status: "NOT_FOUND",
-          message: "User not found",
-        };
+        throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
       }
     } else {
       return {
@@ -107,19 +107,11 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     const user = await ThirdPartyEmailPassword.getUserById(userId);
 
     if (!user) {
-      throw new CustomApiError({
-        message: "User not found",
-        name: "NOT_FOUND",
-        statusCode: 422,
-      });
+      throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
     }
 
     if (!password) {
-      throw new CustomApiError({
-        message: "Invalid password",
-        name: "INVALID_PASSWORD",
-        statusCode: 422,
-      });
+      throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
     }
 
     const signInResponse = await ThirdPartyEmailPassword.emailPasswordSignIn(
@@ -131,11 +123,7 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     if (signInResponse.status === "OK") {
       return await this.delete(userId);
     } else {
-      throw new CustomApiError({
-        message: "Invalid password",
-        name: "INVALID_PASSWORD",
-        statusCode: 422,
-      });
+      throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
     }
   }
 
@@ -250,20 +238,18 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
       const maxSizeInBytes = photoSizeLimit * 1024 * 1024; // Convert to bytes
 
       if (Buffer.isBuffer(data.data) && data.data.length > maxSizeInBytes) {
-        throw new CustomApiError({
-          message: `File size exceeds ${photoSizeLimit}MB limit`,
-          name: "ERROR_FILE_TOO_LARGE",
-          statusCode: 413,
-        });
+        throw new CustomError(
+          `File size exceeds ${photoSizeLimit}MB limit`,
+          ERROR_CODES.PHOTO_FILE_TOO_LARGE,
+        );
       }
     }
 
     if (!this._supportedMimeTypes.includes(data.mimetype)) {
-      throw new CustomApiError({
-        message: "Unsupported file type for profile picture",
-        name: "UNSUPPORTED_FILE_TYPE",
-        statusCode: 422,
-      });
+      throw new CustomError(
+        "Unsupported file type for profile picture",
+        ERROR_CODES.UNSUPPORTED_PHOTO_FILE_TYPE,
+      );
     }
 
     this.fileService.filename = filename;

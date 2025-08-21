@@ -1,6 +1,6 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { mercurius } from "mercurius";
 
-import CustomApiError from "../../../customApiError";
 import RoleService from "../service";
 
 import type { MercuriusContext } from "mercurius";
@@ -26,10 +26,10 @@ const Mutation = {
 
       return createResponse;
     } catch (error) {
-      if (error instanceof CustomApiError) {
-        const mercuriusError = new mercurius.ErrorWithProps(error.name);
+      if (error instanceof CustomError) {
+        const mercuriusError = new mercurius.ErrorWithProps(error.message);
 
-        mercuriusError.statusCode = error.statusCode;
+        mercuriusError.statusCode = 422;
 
         return mercuriusError;
       }
@@ -64,10 +64,10 @@ const Mutation = {
 
       return deleteResponse;
     } catch (error) {
-      if (error instanceof CustomApiError) {
-        const mercuriusError = new mercurius.ErrorWithProps(error.name);
+      if (error instanceof CustomError) {
+        const mercuriusError = new mercurius.ErrorWithProps(error.message);
 
-        mercuriusError.statusCode = error.statusCode;
+        mercuriusError.statusCode = 422;
 
         return mercuriusError;
       }
@@ -104,10 +104,10 @@ const Mutation = {
 
       return updatedPermissionsResponse;
     } catch (error) {
-      if (error instanceof CustomApiError) {
-        const mercuriusError = new mercurius.ErrorWithProps(error.name);
+      if (error instanceof CustomError) {
+        const mercuriusError = new mercurius.ErrorWithProps(error.message);
 
-        mercuriusError.statusCode = error.statusCode;
+        mercuriusError.statusCode = 422;
 
         return mercuriusError;
       }

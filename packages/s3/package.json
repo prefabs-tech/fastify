@@ -43,6 +43,7 @@
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
     "@prefabs.tech/fastify-config": "0.89.2",
+    "@prefabs.tech/fastify-error-handler": "0.89.2",
     "@prefabs.tech/fastify-graphql": "0.89.2",
     "@prefabs.tech/fastify-slonik": "0.89.2",
     "@prefabs.tech/tsconfig": "0.2.0",
@@ -71,6 +72,7 @@
   },
   "peerDependencies": {
     "@prefabs.tech/fastify-config": "0.89.2",
+    "@prefabs.tech/fastify-error-handler": "0.89.2",
     "@prefabs.tech/fastify-graphql": "0.89.2",
     "@prefabs.tech/fastify-slonik": "0.89.2",
     "fastify": ">=5.2.1",

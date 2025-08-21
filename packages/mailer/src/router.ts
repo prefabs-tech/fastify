@@ -16,7 +16,7 @@ const router = async (
   fastify.get(
     path,
     { schema: testEmailSchema },
-    (request: FastifyRequest, reply: FastifyReply) => {
+    async (request: FastifyRequest, reply: FastifyReply) => {
       const { mailer } = fastify;
 
       const html = mjml2html(
@@ -39,34 +39,17 @@ const router = async (
       </mjml>`,
       );
 
-      mailer.sendMail(
-        {
-          html: html.html,
-          subject: "test email",
-          to,
-        },
-        (error: unknown, info: { from: unknown; to: unknown }) => {
-          if (error) {
-            /* eslint-disable-next-line unicorn/consistent-destructuring */
-            fastify.log.error(error);
+      const info = await mailer.sendMail({
+        html: html.html,
+        subject: "test email",
+        to,
+      });
 
-            return reply.status(500).send({
-              error,
-              message: "Something went wrong",
-              statusCode: 500,
-              status: "ERROR",
-            });
-          }
-
-          reply.status(200);
-
-          reply.send({
-            status: "ok",
-            message: "Email successfully sent",
-            info,
-          });
-        },
-      );
+      reply.send({
+        status: "ok",
+        message: "Email successfully sent",
+        info,
+      });
     },
   );
 };

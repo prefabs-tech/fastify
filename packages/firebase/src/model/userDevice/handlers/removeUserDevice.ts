@@ -10,29 +10,17 @@ const removeUserDevice = async (
   const user = request.user;
 
   if (!user) {
-    return reply.status(401).send({
-      error: "Unauthorized",
-      message: "unauthorized",
-      statusCode: 401,
-    });
+    throw request.server.httpErrors.unauthorized("Unauthorised");
   }
 
   const { deviceToken } = request.body as { deviceToken: string };
-
-  if (!deviceToken) {
-    request.log.error("device token is not defined");
-
-    throw new Error("Oops, Something went wrong");
-  }
 
   const service = new Service(request.config, request.slonik, request.dbSchema);
 
   const userDevices = await service.getByUserId(user.id);
 
   if (!userDevices || userDevices.length === 0) {
-    request.log.error("No devices found for user");
-
-    throw new Error("Oops, Something went wrong");
+    throw request.server.httpErrors.notFound("No devices found for the user");
   }
 
   const deviceToDelete = userDevices.find(
@@ -40,9 +28,9 @@ const removeUserDevice = async (
   );
 
   if (!deviceToDelete) {
-    request.log.error("device requested to delete not owned by user");
-
-    throw new Error("Oops, Something went wrong");
+    throw request.server.httpErrors.unprocessableEntity(
+      "Device requested to delete not owned by user",
+    );
   }
 
   reply.send(await service.removeByDeviceToken(deviceToken));

@@ -14,23 +14,19 @@ import type { ChangeEmailInput } from "../../../types";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
-  const { body, config, log, user, slonik, session } = request;
+  const { body, config, user, server, slonik, session } = request;
+
+  if (!user) {
+    throw server.httpErrors.unauthorized("Unauthorised");
+  }
+
+  if (config.user.features?.updateEmail?.enabled === false) {
+    throw server.httpErrors.forbidden(
+      "Update email feature is currently disabled.",
+    );
+  }
 
   try {
-    if (config.user.features?.updateEmail?.enabled === false) {
-      return reply.status(403).send({
-        status: "EMAIL_FEATURE_DISABLED_ERROR",
-        message: "Update email feature is currently disabled.",
-      });
-    }
-
-    if (!user) {
-      return reply.status(401).send({
-        error: "Unauthorised",
-        message: "unauthorised",
-      });
-    }
-
     if (config.user.features?.profileValidation?.enabled) {
       await session?.fetchAndSetClaim(
         new ProfileValidationClaim(),
@@ -50,10 +46,9 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
     const emailValidationResult = validateEmail(email, config);
 
     if (!emailValidationResult.success) {
-      return reply.status(422).send({
-        status: "EMAIL_INVALID_ERROR",
-        message: emailValidationResult.message,
-      });
+      throw server.httpErrors.unprocessableEntity(
+        emailValidationResult.message || "Invalid email",
+      );
     }
 
     if (user.email === email) {
@@ -118,19 +113,13 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
     return reply.send({ status: "OK", message: "Email updated successfully." });
     /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
-    log.error(error);
-
     if (error.message === "EMAIL_ALREADY_EXISTS_ERROR") {
       return reply.send({
         status: error.message,
       });
     }
 
-    reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+    throw error;
   }
 };
 

@@ -1,14 +1,3 @@
-const errorSchema = {
-  type: "object",
-  properties: {
-    code: { type: "string" },
-    error: { type: "object" },
-    message: { type: "string" },
-    statusCode: { type: "number" },
-    status: { type: "string" },
-  },
-};
-
 const userDeviceSchema = {
   type: "object",
   properties: {
@@ -37,10 +26,10 @@ export const deleteUserDeviceSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["user-devices"],
@@ -63,10 +52,10 @@ export const postUserDeviceSchema = {
     },
     401: {
       description: "Unauthorized",
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
     500: {
-      ...errorSchema,
+      $ref: "ErrorResponse#",
     },
   },
   tags: ["user-devices"],

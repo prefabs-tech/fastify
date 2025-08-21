@@ -24,6 +24,8 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
+            "@prefabs.tech/fastify-error-handler":
+              "PrefabsTechFastifyErrorHandler",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
             fastify: "Fastify",

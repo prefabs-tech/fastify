@@ -33,7 +33,7 @@ const deleteRole = async (request: SessionRequest, reply: FastifyReply) => {
     throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
   } catch (error) {
     if (error instanceof CustomError) {
-      request.server.httpErrors.unprocessableEntity(error.message);
+      throw request.server.httpErrors.unprocessableEntity(error.message);
     }
 
     throw error;

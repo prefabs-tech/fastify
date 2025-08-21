@@ -26,7 +26,7 @@ const updatePermissions = async (
     return reply.send(updatedPermissionsResponse);
   } catch (error) {
     if (error instanceof CustomError) {
-      request.server.httpErrors.unprocessableEntity(error.message);
+      throw request.server.httpErrors.unprocessableEntity(error.message);
     }
 
     throw error;

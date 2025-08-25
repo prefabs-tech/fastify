@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-config.js",
-      "require": "./dist/prefabs-tech-fastify-config.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-config.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-config.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-config.cjs",
   "module": "./dist/prefabs-tech-fastify-config.js",
   "types": "./dist/types/index.d.ts",
   "files": [

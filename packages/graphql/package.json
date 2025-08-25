@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-graphql.js",
-      "require": "./dist/prefabs-tech-fastify-graphql.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-graphql.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-graphql.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-graphql.cjs",
   "module": "./dist/prefabs-tech-fastify-graphql.js",
   "types": "./dist/types/index.d.ts",
   "files": ["dist"],

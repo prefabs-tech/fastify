@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-slonik.js",
-      "require": "./dist/prefabs-tech-fastify-slonik.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-slonik.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-slonik.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-slonik.cjs",
   "module": "./dist/prefabs-tech-fastify-slonik.js",
   "types": "./dist/types/index.d.ts",
   "files": ["dist"],

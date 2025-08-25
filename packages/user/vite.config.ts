@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
         fileName: "prefabs-tech-fastify-user",
+        formats: ["cjs", "es"],
         name: "PrefabsTechFastifyUser",
       },
       rollupOptions: {

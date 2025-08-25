@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-firebase.js",
-      "require": "./dist/prefabs-tech-fastify-firebase.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-firebase.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-firebase.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-firebase.cjs",
   "module": "./dist/prefabs-tech-fastify-firebase.js",
   "types": "./dist/types/index.d.ts",
   "files": ["dist"],

@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-mailer.js",
-      "require": "./dist/prefabs-tech-fastify-mailer.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-mailer.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-mailer.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-mailer.cjs",
   "module": "./dist/prefabs-tech-fastify-mailer.js",
   "types": "./dist/types/index.d.ts",
   "files": ["dist"],

@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-error-handler.js",
-      "require": "./dist/prefabs-tech-fastify-error-handler.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-error-handler.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-error-handler.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-error-handler.cjs",
   "module": "./dist/prefabs-tech-fastify-error-handler.js",
   "types": "./dist/types/index.d.ts",
   "files": [

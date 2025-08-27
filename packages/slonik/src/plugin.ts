@@ -2,6 +2,7 @@ import FastifyPlugin from "fastify-plugin";
 import { stringifyDsn } from "slonik";
 
 import createClientConfiguration from "./factories/createClientConfiguration";
+import runMigrations from "./migrations/runMigrations";
 import { fastifySlonik } from "./slonik";
 
 import type { SlonikOptions } from "./types";
@@ -31,6 +32,8 @@ const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
       options.queryLogging?.enabled,
     ),
   });
+
+  await runMigrations(fastify.slonik, options);
 
   fastify.decorateRequest("dbSchema", "");
 };

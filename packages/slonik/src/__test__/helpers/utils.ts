@@ -1,5 +1,3 @@
-import { ApiConfig } from "@prefabs.tech/fastify-config";
-
 import type { FilterInput, SortInput } from "../../types";
 
 const getFilterDataset = (): FilterInput[] => {

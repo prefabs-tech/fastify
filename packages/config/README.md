@@ -1,4 +1,4 @@
-# @dzangolab/fastify-config
+# @prefabs.tech/fastify-config
 
 A [Fastify](https://github.com/fastify/fastify) plugin that defines an opinionated config for an API.
 
@@ -13,13 +13,13 @@ When registered on a Fastify instance, the plugin will:
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-config
+npm install @prefabs.tech/fastify-config
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project @dzangolab/fastify-config
+pnpm add --filter "@scope/project @prefabs.tech/fastify-config
 ```
 
 ## Usage
@@ -27,10 +27,10 @@ pnpm add --filter "@scope/project @dzangolab/fastify-config
 Somewhere in your code, create a `config.ts` file that looks like this:
 
 ```typescript
-import { parse } from "@dzangolab/fastify-config";
+import { parse } from "@prefabs.tech/fastify-config";
 import dotenv from "dotenv";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 dotenv.config();
 
@@ -61,7 +61,7 @@ export default config;
 Register the plugin with your Fastify instance:
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
+import configPlugin from "@prefabs.tech/fastify-config";
 import Fastify from "fastify";
 
 import config from "./config";

@@ -24,7 +24,7 @@ declare module "fastify" {
   }
 }
 
-declare module "@dzangolab/fastify-config" {
+declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     slonik: SlonikConfig;
   }
@@ -32,34 +32,14 @@ declare module "@dzangolab/fastify-config" {
 
 export { default } from "./plugin";
 
-export { applyFilter, applyFiltersToQuery } from "./dbFilters";
+export * from "./filters";
+export * from "./sql";
 
 export { createBigintTypeParser } from "./typeParsers/createBigintTypeParser";
-
-export {
-  createFilterFragment,
-  createLimitFragment,
-  createSortFragment,
-  createTableFragment,
-  createTableIdentifier,
-  createWhereIdFragment,
-} from "./sql";
-
 export { default as createDatabase } from "./createDatabase";
 export { default as BaseService } from "./service";
 export { default as DefaultSqlFactory } from "./sqlFactory";
 export { default as formatDate } from "./formatDate";
 export { default as migrationPlugin } from "./migrationPlugin";
 
-export type {
-  BaseFilterInput,
-  Database,
-  FilterInput,
-  PaginatedList,
-  Service,
-  SlonikConfig,
-  SlonikOptions,
-  SortDirection,
-  SortInput,
-  SqlFactory,
-} from "./types";
+export type * from "./types";

@@ -1,4 +1,4 @@
 module.exports = {
   root: true,
-  extends: ["@12deg/eslint-config/fastify"],
+  extends: ["@prefabs.tech/eslint-config/fastify"],
 };

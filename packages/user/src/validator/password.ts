@@ -2,7 +2,7 @@ import { passwordSchema } from "../schemas";
 import { defaultOptions } from "../schemas/password";
 
 import type { StrongPasswordOptions } from "../types";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 const getErrorMessage = (options?: StrongPasswordOptions): string => {
   let errorMessage = "Password is too weak";

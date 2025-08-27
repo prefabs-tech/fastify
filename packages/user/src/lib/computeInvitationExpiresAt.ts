@@ -1,8 +1,8 @@
-import { formatDate } from "@dzangolab/fastify-slonik";
+import { formatDate } from "@prefabs.tech/fastify-slonik";
 
 import { INVITATION_EXPIRE_AFTER_IN_DAYS } from "../constants";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 const computeInvitationExpiresAt = (config: ApiConfig, expireTime?: string) => {
   return (

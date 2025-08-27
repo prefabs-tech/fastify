@@ -1,5 +1,5 @@
 import type { Database, FilterInput, SortInput } from "../types";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type {
   FragmentSqlToken,
   IdentifierSqlToken,
@@ -13,6 +13,7 @@ interface SqlFactory {
   limitMax: number;
   schema: "public" | string;
   table: string;
+  tableFragment: FragmentSqlToken;
   tableIdentifier: IdentifierSqlToken;
 
   getAllSql(fields: string[], sort?: SortInput[]): QuerySqlToken;

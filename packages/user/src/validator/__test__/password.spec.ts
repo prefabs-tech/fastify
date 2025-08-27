@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 
 import validatePassword from "../password";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 describe("validatePassword", () => {
   let config = {} as unknown as ApiConfig;

@@ -1,22 +1,20 @@
-import { DefaultSqlFactory } from "@dzangolab/fastify-slonik";
+import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 import { sql } from "slonik";
 
 import { TABLE_INVITATIONS } from "../../constants";
 import UserSqlFactory from "../users/sqlFactory";
 
-import type { FilterInput, SortInput } from "@dzangolab/fastify-slonik";
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
 import type { FragmentSqlToken, QuerySqlToken } from "slonik";
 
-/* eslint-disable brace-style */
 class InvitationSqlFactory extends DefaultSqlFactory {
-  /* eslint-enabled */
   static readonly TABLE = TABLE_INVITATIONS;
 
   getFindByTokenSql = (token: string): QuerySqlToken => {
     return sql.type(this.validationSchema)`
       SELECT *
-      FROM ${this.getTableFragment()}
-      WHERE token = ${token};
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filterFragment: sql.fragment`token = ${token}` })};
     `;
   };
 
@@ -27,10 +25,10 @@ class InvitationSqlFactory extends DefaultSqlFactory {
     sort?: SortInput[],
   ): QuerySqlToken => {
     return sql.type(this.validationSchema)`
-      SELECT ${this.getTableFragment()}.*, ROW_TO_JSON("user") AS "invited_by"
-      FROM ${this.getTableFragment()}
-      JOIN ${this.getUserTableFragment()} AS "user" ON ${this.getTableFragment()}."invited_by_id" = "user"."id"
-      ${this.getFilterFragment(filters)}
+      SELECT ${this.tableFragment}.*, ROW_TO_JSON("user") AS "invited_by"
+      FROM ${this.tableFragment}
+      JOIN ${this.getUserTableFragment()} AS "user" ON ${this.tableFragment}."invited_by_id" = "user"."id"
+      ${this.getWhereFragment({ filters })}
       ${this.getSortFragment(sort)}
       ${this.getLimitFragment(limit, offset)};
     `;
@@ -43,7 +41,7 @@ class InvitationSqlFactory extends DefaultSqlFactory {
       this.schema,
     );
 
-    return userSqlFactory.getTableFragment();
+    return userSqlFactory.tableFragment;
   }
 
   get table() {

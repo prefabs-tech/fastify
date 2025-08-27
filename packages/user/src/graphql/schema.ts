@@ -1,4 +1,4 @@
-import { mergeTypeDefs, baseSchema } from "@dzangolab/fastify-graphql";
+import { mergeTypeDefs, baseSchema } from "@prefabs.tech/fastify-graphql";
 
 import invitationSchema from "../model/invitations/graphql/schema";
 import roleSchema from "../model/roles/graphql/schema";

@@ -1,5 +1,5 @@
 {
-  "extends": "@12deg/tsconfig/fastify.json",
+  "extends": "@prefabs.tech/tsconfig/fastify.json",
   "exclude": ["src/**/__test__/**/*"],
   "compilerOptions": {
     "baseUrl": "./",

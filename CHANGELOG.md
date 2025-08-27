@@ -1,3 +1,185 @@
+## [0.90.1](https://github.com/prefabs-tech/fastify/compare/v0.90.0...v0.90.1) (2025-08-25)
+
+
+
+# [0.90.0](https://github.com/prefabs-tech/fastify/compare/v0.89.2...v0.90.0) (2025-08-21)
+
+### Breaking changes
+
+* @prefabs.tech/fastify-firebase, @prefabs.tech/fastify-s3, @prefabs.tech/fastify-user now requires @prefabs.tech/fastify-error-handler package for handling http errors and other custom errors.
+
+### Bug Fixes
+
+* **user/photo:** fix photo upload ([#1005](https://github.com/prefabs-tech/fastify/issues/1005)) ([f32a4e0](https://github.com/prefabs-tech/fastify/commit/f32a4e06e6947f5c1a0b3ddeb503d4660225de94))
+
+* **user/invitation:** create invitaion endpoint now check if role is exists or not, if not exist throws error.
+
+* **error-handler** fix ErrorResponse fastify schema and update error handler.
+
+### Error Handling Guidelines
+
+#### Controllers must not reply with non-200 responses
+
+Do not manually send error responses from controllers.
+
+Instead, always throw an error and let the global error handler handle formatting and response.
+
+**Wrong**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  return reply.code(401).send({ message: "Unauthorized" });
+})
+```
+
+**Correct**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  throw fastify.httpErrors.unauthorized("Unauthorized");
+})
+```
+
+#### Throw `CustomError` (or subclass)
+- Modules **must throw** an instance of `CustomError` (or a class extending it).
+- This ensures errors can be consistently caught and appropriate actions taken.
+
+```ts
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
+const file = fileService.findById(1);
+
+if (!file) {
+  throw new CustomError("File not found", "FILE_NOT_FOUND_ERROR");
+}
+```
+
+## [0.89.2](https://github.com/prefabs-tech/fastify/compare/v0.89.1...v0.89.2) (2025-08-15)
+
+
+
+## [0.89.1](https://github.com/prefabs-tech/fastify/compare/v0.89.0...v0.89.1) (2025-08-13)
+
+
+### Bug Fixes
+
+* **error-handler:** replace stack-trace package with stacktracey to support commonjs ([#1009](https://github.com/prefabs-tech/fastify/issues/1009)) ([05cdb03](https://github.com/prefabs-tech/fastify/commit/05cdb03351066da193d4519183624dea4768c1ca))
+
+
+
+# [0.89.0](https://github.com/prefabs-tech/fastify/compare/v0.88.2...v0.89.0) (2025-08-12)
+
+
+### Features
+
+* **error-handler:** Add error handler package ([#1004](https://github.com/prefabs-tech/fastify/issues/1004)) ([aae5dbd](https://github.com/prefabs-tech/fastify/commit/aae5dbdf6718bd575033df9cfda0d40e10a85aae))
+
+
+
+## [0.88.2](https://github.com/prefabs-tech/fastify/compare/v0.88.1...v0.88.2) (2025-07-31)
+
+
+### Bug Fixes
+
+* **user/photo:** fix photo upload ([#1005](https://github.com/prefabs-tech/fastify/issues/1005)) ([f32a4e0](https://github.com/prefabs-tech/fastify/commit/f32a4e06e6947f5c1a0b3ddeb503d4660225de94))
+
+
+
+## [0.88.1](https://github.com/prefabs-tech/fastify/compare/v0.88.0...v0.88.1) (2025-07-28)
+
+
+### Features
+
+* **user:** add photo file size limit in user package ([#1000](https://github.com/prefabs-tech/fastify/issues/1000)) ([5de43a8](https://github.com/prefabs-tech/fastify/commit/5de43a8e2a588c6fba61684b1927c3dd0a3dc8a9))
+* disable email verifation validation for update me route ([de4deb9](https://github.com/prefabs-tech/fastify/commit/de4deb954dce87586bef5c77a742ec2e2ef9bdad))
+
+
+
+# [0.88.0](https://github.com/prefabs-tech/fastify/compare/v0.87.0...v0.88.0) (2025-07-24)
+
+
+
+> ⚠️ This package was migrated from [`@dzangolab/fastify`](https://github.com/dzangolab/fastify) to [`@prefabs.tech/fastify`](https://github.com/prefabs-tech/fastify). All previous links will redirect.
+
+# [0.87.0](https://github.com/dzangolab/fastify/compare/v0.86.1...v0.87.0) (2025-07-21)
+
+### Features
+
+#### upload / remove user photo ([#988](https://github.com/dzangolab/fastify/issues/988)) ([f94e89d](https://github.com/dzangolab/fastify/commit/f94e89d3cf70bb71c7e31d93fd339f50aa4cdf7b))
+
+- This requires a new column photo_id to be added to the users table (or your custom users table if overridden).
+
+- add `s3.bucket` config to upload user photo to desired bucket. if the bucket is not specified the photo won't get uploaded.
+
+##### Required Migration
+If you're upgrading to this version, run the following SQL migration:
+
+```sql
+ALTER TABLE "users"
+ADD "photo_id" INTEGER NULL,
+ADD CONSTRAINT fk_users_photo
+  FOREIGN KEY (photo_id)
+  REFERENCES files(id);
+```
+
+## [0.86.1](https://github.com/dzangolab/fastify/compare/v0.86.0...v0.86.1) (2025-07-16)
+
+
+
+# [0.86.0](https://github.com/dzangolab/fastify/compare/v0.85.1...v0.86.0) (2025-07-07)
+
+
+### Features
+
+* add support for dwithin filter ([#984](https://github.com/dzangolab/fastify/issues/984)) ([0c179ab](https://github.com/dzangolab/fastify/commit/0c179abe2945384cec826b3dff35acfc0b00c67b))
+
+
+
+## [0.85.1](https://github.com/dzangolab/fastify/compare/v0.85.0...v0.85.1) (2025-07-04)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @fastify/swagger-ui to v5.2.3 ([#972](https://github.com/dzangolab/fastify/issues/972)) ([5fb3e88](https://github.com/dzangolab/fastify/commit/5fb3e884d1f0c8f6a771157b5d84c3c47ed66a84))
+
+
+
+# [0.85.0](https://github.com/dzangolab/fastify/compare/v0.84.4...v0.85.0) (2025-07-02)
+
+
+### Features
+
+* **slonik:** support hooks in slonik service ([#978](https://github.com/dzangolab/fastify/issues/978)) ([82a42f5](https://github.com/dzangolab/fastify/commit/82a42f5906f60a15faefdb23801dffe5b1be4047))
+
+
+
+## [0.84.4](https://github.com/dzangolab/fastify/compare/v0.84.3...v0.84.4) (2025-06-20)
+
+
+### Bug Fixes
+
+* **deps:** update dependency zod to v3.25.67 ([#963](https://github.com/dzangolab/fastify/issues/963)) ([a544c6b](https://github.com/dzangolab/fastify/commit/a544c6b39ef838f374946ad5657abee113abc06b))
+
+
+### Features
+
+* add support for filter and sort in joined table column ([#970](https://github.com/dzangolab/fastify/issues/970)) ([c87438c](https://github.com/dzangolab/fastify/commit/c87438cd200a1338a4fd0fc2daa9e105e6d219d9))
+
+
+
+## [0.84.3](https://github.com/dzangolab/fastify/compare/v0.84.2...v0.84.3) (2025-06-09)
+
+
+### Bug Fixes
+
+* **deps:** update aws-sdk-js-v3 monorepo to v3.815.0 ([#895](https://github.com/dzangolab/fastify/issues/895)) ([6796400](https://github.com/dzangolab/fastify/commit/679640090958c5c39a44b787ac628b7315568b6e))
+* **deps:** update dependency @graphql-tools/merge to v9.0.24 ([#956](https://github.com/dzangolab/fastify/issues/956)) ([682a722](https://github.com/dzangolab/fastify/commit/682a722c71bd94c09758c6fc032dc760db1154d5))
+* **deps:** update dependency nodemailer to v6.10.1 ([#958](https://github.com/dzangolab/fastify/issues/958)) ([07af2b9](https://github.com/dzangolab/fastify/commit/07af2b91d030cf814980da2d0d8f857e2acf6935))
+* **deps:** update dependency slonik-interceptor-query-logging to v46.8.0 ([#897](https://github.com/dzangolab/fastify/issues/897)) ([e6f9927](https://github.com/dzangolab/fastify/commit/e6f9927a268ef7f2e61fe18532ce17aa5ea34bdc))
+* fix creating filter fragment for complex nested filter input ([#967](https://github.com/dzangolab/fastify/issues/967)) ([1ff663c](https://github.com/dzangolab/fastify/commit/1ff663c1860b69753ed9bd68d8603bbcf7fcc5c2))
+
+
+
 ## [0.84.2](https://github.com/dzangolab/fastify/compare/v0.84.1...v0.84.2) (2025-05-22)
 
 

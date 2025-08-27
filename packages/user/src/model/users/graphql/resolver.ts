@@ -1,3 +1,4 @@
+import { GraphQLUpload, Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
 import EmailVerification, {
   EmailVerificationClaim,
@@ -10,17 +11,17 @@ import {
 } from "supertokens-node/recipe/thirdpartyemailpassword";
 import UserRoles from "supertokens-node/recipe/userroles";
 
-import filterUserUpdateInput from "./filterUserUpdateInput";
-import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../constants";
-import CustomApiError from "../../customApiError";
-import getUserService from "../../lib/getUserService";
-import createUserContext from "../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../supertokens/utils/profileValidationClaim";
-import validateEmail from "../../validator/email";
-import validatePassword from "../../validator/password";
+import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
+import CustomApiError from "../../../customApiError";
+import getUserService from "../../../lib/getUserService";
+import createUserContext from "../../../supertokens/utils/createUserContext";
+import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
+import validateEmail from "../../../validator/email";
+import validatePassword from "../../../validator/password";
+import filterUserUpdateInput from "../filterUserUpdateInput";
 
-import type { UserUpdateInput } from "./../../types";
-import type { FilterInput, SortInput } from "@dzangolab/fastify-slonik";
+import type { UserUpdateInput } from "../../../types";
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
 import type { MercuriusContext } from "mercurius";
 
 const Mutation = {
@@ -290,6 +291,141 @@ const Mutation = {
       if (config.user.features?.profileValidation?.enabled) {
         await request.session?.fetchAndSetClaim(
           new ProfileValidationClaim(),
+          createUserContext(undefined, request),
+        );
+      }
+
+      return updatedUser;
+    } catch (error) {
+      app.log.error(error);
+
+      const mercuriusError = new mercurius.ErrorWithProps(
+        "Oops, Something went wrong",
+      );
+      mercuriusError.statusCode = 500;
+
+      return mercuriusError;
+    }
+  },
+  uploadPhoto: async (
+    parent: unknown,
+    arguments_: {
+      photo: GraphQLUpload;
+    },
+    context: MercuriusContext,
+  ) => {
+    const { app, config, database, dbSchema, reply, user } = context;
+    const photo = await arguments_.photo;
+    const { file: photoFile } = photo;
+
+    const service = getUserService(config, database, dbSchema);
+
+    if (!user) {
+      return new mercurius.ErrorWithProps("unauthorized", {}, 401);
+    }
+
+    if (!photoFile) {
+      return new mercurius.ErrorWithProps(
+        "Missing photo file in the request body",
+        {},
+        422,
+      );
+    }
+
+    try {
+      const fileData = photoFile.createReadStream();
+
+      const fileToUpload: Multipart = {
+        ...photoFile,
+        data: fileData,
+        limit: false,
+      };
+
+      const file = await service.uploadPhoto(fileToUpload, user.id, user.id);
+
+      const updatedUser = await service.update(user.id, {
+        ...(file && {
+          photoId: file.id as number,
+        }),
+      });
+
+      if (user.photoId && user.photoId !== updatedUser.photoId) {
+        await service.fileService.delete(user.photoId);
+      }
+
+      const request = reply.request;
+
+      request.user = updatedUser;
+
+      if (request.config.user.features?.profileValidation?.enabled) {
+        await request.session?.fetchAndSetClaim(
+          new ProfileValidationClaim(),
+          createUserContext(undefined, request),
+        );
+      }
+
+      if (request.config.user.features?.signUp?.emailVerification) {
+        await request.session?.fetchAndSetClaim(
+          EmailVerificationClaim,
+          createUserContext(undefined, request),
+        );
+      }
+
+      return updatedUser;
+    } catch (error) {
+      if (error instanceof CustomApiError) {
+        const mercuriusError = new mercurius.ErrorWithProps(error.name);
+
+        mercuriusError.statusCode = error.statusCode;
+
+        return mercuriusError;
+      }
+
+      app.log.error(error);
+
+      const mercuriusError = new mercurius.ErrorWithProps(
+        "Oops, Something went wrong",
+      );
+      mercuriusError.statusCode = 500;
+
+      return mercuriusError;
+    }
+  },
+  removePhoto: async (
+    parent: unknown,
+    arguments_: undefined,
+    context: MercuriusContext,
+  ) => {
+    const { app, config, database, dbSchema, reply, user } = context;
+
+    const service = getUserService(config, database, dbSchema);
+
+    if (!user) {
+      return new mercurius.ErrorWithProps("unauthorized", {}, 401);
+    }
+
+    try {
+      // eslint-disable-next-line unicorn/no-null
+      const updatedUser = await service.update(user.id, { photoId: null });
+
+      if (user.photoId) {
+        await service.fileService.delete(user.photoId);
+      }
+
+      const request = reply.request;
+
+      request.user = updatedUser;
+
+      if (request.config.user.features?.profileValidation?.enabled) {
+        await request.session?.fetchAndSetClaim(
+          new ProfileValidationClaim(),
+          createUserContext(undefined, request),
+        );
+      }
+
+      if (request.config.user.features?.signUp?.emailVerification) {
+        await request.session?.fetchAndSetClaim(
+          EmailVerificationClaim,
           createUserContext(undefined, request),
         );
       }

@@ -1,33 +1,54 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
 import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
 
+import { ERROR_CODES } from "../../../constants";
 import getUserService from "../../../lib/getUserService";
 import createUserContext from "../../../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 import filterUserUpdateInput from "../filterUserUpdateInput";
 
 import type { UserUpdateInput } from "../../../types";
-import type { FastifyReply } from "fastify";
+import type { File } from "@prefabs.tech/fastify-s3";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
-  const userId = request.session?.getUserId();
+  const { body, config, dbSchema, server, slonik, user } =
+    request as FastifyRequest<{
+      Body: UserUpdateInput;
+    }>;
 
-  const input = request.body as UserUpdateInput;
+  if (!user) {
+    throw server.httpErrors.unauthorized("Unauthorised");
+  }
 
-  if (userId) {
-    const service = getUserService(
-      request.config,
-      request.slonik,
-      request.dbSchema,
-    );
+  try {
+    let file: File | undefined;
+    const { photo, ...input } = body as UserUpdateInput;
+
+    const service = getUserService(config, slonik, dbSchema);
 
     filterUserUpdateInput(input);
 
-    const user = await service.update(userId, input);
+    if (photo) {
+      file = await service.uploadPhoto(photo, user.id, user.id);
+    }
 
-    request.user = user;
+    const updatedUser = await service.update(user.id, {
+      ...input,
+      ...(file && {
+        photoId: file.id as number,
+      }),
+    });
 
-    const authUser = await getUserById(userId);
+    if (user.photoId && user.photoId !== updatedUser.photoId) {
+      await service.fileService.delete(user.photoId);
+    }
+
+    request.user = updatedUser;
+
+    const authUser = await getUserById(user.id);
 
     if (request.config.user.features?.profileValidation?.enabled) {
       await request.session?.fetchAndSetClaim(
@@ -36,16 +57,29 @@ const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
       );
     }
 
+    if (request.config.user.features?.signUp?.emailVerification) {
+      await request.session?.fetchAndSetClaim(
+        EmailVerificationClaim,
+        createUserContext(undefined, request),
+      );
+    }
+
     const response = {
-      ...user,
+      ...updatedUser,
       thirdParty: authUser?.thirdParty,
     };
 
     reply.send(response);
-  } else {
-    request.log.error("could not get user id from session");
+  } catch (error) {
+    if (error instanceof CustomError) {
+      if (error.code === ERROR_CODES.PHOTO_FILE_TOO_LARGE) {
+        throw server.httpErrors.payloadTooLarge(error.message);
+      }
 
-    throw new Error("Oops, Something went wrong");
+      throw server.httpErrors.unprocessableEntity(error.message);
+    }
+
+    throw error;
   }
 };
 

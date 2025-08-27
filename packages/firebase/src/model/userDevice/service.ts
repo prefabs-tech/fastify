@@ -1,4 +1,4 @@
-import { BaseService } from "@dzangolab/fastify-slonik";
+import { BaseService } from "@prefabs.tech/fastify-slonik";
 
 import UserDeviceSqlFactory from "./sqlFactory";
 import {
@@ -12,20 +12,6 @@ class UserDeviceService extends BaseService<
   UserDeviceCreateInput,
   UserDeviceUpdateInput
 > {
-  async create(data: UserDeviceCreateInput): Promise<UserDevice | undefined> {
-    const { deviceToken } = data;
-
-    await this.removeByDeviceToken(deviceToken as string);
-
-    const createQuery = this.factory.getCreateSql(data);
-
-    const result = await this.database.connect((connection) => {
-      return connection.maybeOne(createQuery);
-    });
-
-    return result as UserDevice;
-  }
-
   async getByUserId(userId: string): Promise<UserDevice[] | undefined> {
     const query = this.factory.getFindByUserIdSql(userId);
 
@@ -54,6 +40,16 @@ class UserDeviceService extends BaseService<
 
   get sqlFactoryClass() {
     return UserDeviceSqlFactory;
+  }
+
+  protected async preCreate(
+    data: UserDeviceCreateInput,
+  ): Promise<UserDeviceCreateInput> {
+    const { deviceToken } = data;
+
+    await this.removeByDeviceToken(deviceToken as string);
+
+    return data;
   }
 }
 

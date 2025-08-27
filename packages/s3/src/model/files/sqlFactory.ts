@@ -1,4 +1,4 @@
-import { DefaultSqlFactory } from "@dzangolab/fastify-slonik";
+import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 
 import { TABLE_FILES } from "../../constants";
 

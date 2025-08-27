@@ -1,8 +1,9 @@
-import { BaseService, formatDate } from "@dzangolab/fastify-slonik";
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+import { BaseService, formatDate } from "@prefabs.tech/fastify-slonik";
 import { v4 as uuidv4 } from "uuid";
 
 import FileSqlFactory from "./sqlFactory";
-import { ADD_SUFFIX, ERROR } from "../../constants";
+import { ADD_SUFFIX, ERROR, ERROR_CODES } from "../../constants";
 import {
   getPreferredBucket,
   getFileExtension,
@@ -29,7 +30,10 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
     const file = await this.findById(fileId);
 
     if (!file) {
-      throw new Error(`File with ID ${fileId} not found.`);
+      throw new CustomError(
+        `File with ID ${fileId} not found.`,
+        ERROR_CODES.FILE_NOT_FOUND,
+      );
     }
 
     this.s3Client.bucket = options?.bucket || (file.bucket as string);
@@ -47,7 +51,10 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
     const file = await this.findById(id);
 
     if (!file) {
-      throw new Error(`File with ID ${id} not found.`);
+      throw new CustomError(
+        `File with ID ${id} not found.`,
+        ERROR_CODES.FILE_NOT_FOUND,
+      );
     }
 
     this.s3Client.bucket = options?.bucket || (file.bucket as string);
@@ -65,7 +72,10 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
     const file = await this.findById(id);
 
     if (!file) {
-      throw new Error(`File with ID ${id} not found.`);
+      throw new CustomError(
+        `File with ID ${id} not found.`,
+        ERROR_CODES.FILE_NOT_FOUND,
+      );
     }
 
     this.s3Client.bucket = options.bucket || (file.bucket as string);
@@ -109,7 +119,10 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
     if (headObjectResponse) {
       switch (resolutionStrategy) {
         case ERROR: {
-          throw new Error("File already exists in S3.");
+          throw new CustomError(
+            "File already exists in S3.",
+            ERROR_CODES.FILE_ALREADY_EXISTS_IN_S3,
+          );
         }
         case ADD_SUFFIX: {
           const baseFilename = getBaseName(this.filename);

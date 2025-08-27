@@ -1,4 +1,4 @@
-import { gql } from "@dzangolab/fastify-graphql";
+import { gql } from "@prefabs.tech/fastify-graphql";
 
 const role = gql`
   type Role {

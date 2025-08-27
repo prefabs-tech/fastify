@@ -1,7 +1,7 @@
-import UserService from "../model/users/graphql/service";
+import UserService from "../model/users/service";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
-import type { Database } from "@dzangolab/fastify-slonik";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import type { Database } from "@prefabs.tech/fastify-slonik";
 
 const getUserService = (
   config: ApiConfig,

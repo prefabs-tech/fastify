@@ -1,4 +1,4 @@
-# @dzangolab/fastify-graphql
+# @prefabs.tech/fastify-graphql
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of mercurius graphql server in a fastify API.
 
@@ -6,8 +6,8 @@ The plugin is a thin wrapper around the [mercurius](https://mercurius.dev/#/) pl
 
 ## Requirements
 
-* [@dzangolab/fastify-config](../config/)
-* [@dzangolab/fastify-slonik](../slonik/)
+* [@prefabs.tech/fastify-config](../config/)
+* [@prefabs.tech/fastify-slonik](../slonik/)
 * [graphql](https://github.com/graphql/graphql-js)
 * [mercurius](https://mercurius.dev/#/)
 
@@ -16,13 +16,13 @@ The plugin is a thin wrapper around the [mercurius](https://mercurius.dev/#/) pl
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-config @dzangolab/fastify-graphql graphql mercurius
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-graphql graphql mercurius
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-graphql graphql mercurius
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-graphql graphql mercurius
 ```
 
 ## Usage
@@ -71,12 +71,12 @@ export { default as schema } from "./schema";
 Add a `graphql` block to your config in `config/index.ts`:
 
 ```typescript
-import { parse } from "@dzangolab/fastify-config";
+import { parse } from "@prefabs.tech/fastify-config";
 import dotenv from "dotenv";
 
 import { resolvers, schema } from "../src/graphql";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 dotenv.config();
 
@@ -98,8 +98,8 @@ export default config;
 Register the plugin with your fastify instance in `src/index.ts`:
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
-import graphqlPlugin from "@dzangolab/fastify-graphql";
+import configPlugin from "@prefabs.tech/fastify-config";
+import graphqlPlugin from "@prefabs.tech/fastify-graphql";
 import Fastify from "fastify";
 
 import config from "../config";
@@ -136,9 +136,9 @@ The fastify-graphql plugin will generate a graphql context on every request that
 
 | Attribute  | Type | Description |
 |------------|------|-------------|
-| `config`   | `ApiConfig` | The fastify servers' config (as per [@dzangolab/fastify-config](../config/)) |
-| `database` | `Database`  | The fastify server's slonik instance (as per [@dzangolab/fastify-slonik](../slonik/)) |
-| `dbSchema` | `string` | The database schema (as per [@dzangolab/fastify-slonik](../slonik/)) |
+| `config`   | `ApiConfig` | The fastify servers' config (as per [@prefabs.tech/fastify-config](../config/)) |
+| `database` | `Database`  | The fastify server's slonik instance (as per [@prefabs.tech/fastify-slonik](../slonik/)) |
+| `dbSchema` | `string` | The database schema (as per [@prefabs.tech/fastify-slonik](../slonik/)) |
 
 ## Supporting `.gql` files and external schema exports
  To work with multiple schemas defined in `.gql` files or support GraphQL schema exports from external packages, ensure the following packages are installed in your API:

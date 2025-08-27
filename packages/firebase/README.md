@@ -1,24 +1,24 @@
-# @dzangolab/fastify-firebase
+# @prefabs.tech/fastify-firebase
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of Firebase Admin in a fastify API.
 
 ## Requirements
 
-* [@dzangolab/fastify-config](../config/)
-* [@dzangolab/fastify-slonik](../slonik/)
+* [@prefabs.tech/fastify-config](../config/)
+* [@prefabs.tech/fastify-slonik](../slonik/)
 
 ## Installation
 
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-config @dzangolab/fastify-slonik @dzangolab/fastify-firebase
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-slonik @dzangolab/fastify-firebase
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase
 ```
 
 ## Usage
@@ -28,13 +28,13 @@ pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-
 Register the fastify-firebase plugin with your Fastify instance:
 
 ```typescript
-import firebasePlugin from "@dzangolab/fastify-firebase";
-import configPlugin from "@dzangolab/fastify-config";
+import firebasePlugin from "@prefabs.tech/fastify-firebase";
+import configPlugin from "@prefabs.tech/fastify-config";
 import Fastify from "fastify";
 
 import config from "./config";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance } from "fastify";
 
 const start = async () => {
@@ -96,7 +96,7 @@ const config: ApiConfig = {
 
 ## Using GraphQL
 
-This package supports integration with [@dzangolab/fastify-graphql](../graphql/).
+This package supports integration with [@prefabs.tech/fastify-graphql](../graphql/).
 
 ### Schema Integration
 
@@ -105,7 +105,7 @@ The GraphQL schema provided by this package is located at [src/graphql/schema.ts
 To load and merge this schema with your application's custom schemas, update your schema file as follows:
 
 ```typescript
-import { firebaseSchema } from "@dzangolab/fastify-firebase";
+import { firebaseSchema } from "@prefabs.tech/fastify-firebase";
 import { loadFilesSync } from "@graphql-tools/load-files";
 import { mergeTypeDefs } from "";
 import { makeExecutableSchema } from "@graphql-tools/schema";
@@ -123,7 +123,7 @@ export default schema;
 To integrate the resolvers provided by this package, import them and merge with your application's resolvers:
 
 ```typescript
-import { notificationResolver, userDeviceResolver } from "@dzangolab/fastify-firebase";
+import { notificationResolver, userDeviceResolver } from "@prefabs.tech/fastify-firebase";
 
 import type { IResolvers } from "mercurius";
 

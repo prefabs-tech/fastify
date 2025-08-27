@@ -8,6 +8,7 @@ type Database = {
 
 type operator =
   | "ct"
+  | "dwithin"
   | "sw"
   | "ew"
   | "eq"

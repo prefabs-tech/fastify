@@ -1,4 +1,5 @@
-import { formatDate } from "@dzangolab/fastify-slonik";
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { deleteUser } from "supertokens-node";
 import { getUserByThirdPartyInfo } from "supertokens-node/recipe/thirdpartyemailpassword";
 import UserRoles from "supertokens-node/recipe/userroles";
@@ -7,7 +8,7 @@ import getUserService from "../../../../lib/getUserService";
 import areRolesExist from "../../../utils/areRolesExist";
 
 import type { User } from "../../../../types";
-import type { FastifyInstance, FastifyError } from "fastify";
+import type { FastifyInstance } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 const thirdPartySignInUp = (
@@ -26,11 +27,7 @@ const thirdPartySignInUp = (
     );
 
     if (!thirdPartyUser && config.user.features?.signUp?.enabled === false) {
-      throw {
-        name: "SIGN_UP_DISABLED",
-        message: "SignUp feature is currently disabled",
-        statusCode: 404,
-      } as FastifyError;
+      throw fastify.httpErrors.notFound("SignUp feature is currently disabled");
     }
 
     const originalResponse =
@@ -46,13 +43,10 @@ const thirdPartySignInUp = (
       if (!(await areRolesExist(roles))) {
         await deleteUser(originalResponse.user.id);
 
-        log.error(`At least one role from ${roles.join(", ")} does not exist.`);
-
-        throw {
-          name: "SIGN_UP_FAILED",
-          message: "Something went wrong",
-          statusCode: 500,
-        } as FastifyError;
+        throw new CustomError(
+          `At least one role from ${roles.join(", ")} does not exist.`,
+          "SIGNUP_FAILED_ERROR",
+        );
       }
 
       for (const role of roles) {
@@ -77,18 +71,10 @@ const thirdPartySignInUp = (
         if (!user) {
           throw new Error("User not found");
         }
-        /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
-      } catch (error: any) {
-        log.error("Error while creating user");
-        log.error(error);
-
+      } catch (error) {
         await deleteUser(originalResponse.user.id);
 
-        throw {
-          name: "SIGN_UP_FAILED",
-          message: "Something went wrong",
-          statusCode: 500,
-        };
+        throw error;
       }
     } else {
       await userService

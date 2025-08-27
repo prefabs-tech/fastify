@@ -13,8 +13,9 @@ export default defineConfig(({ mode }) => {
     build: {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
-        fileName: "dzangolab-fastify-s3",
-        name: "DzangolabFastifyS3",
+        fileName: "prefabs-tech-fastify-s3",
+        formats: ["cjs", "es"],
+        name: "PrefabsTechFastifyS3",
       },
       rollupOptions: {
         external: [
@@ -28,9 +29,11 @@ export default defineConfig(({ mode }) => {
             "@aws-sdk/client-s3": "AWSClientS3",
             "@aws-sdk/lib-storage": "AWSLibStorage",
             "@aws-sdk/s3-request-presigner": "AWSS3RequestPresigner",
-            "@dzangolab/fastify-config": "DzangolabFastifyConfig",
-            "@dzangolab/fastify-graphql": "DzangolabFastifyGraphql",
-            "@dzangolab/fastify-slonik": "DzangolabFastifySlonik",
+            "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
+            "@prefabs.tech/fastify-error-handler":
+              "PrefabsTechFastifyErrorHandler",
+            "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
+            "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@fastify/cors": "FastifyCors",
             "@fastify/formbody": "FastifyFormbody",
             "@fastify/multipart": "FastifyMultipart",

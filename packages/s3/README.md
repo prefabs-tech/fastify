@@ -1,24 +1,24 @@
-# @dzangolab/fastify-s3
+# @prefabs.tech/fastify-s3
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of S3 in a fastify API.
 
 ## Requirements
 
-* [@dzangolab/fastify-config](../config/)
-* [@dzangolab/fastify-slonik](../slonik/)
+* [@prefabs.tech/fastify-config](../config/)
+* [@prefabs.tech/fastify-slonik](../slonik/)
 
 ## Installation
 
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-config @dzangolab/fastify-slonik @dzangolab/fastify-s3
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-s3
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-slonik @dzangolab/fastify-s3
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-s3
 ```
 
 ## Usage
@@ -75,9 +75,9 @@ When using AWS S3, you are required to enable the following permissions:
 Register the file fastify-s3 package with your Fastify instance:
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
-import s3Plugin, { multipartParserPlugin } from "@dzangolab/fastify-s3";
-import slonikPlugin from "@dzangolab/fastify-slonik";
+import configPlugin from "@prefabs.tech/fastify-config";
+import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
 import config from "./config";
@@ -193,15 +193,15 @@ To handle duplicate filenames:
 
 ## Using GraphQL
 
-This package supports integration with [@dzangolab/fastify-graphql](../graphql/). 
+This package supports integration with [@prefabs.tech/fastify-graphql](../graphql/). 
 
 Register additional `multipartParserPlugin` plugin with the fastify instance as shown below:
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
-import graphqlPlugin from "@dzangolab/fastify-graphql";
-import s3Plugin, { multipartParserPlugin } from "@dzangolab/fastify-s3";
-import slonikPlugin from "@dzangolab/fastify-slonik";
+import configPlugin from "@prefabs.tech/fastify-config";
+import graphqlPlugin from "@prefabs.tech/fastify-graphql";
+import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
 import config from "./config";
@@ -240,16 +240,16 @@ start();
 
 
 ## JSON Schema with Swagger
-If you want to use @dzangolab/fastify-s3 with @fastify/swagger and @fastify/swagger-ui or @dzangolab/swagger you must add a new type called `isFile` and use a custom instance of a validator compiler
+If you want to use @prefabs.tech/fastify-s3 with @fastify/swagger and @fastify/swagger-ui or @prefabs.tech/swagger you must add a new type called `isFile` and use a custom instance of a validator compiler
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
-import graphqlPlugin from "@dzangolab/fastify-graphql";
+import configPlugin from "@prefabs.tech/fastify-config";
+import graphqlPlugin from "@prefabs.tech/fastify-graphql";
 import s3Plugin, {
   ajvFilePlugin,
   multipartParserPlugin,
-} from "@dzangolab/fastify-s3";
-import slonikPlugin from "@dzangolab/fastify-slonik";
+} from "@prefabs.tech/fastify-s3";
+import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
 import config from "./config";

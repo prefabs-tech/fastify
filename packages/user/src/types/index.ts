@@ -1,4 +1,4 @@
-import type { PaginatedList } from "@dzangolab/fastify-slonik";
+import type { PaginatedList } from "@prefabs.tech/fastify-slonik";
 import type { MercuriusContext } from "mercurius";
 import type { QueryResultRow } from "slonik";
 

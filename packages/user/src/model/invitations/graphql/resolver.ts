@@ -1,14 +1,14 @@
-import { formatDate } from "@dzangolab/fastify-slonik";
+import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { mercurius } from "mercurius";
 import { createNewSession } from "supertokens-node/recipe/session";
 import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
 
-import { ROLE_USER } from "../../../constants";
 import computeInvitationExpiresAt from "../../../lib/computeInvitationExpiresAt";
 import getInvitationService from "../../../lib/getInvitationService";
 import getUserService from "../../../lib/getUserService";
 import isInvitationValid from "../../../lib/isInvitationValid";
 import sendInvitation from "../../../lib/sendInvitation";
+import areRolesExist from "../../../supertokens/utils/areRolesExist";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
 
@@ -17,7 +17,7 @@ import type {
   Invitation,
   InvitationCreateInput,
 } from "../../../types/invitation";
-import type { FilterInput, SortInput } from "@dzangolab/fastify-slonik";
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
 import type { MercuriusContext } from "mercurius";
 
 const Mutation = {
@@ -151,9 +151,7 @@ const Mutation = {
       const result = validateEmail(email, config);
 
       if (!result.success && result.message) {
-        const mercuriusError = new mercurius.ErrorWithProps(result.message);
-
-        return mercuriusError;
+        return new mercurius.ErrorWithProps(result.message);
       }
 
       const userService = getUserService(config, database, dbSchema);
@@ -168,11 +166,13 @@ const Mutation = {
 
       // check if user of the email already exists
       if (userCount > 0) {
-        const mercuriusError = new mercurius.ErrorWithProps(
+        return new mercurius.ErrorWithProps(
           `User with email ${email} already exists`,
         );
+      }
 
-        return mercuriusError;
+      if (!(await areRolesExist([role]))) {
+        return new mercurius.ErrorWithProps(`Role "${role}" does not exist`);
       }
 
       const service = getInvitationService(config, database, dbSchema);
@@ -181,7 +181,7 @@ const Mutation = {
         email,
         expiresAt: computeInvitationExpiresAt(config, expiresAt),
         invitedById: user.id,
-        role: role || config.user.role || ROLE_USER,
+        role: role,
       };
 
       const app = config.apps?.find((app) => app.id == appId);

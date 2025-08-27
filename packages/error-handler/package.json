@@ -1,0 +1,67 @@
+{
+  "name": "@prefabs.tech/fastify-error-handler",
+  "version": "0.90.1",
+  "description": "Fastify error-handler plugin",
+  "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/error-handler#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prefabs-tech/fastify.git",
+    "directory": "packages/error-handler"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/prefabs-tech-fastify-error-handler.js",
+      "require": "./dist/prefabs-tech-fastify-error-handler.cjs"
+    }
+  },
+  "main": "./dist/prefabs-tech-fastify-error-handler.cjs",
+  "module": "./dist/prefabs-tech-fastify-error-handler.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "sort-package": "npx sort-package-json",
+    "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
+  },
+  "dependencies": {
+    "@fastify/sensible": "6.0.3",
+    "stacktracey": "2.1.8"
+  },
+  "devDependencies": {
+    "@prefabs.tech/eslint-config": "0.2.0",
+    "@prefabs.tech/tsconfig": "0.2.0",
+    "@types/node": "20.19.9",
+    "@types/stack-trace": "0.0.33",
+    "@typescript-eslint/eslint-plugin": "8.38.0",
+    "@typescript-eslint/parser": "8.38.0",
+    "@vitest/coverage-istanbul": "3.2.4",
+    "eslint": "8.57.1",
+    "eslint-config-prettier": "9.1.2",
+    "eslint-import-resolver-alias": "1.1.2",
+    "eslint-import-resolver-typescript": "3.10.1",
+    "eslint-plugin-import": "2.32.0",
+    "eslint-plugin-n": "14.0.0",
+    "eslint-plugin-prettier": "5.5.3",
+    "eslint-plugin-promise": "7.2.1",
+    "eslint-plugin-unicorn": "56.0.1",
+    "fastify": "5.4.0",
+    "fastify-plugin": "5.0.1",
+    "prettier": "3.6.2",
+    "typescript": "5.8.3",
+    "vite": "6.3.5",
+    "vitest": "3.2.4"
+  },
+  "peerDependencies": {
+    "fastify": ">=5.2.1",
+    "fastify-plugin": ">=5.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

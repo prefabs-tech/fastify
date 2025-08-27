@@ -1,4 +1,4 @@
-# @dzangolab/fastify-mailer
+# @prefabs.tech/fastify-mailer
 
 A [Fastify](https://github.com/fastify/fastify) plugin that when registered on a Fastify instance, will decorate it with a `mailer` object for email.
 
@@ -15,23 +15,23 @@ A [Fastify](https://github.com/fastify/fastify) plugin that when registered on a
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-mailer html-to-text mustache nodemailer nodemailer nodemailer-html-to-text nodemailer-mjml
+npm install @prefabs.tech/fastify-mailer html-to-text mustache nodemailer nodemailer nodemailer-html-to-text nodemailer-mjml
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @dzangolab/fastify-mailer html-to-text mustache nodemailer nodemailer nodemailer-html-to-text nodemailer-mjml
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-mailer html-to-text mustache nodemailer nodemailer nodemailer-html-to-text nodemailer-mjml
 ```
 
 ## Usage
 
 ### Register Plugin
 
-Register @dzangolab/fastify-mailer package with your Fastify instance:
+Register @prefabs.tech/fastify-mailer package with your Fastify instance:
 
 ```typescript
-import mailerPlugin from "@dzangolab/fastify-mailer";
+import mailerPlugin from "@prefabs.tech/fastify-mailer";
 import Fastify from "fastify";
 
 import config from "./config";
@@ -58,7 +58,7 @@ start();
 To configure the mailer, add the following settings to your `config/mailer.ts` file:
 
 ```typescript
-import type { MailerConfig } from "@dzangolab/fastify-mailer";
+import type { MailerConfig } from "@prefabs.tech/fastify-mailer";
 
 const mailerConfig: MailerConfig = {
   defaults: {

@@ -1,4 +1,4 @@
-import { DefaultSqlFactory } from "@dzangolab/fastify-slonik";
+import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 import { QuerySqlToken, sql } from "slonik";
 
 import { TABLE_USER_DEVICES } from "../../constants";
@@ -9,8 +9,8 @@ class UserDeviceSqlFactory extends DefaultSqlFactory {
   getDeleteExistingTokenSql(token: string): QuerySqlToken {
     return sql.type(this.validationSchema)`
       DELETE
-      FROM ${this.getTableFragment()}
-      WHERE device_token = ${token}
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filterFragment: sql.fragment`device_token = ${token}` })}
       RETURNING *;
     `;
   }
@@ -18,8 +18,8 @@ class UserDeviceSqlFactory extends DefaultSqlFactory {
   getFindByUserIdSql(userId: string): QuerySqlToken {
     return sql.type(this.validationSchema)`
       SELECT *
-      FROM ${this.getTableFragment()}
-      WHERE user_id = ${userId};
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filterFragment: sql.fragment`user_id = ${userId}` })};
     `;
   }
 

@@ -1,52 +1,36 @@
-import CustomApiError from "../../../customApiError";
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
 import getUserService from "../../../lib/getUserService";
 
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const deleteMe = async (request: SessionRequest, reply: FastifyReply) => {
-  const { body, config, dbSchema, log, slonik, user } =
+  const { body, config, dbSchema, server, slonik, user } =
     request as FastifyRequest<{
       Body: {
         password: string;
       };
     }>;
 
-  try {
-    if (!user) {
-      return reply.status(401).send({
-        error: "Unauthorised",
-        message: "unauthorised",
-      });
-    }
+  if (!user) {
+    throw server.httpErrors.unauthorized("Unauthorised");
+  }
 
+  try {
     const password = body?.password ?? "";
 
     const service = getUserService(config, slonik, dbSchema);
 
     await service.deleteMe(user.id, password);
 
-    reply.status(200).send({
-      status: "OK",
-    });
+    return reply.send({ status: "OK" });
   } catch (error) {
-    if (error instanceof CustomApiError) {
-      reply.status(error.statusCode);
-
-      return reply.send({
-        message: error.message,
-        name: error.name,
-        statusCode: error.statusCode,
-      });
+    if (error instanceof CustomError) {
+      throw server.httpErrors.unprocessableEntity(error.message);
     }
 
-    log.error(error);
-
-    return reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+    throw error;
   }
 };
 

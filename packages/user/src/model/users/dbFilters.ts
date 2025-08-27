@@ -1,8 +1,11 @@
-import { applyFilter } from "@dzangolab/fastify-slonik";
+import { applyFilter } from "@prefabs.tech/fastify-slonik";
 import humps from "humps";
 import { sql } from "slonik";
 
-import type { BaseFilterInput, FilterInput } from "@dzangolab/fastify-slonik";
+import type {
+  BaseFilterInput,
+  FilterInput,
+} from "@prefabs.tech/fastify-slonik";
 import type { IdentifierSqlToken, FragmentSqlToken } from "slonik";
 
 const applyFiltersToQuery = (

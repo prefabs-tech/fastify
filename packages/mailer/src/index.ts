@@ -1,6 +1,6 @@
 import type { FastifyMailer, MailerConfig } from "./types";
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -8,7 +8,7 @@ declare module "fastify" {
   }
 }
 
-declare module "@dzangolab/fastify-config" {
+declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     mailer: MailerConfig;
   }

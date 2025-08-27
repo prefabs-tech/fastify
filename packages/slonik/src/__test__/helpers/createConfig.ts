@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import type { SlonikOptions } from "../../types";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 const createConfig = (slonikOptions?: SlonikOptions) => {
   const config: ApiConfig = {

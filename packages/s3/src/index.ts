@@ -1,30 +1,24 @@
-import type { FilenameResolutionStrategy } from "./types";
+import type { S3Config } from "./types";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { GraphqlEnabledPlugin } from "@dzangolab/fastify-graphql";
+import type { GraphqlEnabledPlugin } from "@prefabs.tech/fastify-graphql";
 
-declare module "@dzangolab/fastify-config" {
+declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
-    s3: {
-      accessKey: string;
-      bucket: string | Record<string, string>;
-      endPoint?: string;
-      fileSizeLimitInBytes?: number;
-      filenameResolutionStrategy?: FilenameResolutionStrategy;
-      forcePathStyle?: boolean;
-      secretKey: string;
-      region?: string;
-      table?: {
-        name?: string;
-      };
-    };
+    s3: S3Config;
   }
 }
 
+export * from "./constants";
+export * from "./migrations/queries";
+
 export { default as FileService } from "./model/files/service";
 export { default as S3Client } from "./utils/s3Client";
-export type { FilePayload, Multipart } from "./types";
+export type { FilePayload, Multipart, S3Config } from "./types";
 export type { File, FileCreateInput, FileUpdateInput } from "./types/file";
-export type { FileUpload as GraphQLFileUpload } from "graphql-upload-minimal";
+export type {
+  FileUpload as GraphQLFileUpload,
+  Upload as GraphQLUpload,
+} from "graphql-upload-minimal";
 
 export { default } from "./plugin";
 export { default as ajvFilePlugin } from "./plugins/ajvFile";

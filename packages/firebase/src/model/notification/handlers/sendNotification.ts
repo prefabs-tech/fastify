@@ -13,11 +13,7 @@ const testPushNotification = async (
   const user = request.user;
 
   if (!user) {
-    return reply.status(401).send({
-      error: "Unauthorized",
-      message: "unauthorized",
-      statusCode: 401,
-    });
+    throw request.server.httpErrors.unauthorized("Unauthorised");
   }
 
   const {
@@ -26,12 +22,6 @@ const testPushNotification = async (
     data,
     userId: receiverId,
   } = request.body as TestNotificationInput;
-
-  if (!receiverId) {
-    request.log.error("receiver id is not defined");
-
-    throw new Error("Oops, Please provide a receiver id");
-  }
 
   const service = new DeviceService(
     request.config,
@@ -42,9 +32,9 @@ const testPushNotification = async (
   const receiverDevices = await service.getByUserId(receiverId);
 
   if (!receiverDevices || receiverDevices.length === 0) {
-    request.log.error("no device found for the receiver");
-
-    throw new Error("Unable to find device for the receiver");
+    throw request.server.httpErrors.unprocessableEntity(
+      "No devices found for the receiver",
+    );
   }
 
   const tokens = receiverDevices.map((device) => device.deviceToken as string);

@@ -13,8 +13,9 @@ export default defineConfig(({ mode }) => {
     build: {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
-        fileName: "dzangolab-fastify-graphql",
-        name: "DzangolabFastifyGraphql",
+        fileName: "prefabs-tech-fastify-graphql",
+        formats: ["cjs", "es"],
+        name: "PrefabsTechFastifyGraphql",
       },
       rollupOptions: {
         external: [
@@ -24,8 +25,8 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
-            "@dzangolab/fastify-config": "DzangolabFastifyConfig",
-            "@dzangolab/fastify-slonik": "DzangolabFastifySlonik",
+            "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
+            "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@graphql-tools/merge": "GraphqlToolsMerge",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",

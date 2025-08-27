@@ -1,5 +1,11 @@
 import type { Database, FilterInput, SortInput } from "./database";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
+type PaginatedList<T> = {
+  totalCount: number;
+  filteredCount: number;
+  data: readonly T[];
+};
 
 interface Service<T, C, U> {
   config: ApiConfig;
@@ -21,11 +27,5 @@ interface Service<T, C, U> {
   count(filters?: FilterInput): Promise<number>;
   update(id: number | string, data: U): Promise<T>;
 }
-
-type PaginatedList<T> = {
-  totalCount: number;
-  filteredCount: number;
-  data: readonly T[];
-};
 
 export type { PaginatedList, Service };

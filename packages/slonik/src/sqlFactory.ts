@@ -8,6 +8,7 @@ import {
   createSortFragment,
   createTableFragment,
   createTableIdentifier,
+  createWhereFragment,
   isValueExpression,
 } from "./sql";
 
@@ -18,7 +19,7 @@ import type {
   SortInput,
   SortDirection,
 } from "./types";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type {
   FragmentSqlToken,
   IdentifierSqlToken,
@@ -66,8 +67,8 @@ class DefaultSqlFactory implements SqlFactory {
 
     return sql.type(allSchema)`
       SELECT ${sql.join(identifiers, sql.fragment`, `)}
-      FROM ${this.getTableFragment()}
-      ${this.getSoftDeleteFilterFragment(true)}
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment()}
       ${this.getSortFragment(sort)}
     `;
   }
@@ -79,9 +80,8 @@ class DefaultSqlFactory implements SqlFactory {
 
     return sql.type(countSchema)`
       SELECT COUNT(*)
-      FROM ${this.getTableFragment()}
-      ${this.getFilterFragment(filters)}
-      ${this.getSoftDeleteFilterFragment(!filters)};
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filters })};
     `;
   }
 
@@ -101,7 +101,7 @@ class DefaultSqlFactory implements SqlFactory {
     }
 
     return sql.type(this.validationSchema)`
-      INSERT INTO ${this.getTableFragment()}
+      INSERT INTO ${this.tableFragment}
         (${sql.join(identifiers, sql.fragment`, `)})
       VALUES (${sql.join(values, sql.fragment`, `)})
       RETURNING *;
@@ -111,7 +111,7 @@ class DefaultSqlFactory implements SqlFactory {
   getDeleteSql(id: number | string, force: boolean = false): QuerySqlToken {
     if (this.softDeleteEnabled && !force) {
       return sql.type(this.validationSchema)`
-        UPDATE ${this.getTableFragment()}
+        UPDATE ${this.tableFragment}
         SET deleted_at = NOW()
         WHERE id = ${id}
         RETURNING *;
@@ -119,7 +119,7 @@ class DefaultSqlFactory implements SqlFactory {
     }
 
     return sql.type(this.validationSchema)`
-      DELETE FROM ${this.getTableFragment()}
+      DELETE FROM ${this.tableFragment}
       WHERE id = ${id}
       RETURNING *;
     `;
@@ -128,18 +128,16 @@ class DefaultSqlFactory implements SqlFactory {
   getFindByIdSql(id: number | string): QuerySqlToken {
     return sql.type(this.validationSchema)`
       SELECT *
-      FROM ${this.getTableFragment()}
-      WHERE id = ${id}
-      ${this.getSoftDeleteFilterFragment(false)};
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filterFragment: sql.fragment`id = ${id}` })};
     `;
   }
 
   getFindOneSql(filters?: FilterInput, sort?: SortInput[]): QuerySqlToken {
     return sql.type(this.validationSchema)`
       SELECT *
-      FROM ${this.getTableFragment()}
-      ${this.getFilterFragment(filters)}
-      ${this.getSoftDeleteFilterFragment(!filters)}
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filters })}
       ${this.getSortFragment(sort)}
       LIMIT 1;
     `;
@@ -148,9 +146,8 @@ class DefaultSqlFactory implements SqlFactory {
   getFindSql(filters?: FilterInput, sort?: SortInput[]): QuerySqlToken {
     return sql.type(this.validationSchema)`
       SELECT *
-      FROM ${this.getTableFragment()}
-      ${this.getFilterFragment(filters)}
-      ${this.getSoftDeleteFilterFragment(!filters)}
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filters })}
       ${this.getSortFragment(sort)};
     `;
   }
@@ -163,16 +160,18 @@ class DefaultSqlFactory implements SqlFactory {
   ): QuerySqlToken {
     return sql.type(this.validationSchema)`
       SELECT *
-      FROM ${this.getTableFragment()}
-      ${this.getFilterFragment(filters)}
-      ${this.getSoftDeleteFilterFragment(!filters)}
+      FROM ${this.tableFragment}
+      ${this.getWhereFragment({ filters })}
       ${this.getSortFragment(sort)}
       ${this.getLimitFragment(limit, offset)};
     `;
   }
 
+  /**
+   * @deprecated Use the `this.tableFragment` getter instead.
+   */
   getTableFragment(): FragmentSqlToken {
-    return createTableFragment(this.table, this.schema);
+    return this.tableFragment;
   }
 
   getUpdateSql(
@@ -194,10 +193,9 @@ class DefaultSqlFactory implements SqlFactory {
     }
 
     return sql.type(this.validationSchema)`
-      UPDATE ${this.getTableFragment()}
+      UPDATE ${this.tableFragment}
       SET ${sql.join(columns, sql.fragment`, `)}
-      WHERE id = ${id}
-      ${this.getSoftDeleteFilterFragment(false)}
+      ${this.getWhereFragment({ filterFragment: sql.fragment`id = ${id}` })}
       RETURNING *;
     `;
   }
@@ -240,8 +238,12 @@ class DefaultSqlFactory implements SqlFactory {
     return (this.constructor as typeof DefaultSqlFactory).TABLE;
   }
 
+  get tableFragment(): FragmentSqlToken {
+    return createTableFragment(this.table, this.schema);
+  }
+
   get tableIdentifier(): IdentifierSqlToken {
-    return createTableIdentifier(this.table, this.schema);
+    return createTableIdentifier(this.table);
   }
 
   get validationSchema(): z.ZodTypeAny {
@@ -250,6 +252,46 @@ class DefaultSqlFactory implements SqlFactory {
 
   get softDeleteEnabled(): boolean {
     return this._softDeleteEnabled;
+  }
+
+  protected getAdditionalFilterFragments(): FragmentSqlToken[] {
+    return [];
+  }
+
+  protected getWhereFragment(options?: {
+    filters?: FilterInput;
+    filterFragment?: FragmentSqlToken;
+    includeSoftDelete?: boolean;
+    tableIdentifier?: IdentifierSqlToken;
+  }): FragmentSqlToken {
+    const {
+      filters,
+      includeSoftDelete = true,
+      filterFragment,
+      tableIdentifier = this.tableIdentifier,
+    } = options || {};
+
+    const fragments: FragmentSqlToken[] = [];
+
+    if (filterFragment) {
+      fragments.push(filterFragment);
+    }
+
+    if (includeSoftDelete && this.softDeleteEnabled) {
+      fragments.push(sql.fragment`${this.tableIdentifier}.deleted_at IS NULL`);
+    }
+
+    fragments.push(...this.getAdditionalFilterFragments());
+
+    return this.getCreateWhereFragment(tableIdentifier, filters, fragments);
+  }
+
+  protected getCreateWhereFragment(
+    tableIdentifier: IdentifierSqlToken,
+    filters: FilterInput | undefined,
+    fragments: FragmentSqlToken[] | undefined,
+  ): FragmentSqlToken {
+    return createWhereFragment(tableIdentifier, filters, fragments);
   }
 
   protected getFilterFragment(filters?: FilterInput): FragmentSqlToken {

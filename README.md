@@ -1,14 +1,14 @@
-# @dzangolab/fastify
+# @prefabs.tech/fastify
 A set of fastify libraries
 
 
 ## Packages
-  - @dzangolab/fastify-config (https://www.npmjs.com/package/@dzangolab/fastify-config)
-  - @dzangolab/fastify-graphql (https://www.npmjs.com/package/@dzangolab/fastify-graphql)
-  - @dzangolab/fastify-mailer (https://www.npmjs.com/package/@dzangolab/fastify-mailer)
-  - @dzangolab/fastify-s3 (https://www.npmjs.com/package/@dzangolab/fastify-s3)
-  - @dzangolab/fastify-slonik (https://www.npmjs.com/package/@dzangolab/fastify-slonik)
-  - @dzangolab/fastify-user (https://www.npmjs.com/package/@dzangolab/fastify-user)
+  - @prefabs.tech/fastify-config (https://www.npmjs.com/package/@prefabs.tech/fastify-config)
+  - @prefabs.tech/fastify-graphql (https://www.npmjs.com/package/@prefabs.tech/fastify-graphql)
+  - @prefabs.tech/fastify-mailer (https://www.npmjs.com/package/@prefabs.tech/fastify-mailer)
+  - @prefabs.tech/fastify-s3 (https://www.npmjs.com/package/@prefabs.tech/fastify-s3)
+  - @prefabs.tech/fastify-slonik (https://www.npmjs.com/package/@prefabs.tech/fastify-slonik)
+  - @prefabs.tech/fastify-user (https://www.npmjs.com/package/@prefabs.tech/fastify-user)
 
 ## Installation & Usage
 

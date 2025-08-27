@@ -1,4 +1,4 @@
-import { migrate as runMigrations } from "@dzangolab/postgres-migrations";
+import { migrate as runMigrations } from "@prefabs.tech/postgres-migrations";
 import * as pg from "pg";
 
 import type { SlonikOptions } from "./types";

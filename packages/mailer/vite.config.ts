@@ -13,8 +13,9 @@ export default defineConfig(({ mode }) => {
     build: {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
-        fileName: "dzangolab-fastify-mailer",
-        name: "DzangolabFastifyMailer",
+        fileName: "prefabs-tech-fastify-mailer",
+        formats: ["cjs", "es"],
+        name: "PrefabsTechFastifyMailer",
       },
       rollupOptions: {
         external: [
@@ -24,7 +25,7 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
-            "@dzangolab/fastify-config": "DzangolabFastifyConfig",
+            "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
             "html-to-text": "HtmlToText",

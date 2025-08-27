@@ -21,7 +21,7 @@ declare module "mercurius" {
   }
 }
 
-declare module "@dzangolab/fastify-config" {
+declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     firebase: {
       enabled?: boolean;
@@ -73,4 +73,6 @@ export { default as userDeviceRoutes } from "./model/userDevice/controller";
 export { default as UserDeviceService } from "./model/userDevice/service";
 export { default as firebaseSchema } from "./graphql/schema";
 
+export * from "./constants";
 export * from "./lib";
+export * from "./migrations/queries";

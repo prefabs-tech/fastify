@@ -55,7 +55,7 @@ function expandPackageList(list, dir = ".") {
 
 // ship.js config
 module.exports = {
-  appName: "@dzangolab/fastify",
+  appName: "@prefabs.tech/fastify",
   buildCommand: ({ isYarn, version }) => {
     return "pnpm build";
   },

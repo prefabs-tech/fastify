@@ -1,6 +1,6 @@
 import type { GraphqlConfig } from "./types";
-import type { ApiConfig } from "@dzangolab/fastify-config";
-import type { Database } from "@dzangolab/fastify-slonik";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import type { Database } from "@prefabs.tech/fastify-slonik";
 
 declare module "mercurius" {
   interface MercuriusContext {
@@ -10,7 +10,7 @@ declare module "mercurius" {
   }
 }
 
-declare module "@dzangolab/fastify-config" {
+declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     graphql: GraphqlConfig;
   }

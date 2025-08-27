@@ -19,7 +19,7 @@ import type {
   DeleteObjectCommandOutput,
   ListObjectsCommandOutput,
 } from "@aws-sdk/client-s3";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 class s3Client {
   protected _bucket: string = undefined as unknown as string;

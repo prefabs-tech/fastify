@@ -12,7 +12,9 @@ import {
   getMeSchema,
   getUserSchema,
   getUsersSchema,
+  removePhotoSchema,
   updateMeSchema,
+  uploadPhotoSchema,
 } from "./schema";
 import {
   PERMISSIONS_USERS_DISABLE,
@@ -27,6 +29,7 @@ import {
   ROUTE_USERS_DISABLE,
   ROUTE_USERS_ENABLE,
   ROUTE_USERS_FIND_BY_ID,
+  ROUTE_ME_PHOTO,
 } from "../../constants";
 import ProfileValidationClaim from "../../supertokens/utils/profileValidationClaim";
 
@@ -111,7 +114,10 @@ const plugin = async (fastify: FastifyInstance) => {
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
             (sessionClaimValidator) =>
-              sessionClaimValidator.id !== ProfileValidationClaim.key,
+              ![
+                EmailVerificationClaim.key,
+                ProfileValidationClaim.key,
+              ].includes(sessionClaimValidator.id),
           ),
       }),
       schema: updateMeSchema,
@@ -132,6 +138,42 @@ const plugin = async (fastify: FastifyInstance) => {
       schema: deleteMeSchema,
     },
     handlersConfig?.deleteMe || handlers.deleteMe,
+  );
+
+  fastify.put(
+    ROUTE_ME_PHOTO,
+    {
+      preHandler: fastify.verifySession({
+        overrideGlobalClaimValidators: async (globalValidators) =>
+          globalValidators.filter(
+            (sessionClaimValidator) =>
+              ![
+                EmailVerificationClaim.key,
+                ProfileValidationClaim.key,
+              ].includes(sessionClaimValidator.id),
+          ),
+      }),
+      schema: uploadPhotoSchema,
+    },
+    handlers.uploadPhoto,
+  );
+
+  fastify.delete(
+    ROUTE_ME_PHOTO,
+    {
+      preHandler: fastify.verifySession({
+        overrideGlobalClaimValidators: async (globalValidators) =>
+          globalValidators.filter(
+            (sessionClaimValidator) =>
+              ![
+                EmailVerificationClaim.key,
+                ProfileValidationClaim.key,
+              ].includes(sessionClaimValidator.id),
+          ),
+      }),
+      schema: removePhotoSchema,
+    },
+    handlers.removePhoto,
   );
 
   fastify.put(

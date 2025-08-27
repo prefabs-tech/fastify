@@ -45,6 +45,19 @@ interface Multipart {
   mimetype: string;
   limit?: boolean;
 }
+interface S3Config {
+  accessKey: string;
+  bucket: string | Record<string, string>;
+  endPoint?: string;
+  fileSizeLimitInBytes?: number;
+  filenameResolutionStrategy?: FilenameResolutionStrategy;
+  forcePathStyle?: boolean;
+  secretKey: string;
+  region?: string;
+  table?: {
+    name?: string;
+  };
+}
 
 export type {
   BucketChoice,
@@ -53,6 +66,7 @@ export type {
   FilePayloadOptions,
   FilenameResolutionStrategy,
   Multipart,
+  S3Config,
 };
 
 export type * from "./file";

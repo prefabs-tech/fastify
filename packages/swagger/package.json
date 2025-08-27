@@ -1,23 +1,23 @@
 {
-  "name": "@dzangolab/fastify-swagger",
-  "version": "0.84.2",
+  "name": "@prefabs.tech/fastify-swagger",
+  "version": "0.90.1",
   "description": "Fastify swagger plugin",
-  "homepage": "https://github.com/dzangolab/fastify/tree/main/packages/swagger#readme",
+  "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/swagger#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dzangolab/fastify.git",
+    "url": "git+https://github.com/prefabs-tech/fastify.git",
     "directory": "packages/swagger"
   },
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/dzangolab-fastify-swagger.js",
-      "require": "./dist/dzangolab-fastify-swagger.umd.cjs"
+      "import": "./dist/prefabs-tech-fastify-swagger.js",
+      "require": "./dist/prefabs-tech-fastify-swagger.cjs"
     }
   },
-  "main": "./dist/dzangolab-fastify-swagger.umd.cjs",
-  "module": "./dist/dzangolab-fastify-swagger.js",
+  "main": "./dist/prefabs-tech-fastify-swagger.cjs",
+  "module": "./dist/prefabs-tech-fastify-swagger.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
@@ -32,30 +32,30 @@
   },
   "dependencies": {
     "@fastify/swagger": "9.5.1",
-    "@fastify/swagger-ui": "5.2.2"
+    "@fastify/swagger-ui": "5.2.3"
   },
   "devDependencies": {
-    "@12deg/eslint-config": "0.1.11",
-    "@12deg/tsconfig": "0.1.11",
-    "@types/node": "20.17.24",
-    "@typescript-eslint/eslint-plugin": "8.24.1",
-    "@typescript-eslint/parser": "8.24.1",
-    "@vitest/coverage-istanbul": "3.1.4",
+    "@prefabs.tech/eslint-config": "0.2.0",
+    "@prefabs.tech/tsconfig": "0.2.0",
+    "@types/node": "20.19.9",
+    "@typescript-eslint/eslint-plugin": "8.38.0",
+    "@typescript-eslint/parser": "8.38.0",
+    "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "8.57.1",
-    "eslint-config-prettier": "9.1.0",
+    "eslint-config-prettier": "9.1.2",
     "eslint-import-resolver-alias": "1.1.2",
-    "eslint-import-resolver-typescript": "3.8.4",
-    "eslint-plugin-import": "2.31.0",
+    "eslint-import-resolver-typescript": "3.10.1",
+    "eslint-plugin-import": "2.32.0",
     "eslint-plugin-n": "14.0.0",
-    "eslint-plugin-prettier": "5.2.3",
+    "eslint-plugin-prettier": "5.5.3",
     "eslint-plugin-promise": "7.2.1",
     "eslint-plugin-unicorn": "56.0.1",
-    "fastify": "5.3.3",
+    "fastify": "5.4.0",
     "fastify-plugin": "5.0.1",
-    "prettier": "3.3.3",
-    "typescript": "5.5.4",
+    "prettier": "3.6.2",
+    "typescript": "5.8.3",
     "vite": "6.3.5",
-    "vitest": "3.1.4"
+    "vitest": "3.2.4"
   },
   "peerDependencies": {
     "fastify": ">=5.2.1",

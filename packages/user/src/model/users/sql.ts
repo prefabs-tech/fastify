@@ -3,7 +3,7 @@ import { sql } from "slonik";
 
 import { applyFiltersToQuery } from "./dbFilters";
 
-import type { FilterInput, SortInput } from "@dzangolab/fastify-slonik";
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
 import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
 
 const createRoleSortFragment = (

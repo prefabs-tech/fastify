@@ -1,4 +1,4 @@
-# @dzangolab/fastify-swagger
+# @prefabs.tech/fastify-swagger
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of swagger in fastify API.
 
@@ -8,20 +8,20 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-swagger
+npm install @prefabs.tech/fastify-swagger
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project @dzangolab/fastify-swagger
+pnpm add --filter "@scope/project @prefabs.tech/fastify-swagger
 ```
 
 ## Configuration
 To configure the swagger, add the following settings to your `config/swagger.ts` file:
 
 ```typescript
-import type { SwaggerOptions } from "@dzangolab/fastify-swagger";
+import type { SwaggerOptions } from "@prefabs.tech/fastify-swagger";
 
 const swaggerConfig: SwaggerOptions = {
   enabled: true,
@@ -50,7 +50,7 @@ Register the plugin with your Fastify instance:
 
 ```typescript
 import Fastify from "fastify";
-import swaggerPlugin from "@dzangolab/fastify-swagger"
+import swaggerPlugin from "@prefabs.tech/fastify-swagger"
 
 import swaggerConfig from "./config/swagger"
 

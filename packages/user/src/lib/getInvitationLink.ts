@@ -1,7 +1,7 @@
 import { INVITATION_ACCEPT_LINK_PATH } from "../constants";
 
 import type { Invitation } from "../types/invitation";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 const getInvitationLink = (
   config: ApiConfig,

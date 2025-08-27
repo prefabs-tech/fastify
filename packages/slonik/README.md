@@ -1,14 +1,14 @@
-# @dzangolab/fastify-slonik
+# @prefabs.tech/fastify-slonik
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of slonik  in a fastify API.
 
 The plugin is a thin wrapper around the [`fastify-slonik`](https://github.com/spa5k/fastify-slonik) plugin.
 
-The plugin also includes logic to run migrations via [`@dzangolab/postgres-migrations`](https://github.com/dzangolab/postgres-migrations#readme) which is forked from [`postgres-migrations`](https://github.com/thomwright/postgres-migrations#readme).
+The plugin also includes logic to run migrations via [`@prefabs.tech/postgres-migrations`](https://github.com/prefabs-tech/postgres-migrations#readme) which is forked from [`postgres-migrations`](https://github.com/thomwright/postgres-migrations#readme).
 
 ## Requirements
 
-* [@dzangolab/fastify-config](../config/)
+* [@prefabs.tech/fastify-config](../config/)
 * [slonik](https://github.com/gajus/slonik)
 
 ## Installation
@@ -16,13 +16,13 @@ The plugin also includes logic to run migrations via [`@dzangolab/postgres-migra
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-config @dzangolab/fastify-slonik slonik
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik slonik
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-slonik slonik
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik slonik
 ```
 
 ## Usage
@@ -30,10 +30,10 @@ pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-
 Add a `slonik` block to your config:
 
 ```typescript
-import { parse } from "@dzangolab/fastify-config";
+import { parse } from "@prefabs.tech/fastify-config";
 import dotenv from "dotenv";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 dotenv.config();
 
@@ -67,13 +67,13 @@ export default config;
 Register the plugin with your Fastify instance:
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
-import slonikPlugin, { migrationPlugin } from "@dzangolab/fastify-slonik";
+import configPlugin from "@prefabs.tech/fastify-config";
+import slonikPlugin, { migrationPlugin } from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
 import config from "./config";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance } from "fastify";
 
 const start = async () => {
@@ -100,6 +100,16 @@ const start = async () => {
 start();
 ```
 **Note: `migrationPlugin` should be registered after all the plugins.**
+
+### Support for geo-filtering using `dwithin`
+This package supports the filter for fetching the data from specific geographic area. This can return the data within specific area from the given co-ordinate point.
+
+Prerequisite: Ensure that PostGIS extension is enabled before using this filter. Reference: [Setting up PostGIS](https://postgis.net/documentation/getting_started/install_windows/enabling_postgis/)
+
+Example:
+```
+{ "key": "<column>", "operator": "dwithin", "value": "<latitude>,<longitude>,<radius_in_meters>" }
+```
 
 ## Configuration
 

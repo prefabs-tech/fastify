@@ -1,6 +1,6 @@
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 const getThirdPartyProviders = (config: ApiConfig) => {

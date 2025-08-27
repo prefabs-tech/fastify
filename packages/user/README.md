@@ -1,12 +1,13 @@
-# @dzangolab/fastify-user
+# @prefabs.tech/fastify-user
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of user model (service, controller, resolver) in a fastify API.
 
 ## Requirements
 
-* [@dzangolab/fastify-config](../config/)
-* [@dzangolab/fastify-mailer](../mailer/)
-* [@dzangolab/fastify-slonik](../slonik/)
+* [@prefabs.tech/fastify-config](../config/)
+* [@prefabs.tech/fastify-mailer](../mailer/)
+* [@prefabs.tech/fastify-s3](../s3/)
+* [@prefabs.tech/fastify-slonik](../slonik/)
 * [slonik](https://github.com/spa5k/fastify-slonik)
 * [supertokens-node](https://github.com/supertokens/supertokens-node)
 
@@ -15,13 +16,13 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 Install with npm:
 
 ```bash
-npm install @dzangolab/fastify-config @dzangolab/fastify-mailer @dzangolab/fastify-slonik @dzangolab/fastify-user slonik supertokens-node
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-mailer @prefabs.tech/fastify-s3 @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user slonik supertokens-node
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-mailer @dzangolab/fastify-slonik @dzangolab/fastify-user slonik supertokens-node
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-mailer @prefabs.tech/fastify-s3 @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user slonik supertokens-node
 ```
 
 ## Usage
@@ -29,15 +30,16 @@ pnpm add --filter "@scope/project" @dzangolab/fastify-config @dzangolab/fastify-
 Register the user plugin with your Fastify instance:
 
 ```typescript
-import configPlugin from "@dzangolab/fastify-config";
-import mailerPlugin from "@dzangolab/fastify-mailer";
-import slonikPlugin, { migrationPlugin } from "@dzangolab/fastify-slonik";
-import userPlugin from "@dzangolab/fastify-user";
+import configPlugin from "@prefabs.tech/fastify-config";
+import mailerPlugin from "@prefabs.tech/fastify-mailer";
+import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import slonikPlugin, { migrationPlugin } from "@prefabs.tech/fastify-slonik";
+import userPlugin from "@prefabs.tech/fastify-user";
 import Fastify from "fastify";
 
 import config from "./config";
 
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance } from "fastify";
 
 const start = async () => {
@@ -54,7 +56,13 @@ const start = async () => {
 
   // Register mailer plugin
   await fastify.register(mailerPlugin, config.mailer);
+
+  // Register multipart content-type parser plugin
+  await api.register(multipartParserPlugin);
   
+  // Register mailer plugin
+  await fastify.register(s3Plugin);
+
   // Register fastify-user plugin
   await fastify.register(userPlugin);
 
@@ -142,15 +150,15 @@ const config: ApiConfig = {
 
 ## Using GraphQL
 
-This package supports integration with [@dzangolab/fastify-graphql](../graphql/). Additionally, you will need to install [mercurius-auth](https://github.com/mercurius-js/auth) for authentication.
+This package supports integration with [@prefabs.tech/fastify-graphql](../graphql/). Additionally, you will need to install [mercurius-auth](https://github.com/mercurius-js/auth) for authentication.
 
 ### Configuration
 
 Add the required context for the fastify-user package by including `userPlugin` in your GraphQL configuration as shown below:
 
 ```typescript
-import userPlugin from "@dzangolab/fastify-user";
-import type { ApiConfig } from "@dzangolab/fastify-config";
+import userPlugin from "@prefabs.tech/fastify-user";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 const config: ApiConfig = {
   // ...other configurations...
@@ -169,7 +177,7 @@ The GraphQL schema provided by this package is located at [src/graphql/schema.ts
 To load and merge this schema with your application's custom schemas, update your schema file as follows:
 
 ```typescript
-import { userSchema } from "@dzangolab/fastify-user";
+import { userSchema } from "@prefabs.tech/fastify-user";
 import { loadFilesSync } from "@graphql-tools/load-files";
 import { mergeTypeDefs } from "@graphql-tools/merge";
 import { makeExecutableSchema } from "@graphql-tools/schema";
@@ -187,7 +195,7 @@ export default schema;
 To integrate the resolvers provided by this package, import them and merge with your application's resolvers:
 
 ```typescript
-import { usersResolver } from "@dzangolab/fastify-user";
+import { usersResolver } from "@prefabs.tech/fastify-user";
 
 import type { IResolvers } from "mercurius";
 

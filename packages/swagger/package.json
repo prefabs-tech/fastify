@@ -37,7 +37,7 @@
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
     "@prefabs.tech/tsconfig": "0.2.0",
-    "@types/node": "20.19.12",
+    "@types/node": "20.19.13",
     "@typescript-eslint/eslint-plugin": "8.42.0",
     "@typescript-eslint/parser": "8.42.0",
     "@vitest/coverage-istanbul": "3.2.4",

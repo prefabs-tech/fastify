@@ -29,10 +29,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.879.0",
-    "@aws-sdk/lib-storage": "3.879.0",
-    "@aws-sdk/s3-request-presigner": "3.879.0",
-    "@fastify/multipart": "9.0.3",
+    "@aws-sdk/client-s3": "3.882.0",
+    "@aws-sdk/lib-storage": "3.882.0",
+    "@aws-sdk/s3-request-presigner": "3.882.0",
+    "@fastify/multipart": "9.2.1",
     "@types/busboy": "1.5.4",
     "@types/uuid": "9.0.8",
     "ajv": "8.17.1",
@@ -47,7 +47,7 @@
     "@prefabs.tech/fastify-graphql": "0.90.1",
     "@prefabs.tech/fastify-slonik": "0.90.1",
     "@prefabs.tech/tsconfig": "0.2.0",
-    "@types/node": "20.19.12",
+    "@types/node": "20.19.13",
     "@typescript-eslint/eslint-plugin": "8.42.0",
     "@typescript-eslint/parser": "8.42.0",
     "@vitest/coverage-istanbul": "3.2.4",

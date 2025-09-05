@@ -40,7 +40,7 @@
     "@prefabs.tech/tsconfig": "0.2.0",
     "@slonik/driver": "46.8.0",
     "@types/humps": "2.0.6",
-    "@types/node": "20.19.12",
+    "@types/node": "20.19.13",
     "@types/pg": "8.15.5",
     "@typescript-eslint/eslint-plugin": "8.42.0",
     "@typescript-eslint/parser": "8.42.0",

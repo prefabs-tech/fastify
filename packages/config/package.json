@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-config",
-  "version": "0.90.1",
+  "version": "0.90.2",
   "description": "Fastify config plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/config#readme",
   "repository": {

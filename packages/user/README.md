@@ -4,6 +4,8 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 
 ## Requirements
 
+* [@fastify/cors](https://github.com/fastify/fastify-cors)
+* [@fastify/formbody](https://github.com/fastify/fastify-formbody)
 * [@prefabs.tech/fastify-config](../config/)
 * [@prefabs.tech/fastify-mailer](../mailer/)
 * [@prefabs.tech/fastify-s3](../s3/)
@@ -16,13 +18,13 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 Install with npm:
 
 ```bash
-npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-mailer @prefabs.tech/fastify-s3 @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user slonik supertokens-node
+npm install @fastify/cors @fastify/formbody @prefabs.tech/fastify-config @prefabs.tech/fastify-mailer @prefabs.tech/fastify-s3 @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user slonik supertokens-node
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-mailer @prefabs.tech/fastify-s3 @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user slonik supertokens-node
+pnpm add --filter "@scope/project" @fastify/cors @fastify/formbody @prefabs.tech/fastify-config @prefabs.tech/fastify-mailer @prefabs.tech/fastify-s3 @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user slonik supertokens-node
 ```
 
 ## Usage
@@ -30,11 +32,13 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 Register the user plugin with your Fastify instance:
 
 ```typescript
+import corsPlugin from "@fastify/cors";
+import formBodyPlugin from "@fastify/formbody";
 import configPlugin from "@prefabs.tech/fastify-config";
 import mailerPlugin from "@prefabs.tech/fastify-mailer";
 import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
 import slonikPlugin, { migrationPlugin } from "@prefabs.tech/fastify-slonik";
-import userPlugin from "@prefabs.tech/fastify-user";
+import userPlugin, { SUPERTOKENS_CORS_HEADERS } from "@prefabs.tech/fastify-user";
 import Fastify from "fastify";
 
 import config from "./config";
@@ -50,6 +54,17 @@ const start = async () => {
 
   // Register fastify-config plugin
   await fastify.register(configPlugin, { config });
+
+  // Register cors plugin
+  await fastify.register(corsPlugin, {
+    origin: config.appOrigin,
+    allowedHeaders: ["Content-Type", ...SUPERTOKENS_CORS_HEADERS],
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    credentials: true,
+  });
+
+  // Register form-body plugin
+  await fastify.register(formBodyPlugin);
 
   // Register database plugin
   await fastify.register(slonikPlugin, config.slonik);

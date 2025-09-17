@@ -67,6 +67,17 @@ const ERROR_CODES = {
   USER_NOT_FOUND: "USER_NOT_FOUND_ERROR",
 };
 
+const SUPERTOKENS_CORS_HEADERS = [
+  "anti-csrf",
+  "authorization",
+  "fdi-version",
+  "front-token",
+  "rid",
+  "st-access-token",
+  "st-auth-mode",
+  "st-refresh-token",
+];
+
 export {
   DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB,
   EMAIL_VERIFICATION_MODE,
@@ -106,6 +117,7 @@ export {
   ROUTE_USERS,
   ROUTE_USERS_DISABLE,
   ROUTE_USERS_ENABLE,
+  SUPERTOKENS_CORS_HEADERS,
   TABLE_INVITATIONS,
   TABLE_USERS,
 };

@@ -1,7 +1,4 @@
-import cors from "@fastify/cors";
-import formDataPlugin from "@fastify/formbody";
 import FastifyPlugin from "fastify-plugin";
-import supertokens from "supertokens-node";
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
 import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
 
@@ -21,19 +18,6 @@ const plugin = async (fastify: FastifyInstance) => {
     fastify.setErrorHandler(errorHandler);
   }
 
-  await fastify.register(cors, {
-    origin: config.appOrigin,
-    allowedHeaders: [
-      "Content-Type",
-      "st-auth-mode",
-      ...supertokens.getAllCORSHeaders(),
-    ],
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
-    credentials: true,
-  });
-
-  // Register plugins for supertokens
-  await fastify.register(formDataPlugin);
   await fastify.register(supertokensPlugin);
 
   log.info("Registering supertokens plugin complete");

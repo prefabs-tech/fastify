@@ -1,3 +1,58 @@
+# [0.91.0](https://github.com/prefabs-tech/fastify/compare/v0.90.2...v0.91.0) (2025-09-18)
+
+### BREAKING CHANGES
+
+#### Removed `@fastify/cors` and `@fastify/formbody` from `@prefabs.tech/fastify-user`
+
+These plugins are no longer bundled with `@prefabs.tech/fastify-user`.  
+They are now declared as **peer dependencies**, which means you must install and register them yourself.
+
+#### Required Changes
+
+* Install the missing dependencies:
+
+```bash
+npm install @fastify/cors @fastify/formbody
+```
+
+* Update your server setup:
+
+```typescript
+import corsPlugin from "@fastify/cors";
+import formBodyPlugin from "@fastify/formbody";
+import userPlugin, { SUPERTOKENS_CORS_HEADERS } from "@prefabs.tech/fastify-user";
+import Fastify from "fastify";
+
+const start = async () => {
+  // Create fastify instance
+  const fastify = Fastify({
+    logger: config.logger,
+  });
+  ....
+
+  // Register cors plugin
+  await fastify.register(corsPlugin, {
+    origin: config.appOrigin,
+    allowedHeaders: ["Content-Type", ...SUPERTOKENS_CORS_HEADERS],
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    credentials: true,
+  });
+
+  // Register form-body plugin
+  await fastify.register(formBodyPlugin);
+
+  ...
+  
+  await fastify.listen({
+    port: config.port,
+    host: "0.0.0.0",
+  });
+};
+
+start();
+```
+
+
 ## [0.90.2](https://github.com/prefabs-tech/fastify/compare/v0.90.1...v0.90.2) (2025-09-05)
 
 

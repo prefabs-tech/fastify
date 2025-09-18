@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-user",
-  "version": "0.90.2",
+  "version": "0.91.0",
   "description": "Fastify user plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/user#readme",
   "repository": {
@@ -19,9 +19,7 @@
   "main": "./dist/prefabs-tech-fastify-user.cjs",
   "module": "./dist/prefabs-tech-fastify-user.js",
   "types": "./dist/types/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -36,12 +34,12 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
-    "@prefabs.tech/fastify-config": "0.90.2",
-    "@prefabs.tech/fastify-error-handler": "0.90.2",
-    "@prefabs.tech/fastify-graphql": "0.90.2",
-    "@prefabs.tech/fastify-mailer": "0.90.2",
-    "@prefabs.tech/fastify-s3": "0.90.2",
-    "@prefabs.tech/fastify-slonik": "0.90.2",
+    "@prefabs.tech/fastify-config": "0.91.0",
+    "@prefabs.tech/fastify-error-handler": "0.91.0",
+    "@prefabs.tech/fastify-graphql": "0.91.0",
+    "@prefabs.tech/fastify-mailer": "0.91.0",
+    "@prefabs.tech/fastify-s3": "0.91.0",
+    "@prefabs.tech/fastify-slonik": "0.91.0",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/humps": "2.0.6",
     "@types/node": "20.19.13",
@@ -74,12 +72,12 @@
   "peerDependencies": {
     "@fastify/cors": ">=11.0.1",
     "@fastify/formbody": ">=8.0.2",
-    "@prefabs.tech/fastify-config": "0.90.2",
-    "@prefabs.tech/fastify-error-handler": "0.90.2",
-    "@prefabs.tech/fastify-graphql": "0.90.2",
-    "@prefabs.tech/fastify-mailer": "0.90.2",
-    "@prefabs.tech/fastify-s3": "0.90.2",
-    "@prefabs.tech/fastify-slonik": "0.90.2",
+    "@prefabs.tech/fastify-config": "0.91.0",
+    "@prefabs.tech/fastify-error-handler": "0.91.0",
+    "@prefabs.tech/fastify-graphql": "0.91.0",
+    "@prefabs.tech/fastify-mailer": "0.91.0",
+    "@prefabs.tech/fastify-s3": "0.91.0",
+    "@prefabs.tech/fastify-slonik": "0.91.0",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "mercurius": ">=16.1.0",

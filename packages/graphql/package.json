@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-graphql",
-  "version": "0.90.2",
+  "version": "0.91.0",
   "description": "Fastify graphql plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/graphql#readme",
   "repository": {
@@ -19,9 +19,7 @@
   "main": "./dist/prefabs-tech-fastify-graphql.cjs",
   "module": "./dist/prefabs-tech-fastify-graphql.js",
   "types": "./dist/types/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -36,8 +34,8 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
-    "@prefabs.tech/fastify-config": "0.90.2",
-    "@prefabs.tech/fastify-slonik": "0.90.2",
+    "@prefabs.tech/fastify-config": "0.91.0",
+    "@prefabs.tech/fastify-slonik": "0.91.0",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/node": "20.19.13",
     "@typescript-eslint/eslint-plugin": "8.42.0",
@@ -64,8 +62,8 @@
     "zod": "3.25.76"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.90.2",
-    "@prefabs.tech/fastify-slonik": "0.90.2",
+    "@prefabs.tech/fastify-config": "0.91.0",
+    "@prefabs.tech/fastify-slonik": "0.91.0",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "graphql": ">=16.9.0",

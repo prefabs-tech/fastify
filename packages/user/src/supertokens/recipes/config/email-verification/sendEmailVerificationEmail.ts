@@ -40,7 +40,7 @@ const sendEmailVerificationEmail = (
       fastify,
       subject:
         fastify.config.user.emailOverrides?.emailVerification?.subject ||
-        "Email Verification",
+        "Email verification",
       templateName:
         fastify.config.user.emailOverrides?.emailVerification?.templateName ||
         "email-verification",

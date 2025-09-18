@@ -47,7 +47,7 @@ const sendPasswordResetEmail = (
       fastify,
       subject:
         fastify.config.user.emailOverrides?.resetPassword?.subject ||
-        "Reset Password",
+        "Reset password",
       templateName:
         fastify.config.user.emailOverrides?.resetPassword?.templateName ||
         "reset-password",

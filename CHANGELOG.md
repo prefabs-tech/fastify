@@ -1,3 +1,12 @@
+## [0.91.1](https://github.com/prefabs-tech/fastify/compare/v0.91.0...v0.91.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* **slonik:** fix incorrect latitude-longitude order in ST_MakePoint ([#1023](https://github.com/prefabs-tech/fastify/issues/1023)) ([4f403fb](https://github.com/prefabs-tech/fastify/commit/4f403fbe5a7013169f5052c11661770fd16727f7))
+
+
+
 # [0.91.0](https://github.com/prefabs-tech/fastify/compare/v0.90.2...v0.91.0) (2025-09-18)
 
 ### BREAKING CHANGES

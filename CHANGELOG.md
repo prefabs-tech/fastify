@@ -3,7 +3,7 @@
 
 ### Bug Fixes
 
-* **slonik:** fix incorrect latitude-longitude order in ST_MakePoint ([#1023](https://github.com/prefabs-tech/fastify/issues/1023)) ([4f403fb](https://github.com/prefabs-tech/fastify/commit/4f403fbe5a7013169f5052c11661770fd16727f7))
+* **slonik:** fix incorrect latitude-longitude order in dwithin filter ([#1023](https://github.com/prefabs-tech/fastify/issues/1023)) ([4f403fb](https://github.com/prefabs-tech/fastify/commit/4f403fbe5a7013169f5052c11661770fd16727f7))
 
 
 

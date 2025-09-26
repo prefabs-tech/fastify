@@ -1,3 +1,37 @@
+# [0.92.0](https://github.com/prefabs-tech/fastify/compare/v0.91.1...v0.92.0) (2025-09-26)
+
+### BREAKING CHANGES
+
+* **s3:** update s3 config, AWS S3 client config (access key, secret key etc) are now should be passed into clientConfig
+
+Example:
+```typescript
+const config: ApiConfig = {
+  // ... other configurations
+  s3: {
+    clientConfig: {
+      credentials: {
+        accessKeyId: "ASSESS_KEY",   // Replace with your AWS access key
+        secretAccessKey: "SECRET_KEY",   // Replace with your AWS secret key
+      },
+      region: "REGION", // Replace with your AWS region
+      endpoint: "ENDPOINT",
+      forcePathStyle: false,
+    },
+  }
+```
+
+* **s3:** UplaodedById is now optional in files model
+
+##### Required Migration
+If you're upgrading to this version, run the following SQL migration:
+
+```sql
+ALTER TABLE files
+ALTER COLUMN "uploaded_by_id" DROP NOT NULL;
+```
+
+
 ## [0.91.1](https://github.com/prefabs-tech/fastify/compare/v0.91.0...v0.91.1) (2025-09-23)
 
 

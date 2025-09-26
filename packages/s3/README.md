@@ -117,14 +117,29 @@ const config: ApiConfig = {
   // ... other configurations
   
   s3: {
-    //... AWS S3 settings
-    accessKey: "accessKey",   // Replace with your AWS access key
-    secretKey: "secretKey",   // Replace with your AWS secret key
+    //... AWS S3 client config
+    clientConfig: {
+      credentials: {
+        accessKeyId: "accessKey",   // Replace with your AWS access key
+        secretAccessKey: "secretKey",   // Replace with your AWS secret key
+      },
+      region: "ap-southeast-1" // Replace with your AWS region
+    },
     bucket: "" | { key: "value" }, // Specify your S3 bucket
-    region: "ap-southeast-1" // Replace with your AWS region
   }
 };
 ```
+
+> **Credentials on EC2 (IAM Role)**
+>
+> If your application is running on an EC2 instance (or ECS, Lambda,
+> or any AWS environment with an IAM Role attached), you do not need
+> to provide AWS credentials explicitly.
+>
+> The AWS SDK for JavaScript automatically retrieves temporary
+> credentials from the Instance Metadata Service (IMDS).
+>
+> As long as your EC2 instance has an IAM Role with the correct S3 permissions (e.g., s3:GetObject, s3:PutObject), the SDK will handle authentication for you.
 
 Minio Service Config
 
@@ -133,12 +148,16 @@ const config: ApiConfig = {
   // ... other configurations
   
   s3: {
-    accessKey: "yourMinioAccessKey",
-    secretKey: "yourMinioSecretKey",
+    clientConfig: {
+      credentials: {
+        accessKeyId: "yourMinioAccessKey",
+        secretAccessKey: "yourMinioSecretKey",
+      },
+      endpoint: "http://your-minio-server-url:port", // Replace with your Minio server URL
+      forcePathStyle: true, // Set to true if your Minio server uses path-style URLs
+      region: "" // For Minio, you can leave the region empty or specify it based on your setup
+    },
     bucket: "yourMinioBucketName",
-    endpoint: "http://your-minio-server-url:port", // Replace with your Minio server URL
-    forcePathStyle: true, // Set to true if your Minio server uses path-style URLs
-    region: "" // For Minio, you can leave the region empty or specify it based on your setup
   }
 };
 
@@ -151,7 +170,7 @@ const config: ApiConfig = {
   // ... other configurations
   
   s3: {
-    //... AWS S3 settings
+    //... AWS S3 client config
     table: {
         name: "new-table-name" // You can set a custom table name here (default: "files")
     }
@@ -167,7 +186,7 @@ const config: ApiConfig = {
   // ... other configurations
   
   s3: {
-    //... AWS S3 settings
+    //... AWS S3 client config
     fileSizeLimitInBytes: 10485760
   }
 };

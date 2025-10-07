@@ -372,14 +372,14 @@ importers:
         specifier: 4.2.0
         version: 4.2.0
       nodemailer:
-        specifier: 6.10.1
-        version: 6.10.1
+        specifier: 7.0.7
+        version: 7.0.7
       nodemailer-html-to-text:
         specifier: 3.2.0
         version: 3.2.0
       nodemailer-mjml:
         specifier: 1.6.0
-        version: 1.6.0(nodemailer@6.10.1)
+        version: 1.6.0(nodemailer@7.0.7)
     devDependencies:
       '@prefabs.tech/eslint-config':
         specifier: 0.2.0
@@ -4761,12 +4761,12 @@ packages:
       htmlnano:
         optional: true
 
-  nodemailer@6.10.1:
-    resolution: {integrity: sha512-Z+iLaBGVaSjbIzQ4pX6XV41HrooLsQ10ZWPUehGmuantvzWoDVBnmsdUcOIDM1t+yPor5pDhVlDESgOMEGxhHA==}
-    engines: {node: '>=6.0.0'}
-
   nodemailer@6.9.16:
     resolution: {integrity: sha512-psAuZdTIRN08HKVd/E8ObdV6NO7NTBY3KsC30F7M4H1OnmLCUNaS56FpYxyb26zWLSyYF9Ozch9KYHhHegsiOQ==}
+    engines: {node: '>=6.0.0'}
+
+  nodemailer@7.0.7:
+    resolution: {integrity: sha512-jGOaRznodf62TVzdyhKt/f1Q/c3kYynk8629sgJHpRzGZj01ezbgMMWJSAjHADcwTKxco3B68/R+KHJY2T5BaA==}
     engines: {node: '>=6.0.0'}
 
   nopt@6.0.0:
@@ -11629,17 +11629,17 @@ snapshots:
     dependencies:
       html-to-text: 7.1.1
 
-  nodemailer-mjml@1.6.0(nodemailer@6.10.1):
+  nodemailer-mjml@1.6.0(nodemailer@7.0.7):
     dependencies:
       mjml: 4.15.3
       mustache: 4.2.0
-      nodemailer: 6.10.1
+      nodemailer: 7.0.7
     transitivePeerDependencies:
       - encoding
 
-  nodemailer@6.10.1: {}
-
   nodemailer@6.9.16: {}
+
+  nodemailer@7.0.7: {}
 
   nopt@6.0.0:
     dependencies:

@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-s3",
-  "version": "0.92.0",
+  "version": "0.92.1",
   "description": "Fastify S3 plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/s3#readme",
   "repository": {
@@ -42,10 +42,10 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
-    "@prefabs.tech/fastify-config": "0.92.0",
-    "@prefabs.tech/fastify-error-handler": "0.92.0",
-    "@prefabs.tech/fastify-graphql": "0.92.0",
-    "@prefabs.tech/fastify-slonik": "0.92.0",
+    "@prefabs.tech/fastify-config": "0.92.1",
+    "@prefabs.tech/fastify-error-handler": "0.92.1",
+    "@prefabs.tech/fastify-graphql": "0.92.1",
+    "@prefabs.tech/fastify-slonik": "0.92.1",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/node": "20.19.23",
     "@typescript-eslint/eslint-plugin": "8.46.2",
@@ -71,10 +71,10 @@
     "zod": "3.25.76"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.92.0",
-    "@prefabs.tech/fastify-error-handler": "0.92.0",
-    "@prefabs.tech/fastify-graphql": "0.92.0",
-    "@prefabs.tech/fastify-slonik": "0.92.0",
+    "@prefabs.tech/fastify-config": "0.92.1",
+    "@prefabs.tech/fastify-error-handler": "0.92.1",
+    "@prefabs.tech/fastify-graphql": "0.92.1",
+    "@prefabs.tech/fastify-slonik": "0.92.1",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "slonik": ">=46.1.0",

@@ -1,6 +1,6 @@
 import { ROLE_USER } from "../../../../constants";
 
-import type { FastifyInstance, FastifyError } from "fastify";
+import type { FastifyInstance } from "fastify";
 import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
 
 const emailPasswordSignUpPOST = (
@@ -15,11 +15,7 @@ const emailPasswordSignUpPOST = (
     }
 
     if (fastify.config.user.features?.signUp?.enabled === false) {
-      throw {
-        name: "SIGN_UP_DISABLED",
-        message: "SignUp feature is currently disabled",
-        statusCode: 404,
-      } as FastifyError;
+      throw fastify.httpErrors.notFound("SignUp feature is currently disabled");
     }
 
     const originalResponse =

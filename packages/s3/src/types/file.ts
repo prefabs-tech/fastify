@@ -4,7 +4,7 @@ interface File {
   bucket?: string;
   description?: string;
   key: string;
-  uploadedById: string;
+  uploadedById?: string;
   uploadedAt: number;
   downloadCount?: number;
   lastDownloadedAt?: number;

@@ -174,15 +174,7 @@ class s3Client {
   }
 
   protected init(): S3Client {
-    return new S3Client({
-      credentials: {
-        accessKeyId: this.config.s3.accessKey,
-        secretAccessKey: this.config.s3.secretKey,
-      },
-      endpoint: this.config.s3.endPoint,
-      forcePathStyle: this.config.s3.forcePathStyle,
-      region: this.config.s3.region,
-    });
+    return new S3Client(this.config.s3.clientConfig);
   }
 }
 

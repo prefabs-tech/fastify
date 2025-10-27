@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
         fileName: "prefabs-tech-fastify-firebase",
+        formats: ["cjs", "es"],
         name: "PrefabsTechFastifyFirebase",
       },
       rollupOptions: {
@@ -24,6 +25,8 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
+            "@prefabs.tech/fastify-error-handler":
+              "PrefabsTechFastifyErrorHandler",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
             fastify: "Fastify",

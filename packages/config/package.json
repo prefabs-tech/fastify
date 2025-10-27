@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-config",
-  "version": "0.89.1",
+  "version": "0.92.0",
   "description": "Fastify config plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/config#readme",
   "repository": {
@@ -13,10 +13,10 @@
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-config.js",
-      "require": "./dist/prefabs-tech-fastify-config.umd.cjs"
+      "require": "./dist/prefabs-tech-fastify-config.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-config.umd.cjs",
+  "main": "./dist/prefabs-tech-fastify-config.cjs",
   "module": "./dist/prefabs-tech-fastify-config.js",
   "types": "./dist/types/index.d.ts",
   "files": [
@@ -33,9 +33,9 @@
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.2.0",
     "@prefabs.tech/tsconfig": "0.2.0",
-    "@types/node": "20.19.9",
-    "@typescript-eslint/eslint-plugin": "8.38.0",
-    "@typescript-eslint/parser": "8.38.0",
+    "@types/node": "20.19.23",
+    "@typescript-eslint/eslint-plugin": "8.46.2",
+    "@typescript-eslint/parser": "8.46.2",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "8.57.1",
     "eslint-config-prettier": "9.1.2",
@@ -43,15 +43,15 @@
     "eslint-import-resolver-typescript": "3.10.1",
     "eslint-plugin-import": "2.32.0",
     "eslint-plugin-n": "14.0.0",
-    "eslint-plugin-prettier": "5.5.3",
+    "eslint-plugin-prettier": "5.5.4",
     "eslint-plugin-promise": "7.2.1",
     "eslint-plugin-unicorn": "56.0.1",
-    "fastify": "5.4.0",
-    "fastify-plugin": "5.0.1",
+    "fastify": "5.6.1",
+    "fastify-plugin": "5.1.0",
     "pino": "8.21.0",
     "prettier": "3.6.2",
-    "typescript": "5.8.3",
-    "vite": "6.3.5",
+    "typescript": "5.9.3",
+    "vite": "6.4.1",
     "vitest": "3.2.4"
   },
   "peerDependencies": {

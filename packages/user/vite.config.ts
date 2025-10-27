@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
         fileName: "prefabs-tech-fastify-user",
+        formats: ["cjs", "es"],
         name: "PrefabsTechFastifyUser",
       },
       rollupOptions: {
@@ -26,6 +27,8 @@ export default defineConfig(({ mode }) => {
           exports: "named",
           globals: {
             "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
+            "@prefabs.tech/fastify-error-handler":
+              "PrefabsTechFastifyErrorHandler",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
             "@prefabs.tech/fastify-mailer": "PrefabsTechFastifyMailer",
             "@prefabs.tech/fastify-s3": "PrefabsTechFastifyS3",

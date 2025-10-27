@@ -3,7 +3,7 @@ import { getRequestFromUserContext } from "supertokens-node";
 import getUserService from "../../../../lib/getUserService";
 import ProfileValidationClaim from "../../../utils/profileValidationClaim";
 
-import type { FastifyError, FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/session/types";
 
 const createNewSession = (
@@ -28,19 +28,11 @@ const createNewSession = (
       const user = (await userService.findById(input.userId)) || undefined;
 
       if (user?.deletedAt) {
-        throw {
-          name: "SIGN_IN_FAILED",
-          message: "user not found",
-          statusCode: 401,
-        } as FastifyError;
+        throw fastify.httpErrors.unauthorized("User not found");
       }
 
       if (user?.disabled) {
-        throw {
-          name: "SIGN_IN_FAILED",
-          message: "user is disabled",
-          statusCode: 401,
-        } as FastifyError;
+        throw fastify.httpErrors.unauthorized("User is disabled");
       }
 
       request.user = user;

@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
         fileName: "prefabs-tech-fastify-s3",
+        formats: ["cjs", "es"],
         name: "PrefabsTechFastifyS3",
       },
       rollupOptions: {
@@ -29,6 +30,8 @@ export default defineConfig(({ mode }) => {
             "@aws-sdk/lib-storage": "AWSLibStorage",
             "@aws-sdk/s3-request-presigner": "AWSS3RequestPresigner",
             "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
+            "@prefabs.tech/fastify-error-handler":
+              "PrefabsTechFastifyErrorHandler",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@fastify/cors": "FastifyCors",

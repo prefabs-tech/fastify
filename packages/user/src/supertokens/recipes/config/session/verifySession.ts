@@ -1,4 +1,4 @@
-import type { FastifyError, FastifyInstance } from "fastify";
+import type { FastifyInstance } from "fastify";
 import type { APIInterface } from "supertokens-node/recipe/session/types";
 
 const verifySession = (
@@ -29,21 +29,13 @@ const verifySession = (
       if (user?.deletedAt) {
         await session.revokeSession();
 
-        throw {
-          name: "SESSION_VERIFICATION_FAILED",
-          message: "user not found",
-          statusCode: 401,
-        } as FastifyError;
+        throw fastify.httpErrors.unauthorized("User not found");
       }
 
       if (user?.disabled) {
         await session.revokeSession();
 
-        throw {
-          name: "SESSION_VERIFICATION_FAILED",
-          message: "user is disabled",
-          statusCode: 401,
-        } as FastifyError;
+        throw fastify.httpErrors.unauthorized("User is disabled");
       }
     }
 

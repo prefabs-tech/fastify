@@ -1,6 +1,8 @@
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { formatDate, BaseService } from "@prefabs.tech/fastify-slonik";
 
 import InvitationSqlFactory from "./sqlFactory";
+import { ERROR_CODES } from "../../constants";
 
 import type {
   Invitation,
@@ -53,7 +55,10 @@ class InvitationService extends BaseService<
 
     // only one valid invitation is allowed per email
     if (validInvitationCount > 0) {
-      throw new Error("Invitation already exist");
+      throw new CustomError(
+        "Invitation already exists for this email.",
+        ERROR_CODES.INVITATION_ALREADY_EXISTS,
+      );
     }
 
     return data;

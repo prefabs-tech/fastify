@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify",
-  "version": "0.89.1",
+  "version": "0.92.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -18,13 +18,13 @@
   "devDependencies": {
     "@commitlint/cli": "19.8.1",
     "@commitlint/config-conventional": "19.8.1",
-    "@types/node": "22.9.0",
+    "@types/node": "22.18.12",
     "husky": "9.1.7",
     "shipjs": "0.27.0",
-    "turbo": "2.5.5",
-    "typescript": "5.8.3"
+    "turbo": "2.5.8",
+    "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.12.4",
+  "packageManager": "pnpm@10.19.0",
   "engines": {
     "node": ">=20",
     "pnpm": ">=10"

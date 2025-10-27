@@ -1,3 +1,165 @@
+# [0.92.0](https://github.com/prefabs-tech/fastify/compare/v0.91.1...v0.92.0) (2025-09-26)
+
+### BREAKING CHANGES
+
+* **s3:** update s3 config, AWS S3 client config (access key, secret key etc) are now should be passed into clientConfig
+
+Example:
+```typescript
+const config: ApiConfig = {
+  // ... other configurations
+  s3: {
+    clientConfig: {
+      credentials: {
+        accessKeyId: "ASSESS_KEY",   // Replace with your AWS access key
+        secretAccessKey: "SECRET_KEY",   // Replace with your AWS secret key
+      },
+      region: "REGION", // Replace with your AWS region
+      endpoint: "ENDPOINT",
+      forcePathStyle: false,
+    },
+  }
+```
+
+* **s3:** UplaodedById is now optional in files model
+
+##### Required Migration
+If you're upgrading to this version, run the following SQL migration:
+
+```sql
+ALTER TABLE files
+ALTER COLUMN "uploaded_by_id" DROP NOT NULL;
+```
+
+
+## [0.91.1](https://github.com/prefabs-tech/fastify/compare/v0.91.0...v0.91.1) (2025-09-23)
+
+
+### Bug Fixes
+
+* **slonik:** fix incorrect latitude-longitude order in dwithin filter ([#1023](https://github.com/prefabs-tech/fastify/issues/1023)) ([4f403fb](https://github.com/prefabs-tech/fastify/commit/4f403fbe5a7013169f5052c11661770fd16727f7))
+
+
+
+# [0.91.0](https://github.com/prefabs-tech/fastify/compare/v0.90.2...v0.91.0) (2025-09-18)
+
+### BREAKING CHANGES
+
+#### Removed `@fastify/cors` and `@fastify/formbody` from `@prefabs.tech/fastify-user`
+
+These plugins are no longer bundled with `@prefabs.tech/fastify-user`.  
+They are now declared as **peer dependencies**, which means you must install and register them yourself.
+
+#### Required Changes
+
+* Install the missing dependencies:
+
+```bash
+npm install @fastify/cors @fastify/formbody
+```
+
+* Update your server setup:
+
+```typescript
+import corsPlugin from "@fastify/cors";
+import formBodyPlugin from "@fastify/formbody";
+import userPlugin, { SUPERTOKENS_CORS_HEADERS } from "@prefabs.tech/fastify-user";
+import Fastify from "fastify";
+
+const start = async () => {
+  // Create fastify instance
+  const fastify = Fastify({
+    logger: config.logger,
+  });
+  ....
+
+  // Register cors plugin
+  await fastify.register(corsPlugin, {
+    origin: config.appOrigin,
+    allowedHeaders: ["Content-Type", ...SUPERTOKENS_CORS_HEADERS],
+    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE"],
+    credentials: true,
+  });
+
+  // Register form-body plugin
+  await fastify.register(formBodyPlugin);
+
+  ...
+  
+  await fastify.listen({
+    port: config.port,
+    host: "0.0.0.0",
+  });
+};
+
+start();
+```
+
+
+## [0.90.2](https://github.com/prefabs-tech/fastify/compare/v0.90.1...v0.90.2) (2025-09-05)
+
+
+
+## [0.90.1](https://github.com/prefabs-tech/fastify/compare/v0.90.0...v0.90.1) (2025-08-25)
+
+
+
+# [0.90.0](https://github.com/prefabs-tech/fastify/compare/v0.89.2...v0.90.0) (2025-08-21)
+
+### Breaking changes
+
+* @prefabs.tech/fastify-firebase, @prefabs.tech/fastify-s3, @prefabs.tech/fastify-user now requires @prefabs.tech/fastify-error-handler package for handling http errors and other custom errors.
+
+### Bug Fixes
+
+* **user/photo:** fix photo upload ([#1005](https://github.com/prefabs-tech/fastify/issues/1005)) ([f32a4e0](https://github.com/prefabs-tech/fastify/commit/f32a4e06e6947f5c1a0b3ddeb503d4660225de94))
+
+* **user/invitation:** create invitaion endpoint now check if role is exists or not, if not exist throws error.
+
+* **error-handler** fix ErrorResponse fastify schema and update error handler.
+
+### Error Handling Guidelines
+
+#### Controllers must not reply with non-200 responses
+
+Do not manually send error responses from controllers.
+
+Instead, always throw an error and let the global error handler handle formatting and response.
+
+**Wrong**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  return reply.code(401).send({ message: "Unauthorized" });
+})
+```
+
+**Correct**
+
+```ts
+fastify.get('/test', async (req, reply) => {
+  throw fastify.httpErrors.unauthorized("Unauthorized");
+})
+```
+
+#### Throw `CustomError` (or subclass)
+- Modules **must throw** an instance of `CustomError` (or a class extending it).
+- This ensures errors can be consistently caught and appropriate actions taken.
+
+```ts
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
+const file = fileService.findById(1);
+
+if (!file) {
+  throw new CustomError("File not found", "FILE_NOT_FOUND_ERROR");
+}
+```
+
+## [0.89.2](https://github.com/prefabs-tech/fastify/compare/v0.89.1...v0.89.2) (2025-08-15)
+
+
+
 ## [0.89.1](https://github.com/prefabs-tech/fastify/compare/v0.89.0...v0.89.1) (2025-08-13)
 
 

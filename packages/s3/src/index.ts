@@ -9,6 +9,7 @@ declare module "@prefabs.tech/fastify-config" {
 }
 
 export * from "./constants";
+export * from "./migrations/queries";
 
 export { default as FileService } from "./model/files/service";
 export { default as S3Client } from "./utils/s3Client";
@@ -18,6 +19,7 @@ export type {
   FileUpload as GraphQLFileUpload,
   Upload as GraphQLUpload,
 } from "graphql-upload-minimal";
+export type { S3ClientConfig } from "@aws-sdk/client-s3";
 
 export { default } from "./plugin";
 export { default as ajvFilePlugin } from "./plugins/ajvFile";

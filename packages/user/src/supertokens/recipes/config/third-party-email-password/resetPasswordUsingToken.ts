@@ -21,7 +21,7 @@ const resetPasswordUsingToken = (
           fastify,
           subject:
             fastify.config.user.emailOverrides?.resetPasswordNotification
-              ?.subject || "Reset Password Notification",
+              ?.subject || "Reset password notification",
           templateName:
             fastify.config.user.emailOverrides?.resetPasswordNotification
               ?.templateName || "reset-password-notification",

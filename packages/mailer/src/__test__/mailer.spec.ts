@@ -8,9 +8,7 @@ import type { FastifyInstance } from "fastify";
 const nodemailerMjmlPluginMock = vi.fn();
 const htmlToTextMock = vi.fn();
 const useMock = vi.fn();
-const sendMailMock = vi.fn().mockImplementation((config, callback) => {
-  callback();
-});
+const sendMailMock = vi.fn().mockResolvedValue({ response: "250 OK" });
 const createTransportMock = vi.fn().mockReturnValue({
   sendMail: sendMailMock,
   use: useMock,
@@ -76,14 +74,11 @@ describe("Mailer", async () => {
       path: path,
     });
 
-    expect(sendMailMock).toHaveBeenCalledWith(
-      {
-        html: expect.stringContaining("<!doctype html>"),
-        subject: "test email",
-        to: to,
-        templateData: templateData,
-      },
-      expect.any(Function),
-    );
+    expect(sendMailMock).toHaveBeenCalledWith({
+      html: expect.stringContaining("<!doctype html>"),
+      subject: "Test email",
+      to: to,
+      templateData: templateData,
+    });
   });
 });

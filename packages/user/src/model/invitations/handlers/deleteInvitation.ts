@@ -8,37 +8,23 @@ const deleteInvitation = async (
   request: SessionRequest,
   reply: FastifyReply,
 ) => {
-  const { config, dbSchema, log, params, slonik } = request;
+  const { config, dbSchema, params, slonik } = request;
 
-  try {
-    const { id } = params as { id: string };
+  const { id } = params as { id: string };
 
-    const service = new Service(config, slonik, dbSchema);
+  const service = new Service(config, slonik, dbSchema);
 
-    const invitation = await service.delete(id);
+  const invitation = await service.delete(id);
 
-    if (!invitation) {
-      return reply.status(422).send({
-        statusCode: 422,
-        status: "ERROR",
-        message: "Invitation not found",
-      });
-    }
-
-    const data: Partial<Invitation> = invitation;
-
-    delete data.token;
-
-    reply.send(data);
-  } catch (error) {
-    log.error(error);
-
-    reply.status(500).send({
-      message: "Oops! Something went wrong",
-      status: "ERROR",
-      statusCode: 500,
-    });
+  if (!invitation) {
+    throw request.server.httpErrors.notFound("Invitation not found");
   }
+
+  const data: Partial<Invitation> = invitation;
+
+  delete data.token;
+
+  return reply.send(data);
 };
 
 export default deleteInvitation;

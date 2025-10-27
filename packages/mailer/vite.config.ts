@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
       lib: {
         entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
         fileName: "prefabs-tech-fastify-mailer",
+        formats: ["cjs", "es"],
         name: "PrefabsTechFastifyMailer",
       },
       rollupOptions: {

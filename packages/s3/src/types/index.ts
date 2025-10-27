@@ -9,6 +9,7 @@ import {
 } from "../constants";
 
 import type { FileCreateInput } from "./file";
+import type { S3ClientConfig } from "@aws-sdk/client-s3";
 
 type BucketChoice = typeof BUCKET_FROM_FILE_FIELDS | typeof BUCKET_FROM_OPTIONS;
 type FilenameResolutionStrategy =
@@ -46,14 +47,10 @@ interface Multipart {
   limit?: boolean;
 }
 interface S3Config {
-  accessKey: string;
   bucket: string | Record<string, string>;
-  endPoint?: string;
+  clientConfig: S3ClientConfig;
   fileSizeLimitInBytes?: number;
   filenameResolutionStrategy?: FilenameResolutionStrategy;
-  forcePathStyle?: boolean;
-  secretKey: string;
-  region?: string;
   table?: {
     name?: string;
   };

@@ -1,3 +1,12 @@
+## [0.92.2](https://github.com/prefabs-tech/fastify/compare/v0.92.1...v0.92.2) (2025-10-30)
+
+
+### Bug Fixes
+
+* **firebase:** fix firebase-admin import style to support commonjs and ESM ([#1033](https://github.com/prefabs-tech/fastify/issues/1033)) ([b024dee](https://github.com/prefabs-tech/fastify/commit/b024deecf7ae26f215eb3aaa6bc17f8fbf21bc3b))
+
+
+
 ## [0.92.1](https://github.com/prefabs-tech/fastify/compare/v0.92.0...v0.92.1) (2025-10-27)
 
 

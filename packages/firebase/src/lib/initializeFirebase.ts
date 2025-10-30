@@ -1,10 +1,10 @@
-import { initializeApp, credential, apps } from "firebase-admin";
+import admin from "firebase-admin";
 
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance } from "fastify";
 
 const initializeFirebase = (config: ApiConfig, fastify: FastifyInstance) => {
-  if (apps.length > 0) {
+  if (admin.apps.length > 0) {
     return;
   }
 
@@ -14,8 +14,8 @@ const initializeFirebase = (config: ApiConfig, fastify: FastifyInstance) => {
   }
 
   try {
-    initializeApp({
-      credential: credential.cert({
+    admin.initializeApp({
+      credential: admin.credential.cert({
         projectId: config.firebase.credentials?.projectId,
         privateKey: config.firebase.credentials?.privateKey.replaceAll(
           String.raw`\n`,

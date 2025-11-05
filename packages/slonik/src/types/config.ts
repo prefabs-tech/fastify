@@ -3,6 +3,7 @@ import type { ClientConfigurationInput, ConnectionOptions } from "slonik";
 type SlonikOptions = {
   clientConfiguration?: ClientConfigurationInput;
   db: ConnectionOptions;
+  extensions?: string[];
   migrations?: {
     path: string;
   };

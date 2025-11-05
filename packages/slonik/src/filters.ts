@@ -10,9 +10,15 @@ const applyFilter = (
 ): FragmentSqlToken => {
   const keyParts = filter.key.split(".").map((key) => humps.decamelize(key));
   const operator = filter.operator || "eq";
-  const not = filter.not || false;
-  let value: FragmentSqlToken | string = filter.value;
+  const not: boolean =
+    filter.not === true || filter.not === "true" || filter.not === "1";
 
+  const insensitive: boolean =
+    filter.insensitive === true ||
+    filter.insensitive === "true" ||
+    filter.insensitive === "1";
+
+  let value: FragmentSqlToken | string = filter.value;
   let clauseOperator: FragmentSqlToken;
 
   const fieldIdentifier =
@@ -26,6 +32,16 @@ const applyFilter = (
     return sql.fragment`${fieldIdentifier} ${clauseOperator}`;
   }
 
+  if (operator === "dwithin") {
+    const [latitude, longitude, radius] = value.split(",");
+
+    return sql.fragment`ST_DWithin(
+      ${fieldIdentifier}::geography,
+      ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
+      ${radius}
+    )`;
+  }
+
   switch (operator) {
     case "ct":
     case "sw":
@@ -36,53 +52,98 @@ const applyFilter = (
         sw: `${value}%`, // starts with
       };
 
-      value = valueString[operator];
       clauseOperator = not ? sql.fragment`NOT ILIKE` : sql.fragment`ILIKE`;
-      break;
-    }
-    case "dwithin": {
-      const [latitude, longitude, radius] = value.split(",");
 
-      return sql.fragment`ST_DWithin(
-        ${fieldIdentifier}::geography,
-        ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
-        ${radius}
-      )`;
+      value = insensitive
+        ? sql.fragment`unaccent(lower(${valueString[operator]}))`
+        : valueString[operator];
+
+      break;
     }
     case "eq":
     default: {
       clauseOperator = not ? sql.fragment`!=` : sql.fragment`=`;
+
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
+
       break;
     }
     case "gt": {
       clauseOperator = not ? sql.fragment`<` : sql.fragment`>`;
+
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
+
       break;
     }
     case "gte": {
       clauseOperator = not ? sql.fragment`<` : sql.fragment`>=`;
+
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
+
       break;
     }
     case "lte": {
       clauseOperator = not ? sql.fragment`>` : sql.fragment`<=`;
+
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
+
       break;
     }
     case "lt": {
       clauseOperator = not ? sql.fragment`>` : sql.fragment`<`;
+
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
+
       break;
     }
     case "in": {
+      const values = value.split(",").filter(Boolean);
+
+      if (values.length === 0) {
+        throw new Error("IN operator requires at least one value");
+      }
+
       clauseOperator = not ? sql.fragment`NOT IN` : sql.fragment`IN`;
-      value = sql.fragment`(${sql.join(value.split(","), sql.fragment`, `)})`;
+
+      value = insensitive
+        ? sql.fragment`(${sql.join(
+            values.map((item) => sql.fragment`unaccent(lower(${item}))`),
+            sql.fragment`, `,
+          )})`
+        : sql.fragment`(${sql.join(values, sql.fragment`, `)})`;
+
       break;
     }
     case "bt": {
+      const [start, end] = value.split(",");
+
+      if (!start || !end) {
+        throw new Error("BETWEEN operator requires exactly two values");
+      }
+
       clauseOperator = not ? sql.fragment`NOT BETWEEN` : sql.fragment`BETWEEN`;
-      value = sql.fragment`${sql.join(value.split(","), sql.fragment` AND `)}`;
+
+      value = insensitive
+        ? sql.fragment`unaccent(lower(${start})) AND unaccent(lower(${end}))`
+        : sql.fragment`${start} AND ${end}`;
+
       break;
     }
   }
 
-  return sql.fragment`${fieldIdentifier} ${clauseOperator} ${value}`;
+  return insensitive
+    ? sql.fragment`unaccent(lower(${fieldIdentifier})) ${clauseOperator} ${value}`
+    : sql.fragment`${fieldIdentifier} ${clauseOperator} ${value}`;
 };
 
 const applyFiltersToQuery = (

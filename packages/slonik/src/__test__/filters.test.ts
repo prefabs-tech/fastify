@@ -231,7 +231,7 @@ describe("dbFilters", () => {
     "users",
   ]);
 
-  describe("applyFilter", () => {
+  describe("applyFilter > standard cases", () => {
     it("should handle equality operator", () => {
       const filter: BaseFilterInput = {
         key: "name",
@@ -523,6 +523,405 @@ describe("dbFilters", () => {
         expect(result.sql).toContain('"comments"."deleted_at" IS NOT NULL');
         expect(result.values).toEqual([]);
       });
+    });
+  });
+
+  describe("applyFilter > case insensitive", () => {
+    it("should handle equality operator", () => {
+      const filter: BaseFilterInput = {
+        key: "name",
+        operator: "eq",
+        value: "John",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."name")) = unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["John"]);
+    });
+
+    it("should handle equality operator with not flag", () => {
+      const filter: BaseFilterInput = {
+        key: "name",
+        operator: "eq",
+        value: "John",
+        not: true,
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."name")) != unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["John"]);
+    });
+
+    it("should handle null values", () => {
+      const filter: BaseFilterInput = {
+        key: "deletedAt",
+        operator: "eq",
+        value: "null",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain('"users"."deleted_at" IS NULL');
+      expect(result.values).toEqual([]);
+    });
+
+    it("should handle null values with not flag", () => {
+      const filter: BaseFilterInput = {
+        key: "deletedAt",
+        operator: "eq",
+        value: "NULL",
+        not: true,
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain('"users"."deleted_at" IS NOT NULL');
+      expect(result.values).toEqual([]);
+    });
+
+    it("should handle contains operator", () => {
+      const filter: BaseFilterInput = {
+        key: "name",
+        operator: "ct",
+        value: "John",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."name")) ILIKE unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["%John%"]);
+    });
+
+    it("should handle starts with operator", () => {
+      const filter: BaseFilterInput = {
+        key: "name",
+        operator: "sw",
+        value: "John",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."name")) ILIKE unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["John%"]);
+    });
+
+    it("should handle ends with operator", () => {
+      const filter: BaseFilterInput = {
+        key: "name",
+        operator: "ew",
+        value: "son",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."name")) ILIKE unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["%son"]);
+    });
+
+    it("should handle greater than operator", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "gt",
+        value: "25",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."age")) > unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["25"]);
+    });
+
+    it("should handle greater than or equal operator", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "gte",
+        value: "25",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."age")) >= unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["25"]);
+    });
+
+    it("should handle less than operator", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "lt",
+        value: "65",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."age")) < unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["65"]);
+    });
+
+    it("should handle less than or equal operator", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "lte",
+        value: "65",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."age")) <= unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["65"]);
+    });
+
+    it("should handle in operator", () => {
+      const filter: BaseFilterInput = {
+        key: "status",
+        operator: "in",
+        value: "active,inactive,pending",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."status")) IN (unaccent(lower($slonik_1)), unaccent(lower($slonik_2)), unaccent(lower($slonik_3)))',
+      );
+      expect(result.values).toEqual(["active", "inactive", "pending"]);
+    });
+
+    it("should handle between operator", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "bt",
+        value: "25,65",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."age")) BETWEEN unaccent(lower($slonik_1)) AND unaccent(lower($slonik_2))',
+      );
+      expect(result.values).toEqual(["25", "65"]);
+    });
+
+    it("should convert camelCase keys to snake_case", () => {
+      const filter: BaseFilterInput = {
+        key: "firstName",
+        operator: "eq",
+        value: "John",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("users"."first_name")) = unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["John"]);
+    });
+
+    it("should handle schema.table identifiers", () => {
+      const filter: BaseFilterInput = {
+        key: "name",
+        operator: "eq",
+        value: "John",
+        insensitive: true,
+      };
+
+      const result = applyFilter(mockSchemaTableIdentifier, filter);
+
+      expect(result.sql).toContain(
+        'unaccent(lower("public"."users"."name")) = unaccent(lower($slonik_1))',
+      );
+      expect(result.values).toEqual(["John"]);
+    });
+
+    // Join table / dotted key test cases
+    describe("Join table scenarios (keys with dots)", () => {
+      it("should handle simple join table key without table identifier", () => {
+        const filter: BaseFilterInput = {
+          key: "posts.title",
+          operator: "eq",
+          value: "My Post",
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"posts"."title" = $slonik_');
+        expect(result.values).toEqual(["My Post"]);
+      });
+
+      it("should handle join table key with camelCase conversion", () => {
+        const filter: BaseFilterInput = {
+          key: "userProfiles.firstName",
+          operator: "eq",
+          value: "John",
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"user_profiles"."first_name" = $slonik_');
+        expect(result.values).toEqual(["John"]);
+      });
+
+      it("should handle three-part join table key (schema.table.column)", () => {
+        const filter: BaseFilterInput = {
+          key: "public.posts.title",
+          operator: "ct",
+          value: "test",
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"public"."posts"."title" ILIKE $slonik_');
+        expect(result.values).toEqual(["%test%"]);
+      });
+
+      it("should handle join table key with complex operators", () => {
+        const filter: BaseFilterInput = {
+          key: "posts.createdAt",
+          operator: "bt",
+          value: "2023-01-01,2023-12-31",
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"posts"."created_at" BETWEEN $slonik_');
+        expect(result.values).toEqual(["2023-01-01", "2023-12-31"]);
+      });
+
+      it("should handle join table key with NOT flag", () => {
+        const filter: BaseFilterInput = {
+          key: "posts.status",
+          operator: "in",
+          value: "draft,archived",
+          not: true,
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"posts"."status" NOT IN ($slonik_');
+        expect(result.values).toEqual(["draft", "archived"]);
+      });
+
+      it("should handle join table key with null values", () => {
+        const filter: BaseFilterInput = {
+          key: "posts.deletedAt",
+          operator: "eq",
+          value: "null",
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"posts"."deleted_at" IS NULL');
+        expect(result.values).toEqual([]);
+      });
+
+      it("should handle join table key with null values and NOT flag", () => {
+        const filter: BaseFilterInput = {
+          key: "comments.deletedAt",
+          operator: "eq",
+          value: "NULL",
+          not: true,
+        };
+
+        const result = applyFilter(mockTableIdentifier, filter);
+
+        expect(result.sql).toContain('"comments"."deleted_at" IS NOT NULL');
+        expect(result.values).toEqual([]);
+      });
+    });
+  });
+
+  describe("applyFilter > edge cases", () => {
+    it("should default to eq operator if not provided", () => {
+      const filter = {
+        key: "name",
+        value: "John",
+        operator: "eq",
+      } as BaseFilterInput;
+
+      const result = applyFilter(mockTableIdentifier, filter);
+      expect(result.sql).toBe('"users"."name" = $slonik_1');
+      expect(result.values).toEqual(["John"]);
+    });
+
+    it("should throw error for empty IN list", () => {
+      const filter: BaseFilterInput = {
+        key: "status",
+        operator: "in",
+        value: "",
+      };
+
+      expect(() => applyFilter(mockTableIdentifier, filter)).toThrow(
+        "IN operator requires at least one value",
+      );
+    });
+
+    it("should throw error for empty IN list with NOT", () => {
+      const filter: BaseFilterInput = {
+        key: "status",
+        operator: "in",
+        value: "",
+        not: true,
+      };
+
+      expect(() => applyFilter(mockTableIdentifier, filter)).toThrow(
+        "IN operator requires at least one value",
+      );
+    });
+
+    it("should throw error for invalid BETWEEN values", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "bt",
+        value: "18", // Missing second value
+      };
+
+      expect(() => applyFilter(mockTableIdentifier, filter)).toThrow(
+        "BETWEEN operator requires exactly two values",
+      );
+    });
+
+    it("should throw error for empty BETWEEN values", () => {
+      const filter: BaseFilterInput = {
+        key: "age",
+        operator: "bt",
+        value: "",
+      };
+
+      expect(() => applyFilter(mockTableIdentifier, filter)).toThrow(
+        "BETWEEN operator requires exactly two values",
+      );
     });
   });
 

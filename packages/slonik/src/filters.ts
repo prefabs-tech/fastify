@@ -10,7 +10,9 @@ const applyFilter = (
 ): FragmentSqlToken => {
   const keyParts = filter.key.split(".").map((key) => humps.decamelize(key));
   const operator = filter.operator || "eq";
-  const not = filter.not || false;
+  const not: boolean =
+    filter.not === true || filter.not === "true" || filter.not === "1";
+
   const insensitive: boolean =
     filter.insensitive === true ||
     filter.insensitive === "true" ||

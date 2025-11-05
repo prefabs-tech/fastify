@@ -22,7 +22,7 @@ type operator =
 type BaseFilterInput = {
   key: string;
   operator: operator;
-  not?: boolean;
+  not?: boolean | string;
   value: string;
   insensitive?: boolean | string;
 };

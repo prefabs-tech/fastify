@@ -1,3 +1,12 @@
+# [0.93.0](https://github.com/prefabs-tech/fastify/compare/v0.92.2...v0.93.0) (2025-11-05)
+
+
+### Features
+
+* insensitive filter and sort ([#940](https://github.com/prefabs-tech/fastify/issues/940)) ([c5ac3a2](https://github.com/prefabs-tech/fastify/commit/c5ac3a22977212191fe46d82ad97395ea6e64cc4))
+
+
+
 ## [0.92.2](https://github.com/prefabs-tech/fastify/compare/v0.92.1...v0.92.2) (2025-10-30)
 
 

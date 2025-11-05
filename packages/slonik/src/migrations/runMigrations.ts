@@ -1,13 +1,12 @@
 import queryToCreateExtension from "./queryToCreateExtensions";
+import { EXTENSIONS } from "../constants";
 
 import type { Database, SlonikOptions } from "../types";
 
-// FIXME: This should be defined in the constants file
-// but it is not available in the current context
-const extensions = ["citext", "unaccent"];
-
 const runMigrations = async (database: Database, options: SlonikOptions) => {
-  extensions.push(...(options.extensions || []));
+  const extensions = [
+    ...new Set([...EXTENSIONS, ...(options.extensions || [])]),
+  ];
 
   await database.connect(async (connection) => {
     for (const extension of extensions) {

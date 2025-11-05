@@ -35,7 +35,7 @@ const applyFilter = (
 
     return sql.fragment`ST_DWithin(
       ${fieldIdentifier}::geography,
-      ST_SetSRID(ST_MakePoint(${latitude}, ${longitude}), 4326)::geography,
+      ST_SetSRID(ST_MakePoint(${longitude}, ${latitude}), 4326)::geography,
       ${radius}
     )`;
   }

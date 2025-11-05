@@ -107,7 +107,7 @@ const emailPasswordSignUp = (
           fastify,
           subject:
             config.user.emailOverrides?.duplicateEmail?.subject ||
-            "Duplicate Email Registration",
+            "Duplicate email registration",
           templateData: {
             emailId: input.email,
           },

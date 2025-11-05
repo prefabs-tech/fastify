@@ -22,7 +22,7 @@ const sendInvitation = async (
       fastify,
       subject:
         config.user.emailOverrides?.invitation?.subject ||
-        "Invitation for Sign Up",
+        "Invitation for sign up",
       templateData: {
         invitationLink: getInvitationLink(config, invitation, origin),
         invitation,
@@ -33,7 +33,7 @@ const sendInvitation = async (
       to: invitation.email,
     });
   } else {
-    log.error(`Could not send email for invitation ID ${invitation.id}`);
+    log.error(`Could not send email for invitation id ${invitation.id}`);
   }
 };
 

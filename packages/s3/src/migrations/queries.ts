@@ -17,7 +17,7 @@ const createFilesTableQuery = (
         bucket VARCHAR(255),
         description TEXT,
         key VARCHAR(255) NOT NULL,
-        uploaded_by_id VARCHAR(255) NOT NULL,
+        uploaded_by_id VARCHAR(255),
         uploaded_at TIMESTAMP NOT NULL,
         download_count INT DEFAULT 0,
         last_downloaded_at TIMESTAMP,

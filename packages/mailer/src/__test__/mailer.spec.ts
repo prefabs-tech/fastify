@@ -76,7 +76,7 @@ describe("Mailer", async () => {
 
     expect(sendMailMock).toHaveBeenCalledWith({
       html: expect.stringContaining("<!doctype html>"),
-      subject: "test email",
+      subject: "Test email",
       to: to,
       templateData: templateData,
     });

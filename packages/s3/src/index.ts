@@ -19,6 +19,7 @@ export type {
   FileUpload as GraphQLFileUpload,
   Upload as GraphQLUpload,
 } from "graphql-upload-minimal";
+export type { S3ClientConfig } from "@aws-sdk/client-s3";
 
 export { default } from "./plugin";
 export { default as ajvFilePlugin } from "./plugins/ajvFile";

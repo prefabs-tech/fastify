@@ -41,7 +41,7 @@ const router = async (
 
       const info = await mailer.sendMail({
         html: html.html,
-        subject: "test email",
+        subject: "Test email",
         to,
       });
 

@@ -3,7 +3,7 @@
 
 ### Features
 
-* insensitive filter and sort ([#940](https://github.com/prefabs-tech/fastify/issues/940)) ([c5ac3a2](https://github.com/prefabs-tech/fastify/commit/c5ac3a22977212191fe46d82ad97395ea6e64cc4))
+* **slonik**: add support for insensitive (case and accent) filter and sort ([#940](https://github.com/prefabs-tech/fastify/issues/940)) ([c5ac3a2](https://github.com/prefabs-tech/fastify/commit/c5ac3a22977212191fe46d82ad97395ea6e64cc4))
 
 
 

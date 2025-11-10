@@ -1,3 +1,3 @@
-const EXTENSIONS = ["unaccent"];
+const EXTENSIONS = ["citext", "unaccent"];
 
 export { EXTENSIONS };

@@ -14,10 +14,10 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
-      - name: Setup node 20
+      - name: Setup node 24
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           registry-url: "https://registry.npmjs.org"
       - name: Setup pnpm and install dependencies
         uses: pnpm/action-setup@v4

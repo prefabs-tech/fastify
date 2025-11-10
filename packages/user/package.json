@@ -42,7 +42,7 @@
     "@prefabs.tech/fastify-slonik": "0.92.2",
     "@prefabs.tech/tsconfig": "0.2.0",
     "@types/humps": "2.0.6",
-    "@types/node": "20.19.23",
+    "@types/node": "24.10.0",
     "@types/validator": "13.15.3",
     "@typescript-eslint/eslint-plugin": "8.46.2",
     "@typescript-eslint/parser": "8.46.2",

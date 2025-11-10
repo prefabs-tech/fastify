@@ -47,7 +47,7 @@
     "@prefabs.tech/fastify-graphql": "0.92.2",
     "@prefabs.tech/fastify-slonik": "0.92.2",
     "@prefabs.tech/tsconfig": "0.2.0",
-    "@types/node": "20.19.23",
+    "@types/node": "24.10.0",
     "@typescript-eslint/eslint-plugin": "8.46.2",
     "@typescript-eslint/parser": "8.46.2",
     "@vitest/coverage-istanbul": "3.2.4",

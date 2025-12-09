@@ -80,12 +80,12 @@ const getSessionRecipeConfig = (
         return {
           ...originalImplementation,
           createNewSession: createNewSession(originalImplementation, fastify),
-          ...recipeInterface,
           getSession: getSession(originalImplementation, fastify),
           getGlobalClaimValidators: getGlobalClaimValidators(
             originalImplementation,
             fastify,
           ),
+          ...recipeInterface,
         };
       },
       openIdFeature: session.override?.openIdFeature,

@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-error-handler",
-  "version": "0.93.1",
+  "version": "0.93.2",
   "description": "Fastify error-handler plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/error-handler#readme",
   "repository": {

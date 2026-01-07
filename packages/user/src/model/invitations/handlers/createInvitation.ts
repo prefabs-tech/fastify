@@ -51,7 +51,7 @@ const createInvitation = async (
     invitation = await service.create(invitationCreateInput);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
-    throw server.httpErrors.createError("422", error.message, {
+    throw server.httpErrors.createError(422, error.message, {
       code: error.code,
     });
   }

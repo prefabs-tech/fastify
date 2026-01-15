@@ -1,0 +1,5 @@
+.eslintrc.cjs
+
+# Ignore artifacts:
+coverage
+dist

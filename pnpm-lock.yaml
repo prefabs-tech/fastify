@@ -678,6 +678,79 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/stripe:
+    dependencies:
+      stripe:
+        specifier: 20.1.0
+        version: 20.1.0(@types/node@24.10.0)
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@prefabs.tech/eslint-config':
+        specifier: 0.2.0
+        version: 0.2.0(@typescript-eslint/eslint-plugin@8.46.2(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3))(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint-import-resolver-alias@1.1.2(eslint-plugin-import@2.32.0))(eslint-import-resolver-typescript@3.10.1)(eslint-plugin-import@2.32.0)(eslint-plugin-n@14.0.0(eslint@8.57.1))(eslint-plugin-prettier@5.5.4(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2))(eslint-plugin-promise@7.2.1(eslint@8.57.1))(eslint-plugin-unicorn@56.0.1(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)(typescript@5.9.3)
+      '@prefabs.tech/fastify-config':
+        specifier: 0.93.3
+        version: link:../config
+      '@prefabs.tech/tsconfig':
+        specifier: 0.2.0
+        version: 0.2.0(@types/node@24.10.0)
+      '@typescript-eslint/eslint-plugin':
+        specifier: 8.46.2
+        version: 8.46.2(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint@8.57.1)(typescript@5.9.3)
+      '@typescript-eslint/parser':
+        specifier: 8.46.2
+        version: 8.46.2(eslint@8.57.1)(typescript@5.9.3)
+      eslint:
+        specifier: 8.57.1
+        version: 8.57.1
+      eslint-config-prettier:
+        specifier: 9.1.2
+        version: 9.1.2(eslint@8.57.1)
+      eslint-import-resolver-alias:
+        specifier: 1.1.2
+        version: 1.1.2(eslint-plugin-import@2.32.0)
+      eslint-import-resolver-typescript:
+        specifier: 3.10.1
+        version: 3.10.1(eslint-plugin-import@2.32.0)(eslint@8.57.1)
+      eslint-plugin-import:
+        specifier: 2.32.0
+        version: 2.32.0(@typescript-eslint/parser@8.46.2(eslint@8.57.1)(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
+      eslint-plugin-n:
+        specifier: 14.0.0
+        version: 14.0.0(eslint@8.57.1)
+      eslint-plugin-prettier:
+        specifier: 5.5.4
+        version: 5.5.4(eslint-config-prettier@9.1.2(eslint@8.57.1))(eslint@8.57.1)(prettier@3.6.2)
+      eslint-plugin-promise:
+        specifier: 7.2.1
+        version: 7.2.1(eslint@8.57.1)
+      eslint-plugin-unicorn:
+        specifier: 56.0.1
+        version: 56.0.1(eslint@8.57.1)
+      fastify:
+        specifier: 5.6.1
+        version: 5.6.1
+      fastify-plugin:
+        specifier: 5.1.0
+        version: 5.1.0
+      prettier:
+        specifier: 3.6.2
+        version: 3.6.2
+      supertokens-node:
+        specifier: 14.1.4
+        version: 14.1.4
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 6.4.1
+        version: 6.4.1(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
+
   packages/swagger:
     dependencies:
       '@fastify/swagger':
@@ -5401,6 +5474,7 @@ packages:
 
   scmp@2.1.0:
     resolution: {integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==}
+    deprecated: Just use Node.js's crypto.timingSafeEqual()
 
   secure-json-parse@4.1.0:
     resolution: {integrity: sha512-l4KnYfEyqYJxDwlNVyRfO2E4NTHfMKAWdUuA8J0yve2Dz/E/PdBepY03RvyJpssIpRFwJoCD55wA+mEDs6ByWA==}
@@ -5680,6 +5754,15 @@ packages:
 
   strip-literal@3.1.0:
     resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
+
+  stripe@20.1.0:
+    resolution: {integrity: sha512-o1VNRuMkY76ZCq92U3EH3/XHm/WHp7AerpzDs4Zyo8uE5mFL4QUcv/2SudWsSnhBSp4moO2+ZoGCZ7mT8crPmQ==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
@@ -12253,6 +12336,12 @@ snapshots:
   strip-literal@3.1.0:
     dependencies:
       js-tokens: 9.0.1
+
+  stripe@20.1.0(@types/node@24.10.0):
+    dependencies:
+      qs: 6.14.0
+    optionalDependencies:
+      '@types/node': 24.10.0
 
   strnum@1.1.2:
     optional: true

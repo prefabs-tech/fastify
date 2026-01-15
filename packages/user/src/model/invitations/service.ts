@@ -48,6 +48,8 @@ class InvitationService extends BaseService<
   ): Promise<InvitationCreateInput> {
     const { appId, email, expiresAt, role } = data;
 
+    data.expiresAt = computeInvitationExpiresAt(this.config, expiresAt);
+
     const result = validateEmail(email, this.config);
 
     if (!result.success) {
@@ -110,10 +112,7 @@ class InvitationService extends BaseService<
       );
     }
 
-    return {
-      ...data,
-      expiresAt: computeInvitationExpiresAt(this.config, expiresAt),
-    };
+    return data;
   }
 
   protected validateUUID(uuid: string): boolean {

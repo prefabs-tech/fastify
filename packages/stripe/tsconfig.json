@@ -1,0 +1,8 @@
+{
+  "extends": "@prefabs.tech/tsconfig/fastify.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "dist",
+  },
+  "include": ["src/**/*.ts"]
+}

@@ -13,20 +13,20 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import { convertStreamToBuffer } from ".";
 
-import type { S3Config } from "../types";
 import type {
   AbortMultipartUploadCommandOutput,
   CompleteMultipartUploadCommandOutput,
   DeleteObjectCommandOutput,
   ListObjectsCommandOutput,
+  S3ClientConfig,
 } from "@aws-sdk/client-s3";
 
 class s3Client {
   protected _bucket: string = undefined as unknown as string;
-  protected _config: S3Config;
+  protected _config: S3ClientConfig;
   protected _storageClient: S3Client;
 
-  constructor(config: S3Config) {
+  constructor(config: S3ClientConfig) {
     this._config = config;
     this._storageClient = this.init();
   }
@@ -174,7 +174,7 @@ class s3Client {
   }
 
   protected init(): S3Client {
-    return new S3Client(this.config.clientConfig);
+    return new S3Client(this.config);
   }
 }
 

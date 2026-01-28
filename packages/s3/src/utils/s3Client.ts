@@ -18,15 +18,15 @@ import type {
   CompleteMultipartUploadCommandOutput,
   DeleteObjectCommandOutput,
   ListObjectsCommandOutput,
+  S3ClientConfig,
 } from "@aws-sdk/client-s3";
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 class s3Client {
   protected _bucket: string = undefined as unknown as string;
-  protected _config: ApiConfig;
+  protected _config: S3ClientConfig;
   protected _storageClient: S3Client;
 
-  constructor(config: ApiConfig) {
+  constructor(config: S3ClientConfig) {
     this._config = config;
     this._storageClient = this.init();
   }
@@ -174,7 +174,7 @@ class s3Client {
   }
 
   protected init(): S3Client {
-    return new S3Client(this.config.s3.clientConfig);
+    return new S3Client(this.config);
   }
 }
 

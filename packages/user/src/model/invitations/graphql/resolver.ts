@@ -3,12 +3,9 @@ import { mercurius } from "mercurius";
 import { createNewSession } from "supertokens-node/recipe/session";
 import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
 
-import computeInvitationExpiresAt from "../../../lib/computeInvitationExpiresAt";
 import getInvitationService from "../../../lib/getInvitationService";
-import getUserService from "../../../lib/getUserService";
 import isInvitationValid from "../../../lib/isInvitationValid";
 import sendInvitation from "../../../lib/sendInvitation";
-import areRolesExist from "../../../supertokens/utils/areRolesExist";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
 
@@ -147,56 +144,15 @@ const Mutation = {
 
       const { appId, email, expiresAt, payload, role } = arguments_.data;
 
-      //  check if the email is valid
-      const result = validateEmail(email, config);
-
-      if (!result.success && result.message) {
-        return new mercurius.ErrorWithProps(result.message);
-      }
-
-      const userService = getUserService(config, database, dbSchema);
-
-      const emailFilter = {
-        key: "email",
-        operator: "eq",
-        value: email,
-      } as FilterInput;
-
-      const userCount = await userService.count(emailFilter);
-
-      // check if user of the email already exists
-      if (userCount > 0) {
-        return new mercurius.ErrorWithProps(
-          `User with email ${email} already exists`,
-        );
-      }
-
-      if (!(await areRolesExist([role]))) {
-        return new mercurius.ErrorWithProps(`Role "${role}" does not exist`);
-      }
-
       const service = getInvitationService(config, database, dbSchema);
 
       const invitationCreateInput: InvitationCreateInput = {
+        appId,
         email,
-        expiresAt: computeInvitationExpiresAt(config, expiresAt),
+        expiresAt,
         invitedById: user.id,
-        role: role,
+        role,
       };
-
-      const app = config.apps?.find((app) => app.id == appId);
-
-      if (app) {
-        if (app.supportedRoles.includes(invitationCreateInput.role)) {
-          invitationCreateInput.appId = appId;
-        } else {
-          const mercuriusError = new mercurius.ErrorWithProps(
-            `App ${app.name} does not support role ${invitationCreateInput.role}`,
-          );
-
-          return mercuriusError;
-        }
-      }
 
       if (Object.keys(payload || {}).length > 0) {
         invitationCreateInput.payload = JSON.stringify(payload);
@@ -208,9 +164,9 @@ const Mutation = {
         invitation = await service.create(invitationCreateInput);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        const mercuriusError = new mercurius.ErrorWithProps(error.message);
-
-        return mercuriusError;
+        return new mercurius.ErrorWithProps(error.message, {
+          code: error.code,
+        });
       }
 
       if (invitation) {

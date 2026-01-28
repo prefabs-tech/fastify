@@ -12,10 +12,13 @@ const getHttpStatusText = (statusCode: number): string =>
   STATUS_CODES[statusCode] ?? "Internal Server Error";
 
 export const errorHandler = (
-  error: Error,
+  unknownError: unknown,
   request: FastifyRequest,
   reply: FastifyReply,
 ) => {
+  const error =
+    unknownError instanceof Error ? unknownError : new Error("UNKNOWN_ERROR");
+
   const { log: logger } = request;
 
   const isStackTraceEnabled = request.server.stackTrace || false;

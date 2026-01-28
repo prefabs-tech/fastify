@@ -1,8 +1,8 @@
-import { FastifyError, FastifyRequest, FastifyReply } from "fastify";
+import { FastifyRequest, FastifyReply } from "fastify";
 import StackTracey from "stacktracey";
 
 type ErrorHandler = (
-  error: FastifyError,
+  error: unknown,
   request: FastifyRequest,
   reply: FastifyReply,
 ) => void | Promise<void>;

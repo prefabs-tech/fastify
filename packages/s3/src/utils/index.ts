@@ -69,7 +69,7 @@ const getFilenameWithSuffix = (
 ): string => {
   const contents = listObjects.Contents;
   const baseNameWithSuffixRegex = new RegExp(
-    `${baseFilename}-(\\d+)\\.${fileExtension}$`,
+    String.raw`${baseFilename}-(\d+)\.${fileExtension}$`,
   );
 
   const maxNumericSuffix = contents?.reduce((maxNumber, item) => {

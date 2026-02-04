@@ -12,8 +12,7 @@ export interface GraphqlConfig extends MercuriusOptions {
 }
 
 export interface GraphqlEnabledPlugin
-  extends FastifyPluginAsync,
-    FastifyPluginCallback {
+  extends FastifyPluginAsync, FastifyPluginCallback {
   updateContext: (
     context: MercuriusContext,
     request: FastifyRequest,

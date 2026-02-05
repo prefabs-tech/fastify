@@ -46,7 +46,7 @@
     "@types/pg": "8.15.5",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.2",
-    "fastify": "5.6.1",
+    "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
     "pg-mem": "3.0.5",
     "prettier": "3.6.2",

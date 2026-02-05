@@ -7,6 +7,14 @@ const isMultipart = (file: unknown): boolean =>
   "filename" in file &&
   "mimetype" in file;
 
+const validateFile = (data: unknown): boolean => {
+  if (Array.isArray(data)) {
+    return data.every((file) => isMultipart(file));
+  }
+
+  return isMultipart(data);
+};
+
 export default function plugin(ajv: Ajv): Ajv {
   return ajv.addKeyword({
     keyword: "isFile",
@@ -27,13 +35,7 @@ export default function plugin(ajv: Ajv): Ajv {
       }
 
       // Runtime validator
-      return (data: unknown): boolean => {
-        if (Array.isArray(data)) {
-          return data.every((file) => isMultipart(file));
-        }
-
-        return isMultipart(data);
-      };
+      return validateFile;
     },
     error: {
       message: "should be a file or array of files",

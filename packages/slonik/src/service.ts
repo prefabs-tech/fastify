@@ -10,7 +10,6 @@ import type {
 import type { PaginatedList } from "./types/service";
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-/* eslint-disable brace-style */
 abstract class BaseService<
   T,
   C extends Record<string, unknown>,

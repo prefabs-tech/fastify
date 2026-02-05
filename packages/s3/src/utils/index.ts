@@ -72,6 +72,7 @@ const getFilenameWithSuffix = (
     String.raw`${baseFilename}-(\d+)\.${fileExtension}$`,
   );
 
+  // eslint-disable-next-line unicorn/no-array-reduce
   const maxNumericSuffix = contents?.reduce((maxNumber, item) => {
     const matches = item.Key?.match(baseNameWithSuffixRegex);
 

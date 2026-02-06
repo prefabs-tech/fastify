@@ -310,46 +310,6 @@ importers:
         specifier: 3.2.4
         version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
 
-  packages/processor:
-    dependencies:
-      zod:
-        specifier: 3.25.76
-        version: 3.25.76
-    devDependencies:
-      '@prefabs.tech/eslint-config':
-        specifier: 0.4.0
-        version: 0.4.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)
-      '@prefabs.tech/fastify-config':
-        specifier: 0.93.4
-        version: link:../config
-      '@prefabs.tech/tsconfig':
-        specifier: 0.2.0
-        version: 0.2.0(@types/node@24.10.0)
-      eslint:
-        specifier: 9.39.2
-        version: 9.39.2(jiti@2.6.1)
-      fastify:
-        specifier: 5.6.1
-        version: 5.6.1
-      fastify-plugin:
-        specifier: 5.1.0
-        version: 5.1.0
-      prettier:
-        specifier: 3.6.2
-        version: 3.6.2
-      supertokens-node:
-        specifier: 14.1.4
-        version: 14.1.4
-      typescript:
-        specifier: 5.9.3
-        version: 5.9.3
-      vite:
-        specifier: 6.4.1
-        version: 6.4.1(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
-      vitest:
-        specifier: 3.2.4
-        version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
-
   packages/s3:
     dependencies:
       '@aws-sdk/client-s3':
@@ -635,6 +595,46 @@ importers:
       zod:
         specifier: 3.25.76
         version: 3.25.76
+
+  packages/worker:
+    dependencies:
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@prefabs.tech/eslint-config':
+        specifier: 0.4.0
+        version: 0.4.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)
+      '@prefabs.tech/fastify-config':
+        specifier: 0.93.4
+        version: link:../config
+      '@prefabs.tech/tsconfig':
+        specifier: 0.2.0
+        version: 0.2.0(@types/node@24.10.0)
+      eslint:
+        specifier: 9.39.2
+        version: 9.39.2(jiti@2.6.1)
+      fastify:
+        specifier: 5.6.1
+        version: 5.6.1
+      fastify-plugin:
+        specifier: 5.1.0
+        version: 5.1.0
+      prettier:
+        specifier: 3.6.2
+        version: 3.6.2
+      supertokens-node:
+        specifier: 14.1.4
+        version: 14.1.4
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 6.4.1
+        version: 6.4.1(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
 
 packages:
 

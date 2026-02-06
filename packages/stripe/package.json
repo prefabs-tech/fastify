@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-stripe",
-  "version": "0.93.3",
+  "version": "0.93.4",
   "description": "Fastify stripe plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/stripe#readme",
   "repository": {
@@ -11,18 +11,18 @@
   "license": "MIT",
   "exports": {
     ".": {
-      "import": "./dist/prefabs-tech-fastify-stripe.es.js",
-      "require": "./dist/prefabs-tech-fastify-stripe.cjs.js"
+      "import": "./dist/prefabs-tech-fastify-stripe.js",
+      "require": "./dist/prefabs-tech-fastify-stripe.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-stripe.cjs.js",
-  "module": "./dist/prefabs-tech-fastify-stripe.es.js",
+  "main": "./dist/prefabs-tech-fastify-stripe.cjs",
+  "module": "./dist/prefabs-tech-fastify-stripe.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types ",
+    "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "sort-package": "npx sort-package-json",
@@ -33,20 +33,10 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.2.0",
+    "@prefabs.tech/eslint-config": "0.4.0",
     "@prefabs.tech/tsconfig": "0.2.0",
-    "@prefabs.tech/fastify-config": "0.93.3",
-    "@typescript-eslint/eslint-plugin": "8.46.2",
-    "@typescript-eslint/parser": "8.46.2",
-    "eslint": "8.57.1",
-    "eslint-config-prettier": "9.1.2",
-    "eslint-import-resolver-alias": "1.1.2",
-    "eslint-import-resolver-typescript": "3.10.1",
-    "eslint-plugin-import": "2.32.0",
-    "eslint-plugin-n": "14.0.0",
-    "eslint-plugin-prettier": "5.5.4",
-    "eslint-plugin-promise": "7.2.1",
-    "eslint-plugin-unicorn": "56.0.1",
+    "@prefabs.tech/fastify-config": "0.93.4",
+    "eslint": "9.39.2",
     "fastify": "5.6.1",
     "fastify-plugin": "5.1.0",
     "prettier": "3.6.2",
@@ -56,7 +46,7 @@
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.93.3",
+    "@prefabs.tech/fastify-config": "0.93.4",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "supertokens-node": ">=14.1.3"

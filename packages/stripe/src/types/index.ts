@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import webhookHandler from "../webhook/handler";
 
 export type StripeConfig = {
+  allowPromotionCodes: boolean;
   apiKey: string;
   defaultCurrency: string;
   enablePaymentWebhook: boolean;

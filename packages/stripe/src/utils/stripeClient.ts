@@ -20,6 +20,7 @@ class StripeClient {
     metadata?: Record<string, string>,
   ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
     const session = await this.stripe.checkout.sessions.create({
+      allow_promotion_codes: this._config.stripe.allowPromotionCodes,
       cancel_url: input.cancelUrl ?? this._config.stripe.redirectUrl.cancel,
       line_items: [
         {
@@ -42,6 +43,17 @@ class StripeClient {
     });
 
     return session;
+  }
+
+  public async getActivePromotionCode(
+    code: string,
+  ): Promise<Stripe.PromotionCode | undefined> {
+    const codes = await this.stripe.promotionCodes.list({
+      active: true,
+      code: code,
+    });
+
+    return codes.data[0];
   }
 }
 

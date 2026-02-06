@@ -28,7 +28,7 @@ type InvitationCreateInput = Omit<
   | "createdAt"
   | "updatedAt"
 > & {
-  expiresAt: string;
+  expiresAt?: string;
   payload?: string;
 };
 

@@ -75,9 +75,9 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
 
       if (recipients && recipients.length > 0) {
         mailerOptions = {
-          ...mailerOptions,
           bcc: undefined,
           cc: undefined,
+          ...mailerOptions,
           to: recipients,
         };
       }

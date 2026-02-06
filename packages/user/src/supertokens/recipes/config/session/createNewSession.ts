@@ -8,7 +8,7 @@ import type { RecipeInterface } from "supertokens-node/recipe/session/types";
 
 const createNewSession = (
   originalImplementation: RecipeInterface,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   fastify: FastifyInstance,
 ): RecipeInterface["createNewSession"] => {
   return async (input) => {

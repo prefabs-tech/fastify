@@ -1,5 +1,5 @@
+import { CronJob } from "./cron";
+
 export interface WorkerConfig {
-  cronJobs?: {
-    expression: string;
-  }[];
+  cronJobs?: CronJob[];
 }

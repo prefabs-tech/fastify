@@ -10,7 +10,6 @@ interface IOptions {
   slonikAdapterOptions?: SlonikAdapterOptions;
 }
 
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const createDatabase = async (options?: IOptions) => {
   const db = options?.db ?? newDb();
 

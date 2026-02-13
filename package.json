@@ -16,15 +16,15 @@
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
-    "@commitlint/cli": "19.8.1",
-    "@commitlint/config-conventional": "19.8.1",
+    "@commitlint/cli": "20.4.1",
+    "@commitlint/config-conventional": "20.4.1",
     "@types/node": "24.10.13",
     "husky": "9.1.7",
-    "shipjs": "0.27.0",
-    "turbo": "2.5.8",
+    "shipjs": "0.28.2",
+    "turbo": "2.8.7",
     "typescript": "5.9.3"
   },
-  "packageManager": "pnpm@10.19.0",
+  "packageManager": "pnpm@10.29.3",
   "engines": {
     "node": ">=20",
     "pnpm": ">=10"

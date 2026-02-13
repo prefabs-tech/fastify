@@ -31,7 +31,7 @@
   "dependencies": {
     "@prefabs.tech/postgres-migrations": "5.4.3",
     "humps": "2.0.1",
-    "pg": "8.16.3",
+    "pg": "8.18.0",
     "slonik-interceptor-query-logging": "46.8.0"
   },
   "devDependencies": {
@@ -41,13 +41,13 @@
     "@slonik/driver": "46.8.0",
     "@types/humps": "2.0.6",
     "@types/node": "24.10.13",
-    "@types/pg": "8.15.6",
+    "@types/pg": "8.16.0",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.2",
-    "fastify": "5.6.2",
+    "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
     "pg-mem": "3.0.12",
-    "prettier": "3.6.2",
+    "prettier": "3.8.1",
     "slonik": "46.8.0",
     "typescript": "5.9.3",
     "vite": "6.4.1",

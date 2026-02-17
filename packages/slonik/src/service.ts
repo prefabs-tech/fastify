@@ -14,8 +14,7 @@ abstract class BaseService<
   T,
   C extends Record<string, unknown>,
   U extends Record<string, unknown>,
-> implements Service<T, C, U>
-{
+> implements Service<T, C, U> {
   /* eslint-enabled */
   protected _config: ApiConfig;
   protected _database: Database;

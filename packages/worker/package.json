@@ -35,20 +35,20 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.4.0",
-    "@prefabs.tech/fastify-config": "0.93.4",
-    "@prefabs.tech/tsconfig": "0.2.0",
+    "@prefabs.tech/eslint-config": "0.5.0",
+    "@prefabs.tech/fastify-config": "0.93.5",
+    "@prefabs.tech/tsconfig": "0.5.0",
     "eslint": "9.39.2",
-    "fastify": "5.6.1",
+    "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
-    "prettier": "3.6.2",
+    "prettier": "3.8.1",
     "supertokens-node": "14.1.4",
     "typescript": "5.9.3",
     "vite": "6.4.1",
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.93.4",
+    "@prefabs.tech/fastify-config": "0.93.5",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "supertokens-node": ">=14.1.3"

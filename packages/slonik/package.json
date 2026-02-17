@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-slonik",
-  "version": "0.93.4",
+  "version": "0.93.5",
   "description": "Fastify slonik plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/slonik#readme",
   "repository": {
@@ -19,9 +19,7 @@
   "main": "./dist/prefabs-tech-fastify-slonik.cjs",
   "module": "./dist/prefabs-tech-fastify-slonik.js",
   "types": "./dist/types/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -33,23 +31,23 @@
   "dependencies": {
     "@prefabs.tech/postgres-migrations": "5.4.3",
     "humps": "2.0.1",
-    "pg": "8.16.3",
+    "pg": "8.18.0",
     "slonik-interceptor-query-logging": "46.8.0"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.4.0",
-    "@prefabs.tech/fastify-config": "0.93.4",
-    "@prefabs.tech/tsconfig": "0.2.0",
+    "@prefabs.tech/eslint-config": "0.5.0",
+    "@prefabs.tech/fastify-config": "0.93.5",
+    "@prefabs.tech/tsconfig": "0.5.0",
     "@slonik/driver": "46.8.0",
     "@types/humps": "2.0.6",
-    "@types/node": "24.10.0",
-    "@types/pg": "8.15.5",
+    "@types/node": "24.10.13",
+    "@types/pg": "8.16.0",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.2",
-    "fastify": "5.6.1",
+    "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
-    "pg-mem": "3.0.5",
-    "prettier": "3.6.2",
+    "pg-mem": "3.0.12",
+    "prettier": "3.8.1",
     "slonik": "46.8.0",
     "typescript": "5.9.3",
     "vite": "6.4.1",
@@ -57,7 +55,7 @@
     "zod": "3.25.76"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.93.4",
+    "@prefabs.tech/fastify-config": "0.93.5",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "pg-mem": ">=3.0.2",

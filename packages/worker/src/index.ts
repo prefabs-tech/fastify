@@ -8,4 +8,10 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
+export * from "./enum";
+
+export { default } from "./plugin";
+
+export { addToQueue } from "./queue";
+
 export type { WorkerConfig } from "./types";

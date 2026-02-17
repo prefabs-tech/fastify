@@ -1,7 +1,8 @@
 import { FastifyInstance } from "fastify";
-import fastifyPlugin from "fastify-plugin";
+import FastifyPlugin from "fastify-plugin";
 
 import setupCronJobs from "./cron/setup";
+import setupQueues from "./queue/setup";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;
@@ -17,6 +18,10 @@ const plugin = async (fastify: FastifyInstance) => {
   if (config.worker.cronJobs) {
     setupCronJobs(config.worker);
   }
+
+  if (config.worker.queues) {
+    setupQueues(config.worker);
+  }
 };
 
-export default fastifyPlugin(plugin);
+export default FastifyPlugin(plugin);

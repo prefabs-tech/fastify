@@ -9,6 +9,7 @@
     "directory": "packages/worker"
   },
   "license": "MIT",
+  "type": "module",
   "exports": {
     ".": {
       "import": "./dist/prefabs-tech-fastify-worker.js",

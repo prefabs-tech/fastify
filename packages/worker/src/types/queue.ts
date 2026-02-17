@@ -1,4 +1,4 @@
-import { RedisOptions } from "bullmq";
+import { RedisOptions, Job } from "bullmq";
 
 import { QueueProvider } from "../enum";
 
@@ -15,6 +15,8 @@ export interface QueueConfig {
       removeOnFail?: boolean | number;
     };
   };
+  handler: (job: Job) => Promise<void>;
+  concurrency?: number;
   name: string;
   provider: QueueProvider;
 }

@@ -1,0 +1,57 @@
+{
+  "name": "@prefabs.tech/fastify-stripe",
+  "version": "0.93.4",
+  "description": "Fastify stripe plugin",
+  "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/stripe#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prefabs-tech/fastify.git",
+    "directory": "packages/stripe"
+  },
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "import": "./dist/prefabs-tech-fastify-stripe.js",
+      "require": "./dist/prefabs-tech-fastify-stripe.cjs"
+    }
+  },
+  "main": "./dist/prefabs-tech-fastify-stripe.cjs",
+  "module": "./dist/prefabs-tech-fastify-stripe.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "sort-package": "npx sort-package-json",
+    "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
+  },
+  "dependencies": {
+    "stripe": "20.1.0",
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@prefabs.tech/eslint-config": "0.4.0",
+    "@prefabs.tech/tsconfig": "0.2.0",
+    "@prefabs.tech/fastify-config": "0.93.4",
+    "eslint": "9.39.2",
+    "fastify": "5.6.1",
+    "fastify-plugin": "5.1.0",
+    "prettier": "3.6.2",
+    "supertokens-node": "14.1.4",
+    "typescript": "5.9.3",
+    "vite": "6.4.1",
+    "vitest": "3.2.4"
+  },
+  "peerDependencies": {
+    "@prefabs.tech/fastify-config": "0.93.4",
+    "fastify": ">=5.2.1",
+    "fastify-plugin": ">=5.0.1",
+    "supertokens-node": ">=14.1.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

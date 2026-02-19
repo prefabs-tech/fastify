@@ -4,9 +4,9 @@ import { QueueConfig } from "../types/queue";
 
 import { Queue } from ".";
 
-class BullMQQueue<T = unknown> extends Queue {
-  private queue: BullQueue;
-  private worker?: Worker;
+class BullMQQueue<T> extends Queue {
+  public queue: BullQueue;
+  public worker?: Worker;
   private connection: RedisOptions;
 
   constructor(config: Required<Pick<QueueConfig, "name" | "bullmqConfig">>) {
@@ -19,6 +19,10 @@ class BullMQQueue<T = unknown> extends Queue {
     });
 
     this.process(config.bullmqConfig.handler, config.bullmqConfig.concurrency);
+  }
+
+  getClient(): BullQueue {
+    return this.queue;
   }
 
   async push(data: T, options?: Record<string, unknown>): Promise<string> {

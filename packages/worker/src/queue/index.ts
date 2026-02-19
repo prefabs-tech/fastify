@@ -5,6 +5,8 @@ abstract class Queue<T = unknown> {
     this.queueName = name;
   }
 
+  abstract getClient(): T;
+
   abstract process(
     handler: (data: T) => Promise<void>,
     concurrency?: number,
@@ -37,4 +39,4 @@ const addToQueue = async <T>(
   return queue.push(data, options);
 };
 
-export { Queue, registerQueue, addToQueue };
+export { Queue, registerQueue, addToQueue, getQueue };

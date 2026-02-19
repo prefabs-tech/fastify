@@ -10,9 +10,9 @@ import { QueueConfig } from "src/types/queue";
 
 import { Queue } from ".";
 
-class SQSQueue<T = unknown> extends Queue<T> {
+class SQSQueue<T> extends Queue {
   private config: Required<Pick<QueueConfig, "sqsConfig">>;
-  private client: SQSClient;
+  public client: SQSClient;
   private queueUrl: string;
   private isPooling: boolean = false;
 
@@ -24,6 +24,10 @@ class SQSQueue<T = unknown> extends Queue<T> {
     this.queueUrl = config.sqsConfig.queueUrl;
 
     this.process(config.sqsConfig.handler);
+  }
+
+  getClient(): SQSClient {
+    return this.client;
   }
 
   async process(handler: (data: T) => Promise<void>): Promise<void> {

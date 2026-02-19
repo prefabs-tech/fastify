@@ -8,10 +8,12 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
-export * from "./enum";
-
 export { default } from "./plugin";
 
-export { addToQueue } from "./queue";
+export * from "./enum";
+export * from "./queue";
+
+export { SQSClient } from "@aws-sdk/client-sqs";
+export { Job, Queue } from "bullmq";
 
 export type { WorkerConfig } from "./types";

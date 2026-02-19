@@ -5,22 +5,22 @@ abstract class Queue<T = unknown> {
     this.queueName = name;
   }
 
-  abstract push(data: T, options?: Record<string, unknown>): Promise<string>;
-
   abstract process(
     handler: (data: T) => Promise<void>,
     concurrency?: number,
   ): void;
+
+  abstract push(data: T, options?: Record<string, unknown>): Promise<string>;
 }
 
 const queueRegistry = new Map<string, Queue>();
 
-const registerQueue = (name: string, queue: Queue): void => {
-  queueRegistry.set(name, queue);
-};
-
 const getQueue = (name: string): Queue | undefined => {
   return queueRegistry.get(name);
+};
+
+const registerQueue = (name: string, queue: Queue): void => {
+  queueRegistry.set(name, queue);
 };
 
 const addToQueue = async <T>(

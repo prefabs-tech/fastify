@@ -1,10 +1,12 @@
+import { SQSClientConfig } from "@aws-sdk/client-sqs";
 import { RedisOptions, Job } from "bullmq";
 
 import { QueueProvider } from "../enum";
 
-export interface QueueConfig {
+export interface QueueConfig<T = unknown> {
   bullmqConfig?: {
     connection: RedisOptions;
+    concurrency?: number;
     defaultJobOptions?: {
       attempts?: number;
       backoff?: {
@@ -14,9 +16,15 @@ export interface QueueConfig {
       removeOnComplete?: boolean | number;
       removeOnFail?: boolean | number;
     };
+    handler: (job: Job) => Promise<void>;
   };
-  handler: (job: Job) => Promise<void>;
-  concurrency?: number;
   name: string;
   provider: QueueProvider;
+  sqsConfig?: {
+    clientConfig: SQSClientConfig;
+    handler: (data: T) => Promise<void>;
+    maxNumberOfMessages: number;
+    waitTimeSeconds: number;
+    queueUrl: string;
+  };
 }

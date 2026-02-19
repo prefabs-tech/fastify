@@ -1,6 +1,7 @@
 import { QueueProvider } from "../enum";
 import { WorkerConfig } from "../types";
 import BullMQQueue from "./bullmq";
+import SQSQueue from "./sqs";
 
 import { registerQueue } from ".";
 
@@ -23,8 +24,23 @@ const setupQueues = (config: WorkerConfig) => {
         const queue = new BullMQQueue({
           name: queueConfig.name,
           bullmqConfig: queueConfig.bullmqConfig,
-          handler: queueConfig.handler,
-          concurrency: queueConfig.concurrency,
+        });
+
+        registerQueue(queueConfig.name, queue);
+
+        break;
+      }
+
+      case QueueProvider.SQS: {
+        if (!queueConfig.sqsConfig) {
+          throw new Error(
+            `SQS configuration is required for queue: ${queueConfig.name}`,
+          );
+        }
+
+        const queue = new SQSQueue({
+          name: queueConfig.name,
+          sqsConfig: queueConfig.sqsConfig,
         });
 
         registerQueue(queueConfig.name, queue);

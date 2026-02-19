@@ -6,6 +6,7 @@ import { QueueProvider } from "../enum";
 export interface QueueConfig<T = unknown> {
   bullmqConfig?: {
     connection: RedisOptions;
+    concurrency?: number;
     defaultJobOptions?: {
       attempts?: number;
       backoff?: {
@@ -17,12 +18,13 @@ export interface QueueConfig<T = unknown> {
     };
     handler: (job: Job) => Promise<void>;
   };
-  sqsConfig?: {
-    clientConfig: SQSClientConfig;
-    queueUrl: string;
-    handler: (data: T) => Promise<void>;
-  };
-  concurrency?: number;
   name: string;
   provider: QueueProvider;
+  sqsConfig?: {
+    clientConfig: SQSClientConfig;
+    handler: (data: T) => Promise<void>;
+    maxNumberOfMessages: number;
+    waitTimeSeconds: number;
+    queueUrl: string;
+  };
 }

@@ -11,15 +11,15 @@ import { QueueConfig } from "src/types/queue";
 import { Queue } from ".";
 
 class SQSQueue<T = unknown> extends Queue<T> {
+  private config: Required<Pick<QueueConfig, "sqsConfig">>;
   private client: SQSClient;
   private queueUrl: string;
   private isPooling: boolean = false;
 
-  constructor(
-    config: Required<Pick<QueueConfig, "name" | "sqsConfig" | "concurrency">>,
-  ) {
+  constructor(config: Required<Pick<QueueConfig, "name" | "sqsConfig">>) {
     super(config.name);
 
+    this.config = config;
     this.client = new SQSClient(config.sqsConfig.clientConfig);
     this.queueUrl = config.sqsConfig.queueUrl;
 
@@ -38,8 +38,8 @@ class SQSQueue<T = unknown> extends Queue<T> {
         try {
           const command = new ReceiveMessageCommand({
             QueueUrl: this.queueUrl,
-            MaxNumberOfMessages: 10, // Bring from config
-            WaitTimeSeconds: 5, // Bring from config
+            MaxNumberOfMessages: this.config.sqsConfig.maxNumberOfMessages,
+            WaitTimeSeconds: this.config.sqsConfig.waitTimeSeconds,
           });
 
           const response = await this.client.send(command);

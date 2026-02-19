@@ -9,10 +9,7 @@ class BullMQQueue<T = unknown> extends Queue {
   private worker?: Worker;
   private connection: RedisOptions;
 
-  constructor(
-    config: Required<Pick<QueueConfig, "name" | "bullmqConfig">> &
-      Pick<QueueConfig, "concurrency">,
-  ) {
+  constructor(config: Required<Pick<QueueConfig, "name" | "bullmqConfig">>) {
     super(config.name);
 
     this.connection = config.bullmqConfig.connection;
@@ -21,7 +18,7 @@ class BullMQQueue<T = unknown> extends Queue {
       defaultJobOptions: config.bullmqConfig.defaultJobOptions,
     });
 
-    this.process(config.bullmqConfig.handler, config.concurrency);
+    this.process(config.bullmqConfig.handler, config.bullmqConfig.concurrency);
   }
 
   async push(data: T, options?: Record<string, unknown>): Promise<string> {

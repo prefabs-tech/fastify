@@ -1,10 +1,9 @@
 import { Queue as BullQueue, Worker, Job, RedisOptions } from "bullmq";
 
-import { QueueConfig } from "../types/queue";
+import BaseQueueClient from "./base";
+import { QueueConfig } from "../../types";
 
-import { Queue } from ".";
-
-class BullMQQueue<T> extends Queue {
+class BullMqClient<T> extends BaseQueueClient {
   public queue: BullQueue;
   public worker?: Worker;
   private connection: RedisOptions;
@@ -69,4 +68,4 @@ class BullMQQueue<T> extends Queue {
   }
 }
 
-export default BullMQQueue;
+export default BullMqClient;

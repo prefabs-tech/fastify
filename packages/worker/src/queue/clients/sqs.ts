@@ -6,11 +6,10 @@ import {
   SQSClient,
 } from "@aws-sdk/client-sqs";
 
-import { QueueConfig } from "src/types/queue";
+import BaseQueueClient from "./base";
+import { QueueConfig } from "../../types";
 
-import { Queue } from ".";
-
-class SQSQueue<T> extends Queue {
+class SQSQueueClient<Payload> extends BaseQueueClient {
   private config: Required<Pick<QueueConfig, "sqsConfig">>;
   public client: SQSClient;
   private queueUrl: string;
@@ -30,7 +29,7 @@ class SQSQueue<T> extends Queue {
     return this.client;
   }
 
-  async process(handler: (data: T) => Promise<void>): Promise<void> {
+  async process(handler: (data: Payload) => Promise<void>): Promise<void> {
     if (this.isPooling) {
       return;
     }
@@ -52,7 +51,7 @@ class SQSQueue<T> extends Queue {
             await Promise.all(
               response.Messages.map(async (message: Message) => {
                 try {
-                  const data = JSON.parse(message.Body!) as T;
+                  const data = JSON.parse(message.Body!) as Payload;
 
                   await handler(data);
 
@@ -81,7 +80,10 @@ class SQSQueue<T> extends Queue {
     pool();
   }
 
-  async push(data: T, options?: Record<string, unknown>): Promise<string> {
+  async push(
+    data: Payload,
+    options?: Record<string, unknown>,
+  ): Promise<string> {
     try {
       const command = new SendMessageCommand({
         QueueUrl: this.queueUrl,
@@ -100,4 +102,4 @@ class SQSQueue<T> extends Queue {
   }
 }
 
-export default SQSQueue;
+export default SQSQueueClient;

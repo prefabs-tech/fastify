@@ -617,6 +617,9 @@ importers:
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
+      '@prefabs.tech/fastify-error-handler':
+        specifier: 0.93.5
+        version: link:../error-handler
       '@prefabs.tech/tsconfig':
         specifier: 0.5.0
         version: 0.5.0(@types/node@24.10.13)

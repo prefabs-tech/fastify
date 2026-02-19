@@ -23,7 +23,6 @@ const setupQueues = (config: WorkerConfig) => {
         const queue = new BullMQQueue({
           name: queueConfig.name,
           bullmqConfig: queueConfig.bullmqConfig,
-          handler: queueConfig.handler,
           concurrency: queueConfig.concurrency,
         });
 

@@ -1,1 +1,1 @@
-export * from "./setup";
+export { default as setupCronJobs } from "./setup";

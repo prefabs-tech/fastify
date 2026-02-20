@@ -1,19 +1,17 @@
-import { WorkerConfig } from "../types";
 import QueueProcessor from "./processor";
 import QueueProcessorRegistry from "./registry";
+import { QueueConfig } from "../types";
 
-const setupQueues = (config: WorkerConfig) => {
-  if (!config.queues || config.queues.length === 0) {
+const setupQueueProcessors = (queueConfigs: QueueConfig[]) => {
+  if (queueConfigs.length === 0) {
     return;
   }
 
-  const { queues } = config;
-
-  for (const queueConfig of queues) {
+  for (const queueConfig of queueConfigs) {
     const queueProcessor = new QueueProcessor(queueConfig);
 
     QueueProcessorRegistry.add(queueProcessor);
   }
 };
 
-export default setupQueues;
+export default setupQueueProcessors;

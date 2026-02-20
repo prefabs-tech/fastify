@@ -14,5 +14,6 @@ export { Job, Queue } from "bullmq";
 export { default } from "./plugin";
 
 export * from "./enum";
+export * from "./lib";
 export * from "./queue";
 export * from "./types";

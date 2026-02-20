@@ -29,11 +29,13 @@ class BullMqClient<Payload> extends BaseQueueClient {
     super(name);
 
     this.queueOptions = config.queueOptions;
-    this.workerOptions = config.workerOptions;
+    this.workerOptions = {
+      connection: config.queueOptions.connection,
+      ...config.workerOptions,
+    };
     this.handler = config.handler;
     this.onError = config.onError;
     this.onFailed = config.onFailed;
-
     this.queue = new BullQueue(this.queueName, this.queueOptions);
     this.process();
   }

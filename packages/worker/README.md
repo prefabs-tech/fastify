@@ -72,44 +72,36 @@ const config: ApiConfig = {
     ],
     queues: [
       {
-        name: "email-queue",
+        name: "bull-queue",
         provider: QueueProvider.BULLMQ,
         bullmqConfig: {
-          connection: {
-            host: "localhost",
-            port: 6379,
-          },
-          concurrency: 5,
-          defaultJobOptions: {
-            attempts: 3,
-            backoff: {
-              type: "exponential",
-              delay: 1000,
-            },
-          },
           handler: async (job) => {
-            console.log(`Processing email job ${job.id}`);
-            // Send email logic here
+            //
+          },
+          queueOptions: {
+            connection: {
+              host: "localhost",
+              port: 6379,
+            },
           },
         },
       },
       {
-        name: "audit-log-queue",
+        name: "sqs-queue",
         provider: QueueProvider.SQS,
         sqsConfig: {
           clientConfig: {
-            region: "us-east-1",
             credentials: {
-              accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+              accessKeyId: "",
+              secretAccessKey: "",
             },
+            endpoint: "",
+            region: "",
           },
-          queueUrl: "https://sqs.us-east-1.amazonaws.com/123456789012/audit-logs",
-          maxNumberOfMessages: 10, // Defines maximum number of messages SQS ReceiveMessage action will return in a single call. Default: 10
-          waitTimeSeconds: 20, // Defines how long a ReceiveMessage API call waits for a message to arrive before returning. Default: 0
-          handler: async (message) => {
-            console.log("Processing audit log", message);
+          handler: async (message: any) => {
+            //
           },
+          queueUrl: "",
         },
       },
     ],

@@ -4,6 +4,7 @@ import {
   Job,
   QueueOptions,
   WorkerOptions,
+  JobsOptions,
 } from "bullmq";
 
 import BaseQueueClient from "./base";
@@ -19,11 +20,11 @@ export interface BullMQClientConfig {
 class BullMqClient<Payload> extends BaseQueueClient {
   public queue: BullQueue;
   public worker?: Worker;
-  private queueOptions: QueueOptions;
-  private workerOptions?: WorkerOptions;
   private handler: (job: Job) => Promise<void>;
   private onError?: (error: Error) => void;
   private onFailed?: (job: Job, error: Error) => void;
+  private queueOptions: QueueOptions;
+  private workerOptions?: WorkerOptions;
 
   constructor(name: string, config: BullMQClientConfig) {
     super(name);
@@ -44,10 +45,7 @@ class BullMqClient<Payload> extends BaseQueueClient {
     return this.queue;
   }
 
-  async push(
-    data: Payload,
-    options?: Record<string, unknown>,
-  ): Promise<string> {
+  async push(data: Payload, options?: JobsOptions): Promise<string> {
     try {
       const job = await this.queue.add(this.queueName, data, options);
 

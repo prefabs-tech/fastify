@@ -13,9 +13,9 @@ import BaseQueueClient from "./base";
 export interface SQSQueueClientConfig {
   clientConfig: SQSClientConfig;
   handler: (data: unknown) => Promise<void>;
-  receiveMessageOptions?: ReceiveMessageCommandInput;
   onError?: (error: Error, message?: Message) => void;
   queueUrl: string;
+  receiveMessageOptions?: ReceiveMessageCommandInput;
 }
 
 class SQSQueueClient<Payload> extends BaseQueueClient {

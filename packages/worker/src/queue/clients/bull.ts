@@ -1,28 +1,41 @@
-import { Queue as BullQueue, Worker, Job, RedisOptions } from "bullmq";
+import {
+  Queue as BullQueue,
+  Worker,
+  Job,
+  QueueOptions,
+  WorkerOptions,
+} from "bullmq";
 
 import BaseQueueClient from "./base";
-import { QueueConfig } from "../../types";
+
+export interface BullMQClientConfig {
+  queueOptions: QueueOptions;
+  workerOptions?: WorkerOptions;
+  handler: (job: Job) => Promise<void>;
+  onError?: (error: Error) => void;
+  onFailed?: (job: Job, error: Error) => void;
+}
 
 class BullMqClient<Payload> extends BaseQueueClient {
   public queue: BullQueue;
   public worker?: Worker;
-  private connection: RedisOptions;
+  private queueOptions: QueueOptions;
+  private workerOptions?: WorkerOptions;
+  private handler: (job: Job) => Promise<void>;
+  private onError?: (error: Error) => void;
+  private onFailed?: (job: Job, error: Error) => void;
 
-  constructor(config: Required<Pick<QueueConfig, "name" | "bullmqConfig">>) {
-    super(config.name);
+  constructor(name: string, config: BullMQClientConfig) {
+    super(name);
 
-    this.connection = config.bullmqConfig.connection;
-    this.queue = new BullQueue(this.queueName, {
-      connection: this.connection,
-      defaultJobOptions: config.bullmqConfig.defaultJobOptions,
-    });
+    this.queueOptions = config.queueOptions;
+    this.workerOptions = config.workerOptions;
+    this.handler = config.handler;
+    this.onError = config.onError;
+    this.onFailed = config.onFailed;
 
-    this.process(
-      config.bullmqConfig.handler,
-      config.bullmqConfig.concurrency,
-      config.bullmqConfig.onError,
-      config.bullmqConfig.onFailed,
-    );
+    this.queue = new BullQueue(this.queueName, this.queueOptions);
+    this.process();
   }
 
   getClient(): BullQueue {
@@ -44,33 +57,25 @@ class BullMqClient<Payload> extends BaseQueueClient {
     }
   }
 
-  process(
-    handler: (job: Job<Payload>) => Promise<void>,
-    concurrency = 1,
-    onError?: (error: Error) => void,
-    onFailed?: (job: Job, error: Error) => void,
-  ): void {
+  process(): void {
     try {
       this.worker = new Worker(
         this.queueName,
         async (job: Job<Payload>) => {
-          await handler(job);
+          await this.handler(job);
         },
-        {
-          connection: this.connection,
-          concurrency,
-        },
+        this.workerOptions,
       );
 
       this.worker.on("error", (error) => {
-        if (onError) {
-          onError(error);
+        if (this.onError) {
+          this.onError(error);
         }
       });
 
       this.worker.on("failed", (job, error) => {
-        if (onFailed) {
-          onFailed(job as Job<Payload>, error);
+        if (this.onFailed) {
+          this.onFailed(job as Job<Payload>, error);
         }
       });
     } catch (error) {

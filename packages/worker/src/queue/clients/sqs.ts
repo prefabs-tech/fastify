@@ -2,27 +2,36 @@ import {
   DeleteMessageCommand,
   Message,
   ReceiveMessageCommand,
+  ReceiveMessageCommandInput,
   SendMessageCommand,
   SQSClient,
+  SQSClientConfig,
 } from "@aws-sdk/client-sqs";
 
 import BaseQueueClient from "./base";
-import { QueueConfig } from "../../types";
+
+export interface SQSQueueClientConfig {
+  clientConfig: SQSClientConfig;
+  handler: (data: unknown) => Promise<void>;
+  receiveMessageOptions?: ReceiveMessageCommandInput;
+  onError?: (error: Error, message?: Message) => void;
+  queueUrl: string;
+}
 
 class SQSQueueClient<Payload> extends BaseQueueClient {
-  private config: Required<Pick<QueueConfig, "sqsConfig">>;
+  private config: SQSQueueClientConfig;
   public client: SQSClient;
   private queueUrl: string;
   private isPooling: boolean = false;
 
-  constructor(config: Required<Pick<QueueConfig, "name" | "sqsConfig">>) {
-    super(config.name);
+  constructor(name: string, config: SQSQueueClientConfig) {
+    super(name);
 
     this.config = config;
-    this.client = new SQSClient(config.sqsConfig.clientConfig);
-    this.queueUrl = config.sqsConfig.queueUrl;
+    this.client = new SQSClient(config.clientConfig);
+    this.queueUrl = config.queueUrl;
 
-    this.process(config.sqsConfig.handler);
+    this.process(config.handler);
   }
 
   getClient(): SQSClient {
@@ -41,8 +50,7 @@ class SQSQueueClient<Payload> extends BaseQueueClient {
         try {
           const command = new ReceiveMessageCommand({
             QueueUrl: this.queueUrl,
-            MaxNumberOfMessages: this.config.sqsConfig.maxNumberOfMessages,
-            WaitTimeSeconds: this.config.sqsConfig.waitTimeSeconds,
+            ...this.config.receiveMessageOptions,
           });
 
           const response = await this.client.send(command);
@@ -62,8 +70,8 @@ class SQSQueueClient<Payload> extends BaseQueueClient {
                     }),
                   );
                 } catch (error) {
-                  if (this.config.sqsConfig.onError) {
-                    this.config.sqsConfig.onError(
+                  if (this.config.onError) {
+                    this.config.onError(
                       error instanceof Error ? error : new Error(String(error)),
                       message,
                     );
@@ -73,8 +81,8 @@ class SQSQueueClient<Payload> extends BaseQueueClient {
             );
           }
         } catch (error) {
-          if (this.config.sqsConfig.onError) {
-            this.config.sqsConfig.onError(
+          if (this.config.onError) {
+            this.config.onError(
               error instanceof Error ? error : new Error(String(error)),
             );
           }

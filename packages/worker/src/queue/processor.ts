@@ -20,10 +20,7 @@ class QueueProcessor {
           );
         }
 
-        queueClient = new BullMQQueueClient({
-          name: config.name,
-          bullmqConfig: config.bullmqConfig,
-        });
+        queueClient = new BullMQQueueClient(config.name, config.bullmqConfig);
 
         break;
       }
@@ -35,10 +32,7 @@ class QueueProcessor {
           );
         }
 
-        queueClient = new SQSQueueClient({
-          name: config.name,
-          sqsConfig: config.sqsConfig,
-        });
+        queueClient = new SQSQueueClient(config.name, config.sqsConfig);
 
         break;
       }

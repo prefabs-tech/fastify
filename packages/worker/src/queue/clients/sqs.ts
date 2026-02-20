@@ -51,7 +51,7 @@ class SQSQueueClient<Payload> extends BaseQueueClient {
             await Promise.all(
               response.Messages.map(async (message: Message) => {
                 try {
-                  const data = JSON.parse(message.Body!) as Payload;
+                  const data = JSON.parse(message.Body ?? "{}") as Payload;
 
                   await handler(data);
 
@@ -62,17 +62,22 @@ class SQSQueueClient<Payload> extends BaseQueueClient {
                     }),
                   );
                 } catch (error) {
-                  console.error(
-                    `Error processing message from SQS queue: ${this.queueName}. Message ID: ${message.MessageId}. Error: ${(error as Error).message}`,
-                  );
+                  if (this.config.sqsConfig.onError) {
+                    this.config.sqsConfig.onError(
+                      error instanceof Error ? error : new Error(String(error)),
+                      message,
+                    );
+                  }
                 }
               }),
             );
           }
         } catch (error) {
-          console.error(
-            `Error processing job from SQS queue: ${this.queueName}. Error: ${(error as Error).message}`,
-          );
+          if (this.config.sqsConfig.onError) {
+            this.config.sqsConfig.onError(
+              error instanceof Error ? error : new Error(String(error)),
+            );
+          }
         }
       }
     };

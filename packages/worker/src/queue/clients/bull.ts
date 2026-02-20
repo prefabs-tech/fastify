@@ -3,7 +3,7 @@ import { Queue as BullQueue, Worker, Job, RedisOptions } from "bullmq";
 import BaseQueueClient from "./base";
 import { QueueConfig } from "../../types";
 
-class BullMqClient<T> extends BaseQueueClient {
+class BullMqClient<Payload> extends BaseQueueClient {
   public queue: BullQueue;
   public worker?: Worker;
   private connection: RedisOptions;
@@ -17,14 +17,22 @@ class BullMqClient<T> extends BaseQueueClient {
       defaultJobOptions: config.bullmqConfig.defaultJobOptions,
     });
 
-    this.process(config.bullmqConfig.handler, config.bullmqConfig.concurrency);
+    this.process(
+      config.bullmqConfig.handler,
+      config.bullmqConfig.concurrency,
+      config.bullmqConfig.onError,
+      config.bullmqConfig.onFailed,
+    );
   }
 
   getClient(): BullQueue {
     return this.queue;
   }
 
-  async push(data: T, options?: Record<string, unknown>): Promise<string> {
+  async push(
+    data: Payload,
+    options?: Record<string, unknown>,
+  ): Promise<string> {
     try {
       const job = await this.queue.add(this.queueName, data, options);
 
@@ -36,11 +44,16 @@ class BullMqClient<T> extends BaseQueueClient {
     }
   }
 
-  process(handler: (job: Job) => Promise<void>, concurrency = 1): void {
+  process(
+    handler: (job: Job<Payload>) => Promise<void>,
+    concurrency = 1,
+    onError?: (error: Error) => void,
+    onFailed?: (job: Job, error: Error) => void,
+  ): void {
     try {
       this.worker = new Worker(
         this.queueName,
-        async (job: Job) => {
+        async (job: Job<Payload>) => {
           await handler(job);
         },
         {
@@ -50,15 +63,15 @@ class BullMqClient<T> extends BaseQueueClient {
       );
 
       this.worker.on("error", (error) => {
-        console.error(
-          `Error in BullMQ worker for queue: ${this.queueName}. Error: ${(error as Error).message}`,
-        );
+        if (onError) {
+          onError(error);
+        }
       });
 
       this.worker.on("failed", (job, error) => {
-        console.error(
-          `Job failed in BullMQ queue: ${this.queueName}. Job ID: ${job?.id}. Error: ${(error as Error).message}`,
-        );
+        if (onFailed) {
+          onFailed(job as Job<Payload>, error);
+        }
       });
     } catch (error) {
       throw new Error(

@@ -105,8 +105,8 @@ const config: ApiConfig = {
             },
           },
           queueUrl: "https://sqs.us-east-1.amazonaws.com/123456789012/audit-logs",
-          maxNumberOfMessages: 10,
-          waitTimeSeconds: 20,
+          maxNumberOfMessages: 10, // Defines maximum number of messages SQS ReceiveMessage action will return in a single call. Default: 10
+          waitTimeSeconds: 20, // Defines how long a ReceiveMessage API call waits for a message to arrive before returning. Default: 0
           handler: async (message) => {
             console.log("Processing audit log", message);
           },

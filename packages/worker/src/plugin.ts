@@ -1,10 +1,7 @@
 import { FastifyInstance } from "fastify";
 import FastifyPlugin from "fastify-plugin";
 
-import {
-  initializeCronJobs,
-  initializeQueueProcessors,
-} from "./lib/initialize";
+import Worker from "./worker";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;
@@ -17,8 +14,16 @@ const plugin = async (fastify: FastifyInstance) => {
 
   log.info("Registering worker plugin");
 
-  initializeCronJobs(config.worker.cronJobs);
-  initializeQueueProcessors(config.worker.queues);
+  const worker = new Worker(config.worker);
+
+  await worker.start();
+
+  fastify.decorate("worker", worker);
+
+  fastify.addHook("onClose", async () => {
+    log.info("Shutting down worker");
+    await worker.shutdown();
+  });
 };
 
 export default FastifyPlugin(plugin);

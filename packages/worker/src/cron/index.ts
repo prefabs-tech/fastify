@@ -1,1 +1,1 @@
-export { default as setupCronJobs } from "./setup";
+export { default as CronScheduler } from "./scheduler";

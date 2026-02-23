@@ -12,8 +12,8 @@ export { SQSClient } from "@aws-sdk/client-sqs";
 export { Job, Queue } from "bullmq";
 
 export { default } from "./plugin";
+export { default as Worker } from "./worker";
 
 export * from "./enum";
-export * from "./lib";
 export * from "./queue";
 export * from "./types";

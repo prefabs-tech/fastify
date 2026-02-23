@@ -1,5 +1,4 @@
-export * from "./clients";
+export * from "./adapters";
 
-export { default as setupQueueProcessors } from "./setup";
-export { default as QueueProcessor } from "./processor";
-export { default as QueueProcessorRegistry } from "./registry";
+export { default as AdapterRegistry } from "./adapterRegistry";
+export { default as createQueueAdapter } from "./factory";

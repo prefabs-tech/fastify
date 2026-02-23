@@ -27,6 +27,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "sort-package": "npx sort-package-json",
+    "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
@@ -39,6 +40,7 @@
     "@prefabs.tech/eslint-config": "0.5.0",
     "@prefabs.tech/fastify-config": "0.93.5",
     "@prefabs.tech/tsconfig": "0.5.0",
+    "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.2",
     "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",

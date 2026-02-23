@@ -2,7 +2,7 @@ import { CronScheduler } from "./cron";
 import { AdapterRegistry, createQueueAdapter } from "./queue";
 import { WorkerConfig } from "./types";
 
-class Worker {
+class JobOrchestrator {
   public static readonly adapters = new AdapterRegistry();
   public readonly cron: CronScheduler;
   private config: WorkerConfig;
@@ -24,15 +24,15 @@ class Worker {
         const adapter = createQueueAdapter(queueConfig);
 
         await adapter.start();
-        Worker.adapters.add(adapter);
+        JobOrchestrator.adapters.add(adapter);
       }
     }
   }
 
   async shutdown(): Promise<void> {
     this.cron.stopAll();
-    await Worker.adapters.shutdownAll();
+    await JobOrchestrator.adapters.shutdownAll();
   }
 }
 
-export default Worker;
+export default JobOrchestrator;

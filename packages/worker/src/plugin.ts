@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import FastifyPlugin from "fastify-plugin";
 
-import Worker from "./worker";
+import JobOrchestrator from "./jobOrchestrator";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;
@@ -14,15 +14,15 @@ const plugin = async (fastify: FastifyInstance) => {
 
   log.info("Registering worker plugin");
 
-  const worker = new Worker(config.worker);
+  const jobOrchestrator = new JobOrchestrator(config.worker);
 
-  await worker.start();
+  await jobOrchestrator.start();
 
-  fastify.decorate("worker", worker);
+  fastify.decorate("worker", jobOrchestrator);
 
   fastify.addHook("onClose", async () => {
     log.info("Shutting down worker");
-    await worker.shutdown();
+    await jobOrchestrator.shutdown();
   });
 };
 

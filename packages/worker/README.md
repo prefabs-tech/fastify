@@ -49,33 +49,33 @@ await fastify.register(workerPlugin);
 ```
 
 ```typescript
-import { Worker } from "@prefabs.tech/fastify-worker";
+import { JobOrchestrator } from "@prefabs.tech/fastify-worker";
 
-const queue = Worker.adapters.get("queue-name")
+const queue = JobOrchestrator.adapters.get("queue-name")
 
 if (queue) {
   queue.push({ message: 'Hello world!' })
 }
 ```
 
-The plugin creates the `Worker` instance, which populates `Worker.adapters` on `start()`. Services import `Worker` and access the static registry directly. On fastify close, `worker.shutdown()` drains all adapters.
+The plugin creates the `JobOrchestrator` instance, which populates `JobOrchestrator.adapters` on `start()`. Services import `JobOrchestrator` and access the static registry directly. On fastify close, `jobOrchestrator.shutdown()` drains all adapters.
 
 ### Standalone
 
-Use the `Worker` class directly without Fastify:
+Use the `JobOrchestrator` class directly without Fastify:
 
 ```typescript
-import { Worker } from "@prefabs.tech/fastify-worker";
+import { JobOrchestrator } from "@prefabs.tech/fastify-worker";
 
-const worker = new Worker({
+const jobOrchestrator = new JobOrchestrator({
   cronJobs: [...],
   queues: [...],
 });
 
-await worker.start();
+await jobOrchestrator.start();
 
 // later...
-await worker.shutdown();
+await jobOrchestrator.shutdown();
 ```
 
 ## Configuration

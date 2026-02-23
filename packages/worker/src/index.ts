@@ -12,7 +12,7 @@ export { SQSClient } from "@aws-sdk/client-sqs";
 export { Job, Queue } from "bullmq";
 
 export { default } from "./plugin";
-export { default as Worker } from "./worker";
+export { default as JobOrchestrator } from "./jobOrchestrator";
 
 export * from "./enum";
 export * from "./queue";

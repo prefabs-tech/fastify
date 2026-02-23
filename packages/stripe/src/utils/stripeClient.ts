@@ -1,7 +1,6 @@
 import { ApiConfig } from "@prefabs.tech/fastify-config";
 import Stripe from "stripe";
 
-import { STRIPE_API_VERSION } from "../constants";
 import { CreateSessionInput } from "../types";
 
 class StripeClient {
@@ -10,9 +9,7 @@ class StripeClient {
 
   constructor(config: ApiConfig) {
     this._config = config;
-    this.stripe = new Stripe(config.stripe.apiKey, {
-      apiVersion: STRIPE_API_VERSION,
-    });
+    this.stripe = new Stripe(config.stripe.apiKey, config.stripe.clientConfig);
   }
 
   public async createCheckoutSession(
@@ -21,7 +18,7 @@ class StripeClient {
   ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
     const session = await this.stripe.checkout.sessions.create({
       allow_promotion_codes: this._config.stripe.allowPromotionCodes,
-      cancel_url: input.cancelUrl ?? this._config.stripe.redirectUrl.cancel,
+      cancel_url: input.cancelUrl ?? this._config.stripe.urls.cancel,
       line_items: [
         {
           price_data: {
@@ -39,7 +36,7 @@ class StripeClient {
         metadata: metadata,
       },
       mode: input.mode ?? "payment",
-      success_url: input.successUrl ?? this._config.stripe.redirectUrl.success,
+      success_url: input.successUrl ?? this._config.stripe.urls.success,
     });
 
     return session;

@@ -472,32 +472,32 @@ importers:
     dependencies:
       stripe:
         specifier: 20.1.0
-        version: 20.1.0(@types/node@24.10.0)
+        version: 20.1.0(@types/node@24.10.13)
       zod:
         specifier: 3.25.76
         version: 3.25.76
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.4.0
-        version: 0.4.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.6.2)(typescript@5.9.3)
+        specifier: 0.5.0
+        version: 0.5.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.93.4
+        specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.2.0
-        version: 0.2.0(@types/node@24.10.0)
+        specifier: 0.5.0
+        version: 0.5.0(@types/node@24.10.13)
       eslint:
         specifier: 9.39.2
         version: 9.39.2(jiti@2.6.1)
       fastify:
-        specifier: 5.6.1
-        version: 5.6.1
+        specifier: 5.7.4
+        version: 5.7.4
       fastify-plugin:
         specifier: 5.1.0
         version: 5.1.0
       prettier:
-        specifier: 3.6.2
-        version: 3.6.2
+        specifier: 3.8.1
+        version: 3.8.1
       supertokens-node:
         specifier: 14.1.4
         version: 14.1.4
@@ -506,10 +506,10 @@ importers:
         version: 5.9.3
       vite:
         specifier: 6.4.1
-        version: 6.4.1(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
+        version: 6.4.1(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.1)
       vitest:
         specifier: 3.2.4
-        version: 3.2.4(@types/node@24.10.0)(jiti@2.6.1)(yaml@2.8.1)
+        version: 3.2.4(@types/node@24.10.13)(jiti@2.6.1)(yaml@2.8.1)
 
   packages/swagger:
     dependencies:
@@ -11625,11 +11625,11 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
-  stripe@20.1.0(@types/node@24.10.0):
+  stripe@20.1.0(@types/node@24.10.13):
     dependencies:
       qs: 6.14.0
     optionalDependencies:
-      '@types/node': 24.10.0
+      '@types/node': 24.10.13
 
   strnum@1.1.2:
     optional: true

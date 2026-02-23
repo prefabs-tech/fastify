@@ -3,15 +3,15 @@ import Stripe from "stripe";
 import webhookHandler from "../webhook/handler";
 
 export type StripeConfig = {
-  allowPromotionCodes: boolean;
+  allowPromotionCodes?: boolean;
   apiKey: string;
+  clientConfig?: Stripe.StripeConfig;
   defaultCurrency: string;
   enablePaymentWebhook: boolean;
   handlers?: {
     webhook?: typeof webhookHandler;
   };
-  redirectUrl: {
-    callbackWebhook: string;
+  urls: {
     cancel: string;
     success: string;
   };

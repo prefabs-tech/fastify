@@ -1,8 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import Stripe from "stripe";
 
-import { STRIPE_API_VERSION } from "../constants";
-
 const verifyStripeSignature = async (
   request: FastifyRequest,
   reply: FastifyReply,
@@ -27,9 +25,7 @@ const verifyStripeSignature = async (
   }
 
   try {
-    const stripe = new Stripe(config.stripe.apiKey, {
-      apiVersion: STRIPE_API_VERSION,
-    });
+    const stripe = new Stripe(config.stripe.apiKey, config.stripe.clientConfig);
 
     const rawBody = request.rawBody;
 

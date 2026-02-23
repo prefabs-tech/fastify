@@ -3,14 +3,13 @@ import { AdapterRegistry, createQueueAdapter } from "./queue";
 import { WorkerConfig } from "./types";
 
 class Worker {
+  public static readonly adapters = new AdapterRegistry();
   public readonly cron: CronScheduler;
-  public readonly adapters: AdapterRegistry;
   private config: WorkerConfig;
 
   constructor(config: WorkerConfig) {
     this.config = config;
     this.cron = new CronScheduler();
-    this.adapters = new AdapterRegistry();
   }
 
   async start(): Promise<void> {
@@ -25,14 +24,14 @@ class Worker {
         const adapter = createQueueAdapter(queueConfig);
 
         await adapter.start();
-        this.adapters.add(adapter);
+        Worker.adapters.add(adapter);
       }
     }
   }
 
   async shutdown(): Promise<void> {
     this.cron.stopAll();
-    await this.adapters.shutdownAll();
+    await Worker.adapters.shutdownAll();
   }
 }
 

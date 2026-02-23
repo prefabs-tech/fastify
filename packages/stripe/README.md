@@ -62,8 +62,9 @@ const config: ApiConfig = {
     enablePaymentWebhook: true,
     webhookPath: "/payment/webhook", // Optional, defaults to "/payment/webhook"
     webhookSecret: "whsec_...",
-    redirectUrl: {
-      callbackWebhook: "https://your-domain.com/webhook",
+    allowPromotionCodes: true, // Optional, enables promotion code support
+    clientConfig: {}, // Optional, custom Stripe client configuration
+    urls: {
       cancel: "https://your-domain.com/cancel",
       success: "https://your-domain.com/success",
     },
@@ -146,9 +147,13 @@ const customWebhookHandler = async (
 };
 
 // Add to config
-const config = {
+const config: ApiConfig = {
   stripe: {
     // ...other config
+    urls: {
+      cancel: "https://your-domain.com/cancel",
+      success: "https://your-domain.com/success",
+    },
     handlers: {
       webhook: customWebhookHandler,
     },

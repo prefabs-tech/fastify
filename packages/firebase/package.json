@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-firebase",
-  "version": "0.93.4",
+  "version": "0.93.5",
   "description": "Fastify firebase plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/firebase#readme",
   "repository": {
@@ -19,9 +19,7 @@
   "main": "./dist/prefabs-tech-fastify-firebase.cjs",
   "module": "./dist/prefabs-tech-fastify-firebase.js",
   "types": "./dist/types/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -31,24 +29,24 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "firebase-admin": "13.5.0",
+    "firebase-admin": "13.6.1",
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.4.0",
-    "@prefabs.tech/fastify-config": "0.93.4",
-    "@prefabs.tech/fastify-error-handler": "0.93.4",
-    "@prefabs.tech/fastify-graphql": "0.93.4",
-    "@prefabs.tech/fastify-slonik": "0.93.4",
-    "@prefabs.tech/tsconfig": "0.2.0",
-    "@types/node": "24.10.0",
+    "@prefabs.tech/eslint-config": "0.5.0",
+    "@prefabs.tech/fastify-config": "0.93.5",
+    "@prefabs.tech/fastify-error-handler": "0.93.5",
+    "@prefabs.tech/fastify-graphql": "0.93.5",
+    "@prefabs.tech/fastify-slonik": "0.93.5",
+    "@prefabs.tech/tsconfig": "0.5.0",
+    "@types/node": "24.10.13",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.2",
-    "fastify": "5.6.1",
+    "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
-    "graphql": "16.11.0",
-    "mercurius": "16.5.0",
-    "prettier": "3.6.2",
+    "graphql": "16.12.0",
+    "mercurius": "16.7.0",
+    "prettier": "3.8.1",
     "slonik": "46.8.0",
     "supertokens-node": "14.1.4",
     "typescript": "5.9.3",
@@ -56,10 +54,10 @@
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.93.4",
-    "@prefabs.tech/fastify-error-handler": "0.93.4",
-    "@prefabs.tech/fastify-graphql": "0.93.4",
-    "@prefabs.tech/fastify-slonik": "0.93.4",
+    "@prefabs.tech/fastify-config": "0.93.5",
+    "@prefabs.tech/fastify-error-handler": "0.93.5",
+    "@prefabs.tech/fastify-graphql": "0.93.5",
+    "@prefabs.tech/fastify-slonik": "0.93.5",
     "fastify": ">=5.2.1",
     "fastify-plugin": ">=5.0.1",
     "mercurius": ">=16.1.0",

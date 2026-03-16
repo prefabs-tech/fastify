@@ -1,4 +1,5 @@
 import initEmailVerificationRecipe from "./initEmailVerificationRecipe";
+import initPasswordlessRecipe from "./initPasswordlessRecipe";
 import initSessionRecipe from "./initSessionRecipe";
 import initThirdPartyEmailPassword from "./initThirdPartyEmailPasswordRecipe";
 import initUserRolesRecipe from "./initUserRolesRecipe";
@@ -15,6 +16,10 @@ const getRecipeList = (fastify: FastifyInstance): RecipeListFunction[] => {
 
   if (fastify.config.user.features?.signUp?.emailVerification) {
     recipeList.push(initEmailVerificationRecipe(fastify));
+  }
+
+  if (fastify.config.user.features?.signUp?.passwordless) {
+    recipeList.push(initPasswordlessRecipe(fastify));
   }
 
   return recipeList;

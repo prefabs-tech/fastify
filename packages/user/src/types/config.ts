@@ -45,6 +45,10 @@ interface UserConfig {
        * @default false
        */
       emailVerification?: boolean;
+      /**
+       * @default false
+       */
+      passwordless?: boolean;
     };
     updateEmail?: {
       enabled?: boolean;

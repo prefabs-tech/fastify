@@ -44,6 +44,20 @@ const getPasswordlessRecipeConfig = (
     smsDelivery: {
       service: new TwilioService({
         twilioSettings,
+        override: (originalImplementation) => {
+          return {
+            ...originalImplementation,
+            getContent: async (input) => {
+              return {
+                body: `Your verification code is: ${input.userInputCode}.`,
+                toPhoneNumber: input.phoneNumber,
+              };
+            },
+            sendRawSms: async (input) => {
+              await originalImplementation.sendRawSms(input);
+            },
+          };
+        },
       }),
     },
   };

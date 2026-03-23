@@ -10,6 +10,13 @@ import type { StrongPasswordOptions } from "./strongPasswordOptions";
 import type { User, UserUpdateInput } from "./user";
 import type { FastifyRequest } from "fastify";
 
+interface BetterAuthConfig {
+  /** Secret used for signing session tokens (use BETTER_AUTH_SECRET env var) */
+  secret: string;
+  /** Origins allowed to send credentials (passed to better-auth trustedOrigins) */
+  trustedOrigins?: string[];
+}
+
 interface EmailOptions {
   subject?: string;
   templateName?: string;
@@ -113,7 +120,19 @@ interface UserConfig {
     invitation?: typeof InvitationService;
     user?: typeof UserService;
   };
-  supertokens: SupertokensConfig;
+  /**
+   * Which authentication provider to use.
+   * @default "supertokens"
+   */
+  authProvider?: "supertokens" | "better-auth";
+  /**
+   * Better Auth configuration — required when authProvider === "better-auth".
+   */
+  betterAuth?: BetterAuthConfig;
+  /**
+   * SuperTokens configuration — required when authProvider === "supertokens" (default).
+   */
+  supertokens?: SupertokensConfig;
   tables?: {
     invitations?: {
       name?: string;
@@ -124,4 +143,4 @@ interface UserConfig {
   };
 }
 
-export type { EmailOptions, UserConfig };
+export type { BetterAuthConfig, EmailOptions, UserConfig };

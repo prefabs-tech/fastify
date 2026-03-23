@@ -1,5 +1,6 @@
 import FastifyPlugin from "fastify-plugin";
 
+import type { AppError } from "../authProvider";
 import type { BetterAuthProvider } from "./betterAuthProvider";
 import type { FastifyInstance } from "fastify";
 
@@ -163,16 +164,48 @@ const pocRoutes = async (
           error: "phoneOtp capability not supported by this provider",
         });
       }
+
+      // Log incoming body for debugging
+      fastify.log.info({ body: req.body }, "POC OTP verify request");
+
+      const { phoneNumber, otp } = req.body;
+      if (!phoneNumber || !otp) {
+        return reply.code(400).send({
+          error: {
+            code: "MISSING_FIELDS",
+            message: "Both phoneNumber and otp are required",
+            received: { phoneNumber, otp },
+          },
+        });
+      }
+
       try {
-        const user = await auth.phoneOtp!.signInWithOtp(
-          req.body.phoneNumber,
-          req.body.otp,
-        );
+        const user = await auth.phoneOtp!.signInWithOtp(phoneNumber, otp);
         return reply.send({ ok: true, user });
       } catch (error) {
-        return reply
-          .code(auth.normalizeError(error).statusCode)
-          .send({ error: auth.normalizeError(error) });
+        // Log the raw error for debugging
+        fastify.log.error({ err: error, phoneNumber }, "POC OTP verify failed");
+        let statusCode = 500;
+        let responseBody:
+          | { code: string; message: string }
+          | { error: AppError } = {
+          code: "AUTH_ERROR",
+          message: "Authentication error",
+        };
+        try {
+          const appError: AppError = auth.normalizeError(error);
+          // Ensure statusCode is a valid number
+          statusCode =
+            typeof appError.statusCode === "number" &&
+            appError.statusCode >= 100 &&
+            appError.statusCode < 600
+              ? appError.statusCode
+              : 500;
+          responseBody = { error: appError };
+        } catch (error_) {
+          fastify.log.error({ err: error_ }, "Failed to normalize error");
+        }
+        return reply.code(statusCode).send(responseBody);
       }
     },
   );

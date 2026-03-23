@@ -28,10 +28,11 @@ const getThirdPartyEmailPasswordRecipeConfig = (
   let thirdPartyEmailPassword: ThirdPartyEmailPasswordRecipe = {};
 
   if (
-    typeof config.user.supertokens.recipes?.thirdPartyEmailPassword === "object"
+    typeof config.user.supertokens!.recipes?.thirdPartyEmailPassword ===
+    "object"
   ) {
     thirdPartyEmailPassword =
-      config.user.supertokens.recipes.thirdPartyEmailPassword;
+      config.user.supertokens!.recipes.thirdPartyEmailPassword;
   }
 
   return {

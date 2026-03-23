@@ -30,6 +30,14 @@ type SlonikDatabase = {
   query: QueryFunction;
 };
 
+// Extend Node's IncomingMessage to include an optional body property
+// This is needed because better-auth's better-call expects to read req.raw.body
+declare module "http" {
+  interface IncomingMessage {
+    body?: unknown;
+  }
+}
+
 declare module "fastify" {
   interface FastifyInstance {
     slonik: SlonikDatabase;
@@ -130,6 +138,12 @@ export class BetterAuthProvider implements AuthProvider {
     (fastify as any).decorate("verifySession", () => this.verifySessionHandler);
 
     fastify.all("/api/auth/*", async (req, reply) => {
+      // better-call expects to read the body from req.raw.body if the stream is already consumed.
+      // Fastify parses the body and sets req.body, but req.raw.body remains undefined.
+      // Copy the parsed body to req.raw so better-call can use it.
+      if (req.body !== undefined) {
+        req.raw.body = req.body;
+      }
       const handler = toNodeHandler(this.auth);
       await handler(req.raw, reply.raw);
       return reply;

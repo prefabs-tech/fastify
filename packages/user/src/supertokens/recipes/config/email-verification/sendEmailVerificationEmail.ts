@@ -32,7 +32,7 @@ const sendEmailVerificationEmail = (
     const emailVerifyLink = input.emailVerifyLink.replace(
       websiteDomain + "/auth/verify-email",
       origin +
-        (fastify.config.user.supertokens.emailVerificationPath ||
+        (fastify.config.user.supertokens!.emailVerificationPath ||
           EMAIL_VERIFICATION_PATH),
     );
 

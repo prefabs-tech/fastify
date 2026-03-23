@@ -14,7 +14,7 @@ const plugin = async (fastify: FastifyInstance) => {
 
   init(fastify);
 
-  if (config.user.supertokens.setErrorHandler !== false) {
+  if (config.user.supertokens!.setErrorHandler !== false) {
     fastify.setErrorHandler(errorHandler);
   }
 
@@ -27,7 +27,7 @@ const plugin = async (fastify: FastifyInstance) => {
   // [RL 2024-06-11] change sRefreshToken cookie path from config
   fastify.addHook("onSend", async (request, reply) => {
     const refreshTokenCookiePath =
-      request.server.config.user.supertokens.refreshTokenCookiePath;
+      request.server.config.user.supertokens!.refreshTokenCookiePath;
 
     const setCookieHeader = reply.getHeader("set-cookie");
 

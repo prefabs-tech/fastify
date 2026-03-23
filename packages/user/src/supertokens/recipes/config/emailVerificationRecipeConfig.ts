@@ -20,8 +20,8 @@ const getEmailVerificationRecipeConfig = (
 
   let emailVerification: EmailVerificationRecipe = {};
 
-  if (typeof config.user.supertokens.recipes?.emailVerification === "object") {
-    emailVerification = config.user.supertokens.recipes.emailVerification;
+  if (typeof config.user.supertokens!.recipes?.emailVerification === "object") {
+    emailVerification = config.user.supertokens!.recipes.emailVerification;
   }
 
   return {

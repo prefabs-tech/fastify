@@ -90,6 +90,7 @@ class BetterAuthPhoneOtp implements PhoneOtpCapability {
 export class BetterAuthProvider implements AuthProvider {
   private readonly auth: ReturnType<typeof createAuth>;
   private db!: SlonikDatabase;
+  private readonly routePrefix: string;
   readonly phoneOtp: PhoneOtpCapability;
   readonly passkey: PasskeyCapability | undefined = undefined;
   readonly oauth: OAuthCapability | undefined = undefined;
@@ -122,6 +123,8 @@ export class BetterAuthProvider implements AuthProvider {
 
   constructor(config: BetterAuthConfig, dbConfig: SlonikOptions) {
     const connectionString = stringifyDsn(dbConfig.db);
+    // Normalize route prefix: remove trailing slashes, default to /auth
+    this.routePrefix = (config.routePrefix ?? "/auth").replace(/\/+$/, "");
     this.auth = createAuth(config, connectionString);
     this.phoneOtp = new BetterAuthPhoneOtp(this.auth);
   }
@@ -137,7 +140,7 @@ export class BetterAuthProvider implements AuthProvider {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (fastify as any).decorate("verifySession", () => this.verifySessionHandler);
 
-    fastify.all("/api/auth/*", async (req, reply) => {
+    fastify.all(this.routePrefix + "/*", async (req, reply) => {
       // better-call expects to read the body from req.raw.body if the stream is already consumed.
       // Fastify parses the body and sets req.body, but req.raw.body remains undefined.
       // Copy the parsed body to req.raw so better-call can use it.
@@ -150,7 +153,7 @@ export class BetterAuthProvider implements AuthProvider {
     });
 
     fastify.log.info(
-      "[BetterAuthProvider] bootstrapped — auth routes at /api/auth/*",
+      `[BetterAuthProvider] bootstrapped — auth routes at ${this.routePrefix}/*`,
     );
   }
 

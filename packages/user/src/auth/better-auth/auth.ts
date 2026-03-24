@@ -37,6 +37,8 @@ export function createAuth(config: BetterAuthConfig, connectionString: string) {
       type: "postgres",
     },
 
+    basePath: config.routePrefix ?? "/auth",
+
     secret: config.secret,
 
     trustedOrigins: config.trustedOrigins ?? [],

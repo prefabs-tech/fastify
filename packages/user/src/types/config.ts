@@ -15,6 +15,7 @@ interface BetterAuthConfig {
   secret: string;
   /** Origins allowed to send credentials (passed to better-auth trustedOrigins) */
   trustedOrigins?: string[];
+  routePrefix?: string;
 }
 
 interface EmailOptions {

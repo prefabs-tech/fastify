@@ -235,9 +235,11 @@ export class BetterAuthProvider implements AuthProvider {
     };
   }
 
-  async signOut(token: string): Promise<void> {
+  async signOut(authorizationHeader: string): Promise<void> {
     await this.auth.api.signOut({
-      headers: new Headers({ authorization: `Bearer ${token}` }),
+      headers: new Headers({
+        authorization: authorizationHeader,
+      }),
     });
   }
 
@@ -251,7 +253,7 @@ export class BetterAuthProvider implements AuthProvider {
   async getUser(id: string): Promise<AuthUser | undefined> {
     return this.db.connect(async (connection) => {
       const row = await connection.maybeOne(sql.unsafe`
-        SELECT id, email, emailVerified
+        SELECT id, email, ${sql.identifier(["emailVerified"])}
         FROM "user"
         WHERE id = ${id}
       `);

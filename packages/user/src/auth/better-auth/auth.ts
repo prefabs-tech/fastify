@@ -1,5 +1,6 @@
 import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins/admin";
+import { bearer } from "better-auth/plugins/bearer";
 import { phoneNumber } from "better-auth/plugins/phone-number";
 import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
@@ -53,6 +54,7 @@ export function createAuth(config: BetterAuthConfig, connectionString: string) {
 
     plugins: [
       // POC assumption #4 — phone OTP capability
+      bearer(),
       phoneNumber({
         sendOTP: async ({ phoneNumber: phone, code }) => {
           // POC: log to console. Phase 3: use SMS provider via fastify

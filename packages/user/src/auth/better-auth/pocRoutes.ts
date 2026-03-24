@@ -78,16 +78,29 @@ const pocRoutes = async (
 
   // -------------------------------------------------------------------------
   // RFC assumption #3: sign-out
-  // POST /poc/auth/signout  { token }
+  // POST /poc/auth/signout  (Authorization: Bearer <token>)
   // -------------------------------------------------------------------------
 
-  fastify.post<{ Body: { token: string } }>(
-    "/poc/auth/signout",
-    async (req, reply) => {
-      await auth.signOut(req.body.token);
+  fastify.post("/poc/auth/signout", async (req, reply) => {
+    try {
+      const authHeader = req.headers.authorization;
+      if (!authHeader) {
+        return reply.code(401).send({
+          error: {
+            code: "AUTH_UNAUTHORIZED",
+            message: "Missing Authorization header",
+          },
+        });
+      }
+
+      await auth.signOut(authHeader);
+
       return reply.send({ ok: true });
-    },
-  );
+    } catch (error) {
+      const appError = auth.normalizeError(error);
+      return reply.code(appError.statusCode).send({ error: appError });
+    }
+  });
 
   // -------------------------------------------------------------------------
   // RFC assumption #6: role management via user_roles table

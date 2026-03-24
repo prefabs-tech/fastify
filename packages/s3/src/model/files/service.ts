@@ -191,7 +191,10 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
   }
 
   get s3Client() {
-    return this._s3Client ?? (this._s3Client = new S3Client(this.config));
+    return (
+      this._s3Client ??
+      (this._s3Client = new S3Client(this.config.s3.clientConfig))
+    );
   }
 
   get sqlFactoryClass() {

@@ -9,10 +9,11 @@ const migrate = async (slonikOptions: SlonikOptions) => {
 
   let clientConfig: ClientConfig = {
     database: slonikOptions.db.databaseName,
-    user: slonikOptions.db.username,
-    password: slonikOptions.db.password,
     host: slonikOptions.db.host,
+    options: slonikOptions.db.options,
+    password: slonikOptions.db.password,
     port: slonikOptions.db.port,
+    user: slonikOptions.db.username,
   };
 
   if (slonikOptions.clientConfiguration?.ssl) {

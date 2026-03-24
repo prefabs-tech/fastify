@@ -44,7 +44,6 @@ type UserUpdateInput = Partial<
   photo?: Multipart;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface AuthUser extends User, SupertokensUser {}
 
 export type { AuthUser, User, UserCreateInput, UserUpdateInput };

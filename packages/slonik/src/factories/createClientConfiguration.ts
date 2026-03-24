@@ -27,14 +27,15 @@ const createClientConfiguration = (
     ...config,
   };
 
-  configuration.interceptors = [
-    fieldNameCaseConverter,
-    resultParser,
-    ...(queryLoggingEnabled ? [createQueryLoggingInterceptor()] : []),
-    ...(config?.interceptors ?? []),
-  ];
-
-  return configuration;
+  return {
+    ...configuration,
+    interceptors: [
+      fieldNameCaseConverter,
+      resultParser,
+      ...(queryLoggingEnabled ? [createQueryLoggingInterceptor()] : []),
+      ...(config?.interceptors ?? []),
+    ],
+  };
 };
 
 export default createClientConfiguration;

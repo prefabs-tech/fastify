@@ -39,7 +39,6 @@ const plugin = async (fastify: FastifyInstance) => {
       const updatedCookies = cookies.map((cookie) => {
         if (String(cookie).startsWith("sRefreshToken")) {
           return String(cookie).replace(
-            // eslint-disable-next-line unicorn/better-regex
             /Path=\/[^;]*/i,
             `Path=${refreshTokenCookiePath}`,
           );

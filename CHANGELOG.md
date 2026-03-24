@@ -1,3 +1,28 @@
+## [0.93.5](https://github.com/prefabs-tech/fastify/compare/v0.93.4...v0.93.5) (2026-02-11)
+
+
+
+## [0.93.4](https://github.com/prefabs-tech/fastify/compare/v0.93.3...v0.93.4) (2026-01-15)
+
+
+### Bug Fixes
+
+* **user:** fix error handling on create invitation handler ([#1048](https://github.com/prefabs-tech/fastify/issues/1048)) ([a915fca](https://github.com/prefabs-tech/fastify/commit/a915fcaafedce02a0df55fe265e9c9a610baeca5))
+
+
+
+## [0.93.3](https://github.com/prefabs-tech/fastify/compare/v0.93.2...v0.93.3) (2026-01-06)
+
+
+
+## [0.93.2](https://github.com/prefabs-tech/fastify/compare/v0.93.1...v0.93.2) (2025-12-18)
+
+
+
+## [0.93.1](https://github.com/prefabs-tech/fastify/compare/v0.93.0...v0.93.1) (2025-12-09)
+
+
+
 # [0.93.0](https://github.com/prefabs-tech/fastify/compare/v0.92.2...v0.93.0) (2025-11-05)
 
 

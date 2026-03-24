@@ -29,7 +29,6 @@ vi.mock("nodemailer-html-to-text", () => ({
 describe("Mailer", async () => {
   let api: FastifyInstance;
 
-  /* eslint-disable-next-line n/no-unsupported-features/es-syntax */
   const { default: plugin } = await import("../plugin");
 
   beforeEach(async () => {

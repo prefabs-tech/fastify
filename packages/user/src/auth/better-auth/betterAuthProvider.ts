@@ -206,7 +206,9 @@ export class BetterAuthProvider implements AuthProvider {
     const result = await this.auth.api.signUpEmail({
       body: { email, password, name: email },
     });
-    return toAuthUser(result.user);
+    const roles = await this.getUserRoles(result.user.id);
+
+    return toAuthUser(result.user, roles);
   }
 
   async signIn(
@@ -216,7 +218,12 @@ export class BetterAuthProvider implements AuthProvider {
     const result = await this.auth.api.signInEmail({
       body: { email, password },
     });
-    return { user: toAuthUser(result.user), token: result.token ?? "" };
+    const roles = await this.getUserRoles(result.user.id);
+
+    return {
+      user: toAuthUser(result.user, roles),
+      token: result.token ?? "",
+    };
   }
 
   async updateEmail(_userId: string, newEmail: string): Promise<void> {

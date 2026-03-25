@@ -44,6 +44,14 @@ declare module "fastify" {
   }
 }
 
+declare module "@prefabs.tech/fastify-config" {
+  interface ApiConfig {
+    cors?: {
+      origin?: string | string[];
+    };
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -140,16 +148,53 @@ export class BetterAuthProvider implements AuthProvider {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (fastify as any).decorate("verifySession", () => this.verifySessionHandler);
 
-    fastify.all(this.routePrefix + "/*", async (req, reply) => {
-      // better-call expects to read the body from req.raw.body if the stream is already consumed.
-      // Fastify parses the body and sets req.body, but req.raw.body remains undefined.
-      // Copy the parsed body to req.raw so better-call can use it.
-      if (req.body !== undefined) {
-        req.raw.body = req.body;
-      }
-      const handler = toNodeHandler(this.auth);
-      await handler(req.raw, reply.raw);
-      return reply;
+    const fullRoutePattern = this.routePrefix + "/*";
+    fastify.log.info(
+      `[BetterAuthProvider] Registering auth routes: pattern=${fullRoutePattern}, prefix=${this.routePrefix}`,
+    );
+
+    // Register auth routes for all methods EXCEPT OPTIONS (handled by CORS plugin)
+    fastify.route({
+      method: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"],
+      url: fullRoutePattern,
+      handler: async (req, reply) => {
+        // DEBUG: log that handler is invoked
+        fastify.log.info(
+          {
+            method: req.method,
+            url: req.url,
+            rawUrl: req.raw.url,
+            routeConfig: req.routeOptions?.config,
+          },
+          "[BetterAuthProvider] Request hit catch-all handler",
+        );
+
+        // Because better-call writes directly to reply.raw (Node's ServerResponse),
+        // we must copy CORS headers from Fastify's reply to raw before invoking better-call.
+        // The CORS plugin (preHandler) has already added these to reply.
+        const corsHeaders = [
+          "access-control-allow-origin",
+          "access-control-allow-credentials",
+          "access-control-expose-headers",
+          "vary",
+        ];
+        for (const header of corsHeaders) {
+          const value = reply.getHeader(header);
+          if (value !== undefined) {
+            reply.raw.setHeader(header, value);
+          }
+        }
+
+        // better-call expects to read the body from req.raw.body if the stream is already consumed.
+        // Fastify parses the body and sets req.body, but req.raw.body remains undefined.
+        // Copy the parsed body to req.raw so better-call can use it.
+        if (req.body !== undefined) {
+          req.raw.body = req.body;
+        }
+        const handler = toNodeHandler(this.auth);
+        await handler(req.raw, reply.raw);
+        return reply;
+      },
     });
 
     fastify.log.info(
@@ -174,7 +219,7 @@ export class BetterAuthProvider implements AuthProvider {
     return { user: toAuthUser(result.user), token: result.token ?? "" };
   }
 
-  async updateEmail(userId: string, newEmail: string): Promise<void> {
+  async updateEmail(_userId: string, newEmail: string): Promise<void> {
     await this.auth.api.changeEmail({
       body: { newEmail },
       headers: new Headers(),

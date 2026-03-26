@@ -31,10 +31,19 @@ const pocRoutes = async (
     "/poc/auth/signup",
     async (req, reply) => {
       try {
+        // Create user
         const user = await auth.signUp(req.body.email, req.body.password);
+        // Assign default role
         await auth.assignRoles(user.id, ["ROLE_USER"]);
-        user.roles = await auth.getUserRoles(user.id);
-        return reply.code(201).send({ ok: true, user });
+        // Sign in to get token (so we can set cookie and return token)
+        const result = await auth.signIn(req.body.email, req.body.password);
+        // Set session cookie
+        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+        const cookie = `better-auth.session_token=${encodeURIComponent(result.token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+        reply.header("Set-Cookie", cookie);
+        return reply
+          .code(201)
+          .send({ ok: true, user: result.user, token: result.token });
       } catch (error) {
         const appError = auth.normalizeError(error);
         return reply.code(appError.statusCode).send({ error: appError });
@@ -52,6 +61,10 @@ const pocRoutes = async (
     async (req, reply) => {
       try {
         const result = await auth.signIn(req.body.email, req.body.password);
+        // Set session cookie
+        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
+        const cookie = `better-auth.session_token=${encodeURIComponent(result.token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+        reply.header("Set-Cookie", cookie);
         return reply.send({ ok: true, user: result.user, token: result.token });
       } catch (error) {
         const appError = auth.normalizeError(error);
@@ -94,6 +107,12 @@ const pocRoutes = async (
       }
 
       await auth.signOut(authHeader);
+
+      // Clear session cookie
+      reply.header(
+        "Set-Cookie",
+        "better-auth.session_token=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0",
+      );
 
       return reply.send({ ok: true });
     } catch (error) {

@@ -42,6 +42,10 @@ declare module "fastify" {
   interface FastifyInstance {
     slonik: SlonikDatabase;
   }
+
+  interface FastifyRequest {
+    user?: User;
+  }
 }
 
 declare module "@prefabs.tech/fastify-config" {
@@ -144,9 +148,55 @@ export class BetterAuthProvider implements AuthProvider {
   async bootstrap(fastify: FastifyInstance): Promise<void> {
     this.db = fastify.slonik;
 
-    // Decorate fastify with verifySession factory. The factory returns the preHandler.
+    // Decorate fastify with verifySession factory (cast to any to bypass type complexities)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (fastify as any).decorate("verifySession", () => this.verifySessionHandler);
+    fastify.decorate("verifySession", (() => this.verifySessionHandler) as any);
+
+    fastify.addHook("preHandler", async (req: FastifyRequest) => {
+      // Skip auth routes to avoid interference
+      const url = req.url || "";
+      if (url.startsWith(this.routePrefix)) {
+        return;
+      }
+
+      // Skip if Authorization header already exists
+      if (req.headers.authorization) {
+        return;
+      }
+
+      // Try to extract token from our plain cookie (POC routes set this)
+      const cookieHeader = req.headers.cookie || "";
+      const plainCookieName = "better-auth.session_token";
+      // Parse cookies by splitting on ';' and trimming
+      const cookies = cookieHeader.split(";").map((c: string) => c.trim());
+      for (const cookie of cookies) {
+        if (cookie.startsWith(plainCookieName + "=")) {
+          const token = decodeURIComponent(
+            cookie.slice(plainCookieName.length + 1),
+          );
+          req.headers.authorization = `Bearer ${token}`;
+          if (req.raw && typeof req.raw === "object" && "headers" in req.raw) {
+            (req.raw.headers as Record<string, string>).authorization =
+              `Bearer ${token}`;
+          }
+          return;
+        }
+      }
+
+      // Fallback: try BetterAuth's signed cookie format (if using built-in /auth routes)
+      const fullSession = await this.auth.api.getSession({
+        headers: fromNodeHeaders(req.headers),
+      });
+
+      if (fullSession?.session?.token) {
+        req.headers.authorization = `Bearer ${fullSession.session.token}`;
+        // Update raw Node.js request headers for downstream middleware
+        if (req.raw && typeof req.raw === "object" && "headers" in req.raw) {
+          (req.raw.headers as Record<string, string>).authorization =
+            `Bearer ${fullSession.session.token}`;
+        }
+      }
+    });
 
     const fullRoutePattern = this.routePrefix + "/*";
     fastify.log.info(
@@ -274,20 +324,49 @@ export class BetterAuthProvider implements AuthProvider {
   }
 
   async verifySession(req: FastifyRequest): Promise<Session | undefined> {
+    // First try BetterAuth's cookie-based session
     const session = await this.auth.api.getSession({
       headers: fromNodeHeaders(req.headers),
     });
 
-    if (!session) return undefined;
+    if (session) {
+      const roles = await this.getUserRoles(session.user.id);
+      return {
+        sessionId: session.session.id,
+        userId: session.user.id,
+        roles,
+        expiresAt: new Date(session.session.expiresAt),
+      };
+    }
 
-    const roles = await this.getUserRoles(session.user.id);
+    // Fallback: check Authorization header with Bearer token
+    const authHeader = req.headers.authorization;
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.slice(7);
+      // Look up session by token in better-auth's session table
+      const dbSession = await this.db.connect(async (connection) => {
+        const row = await connection.maybeOne(sql.unsafe`
+          SELECT id, "userId", "expiresAt"
+          FROM "session"
+          WHERE token = ${token} AND "expiresAt" > NOW()
+        `);
+        return row as
+          | { id: string; userId: string; expiresAt: string }
+          | undefined;
+      });
 
-    return {
-      sessionId: session.session.id,
-      userId: session.user.id,
-      roles,
-      expiresAt: new Date(session.session.expiresAt),
-    };
+      if (dbSession) {
+        const roles = await this.getUserRoles(dbSession.userId);
+        return {
+          sessionId: dbSession.id,
+          userId: dbSession.userId,
+          roles,
+          expiresAt: new Date(dbSession.expiresAt),
+        };
+      }
+    }
+
+    return undefined;
   }
 
   async signOut(authorizationHeader: string): Promise<void> {

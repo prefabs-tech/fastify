@@ -1,8 +1,17 @@
 import FastifyPlugin from "fastify-plugin";
 
+import { ROLE_USER } from "../../constants";
+
 import type { AppError } from "../authProvider";
 import type { BetterAuthProvider } from "./betterAuthProvider";
 import type { FastifyInstance } from "fastify";
+
+interface AuthErrorInfo {
+  name?: string;
+  message?: string;
+  status?: number;
+  body?: unknown;
+}
 
 /**
  * POC test routes — registered only when authProvider === "better-auth".
@@ -34,7 +43,7 @@ const pocRoutes = async (
         // Create user
         const user = await auth.signUp(req.body.email, req.body.password);
         // Assign default role
-        await auth.assignRoles(user.id, ["ROLE_USER"]);
+        await auth.assignRoles(user.id, [ROLE_USER]);
         // Sign in to get token (so we can set cookie and return token)
         const result = await auth.signIn(req.body.email, req.body.password);
         // Set session cookie
@@ -45,6 +54,18 @@ const pocRoutes = async (
           .code(201)
           .send({ ok: true, user: result.user, token: result.token });
       } catch (error) {
+        // Log raw error for debugging
+        const err = error as AuthErrorInfo;
+        fastify.log.error(
+          {
+            err,
+            errName: err?.name,
+            errMessage: err?.message,
+            errStatus: err?.status,
+            errBody: err?.body,
+          },
+          "Sign-up error raw",
+        );
         const appError = auth.normalizeError(error);
         return reply.code(appError.statusCode).send({ error: appError });
       }
@@ -67,6 +88,18 @@ const pocRoutes = async (
         reply.header("Set-Cookie", cookie);
         return reply.send({ ok: true, user: result.user, token: result.token });
       } catch (error) {
+        // Log raw error for debugging
+        const err = error as AuthErrorInfo;
+        fastify.log.error(
+          {
+            err,
+            errName: err?.name,
+            errMessage: err?.message,
+            errStatus: err?.status,
+            errBody: err?.body,
+          },
+          "Sign-in error raw",
+        );
         const appError = auth.normalizeError(error);
         return reply.code(appError.statusCode).send({ error: appError });
       }

@@ -42,12 +42,19 @@ const createUsersTableQuery = (
   return sql.unsafe`
     CREATE TABLE IF NOT EXISTS ${sql.identifier([users])} (
       id VARCHAR ( 36 ) PRIMARY KEY,
+      name TEXT NOT NULL DEFAULT '',
+      email TEXT NOT NULL,
+      email_verified BOOLEAN NOT NULL DEFAULT FALSE,
+      password_hash VARCHAR(256),
+      password_last_updated_at TIMESTAMP,
       disabled BOOLEAN NOT NULL DEFAULT false,
-      email VARCHAR ( 256 ) NOT NULL,
       photo_id INTEGER,
       last_login_at TIMESTAMP NOT NULL DEFAULT NOW(),
       signed_up_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+      updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
       deleted_at TIMESTAMP,
+      image TEXT,
       FOREIGN KEY ( photo_id ) REFERENCES ${sql.identifier([
         config.s3?.table?.name || TABLE_FILES,
       ])} ( id )
@@ -55,4 +62,67 @@ const createUsersTableQuery = (
   `;
 };
 
-export { createInvitationsTableQuery, createUsersTableQuery };
+/**
+ * Returns multiple queries to be executed sequentially.
+ * Each query cleans up and ensures proper constraints for BetterAuth columns.
+ */
+const addBetterAuthColumnsQuery = (
+  config: ApiConfig,
+): QuerySqlToken<ZodTypeAny>[] => {
+  const users = config.user.tables?.users?.name || TABLE_USERS;
+
+  return [
+    // 1. Add email_verified column if it doesn't exist (nullable initially)
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS email_verified BOOLEAN;
+    `,
+    // 2. Set NULLs to FALSE
+    sql.unsafe`
+      UPDATE ${sql.identifier([users])}
+      SET email_verified = FALSE
+      WHERE email_verified IS NULL;
+    `,
+    // 3. Add NOT NULL constraint (idempotent - safe if already NOT NULL)
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ALTER COLUMN email_verified SET NOT NULL;
+    `,
+    // 4. Set default for future inserts
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ALTER COLUMN email_verified SET DEFAULT FALSE;
+    `,
+    // 5. Add other columns if they don't exist
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS name VARCHAR(255);
+    `,
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS password_hash VARCHAR(256);
+    `,
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS password_last_updated_at TIMESTAMP;
+    `,
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT NOW();
+    `,
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP NOT NULL DEFAULT NOW();
+    `,
+    sql.unsafe`
+      ALTER TABLE ${sql.identifier([users])}
+      ADD COLUMN IF NOT EXISTS image TEXT;
+    `,
+  ];
+};
+
+export {
+  addBetterAuthColumnsQuery,
+  createInvitationsTableQuery,
+  createUsersTableQuery,
+};

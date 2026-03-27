@@ -1,7 +1,5 @@
 import FastifyPlugin from "fastify-plugin";
 
-import { ROLE_USER } from "../../constants";
-
 import type { AppError } from "../authProvider";
 import type { BetterAuthProvider } from "./betterAuthProvider";
 import type { FastifyInstance } from "fastify";
@@ -34,14 +32,9 @@ const pocRoutes = async (
     async (req, reply) => {
       try {
         // Create user
-        const user = await auth.signUp(req.body.email, req.body.password);
-        // Assign default role
-        await auth.assignRoles(user.id, [ROLE_USER]);
-        // Sign in to get token (so we can set cookie and return token)
-        const result = await auth.signIn(req.body.email, req.body.password);
-        // Set session cookie
-        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
-        const cookie = `better-auth.session_token=${encodeURIComponent(result.token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+        const result = await auth.signUp(req.body.email, req.body.password);
+
+        const cookie = result.headers.get("set-cookie");
         reply.header("Set-Cookie", cookie);
         return reply
           .code(201)
@@ -63,10 +56,11 @@ const pocRoutes = async (
     async (req, reply) => {
       try {
         const result = await auth.signIn(req.body.email, req.body.password);
+
         // Set session cookie
-        const maxAge = 7 * 24 * 60 * 60; // 7 days in seconds
-        const cookie = `better-auth.session_token=${encodeURIComponent(result.token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${maxAge}`;
+        const cookie = result.headers.get("set-cookie");
         reply.header("Set-Cookie", cookie);
+
         return reply.send({ ok: true, user: result.user, token: result.token });
       } catch (error) {
         const appError = auth.normalizeError(error);
@@ -98,23 +92,10 @@ const pocRoutes = async (
 
   fastify.post("/poc/auth/signout", async (req, reply) => {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-        return reply.code(401).send({
-          error: {
-            code: "AUTH_UNAUTHORIZED",
-            message: "Missing Authorization header",
-          },
-        });
-      }
+      const result = await auth.signOut(req);
 
-      await auth.signOut(authHeader);
-
-      // Clear session cookie
-      reply.header(
-        "Set-Cookie",
-        "better-auth.session_token=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0",
-      );
+      const cookie = result.headers.get("set-cookie");
+      reply.header("Set-Cookie", cookie);
 
       return reply.send({ ok: true });
     } catch (error) {

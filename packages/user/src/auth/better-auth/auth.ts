@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import { betterAuth } from "better-auth";
 import { admin } from "better-auth/plugins/admin";
 import { bearer } from "better-auth/plugins/bearer";
@@ -6,6 +7,25 @@ import { Kysely, PostgresDialect } from "kysely";
 import { Pool } from "pg";
 
 import type { BetterAuthConfig } from "../../types/config";
+
+async function bcryptHash(password: string): Promise<string> {
+  return bcrypt.hashSync(password, 10); // 10 rounds - synchronous for simplicity
+}
+
+async function bcryptVerify({
+  password,
+  hash,
+}: {
+  password: string;
+  hash: string;
+}): Promise<boolean> {
+  try {
+    return bcrypt.compareSync(password, hash);
+  } catch {
+    // If comparison fails due to invalid hash format, return false
+    return false;
+  }
+}
 
 /**
  * Creates the Better Auth instance from config.
@@ -79,6 +99,10 @@ export function createAuth(config: BetterAuthConfig, connectionString: string) {
         );
       },
       sendEmailVerificationOnSignUp: false,
+      password: {
+        hash: bcryptHash,
+        verify: bcryptVerify,
+      },
     },
 
     plugins: [

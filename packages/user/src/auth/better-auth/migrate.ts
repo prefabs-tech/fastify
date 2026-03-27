@@ -82,4 +82,33 @@ export async function runBetterAuthMigrations(
   const auth = createAuth(config, connectionString);
   const { runMigrations } = await getMigrations(auth.options);
   await runMigrations();
+
+  await database.connect(async (connection) => {
+    await connection.query(sql.unsafe`
+      INSERT INTO account (id, "userId", "accountId", "providerId", password, "createdAt", "updatedAt")
+      SELECT 
+        user_id, 
+        user_id, 
+        user_id, 
+        'credential', 
+        password_hash, 
+        to_timestamp(time_joined / 1000.0),
+        to_timestamp(time_joined / 1000.0)   -- updatedAt = createdAt for migrated data
+      FROM st__emailpassword_users
+      ON CONFLICT (id) DO NOTHING
+    `);
+
+    await connection.query(sql.unsafe`
+      INSERT INTO account (id, "userId", "accountId", "providerId", "createdAt", "updatedAt")
+      SELECT 
+        user_id, 
+        user_id, 
+        third_party_user_id, 
+        third_party_id, 
+        to_timestamp(time_joined / 1000.0),
+        to_timestamp(time_joined / 1000.0)
+      FROM st__thirdparty_users
+      ON CONFLICT (id) DO NOTHING
+    `);
+  });
 }

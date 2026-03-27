@@ -1,5 +1,7 @@
 import FastifyPlugin from "fastify-plugin";
 
+import { ROLE_USER } from "src/constants";
+
 import type { AppError } from "../authProvider";
 import type { BetterAuthProvider } from "./betterAuthProvider";
 import type { FastifyInstance } from "fastify";
@@ -34,7 +36,7 @@ const pocRoutes = async (
         // Create user
         const user = await auth.signUp(req.body.email, req.body.password);
         // Assign default role
-        await auth.assignRoles(user.id, ["ROLE_USER"]);
+        await auth.assignRoles(user.id, [ROLE_USER]);
         // Sign in to get token (so we can set cookie and return token)
         const result = await auth.signIn(req.body.email, req.body.password);
         // Set session cookie

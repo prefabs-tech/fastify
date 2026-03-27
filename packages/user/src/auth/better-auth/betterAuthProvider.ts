@@ -402,8 +402,8 @@ export class BetterAuthProvider implements AuthProvider {
   async getUser(id: string): Promise<AuthUser | undefined> {
     return this.db.connect(async (connection) => {
       const row = await connection.maybeOne(sql.unsafe`
-        SELECT id, email, ${sql.identifier(["emailVerified"])}
-        FROM "user"
+        SELECT id, email, ${sql.identifier(["email_verified"])}
+        FROM "users"
         WHERE id = ${id}
       `);
 
@@ -414,7 +414,7 @@ export class BetterAuthProvider implements AuthProvider {
       return {
         id: row.id as string,
         email: row.email as string,
-        emailVerified: row.emailVerified as boolean,
+        emailVerified: row.email_verified as boolean,
         roles,
       };
     });

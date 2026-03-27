@@ -1,6 +1,6 @@
 import FastifyPlugin from "fastify-plugin";
 
-import { ROLE_USER } from "src/constants";
+import { ROLE_USER } from "../../constants";
 
 import type { AppError } from "../authProvider";
 import type { BetterAuthProvider } from "./betterAuthProvider";

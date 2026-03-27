@@ -99,7 +99,7 @@ const emailPasswordSignUp = (
     }
 
     if (
-      config.user.supertokens.sendUserAlreadyExistsWarning &&
+      config.user.supertokens!.sendUserAlreadyExistsWarning &&
       originalResponse.status === "EMAIL_ALREADY_EXISTS_ERROR"
     ) {
       try {

@@ -7,7 +7,7 @@ import type { FastifyInstance } from "fastify";
 
 const init = (fastify: FastifyInstance) => {
   const session: SupertokensRecipes["session"] =
-    fastify.config.user.supertokens.recipes?.session;
+    fastify.config.user.supertokens!.recipes?.session;
 
   if (typeof session === "function") {
     return Session.init(session(fastify));

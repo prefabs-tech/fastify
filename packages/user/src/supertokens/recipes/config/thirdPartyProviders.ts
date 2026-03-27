@@ -5,7 +5,7 @@ import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpasswo
 
 const getThirdPartyProviders = (config: ApiConfig) => {
   const { Apple, Facebook, Github, Google } = ThirdPartyEmailPassword;
-  const providersConfig = config.user.supertokens.providers;
+  const providersConfig = config.user.supertokens!.providers;
   const providers: TypeProvider[] = [];
 
   const providerFunctions = [

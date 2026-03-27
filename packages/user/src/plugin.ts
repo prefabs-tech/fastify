@@ -12,16 +12,56 @@ import supertokensPlugin from "./supertokens";
 import userContext from "./userContext";
 
 import type { GraphqlEnabledPlugin } from "@prefabs.tech/fastify-graphql";
+import type { Database } from "@prefabs.tech/fastify-slonik";
 import type { FastifyPluginAsync } from "fastify";
 
 const userPlugin: FastifyPluginAsync = async (fastify) => {
   const { graphql, user } = fastify.config;
 
-  await fastify.register(supertokensPlugin);
+  if (user.authProvider === "better-auth") {
+    // --- Better Auth path (POC) ---
+    // Validates config, initializes BetterAuthProvider, registers /api/auth/*
+    // and POC test routes at /poc/auth/*.
+    if (!user.betterAuth) {
+      throw new Error(
+        '[fastify-user] authProvider is "better-auth" but config.user.betterAuth is missing. ' +
+          "Provide { secret } in config.user.betterAuth.",
+      );
+    }
 
-  fastify.addHook("onReady", async () => {
-    await seedRoles(user);
-  });
+    // Reuse the same DB configuration that slonik is already connected to — no separate connectionString needed.
+    const dbConfig = fastify.config.slonik;
+
+    const { BetterAuthProvider } =
+      await import("./auth/better-auth/betterAuthProvider");
+    const { runBetterAuthMigrations } =
+      await import("./auth/better-auth/migrate");
+    const { default: pocRoutes } = await import("./auth/better-auth/pocRoutes");
+
+    const authProvider = new BetterAuthProvider(user.betterAuth, dbConfig);
+
+    // Run Better Auth migrations + ensure user_roles table exists (via slonik)
+    const db: Database = fastify.slonik;
+    await runBetterAuthMigrations(user.betterAuth, dbConfig, db);
+
+    // Register /api/auth/* handler
+    await authProvider.bootstrap(fastify);
+
+    // Register /poc/auth/* test routes
+    await fastify.register(pocRoutes, { auth: authProvider });
+
+    fastify.decorate("authProvider", authProvider);
+
+    // For better-auth, we don't seed roles via SuperTokens; user_roles table is empty.
+    // Roles will be assigned via API endpoints (e.g., POST /users/:id/roles).
+  } else {
+    // --- SuperTokens path (default, unchanged) ---
+    await fastify.register(supertokensPlugin);
+
+    fastify.addHook("onReady", async () => {
+      await seedRoles(user);
+    });
+  }
 
   await runMigrations(fastify.config, fastify.slonik);
 

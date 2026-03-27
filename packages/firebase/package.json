@@ -21,6 +21,7 @@
   "types": "./dist/types/index.d.ts",
   "files": ["dist"],
   "scripts": {
+    "prepare": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

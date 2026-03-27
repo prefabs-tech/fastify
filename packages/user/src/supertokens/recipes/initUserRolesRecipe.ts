@@ -6,7 +6,8 @@ import type { SupertokensRecipes } from "../types";
 import type { FastifyInstance } from "fastify";
 
 const init = (fastify: FastifyInstance) => {
-  const recipes = fastify.config.user.supertokens.recipes as SupertokensRecipes;
+  const recipes = fastify.config.user.supertokens!
+    .recipes as SupertokensRecipes;
 
   if (recipes && recipes.userRoles) {
     return UserRoles.init(recipes.userRoles(fastify));

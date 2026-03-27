@@ -3,6 +3,7 @@ import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import { sql, stringifyDsn } from "slonik";
 
 import { createAuth } from "./auth";
+import { ROLE_USER } from "../../constants";
 
 import type { BetterAuthConfig } from "../../types/config";
 import type { User } from "../../types/user";
@@ -252,27 +253,40 @@ export class BetterAuthProvider implements AuthProvider {
     );
   }
 
-  async signUp(email: string, password: string): Promise<AuthUser> {
+  async signUp(
+    email: string,
+    password: string,
+  ): Promise<{ user: AuthUser; token: string; headers: Headers }> {
     const result = await this.auth.api.signUpEmail({
       body: { email, password, name: email },
+      returnHeaders: true,
     });
-    const roles = await this.getUserRoles(result.user.id);
 
-    return toAuthUser(result.user, roles);
+    await this.assignRoles(result.response.user.id, [ROLE_USER]);
+    const roles = await this.getUserRoles(result.response.user.id);
+
+    return {
+      user: toAuthUser(result.response.user, roles),
+      token: result.response.token ?? "",
+      headers: result.headers,
+    };
   }
 
   async signIn(
     email: string,
     password: string,
-  ): Promise<{ user: AuthUser; token: string }> {
+  ): Promise<{ user: AuthUser; token: string; headers: Headers }> {
     const result = await this.auth.api.signInEmail({
       body: { email, password },
+      returnHeaders: true,
     });
-    const roles = await this.getUserRoles(result.user.id);
+
+    const roles = await this.getUserRoles(result.response.user.id);
 
     return {
-      user: toAuthUser(result.user, roles),
-      token: result.token ?? "",
+      user: toAuthUser(result.response.user, roles),
+      token: result.response.token ?? "",
+      headers: result.headers,
     };
   }
 
@@ -369,12 +383,13 @@ export class BetterAuthProvider implements AuthProvider {
     return undefined;
   }
 
-  async signOut(authorizationHeader: string): Promise<void> {
-    await this.auth.api.signOut({
-      headers: new Headers({
-        authorization: authorizationHeader,
-      }),
+  async signOut(req: FastifyRequest) {
+    const result = await this.auth.api.signOut({
+      headers: fromNodeHeaders(req.headers), // passes cookie automatically
+      returnHeaders: true,
     });
+
+    return result;
   }
 
   async revokeAllSessions(userId: string): Promise<void> {

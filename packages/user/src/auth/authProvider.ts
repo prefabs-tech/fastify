@@ -28,7 +28,10 @@ export interface AuthProvider {
   bootstrap(fastify: FastifyInstance): Promise<void>;
 
   // --- Email + password (universal) ---
-  signUp(email: string, password: string): Promise<AuthUser>;
+  signUp(
+    email: string,
+    password: string,
+  ): Promise<{ user: AuthUser; token: string }>;
   signIn(
     email: string,
     password: string,
@@ -46,7 +49,7 @@ export interface AuthProvider {
 
   // --- Session ---
   verifySession(req: FastifyRequest): Promise<Session | undefined>;
-  signOut(token: string): Promise<void>;
+  signOut(req: FastifyRequest): Promise<unknown>;
   revokeAllSessions(userId: string): Promise<void>;
 
   // --- User & roles ---

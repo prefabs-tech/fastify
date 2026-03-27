@@ -40,7 +40,10 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
 
     const authProvider = new BetterAuthProvider(user.betterAuth, dbConfig);
 
-    // Run Better Auth migrations + ensure user_roles table exists (via slonik)
+    // Run general migrations FIRST to add BetterAuth columns to users table
+    await runMigrations(fastify.config, fastify.slonik);
+
+    // Then run BetterAuth-specific migrations and data migration
     const db: Database = fastify.slonik;
     await runBetterAuthMigrations(user.betterAuth, dbConfig, db);
 
@@ -61,9 +64,10 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
     fastify.addHook("onReady", async () => {
       await seedRoles(user);
     });
-  }
 
-  await runMigrations(fastify.config, fastify.slonik);
+    // Run general migrations for SuperTokens path
+    await runMigrations(fastify.config, fastify.slonik);
+  }
 
   fastify.decorate("hasPermission", hasPermission);
 

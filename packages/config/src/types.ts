@@ -57,7 +57,7 @@ interface ApiConfig {
   rest: {
     enabled: boolean;
   };
-  twilio:
+  twilio?:
     | {
         accountSid: string;
         authToken: string;

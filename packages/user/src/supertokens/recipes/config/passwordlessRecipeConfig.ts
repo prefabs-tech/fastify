@@ -23,6 +23,12 @@ const getPasswordlessRecipeConfig = (
     passwordless = config.user.supertokens.recipes.passwordless;
   }
 
+  if (!config.twilio) {
+    throw new Error(
+      "Twilio config is missing for passwordless recipe. Please add twilio config to your app config.",
+    );
+  }
+
   if (!("messagingServiceSid" in config.twilio) && !("from" in config.twilio)) {
     throw new Error(
       "Twilio config requires either messagingServiceSid or from",

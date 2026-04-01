@@ -23,6 +23,7 @@ interface UserConfig {
     resetPassword?: EmailOptions;
     resetPasswordNotification?: EmailOptions;
   };
+  fallbackEmailDomain?: string;
   features?: {
     profileValidation?: {
       /**

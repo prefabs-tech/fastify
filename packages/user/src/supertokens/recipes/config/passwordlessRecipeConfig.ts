@@ -17,6 +17,8 @@ const getPasswordlessRecipeConfig = (
   fastify: FastifyInstance,
 ): PasswordlessRecipeConfig => {
   const { config } = fastify;
+  const isDevelopment = process.env.NODE_ENV === "development";
+  const defaultTestOtp = process.env.DEFAULT_TEST_OTP || "123456";
 
   let passwordless: PasswordlessRecipe = {};
 
@@ -24,36 +26,48 @@ const getPasswordlessRecipeConfig = (
     passwordless = config.user.supertokens.recipes.passwordless;
   }
 
-  if (!config.twilio) {
-    throw new Error(
-      "Twilio config is missing for passwordless recipe. Please add twilio config to your app config.",
-    );
-  }
+  let twilioSettings: TwilioServiceConfig | undefined;
 
-  if (!("messagingServiceSid" in config.twilio) && !("from" in config.twilio)) {
-    throw new Error(
-      "Twilio config requires either messagingServiceSid or from",
-    );
-  }
+  if (!isDevelopment) {
+    if (!config.user.twilio) {
+      throw new Error(
+        "Twilio config is missing for passwordless recipe. Please add twilio config to your app config.",
+      );
+    }
 
-  const twilioSettings: TwilioServiceConfig =
-    "messagingServiceSid" in config.twilio
-      ? {
-          opts: config.twilio.opts,
-          accountSid: config.twilio.accountSid,
-          authToken: config.twilio.authToken,
-          messagingServiceSid: config.twilio.messagingServiceSid,
-        }
-      : {
-          opts: config.twilio.opts,
-          accountSid: config.twilio.accountSid,
-          authToken: config.twilio.authToken,
-          from: config.twilio.from,
-        };
+    if (
+      !("messagingServiceSid" in config.user.twilio) &&
+      !("from" in config.user.twilio)
+    ) {
+      throw new Error(
+        "Twilio config requires either messagingServiceSid or from",
+      );
+    }
+
+    twilioSettings =
+      "messagingServiceSid" in config.user.twilio
+        ? {
+            opts: config.user.twilio.opts,
+            accountSid: config.user.twilio.accountSid,
+            authToken: config.user.twilio.authToken,
+            messagingServiceSid: config.user.twilio.messagingServiceSid,
+          }
+        : {
+            opts: config.user.twilio.opts,
+            accountSid: config.user.twilio.accountSid,
+            authToken: config.user.twilio.authToken,
+            from: config.user.twilio.from,
+          };
+  }
 
   return {
     contactMethod: passwordless?.contactMethod || "PHONE",
     flowType: passwordless?.flowType || "USER_INPUT_CODE",
+    ...(isDevelopment
+      ? {
+          getCustomUserInputCode: () => defaultTestOtp,
+        }
+      : {}),
     override: {
       apis: (originalImplementation) => {
         const apiInterface: Partial<APIInterface> = {};
@@ -110,25 +124,39 @@ const getPasswordlessRecipeConfig = (
         };
       },
     },
-    smsDelivery: {
-      service: new TwilioService({
-        twilioSettings,
-        override: (originalImplementation) => {
-          return {
-            ...originalImplementation,
-            getContent: async (input) => {
-              return {
-                body: `Your verification code is: ${input.userInputCode}.`,
-                toPhoneNumber: input.phoneNumber,
-              };
-            },
-            sendRawSms: async (input) => {
-              await originalImplementation.sendRawSms(input);
-            },
-          };
-        },
-      }),
-    },
+    ...(isDevelopment
+      ? {
+          createAndSendCustomTextMessage: async () => {
+            fastify.log.info(
+              `Skipping passwordless SMS delivery in development environment. Use default OTP [${defaultTestOtp}] for testing.`,
+            );
+          },
+        }
+      : {
+          smsDelivery: {
+            service: new TwilioService({
+              twilioSettings: twilioSettings as TwilioServiceConfig,
+              override: (originalImplementation) => {
+                return {
+                  ...originalImplementation,
+                  getContent: async (input) => {
+                    const message =
+                      config.user.twilio?.message ||
+                      "Your verification code is:";
+
+                    return {
+                      body: `${message} ${input.userInputCode}.`,
+                      toPhoneNumber: input.phoneNumber,
+                    };
+                  },
+                  sendRawSms: async (input) => {
+                    await originalImplementation.sendRawSms(input);
+                  },
+                };
+              },
+            }),
+          },
+        }),
   };
 };
 

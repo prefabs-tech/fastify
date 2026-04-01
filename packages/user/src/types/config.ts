@@ -128,11 +128,13 @@ interface UserConfig {
         accountSid: string;
         authToken: string;
         from: string;
+        message?: string;
         opts?: Record<string, unknown>;
       }
     | {
         accountSid: string;
         authToken: string;
+        message?: string;
         messagingServiceSid: string;
         opts?: Record<string, unknown>;
       };

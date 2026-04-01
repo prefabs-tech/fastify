@@ -57,19 +57,6 @@ interface ApiConfig {
   rest: {
     enabled: boolean;
   };
-  twilio?:
-    | {
-        accountSid: string;
-        authToken: string;
-        from: string;
-        opts?: Record<string, unknown>;
-      }
-    | {
-        accountSid: string;
-        authToken: string;
-        messagingServiceSid: string;
-        opts?: Record<string, unknown>;
-      };
   version: string;
 }
 

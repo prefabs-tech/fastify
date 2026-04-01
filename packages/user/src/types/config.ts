@@ -123,6 +123,19 @@ interface UserConfig {
       name?: string;
     };
   };
+  twilio?:
+    | {
+        accountSid: string;
+        authToken: string;
+        from: string;
+        opts?: Record<string, unknown>;
+      }
+    | {
+        accountSid: string;
+        authToken: string;
+        messagingServiceSid: string;
+        opts?: Record<string, unknown>;
+      };
 }
 
 export type { EmailOptions, UserConfig };

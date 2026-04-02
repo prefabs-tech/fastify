@@ -6,10 +6,12 @@ import {
 } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import type { EmailVerificationRecipe } from "./emailVerificationRecipe";
+import type { PasswordlessRecipe } from "./passwordlessRecipe";
 import type { SessionRecipe } from "./sessionRecipe";
 import type { ThirdPartyEmailPasswordRecipe } from "./thirdPartyEmailPasswordRecipe";
 import type { FastifyInstance } from "fastify";
 import type { TypeInput as EmailVerificationRecipeConfig } from "supertokens-node/recipe/emailverification/types";
+import type { TypeInput as PasswordlessRecipeConfig } from "supertokens-node/recipe/passwordless/types";
 import type { TypeInput as SessionRecipeConfig } from "supertokens-node/recipe/session/types";
 import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
 import type { TypeInput as ThirdPartyEmailPasswordRecipeConfig } from "supertokens-node/recipe/thirdpartyemailpassword/types";
@@ -19,6 +21,9 @@ interface SupertokensRecipes {
   emailVerification?:
     | EmailVerificationRecipe
     | ((fastify: FastifyInstance) => EmailVerificationRecipeConfig);
+  passwordless?:
+    | PasswordlessRecipe
+    | ((fastify: FastifyInstance) => PasswordlessRecipeConfig);
   session?: SessionRecipe | ((fastify: FastifyInstance) => SessionRecipeConfig);
   userRoles?: (fastify: FastifyInstance) => UserRolesRecipeConfig;
   thirdPartyEmailPassword?:

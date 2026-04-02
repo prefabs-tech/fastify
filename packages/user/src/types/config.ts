@@ -23,6 +23,7 @@ interface UserConfig {
     resetPassword?: EmailOptions;
     resetPasswordNotification?: EmailOptions;
   };
+  fallbackEmailDomain?: string;
   features?: {
     profileValidation?: {
       /**
@@ -122,6 +123,21 @@ interface UserConfig {
       name?: string;
     };
   };
+  twilio?:
+    | {
+        accountSid: string;
+        authToken: string;
+        from: string;
+        message?: string;
+        opts?: Record<string, unknown>;
+      }
+    | {
+        accountSid: string;
+        authToken: string;
+        message?: string;
+        messagingServiceSid: string;
+        opts?: Record<string, unknown>;
+      };
 }
 
 export type { EmailOptions, UserConfig };

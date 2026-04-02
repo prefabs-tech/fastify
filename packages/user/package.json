@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-user",
-  "version": "0.93.5",
+  "version": "0.94.0-beta.1",
   "description": "Fastify user plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/user#readme",
   "repository": {

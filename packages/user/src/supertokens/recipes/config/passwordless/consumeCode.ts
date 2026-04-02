@@ -47,7 +47,7 @@ const consumeCode = (
     const phoneNumber = originalResponse.user.phoneNumber;
 
     const emailDomain =
-      fastify.config.user.fallbackEmailDomain ||
+      fastify.config.user.passwordLessConfig.fallbackEmailDomain ||
       fastify.config.appName.toLowerCase().replaceAll(/\s+/g, "") + ".com";
 
     const email = phoneNumber

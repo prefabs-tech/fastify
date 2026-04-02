@@ -17,8 +17,8 @@ const getPasswordlessRecipeConfig = (
   fastify: FastifyInstance,
 ): PasswordlessRecipeConfig => {
   const { config } = fastify;
-  const isDevelopment = process.env.NODE_ENV === "development";
-  const defaultTestOtp = process.env.DEFAULT_TEST_OTP || "123456";
+  const isDevelopment = config.user.passwordLessConfig.enableDevMode;
+  const developmentModeOtp = config.user.passwordLessConfig.devModeOtp;
 
   let passwordless: PasswordlessRecipe = {};
 
@@ -26,38 +26,25 @@ const getPasswordlessRecipeConfig = (
     passwordless = config.user.supertokens.recipes.passwordless;
   }
 
-  let twilioSettings: TwilioServiceConfig | undefined;
+  const twilioSettings: TwilioServiceConfig | undefined = isDevelopment
+    ? undefined
+    : config.user.passwordLessConfig.twilio;
 
-  if (!isDevelopment) {
-    if (!config.user.twilio) {
-      throw new Error(
-        "Twilio config is missing for passwordless recipe. Please add twilio config to your app config.",
-      );
-    }
+  if (!isDevelopment && !twilioSettings) {
+    throw new Error(
+      "Twilio config is missing for passwordless recipe. Please add twilio config to your app config.",
+    );
+  }
 
-    if (
-      !("messagingServiceSid" in config.user.twilio) &&
-      !("from" in config.user.twilio)
-    ) {
-      throw new Error(
-        "Twilio config requires either messagingServiceSid or from",
-      );
-    }
-
-    twilioSettings =
-      "messagingServiceSid" in config.user.twilio
-        ? {
-            opts: config.user.twilio.opts,
-            accountSid: config.user.twilio.accountSid,
-            authToken: config.user.twilio.authToken,
-            messagingServiceSid: config.user.twilio.messagingServiceSid,
-          }
-        : {
-            opts: config.user.twilio.opts,
-            accountSid: config.user.twilio.accountSid,
-            authToken: config.user.twilio.authToken,
-            from: config.user.twilio.from,
-          };
+  if (
+    !isDevelopment &&
+    twilioSettings &&
+    !("from" in twilioSettings) &&
+    !("messagingServiceSid" in twilioSettings)
+  ) {
+    throw new Error(
+      "Twilio config requires either 'from' or 'messagingServiceSid'.",
+    );
   }
 
   return {
@@ -65,7 +52,7 @@ const getPasswordlessRecipeConfig = (
     flowType: passwordless?.flowType || "USER_INPUT_CODE",
     ...(isDevelopment
       ? {
-          getCustomUserInputCode: () => defaultTestOtp,
+          getCustomUserInputCode: () => developmentModeOtp,
         }
       : {}),
     override: {
@@ -128,7 +115,7 @@ const getPasswordlessRecipeConfig = (
       ? {
           createAndSendCustomTextMessage: async () => {
             fastify.log.info(
-              `Skipping passwordless SMS delivery in development environment. Use default OTP [${defaultTestOtp}] for testing.`,
+              `Skipping passwordless SMS delivery in development environment. Use default OTP [${developmentModeOtp}] for testing.`,
             );
           },
         }
@@ -141,7 +128,7 @@ const getPasswordlessRecipeConfig = (
                   ...originalImplementation,
                   getContent: async (input) => {
                     const message =
-                      config.user.twilio?.message ||
+                      config.user.passwordLessConfig.smsMessage ||
                       "Your verification code is:";
 
                     return {

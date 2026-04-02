@@ -9,11 +9,13 @@ import type { IsEmailOptions } from "./isEmailOptions";
 import type { StrongPasswordOptions } from "./strongPasswordOptions";
 import type { User, UserUpdateInput } from "./user";
 import type { FastifyRequest } from "fastify";
+import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
 
 interface EmailOptions {
   subject?: string;
   templateName?: string;
 }
+
 interface UserConfig {
   email?: IsEmailOptions;
   emailOverrides?: {
@@ -23,7 +25,6 @@ interface UserConfig {
     resetPassword?: EmailOptions;
     resetPasswordNotification?: EmailOptions;
   };
-  fallbackEmailDomain?: string;
   features?: {
     profileValidation?: {
       /**
@@ -88,6 +89,13 @@ interface UserConfig {
     ) => Promise<void>;
   };
   password?: StrongPasswordOptions;
+  passwordLessConfig: {
+    devModeOtp: string;
+    enableDevMode: boolean;
+    fallbackEmailDomain: string;
+    smsMessage: string;
+    twilio: TwilioServiceConfig;
+  };
   permissions?: string[];
   photoMaxSizeInMB?: number;
   role?: string;
@@ -123,21 +131,6 @@ interface UserConfig {
       name?: string;
     };
   };
-  twilio?:
-    | {
-        accountSid: string;
-        authToken: string;
-        from: string;
-        message?: string;
-        opts?: Record<string, unknown>;
-      }
-    | {
-        accountSid: string;
-        authToken: string;
-        message?: string;
-        messagingServiceSid: string;
-        opts?: Record<string, unknown>;
-      };
 }
 
 export type { EmailOptions, UserConfig };

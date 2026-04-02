@@ -29,7 +29,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "firebase-admin": "13.6.1",
+    "firebase-admin": "13.7.0",
     "zod": "3.25.76"
   },
   "devDependencies": {

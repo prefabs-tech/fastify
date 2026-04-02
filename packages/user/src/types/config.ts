@@ -92,9 +92,9 @@ interface UserConfig {
   passwordLessConfig: {
     devModeOtp: string;
     enableDevMode: boolean;
-    fallbackEmailDomain: string;
-    smsMessage: string;
-    twilio: TwilioServiceConfig;
+    fallbackEmailDomain?: string;
+    smsMessage?: string;
+    twilio?: TwilioServiceConfig;
   };
   permissions?: string[];
   photoMaxSizeInMB?: number;

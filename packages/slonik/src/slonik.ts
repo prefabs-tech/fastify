@@ -1,20 +1,21 @@
+import type { FastifyInstance } from "fastify";
+import type { ClientConfigurationInput } from "slonik";
+
 // [OP 2023-JAN-28] Copy/pasted from https://github.com/spa5k/fastify-slonik/blob/main/src/index.ts
 import fastifyPlugin from "fastify-plugin";
 import { sql } from "slonik";
 
+import type { Database } from "./types";
+
 import createDatabase from "./createDatabase";
 
-import type { Database } from "./types";
-import type { FastifyInstance } from "fastify";
-import type { ClientConfigurationInput } from "slonik";
-
 type SlonikOptions = {
-  connectionString: string;
   clientConfiguration?: ClientConfigurationInput;
+  connectionString: string;
 };
 
 const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
-  const { connectionString, clientConfiguration } = options;
+  const { clientConfiguration, connectionString } = options;
   let db: Database;
 
   try {

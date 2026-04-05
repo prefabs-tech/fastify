@@ -1,21 +1,22 @@
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
+import type { MercuriusContext } from "mercurius";
+
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { mercurius } from "mercurius";
 import { createNewSession } from "supertokens-node/recipe/session";
 import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
-
-import getInvitationService from "../../../lib/getInvitationService";
-import isInvitationValid from "../../../lib/isInvitationValid";
-import sendInvitation from "../../../lib/sendInvitation";
-import validateEmail from "../../../validator/email";
-import validatePassword from "../../../validator/password";
 
 import type { User } from "../../../types";
 import type {
   Invitation,
   InvitationCreateInput,
 } from "../../../types/invitation";
-import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
-import type { MercuriusContext } from "mercurius";
+
+import getInvitationService from "../../../lib/getInvitationService";
+import isInvitationValid from "../../../lib/isInvitationValid";
+import sendInvitation from "../../../lib/sendInvitation";
+import validateEmail from "../../../validator/email";
+import validatePassword from "../../../validator/password";
 
 const Mutation = {
   acceptInvitation: async (
@@ -31,7 +32,7 @@ const Mutation = {
   ) => {
     const { app, config, database, dbSchema, reply } = context;
 
-    const { token, data } = arguments_;
+    const { data, token } = arguments_;
 
     try {
       const { email, password } = data;
@@ -82,8 +83,8 @@ const Mutation = {
 
       // signup
       const signUpResponse = await emailPasswordSignUp(email, password, {
-        roles: [invitation.role],
         autoVerifyEmail: true,
+        roles: [invitation.role],
       });
 
       if (signUpResponse.status !== "OK") {
@@ -192,6 +193,35 @@ const Mutation = {
       );
     }
   },
+  deleteInvitation: async (
+    parent: unknown,
+    arguments_: {
+      id: number;
+    },
+    context: MercuriusContext,
+  ) => {
+    const service = getInvitationService(
+      context.config,
+      context.database,
+      context.dbSchema,
+    );
+
+    const invitation = await service.delete(arguments_.id);
+
+    let errorMessage: string | undefined;
+
+    if (!invitation) {
+      errorMessage = "Invitation not found";
+    }
+
+    if (errorMessage) {
+      const mercuriusError = new mercurius.ErrorWithProps(errorMessage);
+
+      return mercuriusError;
+    }
+
+    return invitation;
+  },
   resendInvitation: async (
     parent: unknown,
     arguments_: {
@@ -265,35 +295,6 @@ const Mutation = {
 
     return invitation;
   },
-  deleteInvitation: async (
-    parent: unknown,
-    arguments_: {
-      id: number;
-    },
-    context: MercuriusContext,
-  ) => {
-    const service = getInvitationService(
-      context.config,
-      context.database,
-      context.dbSchema,
-    );
-
-    const invitation = await service.delete(arguments_.id);
-
-    let errorMessage: string | undefined;
-
-    if (!invitation) {
-      errorMessage = "Invitation not found";
-    }
-
-    if (errorMessage) {
-      const mercuriusError = new mercurius.ErrorWithProps(errorMessage);
-
-      return mercuriusError;
-    }
-
-    return invitation;
-  },
 };
 
 const Query = {
@@ -327,9 +328,9 @@ const Query = {
   invitations: async (
     parent: unknown,
     arguments_: {
+      filters?: FilterInput;
       limit: number;
       offset: number;
-      filters?: FilterInput;
       sort?: SortInput[];
     },
     context: MercuriusContext,

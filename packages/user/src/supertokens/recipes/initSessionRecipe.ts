@@ -1,9 +1,10 @@
+import type { FastifyInstance } from "fastify";
+
 import Session from "supertokens-node/recipe/session";
 
-import getSessionRecipeConfig from "./config/sessionRecipeConfig";
-
 import type { SupertokensRecipes } from "../types";
-import type { FastifyInstance } from "fastify";
+
+import getSessionRecipeConfig from "./config/sessionRecipeConfig";
 
 const init = (fastify: FastifyInstance) => {
   const session: SupertokensRecipes["session"] =

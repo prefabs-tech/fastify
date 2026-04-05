@@ -1,14 +1,18 @@
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
+import type { FragmentSqlToken, QuerySqlToken } from "slonik";
+
 import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 import { sql } from "slonik";
 
 import { TABLE_INVITATIONS } from "../../constants";
 import UserSqlFactory from "../users/sqlFactory";
 
-import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
-import type { FragmentSqlToken, QuerySqlToken } from "slonik";
-
 class InvitationSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_INVITATIONS;
+
+  get table() {
+    return this.config.user?.tables?.invitations?.name || super.table;
+  }
 
   getFindByTokenSql = (token: string): QuerySqlToken => {
     return sql.type(this.validationSchema)`
@@ -42,10 +46,6 @@ class InvitationSqlFactory extends DefaultSqlFactory {
     );
 
     return userSqlFactory.tableFragment;
-  }
-
-  get table() {
-    return this.config.user?.tables?.invitations?.name || super.table;
   }
 }
 

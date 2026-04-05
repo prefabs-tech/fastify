@@ -1,9 +1,9 @@
 import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
 
+import type { User } from "./types";
+
 import notificationHandlers from "./model/notification/handlers";
 import deviceHandlers from "./model/userDevice/handlers";
-
-import type { User } from "./types";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -24,24 +24,19 @@ declare module "mercurius" {
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     firebase: {
-      enabled?: boolean;
       credentials?: {
-        projectId: string;
-        privateKey: string;
         clientEmail: string;
+        privateKey: string;
+        projectId: string;
       };
-      routes?: {
-        notifications?: {
-          disabled: boolean;
+      enabled?: boolean;
+      handlers?: {
+        notification?: {
+          sendNotification?: typeof notificationHandlers.sendNotification;
         };
-        userDevices?: {
-          disabled: boolean;
-        };
-      };
-      routePrefix?: string;
-      table?: {
-        userDevices?: {
-          name: string;
+        userDevice?: {
+          addUserDevice?: typeof deviceHandlers.addUserDevice;
+          removeUserDevice?: typeof deviceHandlers.removeUserDevice;
         };
       };
       notification?: {
@@ -50,29 +45,34 @@ declare module "@prefabs.tech/fastify-config" {
           path: string;
         };
       };
-      handlers?: {
-        userDevice?: {
-          addUserDevice?: typeof deviceHandlers.addUserDevice;
-          removeUserDevice?: typeof deviceHandlers.removeUserDevice;
+      routePrefix?: string;
+      routes?: {
+        notifications?: {
+          disabled: boolean;
         };
-        notification?: {
-          sendNotification?: typeof notificationHandlers.sendNotification;
+        userDevices?: {
+          disabled: boolean;
+        };
+      };
+      table?: {
+        userDevices?: {
+          name: string;
         };
       };
     };
   }
 }
 
-export { default } from "./plugin";
+export * from "./constants";
 
+export { default as firebaseSchema } from "./graphql/schema";
+export * from "./lib";
+
+export * from "./migrations/queries";
 export { default as notificationRoutes } from "./model/notification/controller";
 export { default as notificationResolver } from "./model/notification/graphql/resolver";
+export { default as userDeviceRoutes } from "./model/userDevice/controller";
 
 export { default as userDeviceResolver } from "./model/userDevice/graphql/resolver";
-export { default as userDeviceRoutes } from "./model/userDevice/controller";
 export { default as UserDeviceService } from "./model/userDevice/service";
-export { default as firebaseSchema } from "./graphql/schema";
-
-export * from "./constants";
-export * from "./lib";
-export * from "./migrations/queries";
+export { default } from "./plugin";

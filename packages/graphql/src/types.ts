@@ -1,8 +1,8 @@
 import type {
-  FastifyPluginCallback,
   FastifyPluginAsync,
-  FastifyRequest,
+  FastifyPluginCallback,
   FastifyReply,
+  FastifyRequest,
 } from "fastify";
 import type { MercuriusContext, MercuriusOptions } from "mercurius";
 

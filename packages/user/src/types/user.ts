@@ -1,49 +1,49 @@
 import type { Multipart } from "@prefabs.tech/fastify-s3";
 import type { User as SupertokensUser } from "supertokens-node/recipe/thirdpartyemailpassword";
 
+interface AuthUser extends SupertokensUser, User {}
+
 interface Photo {
   id: number;
   url: string;
 }
 
 interface User {
-  id: string;
   deletedAt?: number;
   disabled: boolean;
   email: string;
+  id: string;
   lastLoginAt: number;
-  photoId?: number | null;
   photo?: Photo;
+  photoId?: null | number;
   roles?: string[];
   signedUpAt: number;
 }
 
-type UserCreateInput = Partial<
-  Omit<
-    User,
-    "disabled" | "lastLoginAt" | "roles" | "signedUpAt" | "deletedAt" | "photo"
-  >
-> & {
+type UserCreateInput = {
   lastLoginAt?: string;
   signedUpAt?: string;
-};
-
-type UserUpdateInput = Partial<
+} & Partial<
   Omit<
     User,
-    | "id"
-    | "email"
-    | "lastLoginAt"
-    | "roles"
-    | "signedUpAt"
-    | "deletedAt"
-    | "photo"
+    "deletedAt" | "disabled" | "lastLoginAt" | "photo" | "roles" | "signedUpAt"
   >
-> & {
+>;
+
+type UserUpdateInput = {
   lastLoginAt?: string;
   photo?: Multipart;
-};
-
-interface AuthUser extends User, SupertokensUser {}
+} & Partial<
+  Omit<
+    User,
+    | "deletedAt"
+    | "email"
+    | "id"
+    | "lastLoginAt"
+    | "photo"
+    | "roles"
+    | "signedUpAt"
+  >
+>;
 
 export type { AuthUser, User, UserCreateInput, UserUpdateInput };

@@ -2,13 +2,13 @@ import type { PaginatedList } from "@prefabs.tech/fastify-slonik";
 import type { MercuriusContext } from "mercurius";
 import type { QueryResultRow } from "slonik";
 
-interface ChangePasswordInput {
-  oldPassword?: string;
-  newPassword?: string;
-}
-
 interface ChangeEmailInput {
   email: string;
+}
+
+interface ChangePasswordInput {
+  newPassword?: string;
+  oldPassword?: string;
 }
 
 interface EmailErrorMessages {
@@ -28,7 +28,7 @@ interface Resolver {
       [key: string]: unknown;
     },
     context: MercuriusContext,
-  ) => Promise<QueryResultRow | null | PaginatedList<QueryResultRow>>;
+  ) => Promise<null | PaginatedList<QueryResultRow> | QueryResultRow>;
 }
 
 export type {
@@ -39,12 +39,12 @@ export type {
   Resolver,
 };
 
-export * from "./config";
-export * from "./invitation";
-export * from "./isEmailOptions";
-export * from "./strongPasswordOptions";
-export * from "./user";
-
 export type { EmailVerificationRecipe } from "../supertokens/types/emailVerificationRecipe";
 export type { SessionRecipe } from "../supertokens/types/sessionRecipe";
 export type { ThirdPartyEmailPasswordRecipe } from "../supertokens/types/thirdPartyEmailPasswordRecipe";
+export * from "./config";
+export * from "./invitation";
+
+export * from "./isEmailOptions";
+export * from "./strongPasswordOptions";
+export * from "./user";

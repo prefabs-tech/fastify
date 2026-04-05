@@ -12,7 +12,7 @@ const Mutation = {
     },
     context: MercuriusContext,
   ) => {
-    const { app, config, dbSchema, database, user } = context;
+    const { app, config, database, dbSchema, user } = context;
 
     if (config.firebase.enabled === false) {
       return new mercurius.ErrorWithProps("Firebase is not enabled", {}, 404);
@@ -27,7 +27,7 @@ const Mutation = {
 
       const service = new Service(config, database, dbSchema);
 
-      return await service.create({ userId: user.id, deviceToken });
+      return await service.create({ deviceToken, userId: user.id });
     } catch (error) {
       app.log.error(error);
 
@@ -47,7 +47,7 @@ const Mutation = {
     },
     context: MercuriusContext,
   ) => {
-    const { app, config, dbSchema, database, user } = context;
+    const { app, config, database, dbSchema, user } = context;
 
     if (config.firebase.enabled === false) {
       return new mercurius.ErrorWithProps("Firebase is not enabled", {}, 404);

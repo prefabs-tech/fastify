@@ -19,7 +19,9 @@
   "main": "./dist/prefabs-tech-fastify-slonik.cjs",
   "module": "./dist/prefabs-tech-fastify-slonik.js",
   "types": "./dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -44,6 +46,7 @@
     "@types/pg": "8.16.0",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.2",
+    "eslint-plugin-perfectionist": "5.8.0",
     "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
     "pg-mem": "3.0.12",

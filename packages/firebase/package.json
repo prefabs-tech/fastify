@@ -49,6 +49,7 @@
     "fastify-plugin": "5.1.0",
     "graphql": "16.12.0",
     "mercurius": "16.7.0",
+    "pg-mem": "3.0.14",
     "prettier": "3.8.1",
     "slonik": "46.8.0",
     "supertokens-node": "14.1.4",

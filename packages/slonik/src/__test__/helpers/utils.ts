@@ -105,13 +105,13 @@ const getLimitAndOffsetDataset = async (count: number, config: ApiConfig) => {
 
 const getSortDataset = (): SortInput[][] => {
   return [
-    [{ key: "name", direction: "ASC" }],
-    [{ key: "id", direction: "DESC" }],
-    [{ key: "countryCode", direction: "ASC" }],
-    [{ key: "country_code", direction: "DESC" }],
+    [{ direction: "ASC", key: "name" }],
+    [{ direction: "DESC", key: "id" }],
+    [{ direction: "ASC", key: "countryCode" }],
+    [{ direction: "DESC", key: "country_code" }],
     [
-      { key: "id", direction: "DESC" },
-      { key: "name", direction: "ASC" },
+      { direction: "DESC", key: "id" },
+      { direction: "ASC", key: "name" },
     ],
   ];
 };

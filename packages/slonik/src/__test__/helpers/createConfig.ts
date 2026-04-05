@@ -1,6 +1,7 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
 /* istanbul ignore file */
 import type { SlonikOptions } from "../../types";
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 const createConfig = (slonikOptions?: SlonikOptions) => {
   const config: ApiConfig = {
@@ -17,7 +18,6 @@ const createConfig = (slonikOptions?: SlonikOptions) => {
     rest: {
       enabled: true,
     },
-    version: "0.1",
     slonik: {
       db: {
         databaseName: "test",
@@ -27,6 +27,7 @@ const createConfig = (slonikOptions?: SlonikOptions) => {
       },
       ...slonikOptions,
     },
+    version: "0.1",
   };
 
   return config;

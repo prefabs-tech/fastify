@@ -1,6 +1,5 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { defineConfig, loadEnv } from "vite";
 
 import { dependencies, peerDependencies } from "./package.json";
@@ -25,9 +24,9 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
+            "@graphql-tools/merge": "GraphqlToolsMerge",
             "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
-            "@graphql-tools/merge": "GraphqlToolsMerge",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
             graphql: "Graphql",

@@ -1,4 +1,4 @@
-import DefaultSqlFactory from "./sqlFactory";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import type {
   Database,
@@ -8,19 +8,49 @@ import type {
   SqlFactory,
 } from "./types";
 import type { PaginatedList } from "./types/service";
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
+import DefaultSqlFactory from "./sqlFactory";
 
 abstract class BaseService<
   T,
   C extends Record<string, unknown>,
   U extends Record<string, unknown>,
 > implements Service<T, C, U> {
+  get config(): ApiConfig {
+    return this._config;
+  }
+  get database(): Database {
+    return this._database;
+  }
+  get factory(): SqlFactory {
+    if (!this._factory) {
+      const sqlFactoryClass = this.sqlFactoryClass;
+
+      this._factory = new sqlFactoryClass(
+        this.config,
+        this.database,
+        this.schema,
+      );
+    }
+
+    return this._factory;
+  }
+  get schema(): string {
+    return this._schema || "public";
+  }
+
+  get sqlFactoryClass() {
+    return DefaultSqlFactory;
+  }
+
+  get table(): string {
+    return this.factory.table;
+  }
   /* eslint-enabled */
   protected _config: ApiConfig;
   protected _database: Database;
   protected _factory: SqlFactory | undefined;
   protected _schema = "public";
-
   constructor(config: ApiConfig, database: Database, schema?: string) {
     this._config = config;
     this._database = database;
@@ -29,31 +59,6 @@ abstract class BaseService<
       this._schema = schema;
     }
   }
-
-  // Type-safe optional hook methods for pre-processing
-  protected preAll?(): Promise<void>;
-  protected preCount?(): Promise<void>;
-  protected preCreate?(data: C): Promise<C | undefined>;
-  protected preDelete?(id: number | string): Promise<void>;
-  protected preFind?(): Promise<void>;
-  protected preFindById?(id: number | string): Promise<void>;
-  protected preFindOne?(): Promise<void>;
-  protected preList?(): Promise<void>;
-  protected preUpdate?(data: U): Promise<U | undefined>;
-
-  // Type-safe optional hook methods for post-processing
-  protected postAll?(
-    result: Partial<readonly T[]>,
-  ): Promise<Partial<readonly T[]>>;
-  protected postCount?(result: number): Promise<number>;
-  // protected postCreate?(result: T): Promise<T>;
-  protected postDelete?(result: T): Promise<T>;
-  protected postFind?(result: readonly T[]): Promise<readonly T[]>;
-  protected postFindById?(result: T): Promise<T>;
-  protected postFindOne?(result: T): Promise<T>;
-  protected postList?(result: PaginatedList<T>): Promise<PaginatedList<T>>;
-  protected postUpdate?(result: T): Promise<T>;
-
   /**
    * Only for entities that support it. Returns the full list of entities,
    * with no filtering, no custom sorting order, no pagination,
@@ -74,7 +79,6 @@ abstract class BaseService<
 
     return await this.postProcess<Partial<readonly T[]>>("all", result);
   }
-
   async count(filters?: FilterInput): Promise<number> {
     await this.preProcess("count");
 
@@ -88,7 +92,6 @@ abstract class BaseService<
 
     return await this.postProcess<number>("count", count);
   }
-
   async create(data: C): Promise<T | undefined> {
     const processedData = await this.preProcess("create", data);
 
@@ -103,7 +106,7 @@ abstract class BaseService<
     return result ? await this.postProcess<T>("create", result) : undefined;
   }
 
-  async delete(id: number | string, force?: boolean): Promise<T | null> {
+  async delete(id: number | string, force?: boolean): Promise<null | T> {
     await this.preProcess("delete", id);
 
     const query = this.factory.getDeleteSql(id, force);
@@ -114,7 +117,6 @@ abstract class BaseService<
 
     return result ? await this.postProcess<T>("delete", result) : result;
   }
-
   async find(filters?: FilterInput, sort?: SortInput[]): Promise<readonly T[]> {
     await this.preProcess("find");
 
@@ -126,33 +128,30 @@ abstract class BaseService<
 
     return await this.postProcess<readonly T[]>("find", result);
   }
-
-  async findById(id: number | string): Promise<T | null> {
+  async findById(id: number | string): Promise<null | T> {
     await this.preProcess("findById");
 
     const query = this.factory.getFindByIdSql(id);
 
     const result = (await this.database.connect((connection) => {
       return connection.maybeOne(query);
-    })) as T | null;
+    })) as null | T;
 
     // eslint-disable-next-line unicorn/no-null
     return result ? await this.postProcess<T>("findById", result) : null;
   }
-
-  async findOne(filters?: FilterInput, sort?: SortInput[]): Promise<T | null> {
+  async findOne(filters?: FilterInput, sort?: SortInput[]): Promise<null | T> {
     await this.preProcess("findOne");
 
     const query = this.factory.getFindOneSql(filters, sort);
 
     const result = (await this.database.connect((connection) => {
       return connection.maybeOne(query);
-    })) as T | null;
+    })) as null | T;
 
     // eslint-disable-next-line unicorn/no-null
     return result ? await this.postProcess<T>("findOne", result) : null;
   }
-
   async list(
     limit?: number,
     offset?: number,
@@ -172,14 +171,13 @@ abstract class BaseService<
     ]);
 
     const result = {
-      totalCount,
-      filteredCount,
       data: data as readonly T[],
+      filteredCount,
+      totalCount,
     };
 
     return await this.postProcess<PaginatedList<T>>("list", result);
   }
-
   async update(id: number | string, data: U): Promise<T> {
     const processedData = await this.preProcess("update", data);
 
@@ -193,47 +191,11 @@ abstract class BaseService<
 
     return await this.postProcess<T>("update", result);
   }
-
-  get config(): ApiConfig {
-    return this._config;
-  }
-
-  get database(): Database {
-    return this._database;
-  }
-
-  get factory(): SqlFactory {
-    if (!this._factory) {
-      const sqlFactoryClass = this.sqlFactoryClass;
-
-      this._factory = new sqlFactoryClass(
-        this.config,
-        this.database,
-        this.schema,
-      );
-    }
-
-    return this._factory;
-  }
-
-  get schema(): string {
-    return this._schema || "public";
-  }
-
-  get sqlFactoryClass() {
-    return DefaultSqlFactory;
-  }
-
-  get table(): string {
-    return this.factory.table;
-  }
-
   protected getHook(prefix: string, action: string): unknown {
     const hookName = `${prefix}${action.charAt(0).toUpperCase()}${action.slice(1)}`;
 
     return (this as Record<string, unknown>)[hookName];
   }
-
   protected isCompatibleType<T>(processed: T, original: T): boolean {
     // If original is undefined, processed can be anything
     if (original === undefined) {
@@ -265,6 +227,67 @@ abstract class BaseService<
     return true;
   }
 
+  // Type-safe optional hook methods for post-processing
+  protected postAll?(
+    result: Partial<readonly T[]>,
+  ): Promise<Partial<readonly T[]>>;
+
+  protected postCount?(result: number): Promise<number>;
+
+  protected async postCreate(result: T): Promise<T> {
+    return result;
+  }
+
+  // protected postCreate?(result: T): Promise<T>;
+  protected postDelete?(result: T): Promise<T>;
+
+  protected postFind?(result: readonly T[]): Promise<readonly T[]>;
+
+  protected postFindById?(result: T): Promise<T>;
+
+  protected postFindOne?(result: T): Promise<T>;
+
+  protected postList?(result: PaginatedList<T>): Promise<PaginatedList<T>>;
+
+  protected async postProcess<R>(action: string, result: R): Promise<R> {
+    const postHook = this.getHook("post", action);
+
+    if (typeof postHook === "function") {
+      const processedResult = await (
+        postHook as (result: R) => Promise<R>
+      ).call(this, result);
+
+      // Validate that the processed result has compatible type with original result
+      if (
+        processedResult !== undefined &&
+        this.isCompatibleType(processedResult, result)
+      ) {
+        return processedResult;
+      }
+    }
+
+    return result;
+  }
+
+  protected postUpdate?(result: T): Promise<T>;
+
+  // Type-safe optional hook methods for pre-processing
+  protected preAll?(): Promise<void>;
+
+  protected preCount?(): Promise<void>;
+
+  protected preCreate?(data: C): Promise<C | undefined>;
+
+  protected preDelete?(id: number | string): Promise<void>;
+
+  protected preFind?(): Promise<void>;
+
+  protected preFindById?(id: number | string): Promise<void>;
+
+  protected preFindOne?(): Promise<void>;
+
+  protected preList?(): Promise<void>;
+
   protected async preProcess<D>(
     action: string,
     data?: D,
@@ -288,29 +311,7 @@ abstract class BaseService<
     return data;
   }
 
-  protected async postCreate(result: T): Promise<T> {
-    return result;
-  }
-
-  protected async postProcess<R>(action: string, result: R): Promise<R> {
-    const postHook = this.getHook("post", action);
-
-    if (typeof postHook === "function") {
-      const processedResult = await (
-        postHook as (result: R) => Promise<R>
-      ).call(this, result);
-
-      // Validate that the processed result has compatible type with original result
-      if (
-        processedResult !== undefined &&
-        this.isCompatibleType(processedResult, result)
-      ) {
-        return processedResult;
-      }
-    }
-
-    return result;
-  }
+  protected preUpdate?(data: U): Promise<U | undefined>;
 }
 
 export default BaseService;

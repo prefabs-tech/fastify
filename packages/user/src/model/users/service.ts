@@ -4,30 +4,54 @@ import { BaseService } from "@prefabs.tech/fastify-slonik";
 import Session from "supertokens-node/recipe/session";
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
-import UserSqlFactory from "./sqlFactory";
+import type { User, UserCreateInput, UserUpdateInput } from "../../types";
+
 import {
   DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB,
   ERROR_CODES,
 } from "../../constants";
 import validatePassword from "../../validator/password";
-
-import type { User, UserCreateInput, UserUpdateInput } from "../../types";
+import UserSqlFactory from "./sqlFactory";
 
 class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
-  protected photoPath = "photo";
-  protected photoFilename = "photo";
+  get bucket(): string | undefined {
+    return this.config.user.s3?.bucket;
+  }
+  get factory(): UserSqlFactory {
+    return super.factory as UserSqlFactory;
+  }
+
+  get fileService() {
+    if (!this._fileService) {
+      this._fileService = new FileService(
+        this.config,
+        this.database,
+        this.schema,
+      );
+    }
+
+    return this._fileService;
+  }
+  get sqlFactoryClass() {
+    return UserSqlFactory;
+  }
 
   protected _fileService: FileService | undefined;
+
   protected _supportedMimeTypes: string[] = [
     "image/jpeg",
     "image/png",
     "image/webp",
   ];
 
+  protected photoFilename = "photo";
+
+  protected photoPath = "photo";
+
   async changeEmail(id: string, email: string) {
     const response = await ThirdPartyEmailPassword.updateEmailOrPassword({
-      userId: id,
       email: email,
+      userId: id,
     });
 
     if (response.status !== "OK") {
@@ -52,8 +76,8 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
 
     if (!passwordValidation.success) {
       return {
-        status: "FIELD_ERROR",
         message: passwordValidation.message,
+        status: "FIELD_ERROR",
       };
     }
 
@@ -70,8 +94,8 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
 
         if (isPasswordValid.status === "OK") {
           const result = await ThirdPartyEmailPassword.updateEmailOrPassword({
-            userId,
             password: newPassword,
+            userId,
           });
 
           if (result) {
@@ -88,8 +112,8 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
           }
         } else {
           return {
-            status: "INVALID_PASSWORD",
             message: "Invalid password",
+            status: "INVALID_PASSWORD",
           };
         }
       } else {
@@ -97,10 +121,26 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
       }
     } else {
       return {
-        status: "FIELD_ERROR",
         message: "Password cannot be empty",
+        status: "FIELD_ERROR",
       };
     }
+  }
+
+  async deleteFile(fileId: number): Promise<File | null | undefined> {
+    if (!this.bucket) {
+      console.warn(
+        "S3 bucket for user model is not configured. Skipping file delete.",
+      );
+
+      return undefined;
+    }
+
+    const result = await this.fileService.deleteFile(fileId, {
+      bucket: this.bucket,
+    });
+
+    return result;
   }
 
   async deleteMe(userId: string, password: string) {
@@ -127,22 +167,6 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     }
   }
 
-  async deleteFile(fileId: number): Promise<File | undefined | null> {
-    if (!this.bucket) {
-      console.warn(
-        "S3 bucket for user model is not configured. Skipping file delete.",
-      );
-
-      return undefined;
-    }
-
-    const result = await this.fileService.deleteFile(fileId, {
-      bucket: this.bucket,
-    });
-
-    return result;
-  }
-
   async uploadPhoto(
     photo: Multipart,
     userId: string,
@@ -153,36 +177,6 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     const path = this.getPhotoPath(userId);
 
     return this.upload(photo, path, filename, uploadedById, uploadedAt);
-  }
-
-  get bucket(): string | undefined {
-    return this.config.user.s3?.bucket;
-  }
-
-  get factory(): UserSqlFactory {
-    return super.factory as UserSqlFactory;
-  }
-
-  get fileService() {
-    if (!this._fileService) {
-      this._fileService = new FileService(
-        this.config,
-        this.database,
-        this.schema,
-      );
-    }
-
-    return this._fileService;
-  }
-
-  get sqlFactoryClass() {
-    return UserSqlFactory;
-  }
-
-  protected async postDelete(result: User): Promise<User> {
-    await Session.revokeAllSessionsForUser(result.id);
-
-    return result;
   }
 
   protected getPhotoPath(userId: string): string {
@@ -202,6 +196,12 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     }
 
     return user;
+  }
+
+  protected async postDelete(result: User): Promise<User> {
+    await Session.revokeAllSessionsForUser(result.id);
+
+    return result;
   }
 
   protected async postFindById(result: User): Promise<User> {
@@ -258,9 +258,9 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
       file: {
         fileContent: data,
         fileFields: {
-          uploadedById: uploadedById,
-          uploadedAt: uploadedAt || Date.now(),
           bucket: this.bucket,
+          uploadedAt: uploadedAt || Date.now(),
+          uploadedById: uploadedById,
         },
       },
       options: {

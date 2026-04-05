@@ -1,7 +1,7 @@
-import UserService from "../model/users/service";
-
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { Database } from "@prefabs.tech/fastify-slonik";
+
+import UserService from "../model/users/service";
 
 const getUserService = (
   config: ApiConfig,

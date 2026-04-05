@@ -1,11 +1,12 @@
+import type { FastifyReply } from "fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify";
+
 import { createNewSession } from "supertokens-node/recipe/session";
+
+import type { ChangePasswordInput } from "../../../types";
 
 import getUserService from "../../../lib/getUserService";
 import createUserContext from "../../../supertokens/utils/createUserContext";
-
-import type { ChangePasswordInput } from "../../../types";
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const changePassword = async (request: SessionRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, server, slonik, user } = request;

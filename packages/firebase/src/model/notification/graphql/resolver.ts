@@ -1,27 +1,27 @@
+import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
+import type { MercuriusContext } from "mercurius";
+
 import { mercurius } from "mercurius";
 
 import { sendPushNotification } from "../../../lib";
 import UserDeviceService from "../../userDevice/service";
-
-import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
-import type { MercuriusContext } from "mercurius";
 
 const Mutation = {
   sendNotification: async (
     parent: unknown,
     arguments_: {
       data: {
-        userId: string;
-        title: string;
         body: string;
         data: {
           [key: string]: string;
         };
+        title: string;
+        userId: string;
       };
     },
     context: MercuriusContext,
   ) => {
-    const { app, config, dbSchema, database, user } = context;
+    const { app, config, database, dbSchema, user } = context;
 
     if (!user) {
       return new mercurius.ErrorWithProps("unauthorized", {}, 401);
@@ -32,7 +32,7 @@ const Mutation = {
     }
 
     try {
-      const { userId: receiverId, title, body, data } = arguments_.data;
+      const { body, data, title, userId: receiverId } = arguments_.data;
 
       if (!receiverId) {
         return new mercurius.ErrorWithProps("Receiver id is required", {}, 400);
@@ -59,12 +59,12 @@ const Mutation = {
       );
 
       const message: MulticastMessage = {
-        tokens,
-        notification: {
-          title,
-          body,
-        },
         data,
+        notification: {
+          body,
+          title,
+        },
+        tokens,
       };
 
       await sendPushNotification(message);

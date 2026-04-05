@@ -1,9 +1,10 @@
+import type { FastifyInstance } from "fastify";
+
 import UserRoles from "supertokens-node/recipe/userroles";
 
-import getUserRolesRecipeConfig from "./config/userRolesRecipeConfig";
-
 import type { SupertokensRecipes } from "../types";
-import type { FastifyInstance } from "fastify";
+
+import getUserRolesRecipeConfig from "./config/userRolesRecipeConfig";
 
 const init = (fastify: FastifyInstance) => {
   const recipes = fastify.config.user.supertokens.recipes as SupertokensRecipes;

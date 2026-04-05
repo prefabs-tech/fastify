@@ -1,10 +1,10 @@
+import type { FastifyInstance } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 import mercuriusAuth from "mercurius-auth";
 
 import hasUserPermission from "../lib/hasUserPermission";
-
-import type { FastifyInstance } from "fastify";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {
@@ -34,8 +34,8 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
               {
                 id: "st-perm",
                 reason: {
-                  message: "Not have enough permission",
                   expectedToInclude: permission,
+                  message: "Not have enough permission",
                 },
               },
             ],

@@ -1,6 +1,6 @@
-import { mercurius } from "mercurius";
-
 import type { MercuriusContext } from "mercurius";
+
+import { mercurius } from "mercurius";
 
 const Query = {
   permissions: async (

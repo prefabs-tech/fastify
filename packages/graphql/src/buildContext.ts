@@ -1,6 +1,7 @@
-import type { GraphqlEnabledPlugin } from "./types";
-import type { FastifyRequest, FastifyReply } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import type { MercuriusContext } from "mercurius";
+
+import type { GraphqlEnabledPlugin } from "./types";
 
 const buildContext = (plugins?: GraphqlEnabledPlugin[]) => {
   return async (request: FastifyRequest, reply: FastifyReply) => {

@@ -1,12 +1,11 @@
-import { STATUS_CODES } from "node:http";
-
 import { HttpError } from "@fastify/sensible";
 import { FastifyReply, FastifyRequest } from "fastify";
+import { STATUS_CODES } from "node:http";
 import StackTracey from "stacktracey";
 
-import { CustomError } from "./utils/error";
-
 import type { ErrorResponse } from "./types";
+
+import { CustomError } from "./utils/error";
 
 const getHttpStatusText = (statusCode: number): string =>
   STATUS_CODES[statusCode] ?? "Internal Server Error";
@@ -55,34 +54,26 @@ export const errorHandler = (
     return;
   }
 
-  let message = "Server error, please contact support";
   let code = "INTERNAL_SERVER_ERROR";
+  let message = "Server error, please contact support";
 
   if (error instanceof CustomError) {
     code = error.code || code;
     message = "Server has an error that is not handled, please contact support";
   }
 
+  const response: ErrorResponse = {
+    code: isStackTraceEnabled ? code : "INTERNAL_SERVER_ERROR",
+    message: isStackTraceEnabled ? error.message : message,
+    name: isStackTraceEnabled ? error.name : "Error",
+    statusCode: 500,
+  };
+
   if (isStackTraceEnabled && error.stack) {
-    const response: ErrorResponse = {
-      code: code,
-      message: error.message,
-      name: error.name,
-      statusCode: 500,
-      stack: stack.items,
-    };
-
-    logger.error(error);
-
-    void reply.code(500).send(response);
-
-    return;
+    response.stack = stack.items;
   }
 
-  // remove stack and message from error
-  delete error.stack;
-  error.message = message;
+  logger.error(error);
 
-  // let fastify handle the error
-  throw error;
+  void reply.code(500).send(response);
 };

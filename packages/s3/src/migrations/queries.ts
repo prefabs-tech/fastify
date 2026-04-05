@@ -1,9 +1,9 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import type { ZodTypeAny } from "zod";
+
 import { QuerySqlToken, sql } from "slonik";
 
 import { TABLE_FILES } from "../constants";
-
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
-import type { ZodTypeAny } from "zod";
 
 const createFilesTableQuery = (
   config: ApiConfig,

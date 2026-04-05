@@ -1,22 +1,22 @@
 interface File {
-  id: number;
-  originalFileName: string;
   bucket?: string;
-  description?: string;
-  key: string;
-  uploadedById?: string;
-  uploadedAt: number;
-  downloadCount?: number;
-  lastDownloadedAt?: number;
   createdAt: number;
+  description?: string;
+  downloadCount?: number;
+  id: number;
+  key: string;
+  lastDownloadedAt?: number;
+  originalFileName: string;
   updatedAt: number;
+  uploadedAt: number;
+  uploadedById?: string;
 }
 
 type FileCreateInput = Omit<
   File,
-  "id" | "originalFileName" | "key" | "createdAt" | "updatedAt"
+  "createdAt" | "id" | "key" | "originalFileName" | "updatedAt"
 >;
 
-type FileUpdateInput = Partial<Omit<File, "id" | "createdAt" | "updatedAt">>;
+type FileUpdateInput = Partial<Omit<File, "createdAt" | "id" | "updatedAt">>;
 
 export type { File, FileCreateInput, FileUpdateInput };

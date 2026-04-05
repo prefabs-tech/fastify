@@ -1,7 +1,6 @@
 name: "Test suite"
 
-on:
-  push
+on: push
 
 jobs:
   test:

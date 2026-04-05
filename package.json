@@ -28,5 +28,14 @@
   "engines": {
     "node": ">=20",
     "pnpm": ">=10"
+  },
+  "pnpm": {
+    "overrides": {
+      "@typescript-eslint/eslint-plugin": "8.58.0",
+      "@typescript-eslint/parser": "8.58.0",
+      "@typescript-eslint/typescript-estree": "8.58.0",
+      "@typescript-eslint/utils": "8.58.0",
+      "typescript-eslint": "8.58.0"
+    }
   }
 }

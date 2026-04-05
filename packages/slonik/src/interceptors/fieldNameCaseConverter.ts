@@ -1,5 +1,3 @@
-import humps from "humps";
-
 import type {
   Field,
   Interceptor,
@@ -7,6 +5,8 @@ import type {
   QueryContext,
   QueryResultRow,
 } from "slonik";
+
+import humps from "humps";
 
 const fieldNameCaseConverter: Interceptor = {
   transformRow: (

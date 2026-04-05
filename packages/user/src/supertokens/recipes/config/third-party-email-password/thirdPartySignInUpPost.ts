@@ -1,8 +1,8 @@
-import { ROLE_USER } from "../../../../constants";
-import getUserService from "../../../../lib/getUserService";
-
 import type { FastifyInstance } from "fastify";
 import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+
+import { ROLE_USER } from "../../../../constants";
+import getUserService from "../../../../lib/getUserService";
 
 const thirdPartySignInUpPOST = (
   originalImplementation: APIInterface,
@@ -35,8 +35,8 @@ const thirdPartySignInUpPOST = (
         );
 
         return {
-          status: "GENERAL_ERROR",
           message: "Something went wrong",
+          status: "GENERAL_ERROR",
         };
       }
 

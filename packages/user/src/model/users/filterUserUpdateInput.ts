@@ -3,10 +3,10 @@ import humps from "humps";
 import type { UserUpdateInput } from "../../types";
 
 const ignoredUpdateKeys = new Set([
-  "id",
   "disable",
-  "enable",
   "email",
+  "enable",
+  "id",
   "lastLoginAt",
   "roles",
   "signedUpAt",

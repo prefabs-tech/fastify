@@ -1,0 +1,53 @@
+{
+  "skill_name": "fastify-plugin-skills",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "analyze packages/config — I want to understand what this plugin does and what's ours vs what comes from base libraries",
+      "expected_output": "Structured analysis with ours/theirs classification, passthrough analysis per dependency, decorator list, hook list, conditional branches, and default values. Should complete the checklist.",
+      "files": [],
+      "expectations": [
+        "Output contains a '## Base Library Passthrough Analysis' section",
+        "Classifies at least one export as 'ours' (our code)",
+        "Produces a passthrough classification (FULL PASSTHROUGH, PARTIAL PASSTHROUGH, or MODIFIED) for each wrapped dependency",
+        "Lists at least one Fastify decorator added by the plugin",
+        "Documents conditional branches or default values",
+        "Does NOT claim to read files outside the packages/config directory",
+        "Completeness checklist items are addressed (decorators, hooks, conditional branches, defaults)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "document packages/config — create FEATURES.md and GUIDE.md for the config plugin",
+      "expected_output": "FEATURES.md with numbered features grouped by category, and GUIDE.md with setup, base library section, features with examples, and use cases. Should auto-run /analyze-package first.",
+      "files": [],
+      "expectations": [
+        "FEATURES.md is created",
+        "GUIDE.md is created",
+        "FEATURES.md starts with the required HTML comment about structured feature inventory",
+        "FEATURES.md features are numbered sequentially (1., 2., 3. or ## 1.)",
+        "FEATURES.md does NOT list base library features — only features our code adds",
+        "GUIDE.md contains a Setup section showing plugin registration",
+        "GUIDE.md contains at least 3 TypeScript code examples",
+        "GUIDE.md does NOT contain empty sections or placeholder N/A text",
+        "Analysis was performed before writing (evidence of ours/theirs classification in the approach)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "write tests for packages/config — I need unit tests covering the plugin behavior",
+      "expected_output": "Test files in src/__test__/ using Vitest with real Fastify instances. Tests should pass.",
+      "files": [],
+      "expectations": [
+        "At least one test file created in src/__test__/",
+        "Tests import Fastify and create real instances (no vi.mock of Fastify)",
+        "Every test group has afterEach closing the Fastify instance",
+        "Tests cover conditional logic branches (if/else, enable/disable flags)",
+        "Tests verify at least one decorator exists on the Fastify instance",
+        "Tests do NOT mock the base library plugins (env-schema or similar)",
+        "All tests pass — test_results.txt shows no failures",
+        "Number of tests is between 5 and 20 (appropriate scope)"
+      ]
+    }
+  ]
+}

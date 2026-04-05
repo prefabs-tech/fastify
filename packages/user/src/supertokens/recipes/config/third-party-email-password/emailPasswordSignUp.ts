@@ -1,16 +1,17 @@
+import type { FastifyInstance } from "fastify";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
+
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { deleteUser } from "supertokens-node";
 import EmailVerification from "supertokens-node/recipe/emailverification";
 import UserRoles from "supertokens-node/recipe/userroles";
 
+import type { User } from "../../../../types";
+
 import getUserService from "../../../../lib/getUserService";
 import sendEmail from "../../../../lib/sendEmail";
 import verifyEmail from "../../../../lib/verifyEmail";
 import areRolesExist from "../../../utils/areRolesExist";
-
-import type { User } from "../../../../types";
-import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 const emailPasswordSignUp = (
   originalImplementation: RecipeInterface,
@@ -34,12 +35,12 @@ const emailPasswordSignUp = (
     if (originalResponse.status === "OK") {
       const userService = getUserService(config, slonik);
 
-      let user: User | null | undefined;
+      let user: null | undefined | User;
 
       try {
         user = await userService.create({
-          id: originalResponse.user.id,
           email: originalResponse.user.email,
+          id: originalResponse.user.id,
         });
 
         if (!user) {
@@ -85,9 +86,9 @@ const emailPasswordSignUp = (
               // [DU 2023-SEP-4] We need to provide all the arguments.
               // emailVerifyLink is same as what would supertokens create.
               await EmailVerification.sendEmail({
+                emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
                 type: "EMAIL_VERIFICATION",
                 user: originalResponse.user,
-                emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
                 userContext: input.userContext,
               });
             }

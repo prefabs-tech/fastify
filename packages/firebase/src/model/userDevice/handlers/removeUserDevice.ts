@@ -1,7 +1,7 @@
-import Service from "../service";
-
 import type { FastifyReply } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
+
+import Service from "../service";
 
 const removeUserDevice = async (
   request: SessionRequest,

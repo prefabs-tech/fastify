@@ -1,12 +1,12 @@
+import type { FastifyInstance } from "fastify";
+
 import fastify from "fastify";
-import { describe, expect, it, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import graphqlPlugin from "../plugin";
 import createConfig from "./helpers/createConfig";
 import testPlugin from "./helpers/testPlugin";
 import testPluginAsync from "./helpers/testPluginAsync";
-
-import type { FastifyInstance } from "fastify";
 
 describe("Graphql Context", async () => {
   let api: FastifyInstance;
@@ -79,9 +79,9 @@ describe("Graphql Context", async () => {
     });
 
     expect(JSON.parse(response.payload).data.test).toEqual({
+      propertyOne: "Property One",
       //eslint-disable-next-line unicorn/no-null
       propertyTwo: null,
-      propertyOne: "Property One",
     });
 
     expect(api).toHaveProperty(["propertyOne"], "Property One");
@@ -115,8 +115,8 @@ describe("Graphql Context", async () => {
     });
 
     expect(JSON.parse(response.payload).data.test).toEqual({
-      propertyTwo: "Property Two",
       propertyOne: "Property One",
+      propertyTwo: "Property Two",
     });
 
     expect(api).toHaveProperty(["propertyTwo"], "Property Two");

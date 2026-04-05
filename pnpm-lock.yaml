@@ -163,6 +163,9 @@ importers:
       mercurius:
         specifier: 16.7.0
         version: 16.7.0(graphql@16.12.0)
+      pg-mem:
+        specifier: 3.0.14
+        version: 3.0.14(slonik@46.8.0(zod@3.25.76))
       prettier:
         specifier: 3.8.1
         version: 3.8.1
@@ -4635,6 +4638,41 @@ packages:
 
   pg-mem@3.0.12:
     resolution: {integrity: sha512-XZG5DsqKPPX0UdYW+ihshNrHzF+x6uEV/50x4jZxQo6iFMl02mYdP1DFnkVwfUKLFgi/bKz5vlVYmDFDGFDEgw==}
+    peerDependencies:
+      '@mikro-orm/core': '>=4.5.3'
+      '@mikro-orm/postgresql': '>=4.5.3'
+      knex: '>=0.20'
+      kysely: '>=0.26'
+      mikro-orm: '*'
+      pg-promise: '>=10.8.7'
+      pg-server: ^0.1.5
+      postgres: ^3.4.4
+      slonik: '>=23.0.1'
+      typeorm: '>=0.2.29'
+    peerDependenciesMeta:
+      '@mikro-orm/core':
+        optional: true
+      '@mikro-orm/postgresql':
+        optional: true
+      knex:
+        optional: true
+      kysely:
+        optional: true
+      mikro-orm:
+        optional: true
+      pg-promise:
+        optional: true
+      pg-server:
+        optional: true
+      postgres:
+        optional: true
+      slonik:
+        optional: true
+      typeorm:
+        optional: true
+
+  pg-mem@3.0.14:
+    resolution: {integrity: sha512-G9m8OD0A+YS083smidSUJddTX2dEDPT8mRMG3sQGNiGfS/mkvAgd9Kf1/onD5633bFN7HcQK/Tn2x7qjBMFRUQ==}
     peerDependencies:
       '@mikro-orm/core': '>=4.5.3'
       '@mikro-orm/postgresql': '>=4.5.3'
@@ -10909,6 +10947,18 @@ snapshots:
   pg-int8@1.0.1: {}
 
   pg-mem@3.0.12(slonik@46.8.0(zod@3.25.76)):
+    dependencies:
+      functional-red-black-tree: 1.0.1
+      immutable: 4.3.7
+      json-stable-stringify: 1.3.0
+      lru-cache: 6.0.0
+      moment: 2.30.1
+      object-hash: 2.2.0
+      pgsql-ast-parser: 12.0.2
+    optionalDependencies:
+      slonik: 46.8.0(zod@3.25.76)
+
+  pg-mem@3.0.14(slonik@46.8.0(zod@3.25.76)):
     dependencies:
       functional-red-black-tree: 1.0.1
       immutable: 4.3.7

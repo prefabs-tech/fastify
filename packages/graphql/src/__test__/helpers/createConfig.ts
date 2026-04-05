@@ -1,7 +1,8 @@
-/* istanbul ignore file */
-import type { GraphqlEnabledPlugin } from "../../types";
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { MercuriusContext } from "mercurius";
+
+/* istanbul ignore file */
+import type { GraphqlEnabledPlugin } from "../../types";
 
 const schema = `
   type Query {
@@ -29,6 +30,14 @@ const createConfig = (plugins: GraphqlEnabledPlugin[]) => {
     appOrigin: ["http://localhost"],
     baseUrl: "http://localhost",
     env: "development",
+    graphql: {
+      enabled: true,
+      graphiql: false,
+      path: "/graphql",
+      plugins,
+      resolvers,
+      schema,
+    },
     logger: {
       level: "debug",
     },
@@ -38,15 +47,6 @@ const createConfig = (plugins: GraphqlEnabledPlugin[]) => {
     rest: {
       enabled: true,
     },
-    version: "0.1",
-    graphql: {
-      enabled: true,
-      graphiql: false,
-      path: "/graphql",
-      schema,
-      resolvers,
-      plugins,
-    },
     slonik: {
       db: {
         databaseName: "test",
@@ -55,6 +55,7 @@ const createConfig = (plugins: GraphqlEnabledPlugin[]) => {
         username: "username",
       },
     },
+    version: "0.1",
   };
 
   return config;

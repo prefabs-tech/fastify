@@ -52,4 +52,24 @@ describe("parse", () => {
       expect(error).toBeInstanceOf(SyntaxError);
     }
   });
+
+  it('parses "1" as truthy boolean', () => {
+    expect(parse("1", false)).toBe(true);
+  });
+
+  it('parses "0" as falsy boolean', () => {
+    expect(parse("0", true)).toBe(false);
+  });
+
+  it("parses a float number", () => {
+    expect(parse("3.14", 0)).toBe(3.14);
+  });
+
+  it("parses a negative number", () => {
+    expect(parse("-5", 0)).toBe(-5);
+  });
+
+  it("returns empty string when value is empty string", () => {
+    expect(parse("", "default")).toBe("");
+  });
 });

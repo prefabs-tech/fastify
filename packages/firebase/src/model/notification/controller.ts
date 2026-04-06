@@ -1,12 +1,12 @@
-import handlers from "./handlers";
-import { sendNotificationSchema } from "./schema";
-import { ROUTE_SEND_NOTIFICATION } from "../../constants";
-import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
-
 import type { FastifyInstance } from "fastify";
 
+import { ROUTE_SEND_NOTIFICATION } from "../../constants";
+import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
+import handlers from "./handlers";
+import { sendNotificationSchema } from "./schema";
+
 const plugin = async (fastify: FastifyInstance) => {
-  const handlersConfig = fastify.config.firebase.handlers?.userDevice;
+  const notificationHandlers = fastify.config.firebase.handlers?.notification;
   const notificationConfig = fastify.config.firebase.notification;
 
   if (notificationConfig?.test?.enabled) {
@@ -16,7 +16,7 @@ const plugin = async (fastify: FastifyInstance) => {
         preHandler: [fastify.verifySession(), isFirebaseEnabled(fastify)],
         schema: sendNotificationSchema,
       },
-      handlersConfig?.addUserDevice || handlers.sendNotification,
+      notificationHandlers?.sendNotification || handlers.sendNotification,
     );
   }
 };

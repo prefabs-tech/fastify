@@ -5,8 +5,12 @@ import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
 import handlers from "./handlers";
 import { sendNotificationSchema } from "./schema";
 
+/**
+ * Registers an authenticated test endpoint to send a push notification to a user’s
+ * registered device tokens (enabled via `config.firebase.notification.test`).
+ */
 const plugin = async (fastify: FastifyInstance) => {
-  const notificationHandlers = fastify.config.firebase.handlers?.notification;
+  const handlersConfig = fastify.config.firebase.handlers?.notification;
   const notificationConfig = fastify.config.firebase.notification;
 
   if (notificationConfig?.test?.enabled) {
@@ -16,7 +20,7 @@ const plugin = async (fastify: FastifyInstance) => {
         preHandler: [fastify.verifySession(), isFirebaseEnabled(fastify)],
         schema: sendNotificationSchema,
       },
-      notificationHandlers?.sendNotification || handlers.sendNotification,
+      handlersConfig?.sendNotification || handlers.sendNotification,
     );
   }
 };

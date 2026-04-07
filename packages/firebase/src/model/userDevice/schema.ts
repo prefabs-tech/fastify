@@ -1,32 +1,32 @@
 const userDeviceSchema = {
-  type: "object",
   properties: {
-    userId: { type: "string" },
-    deviceToken: { type: "string" },
     createdAt: { type: "number" },
+    deviceToken: { type: "string" },
     updatedAt: { type: "number" },
+    userId: { type: "string" },
   },
   required: ["userId", "deviceToken", "createdAt", "updatedAt"],
+  type: "object",
 };
 
 export const deleteUserDeviceSchema = {
-  description: "Delete a user device by device token",
-  operationId: "deleteUserDevice",
   body: {
-    type: "object",
     properties: {
       deviceToken: { type: "string" },
     },
     required: ["deviceToken"],
+    type: "object",
   },
+  description: "Delete a user device by device token",
+  operationId: "deleteUserDevice",
   response: {
     200: {
       ...userDeviceSchema,
       nullable: true,
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     500: {
       $ref: "ErrorResponse#",
@@ -36,23 +36,23 @@ export const deleteUserDeviceSchema = {
 };
 
 export const postUserDeviceSchema = {
-  description: "Register a new user device",
-  operationId: "postUserDevice",
   body: {
-    type: "object",
     properties: {
       deviceToken: { type: "string" },
     },
     required: ["deviceToken"],
+    type: "object",
   },
+  description: "Register a new user device",
+  operationId: "postUserDevice",
   response: {
     200: {
       ...userDeviceSchema,
       nullable: true,
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     500: {
       $ref: "ErrorResponse#",

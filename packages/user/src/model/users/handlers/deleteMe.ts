@@ -1,9 +1,9 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify";
+
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 
 import getUserService from "../../../lib/getUserService";
-
-import type { FastifyReply, FastifyRequest } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const deleteMe = async (request: SessionRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, server, slonik, user } =

@@ -17,7 +17,6 @@ const validateFile = (data: unknown): boolean => {
 
 export default function plugin(ajv: Ajv): Ajv {
   return ajv.addKeyword({
-    keyword: "isFile",
     compile: (_schema: boolean, parentSchema: AnySchemaObject) => {
       const schema = parentSchema;
       if (schema.type === "array") {
@@ -40,5 +39,6 @@ export default function plugin(ajv: Ajv): Ajv {
     error: {
       message: "should be a file or array of files",
     },
+    keyword: "isFile",
   });
 }

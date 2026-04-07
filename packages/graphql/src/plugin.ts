@@ -1,10 +1,11 @@
+import type { FastifyInstance } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 
-import buildContext from "./buildContext";
-
 import type { GraphqlOptions } from "./types";
-import type { FastifyInstance } from "fastify";
+
+import buildContext from "./buildContext";
 
 const plugin = async (fastify: FastifyInstance, options: GraphqlOptions) => {
   fastify.log.info("Registering fastify-graphql plugin");

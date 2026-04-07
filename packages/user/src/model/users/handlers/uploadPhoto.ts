@@ -1,16 +1,17 @@
+import type { Multipart } from "@prefabs.tech/fastify-s3";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify";
+
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
 import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
+
+import type { UserUpdateInput } from "../../../types";
 
 import { ERROR_CODES } from "../../../constants";
 import getUserService from "../../../lib/getUserService";
 import createUserContext from "../../../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
-
-import type { UserUpdateInput } from "../../../types";
-import type { Multipart } from "@prefabs.tech/fastify-s3";
-import type { FastifyReply, FastifyRequest } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const uploadPhoto = async (request: SessionRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, server, slonik, user } =

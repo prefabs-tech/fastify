@@ -1,19 +1,19 @@
 export const errorSchema = {
   $id: "ErrorResponse",
-  type: "object",
+  additionalProperties: true,
   properties: {
     code: { type: "string" },
     error: { type: "string" },
     message: { type: "string" },
     name: { type: "string" },
     stack: {
-      type: "array",
       items: {
-        type: "object",
         additionalProperties: true,
+        type: "object",
       },
+      type: "array",
     },
     statusCode: { type: "number" },
   },
-  additionalProperties: true,
+  type: "object",
 };

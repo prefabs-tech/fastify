@@ -1,12 +1,13 @@
-import getInvitationService from "../../../lib/getInvitationService";
-import sendInvitation from "../../../lib/sendInvitation";
+import type { FastifyReply } from "fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 import type {
   Invitation,
   InvitationCreateInput,
 } from "../../../types/invitation";
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+
+import getInvitationService from "../../../lib/getInvitationService";
+import sendInvitation from "../../../lib/sendInvitation";
 
 const createInvitation = async (
   request: SessionRequest,

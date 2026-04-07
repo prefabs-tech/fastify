@@ -1,30 +1,31 @@
-import type { Database, FilterInput, SortInput } from "./database";
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
+import type { Database, FilterInput, SortInput } from "./database";
+
 type PaginatedList<T> = {
-  totalCount: number;
-  filteredCount: number;
   data: readonly T[];
+  filteredCount: number;
+  totalCount: number;
 };
 
 interface Service<T, C, U> {
-  config: ApiConfig;
-  database: Database;
-  schema: "public" | string;
-
   all(fields: string[]): Promise<Partial<readonly T[]>>;
+  config: ApiConfig;
+  count(filters?: FilterInput): Promise<number>;
+
   create(data: C): Promise<T | undefined>;
-  delete(id: number | string, force?: boolean): Promise<T | null>;
+  database: Database;
+  delete(id: number | string, force?: boolean): Promise<null | T>;
   find(filters?: FilterInput, sort?: SortInput[]): Promise<readonly T[]>;
-  findById(id: number | string): Promise<T | null>;
-  findOne(filters?: FilterInput, sort?: SortInput[]): Promise<T | null>;
+  findById(id: number | string): Promise<null | T>;
+  findOne(filters?: FilterInput, sort?: SortInput[]): Promise<null | T>;
   list(
     limit?: number,
     offset?: number,
     filters?: FilterInput,
     sort?: SortInput[],
   ): Promise<PaginatedList<T>>;
-  count(filters?: FilterInput): Promise<number>;
+  schema: "public" | string;
   update(id: number | string, data: U): Promise<T>;
 }
 

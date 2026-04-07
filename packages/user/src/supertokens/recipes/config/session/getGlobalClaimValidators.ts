@@ -1,9 +1,9 @@
+import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { RecipeInterface } from "supertokens-node/recipe/session/types";
+
 import { getRequestFromUserContext } from "supertokens-node";
 
 import ProfileValidationClaim from "../../../utils/profileValidationClaim";
-
-import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/session/types";
 
 const getGlobalClaimValidators = (
   originalImplementation: RecipeInterface,

@@ -1,3 +1,5 @@
+import type { SessionRequest } from "supertokens-node/framework/fastify";
+
 import { FastifyReply } from "fastify";
 import EmailVerification, {
   EmailVerificationClaim,
@@ -5,16 +7,15 @@ import EmailVerification, {
 } from "supertokens-node/recipe/emailverification";
 import { getUsersByEmail } from "supertokens-node/recipe/thirdpartyemailpassword";
 
+import type { ChangeEmailInput } from "../../../types";
+
 import getUserService from "../../../lib/getUserService";
 import createUserContext from "../../../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 import validateEmail from "../../../validator/email";
 
-import type { ChangeEmailInput } from "../../../types";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
-
 const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
-  const { body, config, user, server, slonik, session } = request;
+  const { body, config, server, session, slonik, user } = request;
 
   if (!user) {
     throw server.httpErrors.unauthorized("Unauthorised");
@@ -53,8 +54,8 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
 
     if (user.email === email) {
       return reply.send({
-        status: "EMAIL_SAME_AS_CURRENT_ERROR",
         message: "Email is same as the current one.",
+        status: "EMAIL_SAME_AS_CURRENT_ERROR",
       });
     }
 
@@ -79,12 +80,12 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
 
         if (tokenResponse.status === "OK") {
           await EmailVerification.sendEmail({
+            emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
             type: "EMAIL_VERIFICATION",
             user: {
-              id: user.id,
               email: email,
+              id: user.id,
             },
-            emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
             userContext: {
               _default: {
                 request: {
@@ -95,8 +96,8 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
           });
 
           return reply.send({
-            status: "OK",
             message: "A verification link has been sent to your email.",
+            status: "OK",
           });
         }
 
@@ -110,7 +111,7 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
 
     request.user = response;
 
-    return reply.send({ status: "OK", message: "Email updated successfully." });
+    return reply.send({ message: "Email updated successfully.", status: "OK" });
     /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
   } catch (error: any) {
     if (error.message === "EMAIL_ALREADY_EXISTS_ERROR") {

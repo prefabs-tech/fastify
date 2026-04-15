@@ -4,8 +4,8 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 
 ## Requirements
 
-* [@prefabs.tech/fastify-config](../config/)
-* [@fastify/sensible](https://github.com/fastify/fastify-sensible)
+- [@prefabs.tech/fastify-config](../config/)
+- [@fastify/sensible](https://github.com/fastify/fastify-sensible)
 
 ## Installation
 
@@ -48,6 +48,7 @@ const start = async () => {
 
 start();
 ```
+
 ### Options
 
 #### stackTrace
@@ -100,6 +101,7 @@ fastify.get('/test', async (req, reply) => {
 ```
 
 ### Throw `CustomError` (or subclass)
+
 - Modules **must throw** an instance of `CustomError` (or a class extending it).
 - This ensures errors can be consistently caught and appropriate actions taken.
 
@@ -112,3 +114,4 @@ if (!file) {
   throw new CustomError("File not found", "FILE_NOT_FOUND_ERROR");
 }
 ```
+

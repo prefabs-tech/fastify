@@ -68,10 +68,10 @@ describe("createInvitation handler", () => {
     expect(createError).not.toHaveBeenCalled();
     expect(reply.code).toHaveBeenCalledWith(422);
     expect(reply.send).toHaveBeenCalledWith({
-      statusCode: 422,
       code: ERROR_CODES.INVITATION_ALREADY_EXISTS,
       error: "Unprocessable Entity",
       message: "Invitation already exists for this email.",
+      statusCode: 422,
     });
   });
 

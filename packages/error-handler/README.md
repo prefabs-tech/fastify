@@ -4,8 +4,8 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 
 ## Requirements
 
-* [@prefabs.tech/fastify-config](../config/)
-* [@fastify/sensible](https://github.com/fastify/fastify-sensible)
+- [@prefabs.tech/fastify-config](../config/)
+- [@fastify/sensible](https://github.com/fastify/fastify-sensible)
 
 ## Installation
 
@@ -36,10 +36,10 @@ import Fastify from "fastify";
 const start = async () => {
   // Create fastify instance
   const fastify = Fastify();
-  
+
   // Register fastify-error-handler plugin
   await fastify.register(errorHandlerPlugin, {});
-  
+
   await fastify.listen({
     port: config.port,
     host: "0.0.0.0",
@@ -48,6 +48,7 @@ const start = async () => {
 
 start();
 ```
+
 ### Options
 
 #### stackTrace
@@ -86,20 +87,21 @@ Instead, always throw an error and let the global error handler handle formattin
 **Wrong**
 
 ```ts
-fastify.get('/test', async (req, reply) => {
+fastify.get("/test", async (req, reply) => {
   return reply.code(401).send({ message: "Unauthorized" });
-})
+});
 ```
 
 **Correct**
 
 ```ts
-fastify.get('/test', async (req, reply) => {
+fastify.get("/test", async (req, reply) => {
   throw fastify.httpErrors.unauthorized("Unauthorized");
-})
+});
 ```
 
 ### Throw `CustomError` (or subclass)
+
 - Modules **must throw** an instance of `CustomError` (or a class extending it).
 - This ensures errors can be consistently caught and appropriate actions taken.
 

@@ -30,10 +30,8 @@ export const errorHandler = (
   if (isHttpError) {
     const statusCode = error.statusCode || 500;
 
-    if (statusCode >= 500) {
-      logger.error(error);
-    } else if (statusCode >= 400) {
-      logger.info(error);
+    if (statusCode < 500) {
+      logger.warn(error);
     } else {
       logger.error(error);
     }

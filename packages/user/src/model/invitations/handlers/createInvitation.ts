@@ -1,6 +1,5 @@
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 
-import { ERROR_CODES } from "../../../constants";
 import getInvitationService from "../../../lib/getInvitationService";
 import sendInvitation from "../../../lib/sendInvitation";
 
@@ -53,28 +52,14 @@ const createInvitation = async (
   try {
     invitation = await service.create(invitationCreateInput);
   } catch (error: unknown) {
-    // Only duplicate pending invitations are handled here instead of
-    // `httpErrors.createError`. That throw path is formatted by the global error
-    // handler as an HttpError and includes extra properties (for example `name`)
-    // alongside `code`. This route keeps an explicit 422 body with
-    // `code`, `error`, `message`, and `statusCode` only for this conflict so
-    // consumers see a stable contract. Other `CustomError` codes from the
-    // invitation service still use the standard throw path below.
-    if (
-      error instanceof CustomError &&
-      error.code === ERROR_CODES.INVITATION_ALREADY_EXISTS
-    ) {
+    // CustomError: send a plain 422 body (code, message, statusCode) instead of
+    // createError, which the global handler augments with HttpError fields.
+    if (error instanceof CustomError) {
       return reply.code(422).send({
         code: error.code,
         error: "Unprocessable Entity",
         message: error.message,
         statusCode: 422,
-      });
-    }
-
-    if (error instanceof CustomError) {
-      throw server.httpErrors.createError(422, error.message, {
-        code: error.code,
       });
     }
 

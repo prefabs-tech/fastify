@@ -75,11 +75,7 @@ describe("createInvitation handler", () => {
     });
   });
 
-  it("throws createError(422) for other service CustomError codes", async () => {
-    const sentinel = new Error("wrapped");
-
-    createError.mockReturnValue(sentinel);
-
+  it("returns the same 422 body for other CustomError codes", async () => {
     vi.mocked(getInvitationService).mockReturnValue({
       create: vi
         .fn()
@@ -91,10 +87,15 @@ describe("createInvitation handler", () => {
       send: vi.fn(),
     } as unknown as FastifyReply;
 
-    await expect(createInvitation(baseRequest, reply)).rejects.toBe(sentinel);
+    await createInvitation(baseRequest, reply);
 
-    expect(createError).toHaveBeenCalledWith(422, "Other message", {
+    expect(createError).not.toHaveBeenCalled();
+    expect(reply.code).toHaveBeenCalledWith(422);
+    expect(reply.send).toHaveBeenCalledWith({
       code: "SOME_OTHER_CODE",
+      error: "Unprocessable Entity",
+      message: "Other message",
+      statusCode: 422,
     });
   });
 });

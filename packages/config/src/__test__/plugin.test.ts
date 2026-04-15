@@ -27,6 +27,21 @@ describe("configPlugin — registration", () => {
     ).resolves.not.toThrow();
     await fastify.close();
   });
+
+  it("fails registration when config option is not provided", async () => {
+    const fastify = Fastify({ logger: false });
+
+    await expect(
+      fastify.register(
+        configPlugin,
+        {} as unknown as {
+          config: ApiConfig;
+        },
+      ),
+    ).rejects.toThrow();
+
+    await fastify.close();
+  });
 });
 
 describe("configPlugin — fastify.config decorator", () => {

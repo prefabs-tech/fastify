@@ -92,7 +92,7 @@ await fastify.ready();
 
 Their docs: https://www.npmjs.com/package/nodemailer
 
-`nodemailer.createTransport()` is called internally with the `transport` and `defaults` options you provide. The resulting `Transporter` object is fully exposed on `fastify.mailer`, so the complete nodemailer API (`.verify()`, event hooks, transport inspection) is available.
+`nodemailer.createTransport()` is called internally with the `transport` and `defaults` options you provide. `fastify.mailer` is built from that transporter, but `sendMail` is wrapped by this package before delivery.
 
 What we add on top:
 
@@ -100,19 +100,19 @@ What we add on top:
 - When `recipients` is configured, we intercept the `to`, `cc`, and `bcc` fields before the call reaches nodemailer.
 - `createTransport` and the raw `Transporter` are never directly exposed — access is always through `fastify.mailer`.
 
-### nodemailer-mjml — Full Passthrough
+### nodemailer-mjml — Partial Passthrough
 
 Their docs: https://www.npmjs.com/package/nodemailer-mjml
 
-The plugin is registered on nodemailer's `"compile"` lifecycle hook with the `templateFolder` you provide. We do not modify the plugin's behavior — all MJML compilation, template lookup, and variable interpolation follow nodemailer-mjml's own rules. We expose `IPluginOptions` via the `templating` config key.
+The plugin is registered on nodemailer's `"compile"` lifecycle hook with the `templateFolder` you provide. We currently forward only `templateFolder` to `nodemailerMjmlPlugin`, even though `templating` is typed as `IPluginOptions`.
 
-### nodemailer-html-to-text — Full Passthrough
+### nodemailer-html-to-text — Modified
 
 Their docs: https://www.npmjs.com/package/nodemailer-html-to-text
 
-Registered on nodemailer's `"compile"` lifecycle hook after MJML (so it operates on already-compiled HTML). We pass no options — it runs with its defaults. There is no configuration surface exposed.
+Registered on nodemailer's `"compile"` lifecycle hook after MJML (so it operates on already-compiled HTML). We always call `htmlToText()` with no options and do not expose configuration.
 
-### mjml — Full Passthrough
+### mjml — Modified
 
 Their docs: https://www.npmjs.com/package/mjml
 
@@ -249,14 +249,16 @@ See the [nodemailer-mjml docs](https://www.npmjs.com/package/nodemailer-mjml) fo
 
 A plain-text `text` part is automatically generated from the `html` content of every email. No configuration is required and nothing needs to be set in `sendMail` calls. The conversion runs after MJML compilation.
 
-### 10. Full nodemailer `Transporter` API on `fastify.mailer`
+### 10. Transporter-backed `fastify.mailer` decorator
 
-`fastify.mailer` is a `FastifyMailer` which extends `nodemailer.Transporter`. All transporter methods are available:
+`fastify.mailer` is created from the nodemailer transporter and adds a wrapped `sendMail` implementation that injects plugin behavior (templateData merge + optional recipient override):
 
 ```typescript
-// Verify SMTP connectivity
-const ok = await fastify.mailer.verify();
-console.log("SMTP ready:", ok);
+await fastify.mailer.sendMail({
+  to: "user@example.com",
+  subject: "Hello",
+  html: "<p>Hello</p>",
+});
 ```
 
 ### 11. Promise-based `sendMail`

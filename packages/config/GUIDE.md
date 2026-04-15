@@ -47,7 +47,52 @@ await fastify.register(configPlugin, { config });
 
 ---
 
+## Base Libraries
+
+### `fastify-plugin` — Modified
+
+`fastify-plugin` provides Fastify plugin wrapping and metadata controls.
+
+-> **Their docs:** [`fastify-plugin`](https://www.npmjs.com/package/fastify-plugin)
+
+We wrap this library with a different surface:
+
+- Consumers do not pass `fastify-plugin` metadata options (`name`, `dependencies`, Fastify version metadata, etc.).
+- The exposed API is only `fastify.register(configPlugin, { config })`.
+- Internally we use the wrapper to expose our decorators and hooks application-wide.
+
+**What we add on top:**
+
+- `fastify.config` decorator with your `ApiConfig` object
+- `fastify.hostname` decorator derived from `baseUrl` and `port`
+- `request.config` population via `onRequest`
+- Type exports and Fastify module augmentation
+- `parse` utility for typed env parsing
+
+---
+
 ## Features
+
+### Plugin registration contract
+
+The plugin takes one required option (`config`) and does not apply internal defaults. Pass a full `ApiConfig` object at registration time.
+
+```typescript
+await fastify.register(configPlugin, {
+  config: {
+    appName: "my-api",
+    appOrigin: ["https://app.example.com"],
+    baseUrl: "http://localhost",
+    env: "production",
+    logger: { level: "info" },
+    name: "my-api",
+    port: 3000,
+    protocol: "https",
+    rest: { enabled: true },
+    version: "1.0.0",
+  },
+});
+```
 
 ### `fastify.config` decorator
 
@@ -100,6 +145,7 @@ Rules:
 - `typeof fallback === "boolean"` → `!!JSON.parse(value)` (`"true"`/`"1"` → `true`, `"false"`/`"0"` → `false`)
 - `typeof fallback === "number"` → `JSON.parse(value)`
 - Otherwise → returns `value` as-is (string)
+- Invalid JSON-like input in boolean/number mode propagates `SyntaxError` from `JSON.parse`.
 
 ### `ApiConfig` type
 

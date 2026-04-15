@@ -42,9 +42,10 @@ pnpm --filter @prefabs.tech/fastify-s3 build
 Register the plugin once. All later examples assume this setup is already in place.
 
 ```typescript
+import configPlugin from "@prefabs.tech/fastify-config";
 import Fastify from "fastify";
-import fastifyPlugin from "fastify-plugin";
 import s3Plugin, { ajvFilePlugin } from "@prefabs.tech/fastify-s3";
+import slonikPlugin from "@prefabs.tech/fastify-slonik";
 
 // Extend ApiConfig so TypeScript knows about config.s3
 // (the module augmentation in index.ts handles this automatically when you import the package)
@@ -88,7 +89,7 @@ await fastify.listen({ port: 3000 });
 
 ## Base Libraries
 
-### `@aws-sdk/client-s3` — Partial Passthrough
+### `@aws-sdk/client-s3` — Modified
 
 Official docs: https://www.npmjs.com/package/@aws-sdk/client-s3
 
@@ -483,16 +484,17 @@ console.log(service.filename); // "avatar.png"
 
 ### 24 — `convertStreamToBuffer`
 
-Internal utility also exported for use in custom code:
+Internal utility used by `S3Client.get` to normalize a stream response into a `Buffer`:
 
 ```typescript
-import { Readable } from "node:stream";
-import { convertStreamToBuffer } from "@prefabs.tech/fastify-s3"; // not exported — use via S3Client.get
+const { Body, ContentType } = await client.get("uploads/report.pdf");
 
-// Not directly exported; available via S3Client.get which calls it internally.
+// Body is already converted to Buffer by the internal helper.
+console.log(Body instanceof Buffer); // true
+console.log(ContentType);
 ```
 
-Note: `convertStreamToBuffer` is not in the public export surface. Use `S3Client.get` which calls it internally, or implement your own if you need standalone stream-to-buffer conversion.
+Note: `convertStreamToBuffer` is intentionally not part of the package's public export surface.
 
 ### 25 — `getPreferredBucket` utility
 

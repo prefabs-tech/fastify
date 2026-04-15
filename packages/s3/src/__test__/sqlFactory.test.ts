@@ -3,6 +3,8 @@ import type { Database } from "@prefabs.tech/fastify-slonik";
 
 import { describe, expect, it, vi } from "vitest";
 
+import { createFilesTableQuery } from "../migrations/queries";
+
 vi.mock("@prefabs.tech/fastify-slonik", () => {
   class MockDefaultSqlFactory {
     config: ApiConfig;
@@ -83,5 +85,22 @@ describe("runMigrations", async () => {
     );
 
     expect(mockConnection.query).toHaveBeenCalledOnce();
+  });
+});
+
+describe("createFilesTableQuery", () => {
+  it("uses the default 'files' table name when config.s3.table.name is not set", () => {
+    const query = createFilesTableQuery({ s3: {} } as unknown as ApiConfig);
+
+    expect(query.sql).toContain("CREATE TABLE IF NOT EXISTS");
+    expect(query.sql).toContain('"files"');
+  });
+
+  it("uses config.s3.table.name when provided", () => {
+    const query = createFilesTableQuery({
+      s3: { table: { name: "documents" } },
+    } as unknown as ApiConfig);
+
+    expect(query.sql).toContain('"documents"');
   });
 });

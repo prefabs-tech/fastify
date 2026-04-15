@@ -21,6 +21,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: 20.4.1
         version: 20.4.1
+      '@prefabs.tech/skills':
+        specifier: git+https://github.com/prefabs-tech/skills
+        version: git+https://git@github.com:prefabs-tech/skills.git#0d88f45e9236557e9d79f1051ffa874dff514508
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -1647,6 +1650,10 @@ packages:
     resolution: {integrity: sha512-9cpcwgI0nZaUWmmybYuqhvroCEZHXy9IQmjdM83UF/yUXNu25ASZ09xfw96Q5Ixq0nYwtqkivorvpayBm+/XXg==}
     engines: {node: '>10.17.0'}
     hasBin: true
+
+  '@prefabs.tech/skills@git+https://git@github.com:prefabs-tech/skills.git#0d88f45e9236557e9d79f1051ffa874dff514508':
+    resolution: {commit: 0d88f45e9236557e9d79f1051ffa874dff514508, repo: git@github.com:prefabs-tech/skills.git, type: git}
+    version: 0.1.0
 
   '@prefabs.tech/tsconfig@0.5.0':
     resolution: {integrity: sha512-lpu9UPVDpbpMKlClhImF8x0YIqSm6dTtBpVK8/BFkhfOrJR1hp5l1EBlvbkzEL2hxx1vx/cQ43dEDobAZvBBQA==}
@@ -7454,6 +7461,8 @@ snapshots:
       sql-template-strings: 2.2.2
     transitivePeerDependencies:
       - pg-native
+
+  '@prefabs.tech/skills@git+https://git@github.com:prefabs-tech/skills.git#0d88f45e9236557e9d79f1051ffa874dff514508': {}
 
   '@prefabs.tech/tsconfig@0.5.0(@types/node@24.10.13)':
     dependencies:

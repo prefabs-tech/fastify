@@ -96,6 +96,17 @@ describe("errorHandlerPlugin — unknown error handling", () => {
     await fastify.close();
   });
 
+  it("sanitizes code and name for plain Error when stackTrace: false", async () => {
+    const fastify = await buildFastify({ stackTrace: false });
+    fastify.get("/test", async () => {
+      throw new Error("unexpected crash");
+    });
+    const res = await fastify.inject({ method: "GET", url: "/test" });
+    expect(res.json().code).toBe("INTERNAL_SERVER_ERROR");
+    expect(res.json().name).toBe("Error");
+    await fastify.close();
+  });
+
   it("includes stack and original message when stackTrace: true", async () => {
     const fastify = await buildFastify({ stackTrace: true });
     fastify.get("/test", async () => {

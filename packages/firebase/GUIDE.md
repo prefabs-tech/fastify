@@ -150,6 +150,7 @@ import { initializeFirebase } from "@prefabs.tech/fastify-firebase";
 initializeFirebase(config, fastify);
 // If admin.apps.length > 0, this is a no-op.
 // If credentials are missing, logs an error and returns without throwing.
+// If admin.initializeApp throws, the function logs the failure and the error object.
 ```
 
 ### 4. Skip re-initialization guard
@@ -181,6 +182,11 @@ config.firebase.notification = {
     enabled: true,
     path: "/test/send-notification", // optional; defaults to /send-notification
   },
+};
+
+// Optional hard-disable switch (wins even when test.enabled is true):
+config.firebase.routes = {
+  notifications: { disabled: true },
 };
 ```
 
@@ -232,19 +238,16 @@ config.firebase.handlers = {
 
 ### 11. `isFirebaseEnabled` preHandler
 
-A preHandler factory that throws a Fastify `404 notFound` error if `config.firebase.enabled === false`. It is applied automatically to all firebase routes. You can also apply it to your own routes:
+A preHandler factory that throws a Fastify `404 notFound` error if `config.firebase.enabled === false`. It is applied automatically to all firebase routes by this package.
 
 ```typescript
-import isFirebaseEnabled from "@prefabs.tech/fastify-firebase/middlewares/isFirebaseEnabled";
-// (consume via plugin registration — not a public export; shown for illustration)
+// No extra setup required. Once the plugin is registered:
+config.firebase.enabled = false;
 
-fastify.get(
-  "/my-route",
-  {
-    preHandler: [isFirebaseEnabled(fastify)],
-  },
-  handler,
-);
+// Firebase-managed routes then return 404:
+// POST /user-device
+// DELETE /user-device
+// POST /send-notification (when enabled in config)
 ```
 
 ### 12. `POST /user-device` — register a device token
@@ -318,7 +321,7 @@ config.firebase.table = {
 ### 16 & 17. `UserDeviceService.getByUserId` / `removeByDeviceToken`
 
 ```typescript
-import UserDeviceService from "@prefabs.tech/fastify-firebase";
+import { UserDeviceService } from "@prefabs.tech/fastify-firebase";
 
 const service = new UserDeviceService(config, database, dbSchema);
 
@@ -563,8 +566,10 @@ await app.register(mercurius, {
 ### Use case 3: Send a push notification from application code
 
 ```typescript
-import { sendPushNotification } from "@prefabs.tech/fastify-firebase";
-import UserDeviceService from "@prefabs.tech/fastify-firebase";
+import {
+  UserDeviceService,
+  sendPushNotification,
+} from "@prefabs.tech/fastify-firebase";
 import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
 
 async function notifyUser(

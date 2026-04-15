@@ -1,3 +1,8 @@
+import { STATUS_CODES } from "node:http";
+
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+
+import { ERROR_CODES } from "../../../constants";
 import getInvitationService from "../../../lib/getInvitationService";
 import sendInvitation from "../../../lib/sendInvitation";
 
@@ -49,10 +54,24 @@ const createInvitation = async (
 
   try {
     invitation = await service.create(invitationCreateInput);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    throw server.httpErrors.createError(422, error.message, {
-      code: error.code,
+  } catch (error: unknown) {
+    if (
+      error instanceof CustomError &&
+      error.code === ERROR_CODES.INVITATION_ALREADY_EXISTS
+    ) {
+      // Avoid throwing HttpError so Sentry (and similar) do not treat this as an exception.
+      return reply.code(422).send({
+        statusCode: 422,
+        code: error.code,
+        error: STATUS_CODES[422],
+        message: error.message,
+      });
+    }
+
+    const err = error as { message?: string; code?: string };
+
+    throw server.httpErrors.createError(422, err.message ?? "Unknown error", {
+      code: err.code,
     });
   }
 

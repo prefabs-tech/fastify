@@ -1,5 +1,3 @@
-import { STATUS_CODES } from "node:http";
-
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 
 import { ERROR_CODES } from "../../../constants";
@@ -63,7 +61,7 @@ const createInvitation = async (
       return reply.code(422).send({
         statusCode: 422,
         code: error.code,
-        error: STATUS_CODES[422],
+        error: "Unprocessable Entity",
         message: error.message,
       });
     }

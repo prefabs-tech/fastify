@@ -66,11 +66,17 @@ const createInvitation = async (
       });
     }
 
-    const err = error as { message?: string; code?: string };
+    if (error instanceof CustomError) {
+      throw server.httpErrors.createError(422, error.message, {
+        code: error.code,
+      });
+    }
 
-    throw server.httpErrors.createError(422, err.message ?? "Unknown error", {
-      code: err.code,
-    });
+    if (error instanceof Error) {
+      throw server.httpErrors.createError(422, error.message, {});
+    }
+
+    throw server.httpErrors.createError(422, "Unknown error", {});
   }
 
   if (invitation) {

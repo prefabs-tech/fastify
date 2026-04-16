@@ -177,6 +177,28 @@ describe("firebasePlugin — userDevice route registration", async () => {
     ).toBe(false);
     await fastify.close();
   });
+
+  it("registers user device routes under a custom routePrefix", async () => {
+    const customPrefix = "/v2/firebase";
+    fastify = buildFastify({ enabled: false, routePrefix: customPrefix });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(
+      fastify.hasRoute({
+        method: "POST",
+        url: `${customPrefix}${ROUTE_USER_DEVICE_ADD}`,
+      }),
+    ).toBe(true);
+
+    expect(
+      fastify.hasRoute({
+        method: "DELETE",
+        url: `${customPrefix}${ROUTE_USER_DEVICE_REMOVE}`,
+      }),
+    ).toBe(true);
+    await fastify.close();
+  });
 });
 
 describe("firebasePlugin — notification route registration", async () => {
@@ -206,6 +228,23 @@ describe("firebasePlugin — notification route registration", async () => {
     fastify = buildFastify({
       enabled: false,
       notification: { test: { enabled: true, path: ROUTE_SEND_NOTIFICATION } },
+    });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(
+      fastify.hasRoute({
+        method: "POST",
+        url: `${fastify.config.firebase.routePrefix}${ROUTE_SEND_NOTIFICATION}`,
+      }),
+    ).toBe(true);
+    await fastify.close();
+  });
+
+  it("registers notification test route at default path when test is enabled but path is omitted", async () => {
+    fastify = buildFastify({
+      enabled: false,
+      notification: { test: { enabled: true } },
     });
     await fastify.register(plugin);
     await fastify.ready();

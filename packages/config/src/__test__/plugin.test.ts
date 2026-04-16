@@ -194,6 +194,35 @@ describe("configPlugin — req.config request decorator", () => {
   });
 });
 
+describe("configPlugin — app-wide visibility (fastify-plugin)", () => {
+  it("exposes fastify.config, fastify.hostname, and req.config inside a nested child plugin", async () => {
+    const fastify = Fastify({ logger: false });
+    await fastify.register(configPlugin, { config: baseConfig });
+
+    await fastify.register(async function nestedChildPlugin(child) {
+      child.get("/nested", async (request) => {
+        return {
+          hostname: child.hostname,
+          instanceHasConfig: "config" in child,
+          instanceHasHostname: "hostname" in child,
+          requestAppName: request.config.appName,
+        };
+      });
+    });
+
+    await fastify.ready();
+    const res = await fastify.inject({ method: "GET", url: "/nested" });
+    expect(res.statusCode).toBe(200);
+    expect(res.json()).toEqual({
+      hostname: "http://localhost:3000",
+      instanceHasConfig: true,
+      instanceHasHostname: true,
+      requestAppName: "TestApp",
+    });
+    await fastify.close();
+  });
+});
+
 describe("configPlugin — optional config fields", () => {
   it("exposes apps array when provided", async () => {
     const fastify = Fastify({ logger: false });

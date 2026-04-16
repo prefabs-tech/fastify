@@ -46,6 +46,16 @@ describe("errorHandlerPlugin — CustomError handling", () => {
     await fastify.close();
   });
 
+  it("uses INTERNAL_SERVER_ERROR for CustomError when no code is set and stackTrace: true", async () => {
+    const fastify = await buildFastify({ stackTrace: true });
+    fastify.get("/test", async () => {
+      throw new CustomError("some error");
+    });
+    const res = await fastify.inject({ method: "GET", url: "/test" });
+    expect(res.json().code).toBe("INTERNAL_SERVER_ERROR");
+    await fastify.close();
+  });
+
   it("includes name in response when stackTrace: true", async () => {
     const fastify = await buildFastify({ stackTrace: true });
     fastify.get("/test", async () => {

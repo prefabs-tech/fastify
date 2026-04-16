@@ -39,6 +39,29 @@ describe("errorHandlerPlugin — unknown error normalization", () => {
     expect(res.statusCode).toBe(500);
     await fastify.close();
   });
+
+  it("coerces a thrown string into Error UNKNOWN_ERROR before masking", async () => {
+    const fastify = await buildFastify({ stackTrace: true });
+    fastify.get("/test", async () => {
+      throw "not an Error instance";
+    });
+    const res = await fastify.inject({ method: "GET", url: "/test" });
+    expect(res.statusCode).toBe(500);
+    expect(res.json().message).toBe("UNKNOWN_ERROR");
+    await fastify.close();
+  });
+
+  it("coerces a thrown null into a generic 500 when stackTrace is false", async () => {
+    const fastify = await buildFastify({ stackTrace: false });
+    fastify.get("/test", async () => {
+      // eslint-disable-next-line unicorn/no-null -- explicit null throw is part of the normalization behavior being tested
+      throw null;
+    });
+    const res = await fastify.inject({ method: "GET", url: "/test" });
+    expect(res.statusCode).toBe(500);
+    expect(res.json().message).toBe("Server error, please contact support");
+    await fastify.close();
+  });
 });
 
 describe("errorHandlerPlugin — non-HttpError logging", () => {

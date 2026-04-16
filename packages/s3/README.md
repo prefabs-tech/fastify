@@ -17,21 +17,29 @@ Handling file uploads in a full-stack context requires substantially more effort
 
 ## Requirements
 
+Peer dependencies (install compatible versions — see [package.json](./package.json)):
+
 - [@prefabs.tech/fastify-config](../config/)
+- [@prefabs.tech/fastify-error-handler](../error-handler/)
+- [@prefabs.tech/fastify-graphql](../graphql/)
 - [@prefabs.tech/fastify-slonik](../slonik/)
+- [`fastify`](https://www.npmjs.com/package/fastify)
+- [`fastify-plugin`](https://www.npmjs.com/package/fastify-plugin)
+- [`slonik`](https://www.npmjs.com/package/slonik)
+- [`zod`](https://www.npmjs.com/package/zod)
 
 ## Installation
 
 Install with npm:
 
 ```bash
-npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-s3
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-s3 fastify fastify-plugin slonik zod
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-s3
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-s3 fastify fastify-plugin slonik zod
 ```
 
 ## Usage
@@ -86,7 +94,9 @@ Register the file fastify-s3 package with your Fastify instance:
 
 ```typescript
 import configPlugin from "@prefabs.tech/fastify-config";
-import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import errorHandlerPlugin from "@prefabs.tech/fastify-error-handler";
+import graphqlPlugin from "@prefabs.tech/fastify-graphql";
+import s3Plugin from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
@@ -101,10 +111,16 @@ const start = async () => {
   // Register config plugin
   await fastify.register(configPlugin, { config });
 
+  await fastify.register(errorHandlerPlugin, {
+    stackTrace: process.env.NODE_ENV === "development",
+  });
+
   // Register database plugin
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register fastify-s3 plugin
+  await fastify.register(graphqlPlugin, config.graphql);
+
+  // Register fastify-s3 plugin (see below for multipartParserPlugin when using GraphQL uploads)
   await fastify.register(s3Plugin);
 
   await fastify.listen({

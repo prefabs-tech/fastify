@@ -88,9 +88,9 @@ const start = async () => {
   await fastify.register(mailerPlugin, config.mailer);
 
   // Register multipart content-type parser plugin
-  await api.register(multipartParserPlugin);
+  await fastify.register(multipartParserPlugin);
 
-  // Register mailer plugin
+  // Register s3 plugin
   await fastify.register(s3Plugin);
 
   // Register fastify-user plugin
@@ -229,13 +229,13 @@ export default schema;
 To integrate the resolvers provided by this package, import them and merge with your application's resolvers:
 
 ```typescript
-import { usersResolver } from "@prefabs.tech/fastify-user";
+import { userResolver } from "@prefabs.tech/fastify-user";
 
 import type { IResolvers } from "mercurius";
 
 const resolvers: IResolvers = {
   Mutation: {
-    ...usersResolver.Mutation,
+    ...userResolver.Mutation,
   },
   Query: {
     ...userResolver.Query,

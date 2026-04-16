@@ -24,7 +24,7 @@ npm install @prefabs.tech/fastify-swagger
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project @prefabs.tech/fastify-swagger
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-swagger
 ```
 
 ## Configuration
@@ -69,7 +69,7 @@ const start = async () => {
   // Create fastify instance
   const fastify = Fastify();
 
-  await fastify.register(swaggerPlugin, swaggerOptions);
+  await fastify.register(swaggerPlugin, swaggerConfig);
 
   await fastify.listen({
     host: "0.0.0.0",

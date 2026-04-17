@@ -24,7 +24,6 @@
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
-    "clean": "node -e \"const fs=require('node:fs'); for (const d of ['dist','coverage']) fs.rmSync(d,{recursive:true,force:true});\"",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "sort-package": "npx sort-package-json",

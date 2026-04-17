@@ -46,6 +46,16 @@ describe("errorHandlerPlugin — CustomError handling", () => {
     await fastify.close();
   });
 
+  it("uses INTERNAL_SERVER_ERROR for CustomError when no code is set and stackTrace: true", async () => {
+    const fastify = await buildFastify({ stackTrace: true });
+    fastify.get("/test", async () => {
+      throw new CustomError("some error");
+    });
+    const res = await fastify.inject({ method: "GET", url: "/test" });
+    expect(res.json().code).toBe("INTERNAL_SERVER_ERROR");
+    await fastify.close();
+  });
+
   it("includes name in response when stackTrace: true", async () => {
     const fastify = await buildFastify({ stackTrace: true });
     fastify.get("/test", async () => {
@@ -93,6 +103,17 @@ describe("errorHandlerPlugin — unknown error handling", () => {
     });
     const res = await fastify.inject({ method: "GET", url: "/test" });
     expect(res.json().message).not.toContain("secret internal detail");
+    await fastify.close();
+  });
+
+  it("sanitizes code and name for plain Error when stackTrace: false", async () => {
+    const fastify = await buildFastify({ stackTrace: false });
+    fastify.get("/test", async () => {
+      throw new Error("unexpected crash");
+    });
+    const res = await fastify.inject({ method: "GET", url: "/test" });
+    expect(res.json().code).toBe("INTERNAL_SERVER_ERROR");
+    expect(res.json().name).toBe("Error");
     await fastify.close();
   });
 

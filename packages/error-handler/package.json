@@ -27,6 +27,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "sort-package": "npx sort-package-json",
+    "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {

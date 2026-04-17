@@ -41,6 +41,34 @@ describe("swagger plugin", () => {
     expect(fastify.apiDocumentationPath).toBe("/api-docs");
   });
 
+  it("uses default documentation path when uiOptions is an empty object", async () => {
+    fastify = Fastify();
+    await fastify.register(swaggerPlugin, {
+      fastifySwaggerOptions: { openapi: {} },
+      uiOptions: {},
+    });
+    await fastify.ready();
+
+    expect(fastify.swaggerUIRoutePrefix).toBe("/documentation");
+    expect(fastify.apiDocumentationPath).toBe("/documentation");
+  });
+
+  it("serves swagger spec JSON at custom uiOptions.routePrefix", async () => {
+    fastify = Fastify();
+    await fastify.register(swaggerPlugin, {
+      fastifySwaggerOptions: { openapi: {} },
+      uiOptions: { routePrefix: "/api-docs" },
+    });
+    await fastify.ready();
+
+    const response = await fastify.inject({
+      method: "GET",
+      url: "/api-docs/json",
+    });
+
+    expect(response.statusCode).toBe(200);
+  });
+
   it("skips registration when enabled is false", async () => {
     fastify = Fastify();
     await fastify.register(swaggerPlugin, {
@@ -52,6 +80,12 @@ describe("swagger plugin", () => {
     expect(fastify.swaggerUIRoutePrefix).toBeUndefined();
     expect(fastify.apiDocumentationPath).toBeUndefined();
     expect(fastify.swagger).toBeUndefined();
+
+    const response = await fastify.inject({
+      method: "GET",
+      url: "/documentation/json",
+    });
+    expect(response.statusCode).toBe(404);
   });
 
   it("registers when enabled is explicitly true", async () => {

@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import Fastify from "fastify";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import "../index";
 import createMailerConfig from "./helpers/createMailerConfig";
@@ -36,6 +36,10 @@ describe("mailerPlugin — registration", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: false });
+  });
+
+  afterEach(async () => {
+    await fastify.close();
   });
 
   it("registers without throwing", async () => {
@@ -90,6 +94,25 @@ describe("mailerPlugin — registration", async () => {
       fastify.register(plugin, createMailerConfig()),
     ).rejects.toThrow("fastify-mailer has already been registered");
   });
+
+  it("logs an info message when the plugin starts registering", async () => {
+    await fastify.close();
+    fastify = Fastify({ logger: { level: "silent" } });
+    const infoSpy = vi.spyOn(fastify.log, "info");
+    await fastify.register(plugin, createMailerConfig());
+    await fastify.ready();
+    expect(infoSpy).toHaveBeenCalledWith("Registering fastify-mailer plugin");
+  });
+
+  it("exposes fastify.mailer inside nested plugin registrations without re-registering", async () => {
+    await fastify.register(plugin, createMailerConfig());
+    let nestedHasMailer = false;
+    await fastify.register(async (instance) => {
+      nestedHasMailer = typeof instance.mailer?.sendMail === "function";
+    });
+    await fastify.ready();
+    expect(nestedHasMailer).toBe(true);
+  });
 });
 
 describe("mailerPlugin — legacy config fallback", async () => {
@@ -100,6 +123,10 @@ describe("mailerPlugin — legacy config fallback", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: false });
+  });
+
+  afterEach(async () => {
+    await fastify.close();
   });
 
   it("reads options from fastify.config.mailer when no options passed to register()", async () => {
@@ -125,6 +152,18 @@ describe("mailerPlugin — legacy config fallback", async () => {
   it("throws a descriptive error when no options and no fastify.config.mailer", async () => {
     await expect(fastify.register(plugin)).rejects.toThrow(
       "Missing mailer configuration. Did you forget to pass it to the mailer plugin?",
+    );
+  });
+
+  it("warns when falling back to fastify.config.mailer", async () => {
+    await fastify.close();
+    fastify = Fastify({ logger: { level: "silent" } });
+    const warnSpy = vi.spyOn(fastify.log, "warn");
+    fastify.decorate("config", { mailer: createMailerConfig() });
+    await fastify.register(plugin);
+    await fastify.ready();
+    expect(warnSpy).toHaveBeenCalledWith(
+      "The mailer plugin now recommends passing mailer options directly to the plugin.",
     );
   });
 });

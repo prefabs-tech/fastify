@@ -27,13 +27,13 @@ Sending production-ready emails is significantly more complex than just piping s
 Install with npm:
 
 ```bash
-npm install @prefabs.tech/fastify-mailer html-to-text mustache nodemailer nodemailer nodemailer-html-to-text nodemailer-mjml
+npm install @prefabs.tech/fastify-mailer html-to-text mustache nodemailer nodemailer-html-to-text nodemailer-mjml
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @prefabs.tech/fastify-mailer html-to-text mustache nodemailer nodemailer nodemailer-html-to-text nodemailer-mjml
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-mailer html-to-text mustache nodemailer nodemailer-html-to-text nodemailer-mjml
 ```
 
 ## Usage

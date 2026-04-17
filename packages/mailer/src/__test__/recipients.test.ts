@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import Fastify from "fastify";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import "../index";
 import createMailerConfig from "./helpers/createMailerConfig";
@@ -54,6 +54,10 @@ describe("mailerPlugin — recipient override", async () => {
       await fastify.ready();
     });
 
+    afterEach(async () => {
+      await fastify.close();
+    });
+
     it("passes the original to through unchanged", async () => {
       await fastify.mailer.sendMail(baseMailOptions);
       const calledWith = sendMailMock.mock.calls[0][0];
@@ -83,6 +87,10 @@ describe("mailerPlugin — recipient override", async () => {
       await fastify.ready();
     });
 
+    afterEach(async () => {
+      await fastify.close();
+    });
+
     it("does not override to", async () => {
       await fastify.mailer.sendMail(baseMailOptions);
       const calledWith = sendMailMock.mock.calls[0][0];
@@ -106,6 +114,10 @@ describe("mailerPlugin — recipient override", async () => {
         recipients,
       });
       await fastify.ready();
+    });
+
+    afterEach(async () => {
+      await fastify.close();
     });
 
     it("overrides to with the recipients array", async () => {

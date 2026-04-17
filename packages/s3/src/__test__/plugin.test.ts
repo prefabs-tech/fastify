@@ -26,6 +26,23 @@ const buildFastify = (configOverrides: Record<string, unknown> = {}) => {
   return fastify;
 };
 
+/** Minimal multipart/form-data body for inject tests (single file field). */
+const buildMultipartFileBody = (
+  boundary: string,
+  fieldName: string,
+  filename: string,
+  fileBytes: Buffer,
+): Buffer => {
+  const preamble = Buffer.from(
+    `--${boundary}\r\n` +
+      `Content-Disposition: form-data; name="${fieldName}"; filename="${filename}"\r\n` +
+      `Content-Type: application/octet-stream\r\n\r\n`,
+    "utf8",
+  );
+  const closing = Buffer.from(`\r\n--${boundary}--\r\n`, "utf8");
+  return Buffer.concat([preamble, fileBytes, closing]);
+};
+
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("s3 plugin — initialization", async () => {
@@ -79,6 +96,77 @@ describe("s3 plugin — REST multipart registration", async () => {
     await fastify.ready();
 
     expect(fastify.hasContentTypeParser("multipart/form-data")).toBe(false);
+  });
+
+  it("rejects multipart uploads larger than fileSizeLimitInBytes with 413", async () => {
+    const boundary = "----test-boundary-413";
+    const limitBytes = 512;
+    const oversized = Buffer.alloc(limitBytes + 200, 7);
+
+    fastify = buildFastify({
+      s3: {
+        bucket: "test-bucket",
+        clientConfig: {},
+        fileSizeLimitInBytes: limitBytes,
+      },
+    });
+    await fastify.register(plugin);
+
+    fastify.post("/upload", async () => ({ ok: true }));
+
+    await fastify.ready();
+
+    const response = await fastify.inject({
+      headers: {
+        "content-type": `multipart/form-data; boundary=${boundary}`,
+      },
+      method: "POST",
+      payload: buildMultipartFileBody(boundary, "doc", "big.bin", oversized),
+      url: "/upload",
+    });
+
+    expect(response.statusCode).toBe(413);
+  });
+
+  it("attaches normalised file objects to the body for multipart fields within the size limit", async () => {
+    const boundary = "----test-boundary-ok";
+    const fileBytes = Buffer.from("hello-s3");
+
+    fastify = buildFastify({
+      s3: {
+        bucket: "test-bucket",
+        clientConfig: {},
+        fileSizeLimitInBytes: 50000,
+      },
+    });
+    await fastify.register(plugin);
+
+    let body: unknown;
+    fastify.post("/upload", async (request) => {
+      body = request.body;
+      return {};
+    });
+
+    await fastify.ready();
+
+    const response = await fastify.inject({
+      headers: {
+        "content-type": `multipart/form-data; boundary=${boundary}`,
+      },
+      method: "POST",
+      payload: buildMultipartFileBody(boundary, "doc", "note.txt", fileBytes),
+      url: "/upload",
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(body).toEqual({
+      doc: {
+        data: fileBytes,
+        encoding: expect.any(String),
+        filename: "note.txt",
+        mimetype: "application/octet-stream",
+      },
+    });
   });
 });
 

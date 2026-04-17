@@ -4,7 +4,7 @@
 
 ## Plugin Registration
 
-1. **Registers `@fastify/sensible`** — adds `fastify.httpErrors` and `HttpError` support automatically.
+1. **Registers `@fastify/sensible` with fixed defaults** — adds `fastify.httpErrors` and `HttpError` support automatically; this package does not expose `@fastify/sensible` registration options.
 
 2. **Adds `ErrorResponse` JSON schema** — registers the `ErrorResponse` schema (`$id: "ErrorResponse"`) with Fastify so routes can reference it in response schemas.
 

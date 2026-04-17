@@ -87,11 +87,11 @@ All later examples assume the Fastify instance is set up as above.
 
 Docs: https://mercurius.dev / https://www.npmjs.com/package/mercurius
 
-The plugin wraps `mercurius` and passes the full options object through to `mercurius.register()`. We add two extra option fields (`enabled` and `plugins`) and always override the `context` option with our own context-building function.
+The plugin wraps `mercurius` and passes the full options object through to `mercurius.register()`. We add two extra option fields (`enabled` and `plugins`) and provide a default context-building function. Because options are spread after that default, a caller-provided `context` still takes precedence.
 
 What we add on top:
 
-- The `enabled` guard — mercurius is only registered when `enabled: true`.
+- The `enabled` guard — mercurius is only registered when `enabled` is truthy.
 - A config-fallback path — reads `fastify.config.graphql` when no options are provided directly.
 - A `buildContext` factory that seeds the Mercurius context with `config`, `database`, and `dbSchema`, then calls each `GraphqlEnabledPlugin.updateContext` in order.
 
@@ -117,7 +117,20 @@ Only the `DocumentNode` type is re-exported. No runtime code from this library i
 
 ## Features
 
-### 1. Conditional mercurius registration
+### 1. Registration lifecycle logging
+
+The plugin emits lifecycle logs during setup so registration mode is visible in startup logs:
+
+- `info`: `"Registering fastify-graphql plugin"` when registration begins
+- `warn`: fallback warning when no options are passed directly
+- `info`: `"GraphQL API not enabled"` when `enabled` is falsy
+
+```typescript
+await fastify.register(graphqlPlugin, config.graphql);
+// logs: "Registering fastify-graphql plugin"
+```
+
+### 2. Conditional mercurius registration
 
 When `enabled` is falsy, the plugin logs `"GraphQL API not enabled"` and returns without registering mercurius. No `/graphql` route is mounted.
 
@@ -130,7 +143,7 @@ await fastify.register(graphqlPlugin, {
 // When enabled is false, POST /graphql → 404
 ```
 
-### 2. Config fallback
+### 3. Config fallback
 
 When the options object passed to `register()` is empty, the plugin falls back to `fastify.config.graphql`. It logs a deprecation-style warning. If `fastify.config.graphql` is also not present, it throws:
 
@@ -145,9 +158,23 @@ await fastify.register(graphqlPlugin, config.graphql);
 await fastify.register(graphqlPlugin);
 ```
 
-### 3. Automatic context building
+### 4. Default context factory
 
-On every GraphQL request, three fields are injected into the Mercurius context from the Fastify request object automatically — no resolver-level wiring required.
+When mercurius is registered, this package sets `context: buildContext(options.plugins)` as the default context function. Because `...options` is spread afterward, a caller-provided `context` can override this default. Use `plugins` when you want to extend the package-provided context path.
+
+```typescript
+await fastify.register(graphqlPlugin, {
+  enabled: true,
+  schema,
+  resolvers,
+  plugins: [myContextPlugin], // preferred extension point
+  // context: customContext // optional override if you need full control
+});
+```
+
+### 5. Automatic context building (default path)
+
+When using the package's default context factory, three fields are injected into the Mercurius context from the Fastify request object automatically — no resolver-level wiring required.
 
 | Context field      | Source                                                   |
 | ------------------ | -------------------------------------------------------- |
@@ -171,9 +198,9 @@ const resolvers = {
 };
 ```
 
-### 4. Plugin-based context extension
+### 6. Plugin-based context extension
 
-Pass an array of `GraphqlEnabledPlugin` objects in the `plugins` option. Each plugin's `updateContext(context, request, reply)` method is called on every GraphQL request, in array order, after the base context is built. Plugins can add any fields they need to the shared context.
+Pass an array of `GraphqlEnabledPlugin` objects in the `plugins` option. When the default context factory is active, each plugin's `updateContext(context, request, reply)` method is called on every GraphQL request, in array order, after the base context is built. Plugins can add any fields they need to the shared context.
 
 ```typescript
 import type { FastifyInstance } from "fastify";
@@ -211,7 +238,7 @@ await fastify.register(graphqlPlugin, {
 });
 ```
 
-### 5. `GraphqlConfig` interface
+### 7. `GraphqlConfig` interface
 
 Extends `MercuriusOptions` with two plugin-specific fields:
 
@@ -227,7 +254,7 @@ const graphqlConfig: GraphqlConfig = {
 };
 ```
 
-### 6. `GraphqlOptions` type alias
+### 8. `GraphqlOptions` type alias
 
 `GraphqlOptions` is an alias for `GraphqlConfig`. Use whichever name feels more natural in your codebase.
 
@@ -237,7 +264,7 @@ import type { GraphqlOptions } from "@prefabs.tech/fastify-graphql";
 const opts: GraphqlOptions = { enabled: true, schema, resolvers };
 ```
 
-### 7. `GraphqlEnabledPlugin` interface
+### 9. `GraphqlEnabledPlugin` interface
 
 A Fastify plugin (sync or async) that also carries a mandatory `updateContext` method. Implement this interface to create plugins that extend the GraphQL request context.
 
@@ -255,7 +282,7 @@ myPlugin.updateContext = async (context: MercuriusContext, request, reply) => {
 };
 ```
 
-### 8. `MercuriusContext` augmentation
+### 10. `MercuriusContext` augmentation
 
 This package extends the global `mercurius` module's `MercuriusContext` interface with three typed fields. Importing the package is enough for TypeScript to pick up the augmentation in your resolvers.
 
@@ -275,7 +302,7 @@ const resolvers = {
 };
 ```
 
-### 9. `ApiConfig` augmentation
+### 11. `ApiConfig` augmentation
 
 Importing this package extends `@prefabs.tech/fastify-config`'s `ApiConfig` interface with a `graphql` property typed as `GraphqlConfig`. This allows `fastify.config.graphql` to be fully typed throughout your application.
 
@@ -294,7 +321,7 @@ const config: ApiConfig = {
 };
 ```
 
-### 10. `baseSchema` export
+### 12. `baseSchema` export
 
 A pre-built `DocumentNode` with common GraphQL primitives ready to merge into your application schema. Use `mergeTypeDefs` to combine it with your own type definitions.
 
@@ -334,7 +361,7 @@ Provided by `baseSchema`:
 | `SortInput`      | input     | `key: String`, `direction: SortDirection`                                                |
 | `DeleteResult`   | type      | `result: Boolean!`                                                                       |
 
-### 11. `mergeTypeDefs` re-export
+### 13. `mergeTypeDefs` re-export
 
 `mergeTypeDefs` from `@graphql-tools/merge` is re-exported so you do not need a separate import. Merges an array of `DocumentNode` objects or SDL strings into a single `DocumentNode`.
 
@@ -352,7 +379,7 @@ const merged = mergeTypeDefs([
 ]);
 ```
 
-### 12. `gql` tag re-export
+### 14. `gql` tag re-export
 
 `gql` from `graphql-tag` is re-exported so you do not need a separate import. Parses a tagged template literal into a `DocumentNode`.
 
@@ -367,7 +394,7 @@ const userTypeDefs = gql`
 `;
 ```
 
-### 13. `DocumentNode` type re-export
+### 15. `DocumentNode` type re-export
 
 The `DocumentNode` type from the `graphql` package is re-exported for use in function signatures and type annotations without adding a direct `graphql` dependency to your code.
 

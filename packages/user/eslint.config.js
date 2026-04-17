@@ -9,8 +9,8 @@ export default [
     },
     rules: {
       // Disable conflicting default/import rules
-      "import/order": "off",
       "sort-imports": "off",
+      "import/order": "off",
 
       // Enable and spread Perfectionist's recommended rules
       ...perfectionist.configs["recommended-alphabetical"].rules,

@@ -37,20 +37,12 @@ describe("parse", () => {
     expect(parse(undefined, undefined)).toBe(undefined);
   });
 
-  it("throws SyntaxError Exception due to json parse on boolean", () => {
-    try {
-      parse("Dzango", false);
-    } catch (error) {
-      expect(error).toBeInstanceOf(SyntaxError);
-    }
+  it("throws SyntaxError when boolean parsing receives invalid JSON", () => {
+    expect(() => parse("Dzango", false)).toThrow(SyntaxError);
   });
 
-  it("returns SyntaxError Exception due to json parse on number", () => {
-    try {
-      parse("Dzango", 14);
-    } catch (error) {
-      expect(error).toBeInstanceOf(SyntaxError);
-    }
+  it("throws SyntaxError when number parsing receives invalid JSON", () => {
+    expect(() => parse("Dzango", 14)).toThrow(SyntaxError);
   });
 
   it('parses "1" as truthy boolean', () => {

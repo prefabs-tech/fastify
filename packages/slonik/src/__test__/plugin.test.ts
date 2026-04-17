@@ -121,6 +121,30 @@ describe("slonikPlugin — registration", async () => {
       undefined,
     );
   });
+
+  it("passes false for queryLogging.enabled when query logging is explicitly disabled", async () => {
+    const options: SlonikOptions = {
+      ...baseOptions,
+      queryLogging: { enabled: false },
+    };
+    await fastify.register(plugin, options);
+    await fastify.ready();
+    expect(createClientConfigurationMock).toHaveBeenCalledWith(
+      options.clientConfiguration,
+      false,
+    );
+  });
+
+  it("runs extension and migration setup after the pool is decorated", async () => {
+    const options: SlonikOptions = {
+      ...baseOptions,
+      extensions: ["uuid-ossp"],
+    };
+    await fastify.register(plugin, options);
+    await fastify.ready();
+    expect(runMigrationsMock).toHaveBeenCalledTimes(1);
+    expect(runMigrationsMock).toHaveBeenCalledWith(fastify.slonik, options);
+  });
 });
 
 describe("slonikPlugin — legacy config fallback", async () => {
@@ -134,10 +158,16 @@ describe("slonikPlugin — legacy config fallback", async () => {
   });
 
   it("reads options from fastify.config.slonik when no options passed", async () => {
+    const warnSpy = vi.spyOn(fastify.log, "warn").mockImplementation(() => {});
     fastify.decorate("config", { slonik: baseOptions });
     await fastify.register(plugin);
     await fastify.ready();
     expect(stringifyDsnMock).toHaveBeenCalledWith(baseOptions.db);
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "The slonik plugin now recommends passing slonik options directly",
+      ),
+    );
   });
 
   it("fastify.slonik is available after legacy registration", async () => {
@@ -151,5 +181,12 @@ describe("slonikPlugin — legacy config fallback", async () => {
     await expect(fastify.register(plugin)).rejects.toThrow(
       "Missing slonik configuration. Did you forget to pass it to the slonik plugin?",
     );
+  });
+
+  it("runs extension setup with config resolved from fastify.config.slonik", async () => {
+    fastify.decorate("config", { slonik: baseOptions });
+    await fastify.register(plugin);
+    await fastify.ready();
+    expect(runMigrationsMock).toHaveBeenCalledWith(fastify.slonik, baseOptions);
   });
 });

@@ -102,3 +102,9 @@
 ## Migration Queries
 
 35. **`createUserDevicesTableQuery` export** — exported SQL factory function for the user devices table DDL; uses the configured or default table name.
+
+## Initialization and Route Guards
+
+36. **Initialization failure logging** — if `firebase-admin` initialization throws, `initializeFirebase` catches the error and logs both a fixed message (`"Failed to initialize firebase"`) and the original error object instead of crashing startup.
+
+37. **Explicit notification route disable flag** — even when `config.firebase.notification.test.enabled === true`, setting `config.firebase.routes.notifications.disabled = true` prevents notification route registration entirely.

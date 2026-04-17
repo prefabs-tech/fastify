@@ -1,4 +1,4 @@
-name: "Test suite"
+name: "@prefabs.tech/fastify Test"
 
 on:
   push
@@ -12,17 +12,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use node ${{ matrix.node-version }}
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: "pnpm"
+
       - name: Setup pnpm and install dependencies
         uses: pnpm/action-setup@v4
         with:
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
+
       - name: Build packages
         run: pnpm build
+
       - name: Run tests
         run: pnpm test

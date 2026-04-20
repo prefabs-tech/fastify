@@ -1,12 +1,13 @@
+import type { FastifyInstance } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 import { stringifyDsn } from "slonik";
+
+import type { SlonikOptions } from "./types";
 
 import createClientConfiguration from "./factories/createClientConfiguration";
 import runMigrations from "./migrations/runMigrations";
 import { fastifySlonik } from "./slonik";
-
-import type { SlonikOptions } from "./types";
-import type { FastifyInstance } from "fastify";
 
 const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
   fastify.log.info("Registering fastify-slonik plugin");
@@ -26,11 +27,11 @@ const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
   }
 
   await fastify.register(fastifySlonik, {
-    connectionString: stringifyDsn(options.db),
     clientConfiguration: createClientConfiguration(
       options.clientConfiguration,
       options.queryLogging?.enabled,
     ),
+    connectionString: stringifyDsn(options.db),
   });
 
   await runMigrations(fastify.slonik, options);

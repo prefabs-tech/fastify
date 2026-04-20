@@ -4,11 +4,11 @@
 
 // reference https://github.com/supertokens/supertokens-node/blob/master/lib/ts/recipe/session/claimBaseClasses/primitiveArrayClaim.ts
 
-import { getRequestFromUserContext } from "supertokens-node";
-import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims";
-
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 import type { SessionClaimValidator } from "supertokens-node/recipe/session";
+
+import { getRequestFromUserContext } from "supertokens-node";
+import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims";
 
 interface Response {
   gracePeriodEndsAt?: number;
@@ -19,6 +19,55 @@ class ProfileValidationClaim extends SessionClaim<Response> {
   public static defaultMaxAgeInSeconds: number | undefined = undefined;
   public static key = "profileValidation";
 
+  validators = {
+    isVerified: (
+      maxAgeInSeconds:
+        | number
+        | undefined = ProfileValidationClaim.defaultMaxAgeInSeconds,
+      id?: string,
+    ): SessionClaimValidator => {
+      return {
+        claim: this,
+        id: id ?? this.key,
+        shouldRefetch: () => true,
+        validate: async (payload, context) => {
+          const expectedValue = true;
+
+          const claimValue = this.getValueFromPayload(payload, context);
+
+          if (claimValue === undefined) {
+            return {
+              isValid: false,
+              reason: {
+                actualValue: undefined,
+                expectedValue,
+                message: "value does not exist",
+              },
+            };
+          }
+
+          if (
+            claimValue.isVerified !== expectedValue &&
+            (claimValue.gracePeriodEndsAt
+              ? claimValue.gracePeriodEndsAt <= Date.now()
+              : true)
+          ) {
+            return {
+              isValid: false,
+              reason: {
+                actualValue: claimValue.isVerified,
+                expectedValue,
+                message: "User profile is incomplete",
+              },
+            };
+          }
+
+          return { isValid: true };
+        },
+      };
+    },
+  };
+
   constructor() {
     super("profileValidation");
   }
@@ -27,8 +76,8 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     return {
       ...payload,
       [this.key]: {
-        v: value,
         t: Date.now(),
+        v: value,
       },
     };
   }
@@ -97,55 +146,6 @@ class ProfileValidationClaim extends SessionClaim<Response> {
 
     return res;
   }
-
-  validators = {
-    isVerified: (
-      maxAgeInSeconds:
-        | number
-        | undefined = ProfileValidationClaim.defaultMaxAgeInSeconds,
-      id?: string,
-    ): SessionClaimValidator => {
-      return {
-        claim: this,
-        id: id ?? this.key,
-        shouldRefetch: () => true,
-        validate: async (payload, context) => {
-          const expectedValue = true;
-
-          const claimValue = this.getValueFromPayload(payload, context);
-
-          if (claimValue === undefined) {
-            return {
-              isValid: false,
-              reason: {
-                message: "value does not exist",
-                expectedValue,
-                actualValue: undefined,
-              },
-            };
-          }
-
-          if (
-            claimValue.isVerified !== expectedValue &&
-            (claimValue.gracePeriodEndsAt
-              ? claimValue.gracePeriodEndsAt <= Date.now()
-              : true)
-          ) {
-            return {
-              isValid: false,
-              reason: {
-                message: "User profile is incomplete",
-                expectedValue,
-                actualValue: claimValue.isVerified,
-              },
-            };
-          }
-
-          return { isValid: true };
-        },
-      };
-    },
-  };
 }
 
 export default ProfileValidationClaim;

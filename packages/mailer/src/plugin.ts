@@ -1,14 +1,15 @@
-import FastifyPlugin from "fastify-plugin";
-import { createTransport } from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
-import { htmlToText } from "nodemailer-html-to-text";
-import { nodemailerMjmlPlugin } from "nodemailer-mjml";
-
-import router from "./router";
-
-import type { FastifyMailer, MailerOptions } from "./types";
 import type { FastifyInstance } from "fastify";
 import type { MailOptions } from "nodemailer/lib/sendmail-transport";
+
+import FastifyPlugin from "fastify-plugin";
+import { createTransport } from "nodemailer";
+import { htmlToText } from "nodemailer-html-to-text";
+import { nodemailerMjmlPlugin } from "nodemailer-mjml";
+import SMTPTransport from "nodemailer/lib/smtp-transport";
+
+import type { FastifyMailer, MailerOptions } from "./types";
+
+import router from "./router";
 
 const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
   fastify.log.info("Registering fastify-mailer plugin");
@@ -18,7 +19,7 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
       "The mailer plugin now recommends passing mailer options directly to the plugin.",
     );
 
-    if (!fastify.config.mailer) {
+    if (!fastify.config?.mailer) {
       throw new Error(
         "Missing mailer configuration. Did you forget to pass it to the mailer plugin?",
       );
@@ -29,11 +30,11 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
 
   const {
     defaults,
+    recipients,
+    templateData: configTemplateData,
     templating,
     test,
     transport,
-    templateData: configTemplateData,
-    recipients,
   } = options;
 
   const transporter = createTransport(transport, defaults);
@@ -75,9 +76,9 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
 
       if (recipients && recipients.length > 0) {
         mailerOptions = {
+          ...mailerOptions,
           bcc: undefined,
           cc: undefined,
-          ...mailerOptions,
           to: recipients,
         };
       }

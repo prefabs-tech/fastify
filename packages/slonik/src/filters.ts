@@ -1,8 +1,9 @@
+import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
+
 import humps from "humps";
 import { sql } from "slonik";
 
 import type { BaseFilterInput, FilterInput } from "./types";
-import type { IdentifierSqlToken, FragmentSqlToken } from "slonik";
 
 const applyFilter = (
   tableIdentifier: IdentifierSqlToken,
@@ -43,9 +44,24 @@ const applyFilter = (
   }
 
   switch (operator) {
+    case "bt": {
+      const [start, end] = value.split(",");
+
+      if (!start || !end) {
+        throw new Error("BETWEEN operator requires exactly two values");
+      }
+
+      clauseOperator = not ? sql.fragment`NOT BETWEEN` : sql.fragment`BETWEEN`;
+
+      value = insensitive
+        ? sql.fragment`unaccent(lower(${start})) AND unaccent(lower(${end}))`
+        : sql.fragment`${start} AND ${end}`;
+
+      break;
+    }
     case "ct":
-    case "sw":
-    case "ew": {
+    case "ew":
+    case "sw": {
       const valueString = {
         ct: `%${value}%`, // contains
         ew: `%${value}`, // ends with
@@ -60,16 +76,6 @@ const applyFilter = (
 
       break;
     }
-    case "eq":
-    default: {
-      clauseOperator = not ? sql.fragment`!=` : sql.fragment`=`;
-
-      if (insensitive) {
-        value = sql.fragment`unaccent(lower(${value}))`;
-      }
-
-      break;
-    }
     case "gt": {
       clauseOperator = not ? sql.fragment`<` : sql.fragment`>`;
 
@@ -81,24 +87,6 @@ const applyFilter = (
     }
     case "gte": {
       clauseOperator = not ? sql.fragment`<` : sql.fragment`>=`;
-
-      if (insensitive) {
-        value = sql.fragment`unaccent(lower(${value}))`;
-      }
-
-      break;
-    }
-    case "lte": {
-      clauseOperator = not ? sql.fragment`>` : sql.fragment`<=`;
-
-      if (insensitive) {
-        value = sql.fragment`unaccent(lower(${value}))`;
-      }
-
-      break;
-    }
-    case "lt": {
-      clauseOperator = not ? sql.fragment`>` : sql.fragment`<`;
 
       if (insensitive) {
         value = sql.fragment`unaccent(lower(${value}))`;
@@ -124,18 +112,30 @@ const applyFilter = (
 
       break;
     }
-    case "bt": {
-      const [start, end] = value.split(",");
+    case "lt": {
+      clauseOperator = not ? sql.fragment`>` : sql.fragment`<`;
 
-      if (!start || !end) {
-        throw new Error("BETWEEN operator requires exactly two values");
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
       }
 
-      clauseOperator = not ? sql.fragment`NOT BETWEEN` : sql.fragment`BETWEEN`;
+      break;
+    }
+    case "lte": {
+      clauseOperator = not ? sql.fragment`>` : sql.fragment`<=`;
 
-      value = insensitive
-        ? sql.fragment`unaccent(lower(${start})) AND unaccent(lower(${end}))`
-        : sql.fragment`${start} AND ${end}`;
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
+
+      break;
+    }
+    default: {
+      clauseOperator = not ? sql.fragment`!=` : sql.fragment`=`;
+
+      if (insensitive) {
+        value = sql.fragment`unaccent(lower(${value}))`;
+      }
 
       break;
     }

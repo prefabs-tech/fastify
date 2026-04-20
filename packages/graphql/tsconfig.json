@@ -1,9 +1,9 @@
 {
   "extends": "@prefabs.tech/tsconfig/fastify.json",
+  "exclude": ["src/**/__test__/**/*"],
   "compilerOptions": {
-    "outDir": "./dist",
+    "baseUrl": "./",
+    "outDir": "./dist"
   },
-  "include": [
-    "src/**/*.ts"
-  ]
+  "include": ["src/**/*.ts"]
 }

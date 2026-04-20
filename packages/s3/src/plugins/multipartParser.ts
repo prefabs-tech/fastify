@@ -1,8 +1,8 @@
+import type { FastifyInstance } from "fastify";
+
 import fastifyPlugin from "fastify-plugin";
 
 import { processMultipartFormData } from "../utils";
-
-import type { FastifyInstance } from "fastify";
 
 declare module "fastify" {
   interface FastifyRequest {

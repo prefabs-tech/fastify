@@ -5,15 +5,6 @@ import type {
   StreamEntry,
 } from "pino";
 
-interface AppConfig {
-  id: number;
-  name: string;
-  origin: string;
-  supportedRoles: string[];
-}
-
-type Compressor = (source: string, destination: string) => string;
-
 interface ApiConfig {
   appName: string;
   appOrigin: string[];
@@ -34,7 +25,7 @@ interface ApiConfig {
     rotation?: {
       enabled: boolean;
       options: {
-        compress?: boolean | string | Compressor;
+        compress?: boolean | Compressor | string;
         filenames: string[];
         interval?: string;
         maxFiles?: number;
@@ -44,8 +35,8 @@ interface ApiConfig {
       };
     };
     streams?: (DestinationStream | StreamEntry)[];
-    transport?: LoggerOptions["transport"];
     timestamp?: LoggerOptions["timestamp"];
+    transport?: LoggerOptions["transport"];
   };
   name: string;
   pagination?: {
@@ -59,5 +50,14 @@ interface ApiConfig {
   };
   version: string;
 }
+
+interface AppConfig {
+  id: number;
+  name: string;
+  origin: string;
+  supportedRoles: string[];
+}
+
+type Compressor = (source: string, destination: string) => string;
 
 export type { ApiConfig, AppConfig };

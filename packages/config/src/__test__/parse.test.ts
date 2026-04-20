@@ -37,19 +37,31 @@ describe("parse", () => {
     expect(parse(undefined, undefined)).toBe(undefined);
   });
 
-  it("throws SyntaxError Exception due to json parse on boolean", () => {
-    try {
-      parse("Dzango", false);
-    } catch (error) {
-      expect(error).toBeInstanceOf(SyntaxError);
-    }
+  it("throws SyntaxError when boolean parsing receives invalid JSON", () => {
+    expect(() => parse("Dzango", false)).toThrow(SyntaxError);
   });
 
-  it("returns SyntaxError Exception due to json parse on number", () => {
-    try {
-      parse("Dzango", 14);
-    } catch (error) {
-      expect(error).toBeInstanceOf(SyntaxError);
-    }
+  it("throws SyntaxError when number parsing receives invalid JSON", () => {
+    expect(() => parse("Dzango", 14)).toThrow(SyntaxError);
+  });
+
+  it('parses "1" as truthy boolean', () => {
+    expect(parse("1", false)).toBe(true);
+  });
+
+  it('parses "0" as falsy boolean', () => {
+    expect(parse("0", true)).toBe(false);
+  });
+
+  it("parses a float number", () => {
+    expect(parse("3.14", 0)).toBe(3.14);
+  });
+
+  it("parses a negative number", () => {
+    expect(parse("-5", 0)).toBe(-5);
+  });
+
+  it("returns empty string when value is empty string", () => {
+    expect(parse("", "default")).toBe("");
   });
 });

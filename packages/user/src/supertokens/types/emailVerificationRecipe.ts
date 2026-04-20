@@ -1,12 +1,12 @@
-import EmailVerification from "supertokens-node/recipe/emailverification";
-
 import type { FastifyInstance } from "fastify";
 import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
 import type {
-  TypeEmailVerificationEmailDeliveryInput,
   APIInterface,
   RecipeInterface,
+  TypeEmailVerificationEmailDeliveryInput,
 } from "supertokens-node/recipe/emailverification/types";
+
+import EmailVerification from "supertokens-node/recipe/emailverification";
 
 type APIInterfaceWrapper = {
   [key in keyof APIInterface]?: (
@@ -14,6 +14,15 @@ type APIInterfaceWrapper = {
     fastify: FastifyInstance,
   ) => APIInterface[key];
 };
+
+interface EmailVerificationRecipe {
+  mode?: "OPTIONAL" | "REQUIRED";
+  override?: {
+    apis?: APIInterfaceWrapper;
+    functions?: RecipeInterfaceWrapper;
+  };
+  sendEmail?: SendEmailWrapper;
+}
 
 type RecipeInterfaceWrapper = {
   [key in keyof RecipeInterface]?: (
@@ -27,18 +36,9 @@ type SendEmailWrapper = (
   fastify: FastifyInstance,
 ) => typeof EmailVerification.sendEmail;
 
-interface EmailVerificationRecipe {
-  override?: {
-    apis?: APIInterfaceWrapper;
-    functions?: RecipeInterfaceWrapper;
-  };
-  mode?: "REQUIRED" | "OPTIONAL";
-  sendEmail?: SendEmailWrapper;
-}
-
 export type {
   APIInterfaceWrapper,
-  RecipeInterfaceWrapper,
   EmailVerificationRecipe,
+  RecipeInterfaceWrapper,
   SendEmailWrapper,
 };

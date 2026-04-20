@@ -1,3 +1,15 @@
+import type { FastifyInstance } from "fastify";
+import type {
+  APIInterface,
+  RecipeInterface,
+  TypeInput as ThirdPartyEmailPasswordRecipeConfig,
+} from "supertokens-node/recipe/thirdpartyemailpassword/types";
+
+import type {
+  SendEmailWrapper,
+  ThirdPartyEmailPasswordRecipe,
+} from "../../types/thirdPartyEmailPasswordRecipe";
+
 import appleRedirectHandlerPOST from "./third-party-email-password/appleRedirectHandlerPost";
 import emailPasswordSignIn from "./third-party-email-password/emailPasswordSignIn";
 import emailPasswordSignUp from "./third-party-email-password/emailPasswordSignUp";
@@ -8,17 +20,6 @@ import sendPasswordResetEmail from "./third-party-email-password/sendPasswordRes
 import thirdPartySignInUp from "./third-party-email-password/thirdPartySignInUp";
 import thirdPartySignInUpPOST from "./third-party-email-password/thirdPartySignInUpPost";
 import getThirdPartyProviders from "./thirdPartyProviders";
-
-import type {
-  SendEmailWrapper,
-  ThirdPartyEmailPasswordRecipe,
-} from "../../types/thirdPartyEmailPasswordRecipe";
-import type { FastifyInstance } from "fastify";
-import type {
-  APIInterface,
-  RecipeInterface,
-  TypeInput as ThirdPartyEmailPasswordRecipeConfig,
-} from "supertokens-node/recipe/thirdpartyemailpassword/types";
 
 const getThirdPartyEmailPasswordRecipeConfig = (
   fastify: FastifyInstance,
@@ -35,6 +36,22 @@ const getThirdPartyEmailPasswordRecipeConfig = (
   }
 
   return {
+    emailDelivery: {
+      override: (originalImplementation) => {
+        let sendEmailConfig: SendEmailWrapper | undefined;
+
+        if (thirdPartyEmailPassword?.sendEmail) {
+          sendEmailConfig = thirdPartyEmailPassword.sendEmail;
+        }
+
+        return {
+          ...originalImplementation,
+          sendEmail: sendEmailConfig
+            ? sendEmailConfig(originalImplementation, fastify)
+            : sendPasswordResetEmail(originalImplementation, fastify),
+        };
+      },
+    },
     override: {
       apis: (originalImplementation) => {
         const apiInterface: Partial<APIInterface> = {};
@@ -59,15 +76,15 @@ const getThirdPartyEmailPasswordRecipeConfig = (
 
         return {
           ...originalImplementation,
+          appleRedirectHandlerPOST: appleRedirectHandlerPOST(
+            originalImplementation,
+            fastify,
+          ),
           emailPasswordSignUpPOST: emailPasswordSignUpPOST(
             originalImplementation,
             fastify,
           ),
           thirdPartySignInUpPOST: thirdPartySignInUpPOST(
-            originalImplementation,
-            fastify,
-          ),
-          appleRedirectHandlerPOST: appleRedirectHandlerPOST(
             originalImplementation,
             fastify,
           ),
@@ -117,26 +134,10 @@ const getThirdPartyEmailPasswordRecipeConfig = (
         };
       },
     },
+    providers: getThirdPartyProviders(config),
     signUpFeature: {
       formFields: getFormFields(config),
     },
-    emailDelivery: {
-      override: (originalImplementation) => {
-        let sendEmailConfig: SendEmailWrapper | undefined;
-
-        if (thirdPartyEmailPassword?.sendEmail) {
-          sendEmailConfig = thirdPartyEmailPassword.sendEmail;
-        }
-
-        return {
-          ...originalImplementation,
-          sendEmail: sendEmailConfig
-            ? sendEmailConfig(originalImplementation, fastify)
-            : sendPasswordResetEmail(originalImplementation, fastify),
-        };
-      },
-    },
-    providers: getThirdPartyProviders(config),
   };
 };
 

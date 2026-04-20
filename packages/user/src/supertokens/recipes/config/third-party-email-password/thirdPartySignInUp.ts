@@ -1,15 +1,16 @@
+import type { FastifyInstance } from "fastify";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
+
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { deleteUser } from "supertokens-node";
 import { getUserByThirdPartyInfo } from "supertokens-node/recipe/thirdpartyemailpassword";
 import UserRoles from "supertokens-node/recipe/userroles";
 
+import type { User } from "../../../../types";
+
 import getUserService from "../../../../lib/getUserService";
 import areRolesExist from "../../../utils/areRolesExist";
-
-import type { User } from "../../../../types";
-import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 const thirdPartySignInUp = (
   originalImplementation: RecipeInterface,
@@ -60,12 +61,12 @@ const thirdPartySignInUp = (
         }
       }
 
-      let user: User | null | undefined;
+      let user: null | undefined | User;
 
       try {
         user = await userService.create({
-          id: originalResponse.user.id,
           email: originalResponse.user.email,
+          id: originalResponse.user.id,
         });
 
         if (!user) {

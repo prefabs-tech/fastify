@@ -1,7 +1,7 @@
-import { FastifyRequest as SupertokensFastifyRequest } from "supertokens-node/lib/build/framework/fastify/framework";
-
 import type { FastifyRequest } from "fastify";
 import type { SessionRequest } from "supertokens-node/lib/build/framework/fastify";
+
+import { FastifyRequest as SupertokensFastifyRequest } from "supertokens-node/lib/build/framework/fastify/framework";
 
 // reference https://github.com/supertokens/supertokens-node/blob/0faebfae435fd661f4b6657e2ca510101da012f5/lib/ts/utils.ts#L143
 

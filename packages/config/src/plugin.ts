@@ -1,7 +1,8 @@
+import type { FastifyInstance, FastifyRequest } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 
 import type { ApiConfig } from "./types";
-import type { FastifyInstance, FastifyRequest } from "fastify";
 
 const plugin = async (
   fastify: FastifyInstance,

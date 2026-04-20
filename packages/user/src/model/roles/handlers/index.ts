@@ -5,9 +5,9 @@ import getRoles from "./getRoles";
 import updatePermissions from "./updatePermissions";
 
 export default {
-  deleteRole,
   createRole,
-  getRoles,
+  deleteRole,
   getPermissions,
+  getRoles,
   updatePermissions,
 };

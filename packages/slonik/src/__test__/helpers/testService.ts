@@ -1,7 +1,7 @@
-import TestSqlFactory from "./sqlFactory";
-import BaseService from "../../service";
-
 import type { QueryResultRow } from "slonik";
+
+import BaseService from "../../service";
+import TestSqlFactory from "./sqlFactory";
 
 class TestService<
   T extends QueryResultRow,

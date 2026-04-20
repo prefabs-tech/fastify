@@ -1,11 +1,11 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import type { QuerySqlToken } from "slonik";
+import type { ZodTypeAny } from "zod";
+
 import { TABLE_FILES } from "@prefabs.tech/fastify-s3";
 import { sql } from "slonik";
 
 import { TABLE_INVITATIONS, TABLE_USERS } from "../constants";
-
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
-import type { QuerySqlToken } from "slonik";
-import type { ZodTypeAny } from "zod";
 
 const createInvitationsTableQuery = (
   config: ApiConfig,

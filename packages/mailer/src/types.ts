@@ -1,21 +1,27 @@
 import type { Transporter } from "nodemailer";
+import type { IPluginOptions } from "nodemailer-mjml";
 import type { Options } from "nodemailer/lib/mailer/";
 import type { Options as SMTPOptions } from "nodemailer/lib/smtp-transport";
-import type { IPluginOptions } from "nodemailer-mjml";
+
+type FastifyMailer = FastifyMailerNamedInstance & Transporter;
+
+interface FastifyMailerNamedInstance {
+  [namespace: string]: Transporter;
+}
 
 interface MailerConfig {
-  defaults: Partial<Options> & {
+  defaults: {
     from: {
       address: string;
       name: string;
     };
-  };
+  } & Partial<Options>;
   /**
    * Any email sent from the API will be directed to these addresses.
    */
   recipients?: string[];
-  templating: IPluginOptions;
   templateData?: Record<never, never>;
+  templating: IPluginOptions;
   test?: {
     enabled: boolean;
     path: string;
@@ -26,15 +32,9 @@ interface MailerConfig {
 
 type MailerOptions = MailerConfig;
 
-interface FastifyMailerNamedInstance {
-  [namespace: string]: Transporter;
-}
-
-type FastifyMailer = FastifyMailerNamedInstance & Transporter;
-
 export type {
-  FastifyMailerNamedInstance,
   FastifyMailer,
+  FastifyMailerNamedInstance,
   MailerConfig,
   MailerOptions,
 };

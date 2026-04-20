@@ -1,13 +1,14 @@
+import type { QueryResultRow } from "slonik";
+
 /* istanbul ignore file */
 import { newDb } from "pg-mem";
 import { describe, expect, it } from "vitest";
 
+import type { PaginatedList } from "../types";
+
 import createConfig from "./helpers/createConfig";
 import createDatabase from "./helpers/createDatabase";
 import TestService from "./helpers/testService";
-
-import type { PaginatedList } from "../types";
-import type { QueryResultRow } from "slonik";
 
 // Test service with hooks implementation
 class TestServiceWithHooks<
@@ -15,43 +16,6 @@ class TestServiceWithHooks<
   C extends QueryResultRow,
   U extends QueryResultRow,
 > extends TestService<T, C, U> {
-  // Pre-hooks
-  async preAll() {
-    // No processing needed for read operations
-  }
-
-  async preCount() {
-    // No processing needed for read operations
-  }
-
-  async preCreate(data: C): Promise<C> {
-    return { ...data, name: `pre-${data.name}` } as C;
-  }
-
-  async preDelete() {
-    // No processing needed for delete operation
-  }
-
-  async preFind() {
-    // No processing needed for read operations
-  }
-
-  async preFindById() {
-    // No processing needed for read operations
-  }
-
-  async preFindOne() {
-    // No processing needed for read operations
-  }
-
-  async preList() {
-    // No processing needed for read operations
-  }
-
-  async preUpdate(data: U): Promise<U> {
-    return { ...data, name: `pre-${data.name}` } as U;
-  }
-
   // Post-hooks
   async postAll(result: Partial<readonly T[]>): Promise<Partial<readonly T[]>> {
     return result.map((item) => ({
@@ -97,6 +61,43 @@ class TestServiceWithHooks<
   async postUpdate(result: T): Promise<T> {
     return { ...result, processed: "updated" } as T;
   }
+
+  // Pre-hooks
+  async preAll() {
+    // No processing needed for read operations
+  }
+
+  async preCount() {
+    // No processing needed for read operations
+  }
+
+  async preCreate(data: C): Promise<C> {
+    return { ...data, name: `pre-${data.name}` } as C;
+  }
+
+  async preDelete() {
+    // No processing needed for delete operation
+  }
+
+  async preFind() {
+    // No processing needed for read operations
+  }
+
+  async preFindById() {
+    // No processing needed for read operations
+  }
+
+  async preFindOne() {
+    // No processing needed for read operations
+  }
+
+  async preList() {
+    // No processing needed for read operations
+  }
+
+  async preUpdate(data: U): Promise<U> {
+    return { ...data, name: `pre-${data.name}` } as U;
+  }
 }
 
 // Service with invalid hooks (returning wrong types)
@@ -105,12 +106,12 @@ class TestServiceWithInvalidHooks<
   C extends QueryResultRow,
   U extends QueryResultRow,
 > extends TestService<T, C, U> {
-  async preCreate(): Promise<C> {
-    return "invalid-type" as unknown as C;
-  }
-
   async postCreate(): Promise<T> {
     return "invalid-type" as unknown as T;
+  }
+
+  async preCreate(): Promise<C> {
+    return "invalid-type" as unknown as C;
   }
 }
 
@@ -128,7 +129,7 @@ describe("Service Hooks", async () => {
   describe("Pre-hooks", () => {
     it("calls preCreate hook and modifies data before create", async () => {
       const service = new TestServiceWithHooks(config, database);
-      const data = { name: "Test", latitude: 20, countryCode: "FR" };
+      const data = { countryCode: "FR", latitude: 20, name: "Test" };
 
       const result = await service.create(data);
 
@@ -148,7 +149,7 @@ describe("Service Hooks", async () => {
 
     it("handles missing pre-hooks gracefully", async () => {
       const service = new TestService(config, database);
-      const data = { name: "Test", latitude: 20, countryCode: "FR" };
+      const data = { countryCode: "FR", latitude: 20, name: "Test" };
 
       const result = await service.create(data);
 
@@ -157,7 +158,7 @@ describe("Service Hooks", async () => {
 
     it("returns original data when pre-hook returns wrong type", async () => {
       const service = new TestServiceWithInvalidHooks(config, database);
-      const data = { name: "Test", latitude: 20, countryCode: "FR" };
+      const data = { countryCode: "FR", latitude: 20, name: "Test" };
 
       const result = await service.create(data);
 
@@ -167,7 +168,7 @@ describe("Service Hooks", async () => {
 
     it("verifies pre-hooks are called and modify data", async () => {
       const service = new TestServiceWithHooks(config, database);
-      const data = { name: "TrackingTest", latitude: 25, countryCode: "DE" };
+      const data = { countryCode: "DE", latitude: 25, name: "TrackingTest" };
 
       const result = await service.create(data);
 
@@ -201,7 +202,7 @@ describe("Service Hooks", async () => {
 
     it("calls postCreate hook and modifies result", async () => {
       const service = new TestServiceWithHooks(config, database);
-      const data = { name: "PostTest", latitude: 15, countryCode: "IT" };
+      const data = { countryCode: "IT", latitude: 15, name: "PostTest" };
 
       const result = await service.create(data);
 
@@ -261,7 +262,7 @@ describe("Service Hooks", async () => {
       const service = new TestServiceWithHooks(config, database);
 
       // First create a record to delete
-      const createData = { name: "ToDelete", latitude: 50, countryCode: "CA" };
+      const createData = { countryCode: "CA", latitude: 50, name: "ToDelete" };
       const created = await service.create(createData);
 
       const result = await service.delete(created!.id as number);
@@ -280,7 +281,7 @@ describe("Service Hooks", async () => {
 
     it("returns original result when post-hook returns wrong type", async () => {
       const service = new TestServiceWithInvalidHooks(config, database);
-      const data = { name: "Test", latitude: 20, countryCode: "FR" };
+      const data = { countryCode: "FR", latitude: 20, name: "Test" };
 
       const result = await service.create(data);
 
@@ -291,9 +292,9 @@ describe("Service Hooks", async () => {
     it("verifies post-hooks are called and modify results", async () => {
       const service = new TestServiceWithHooks(config, database);
       const data = {
-        name: "PostTrackingTest",
-        latitude: 25,
         countryCode: "DE",
+        latitude: 25,
+        name: "PostTrackingTest",
       };
 
       const result = await service.create(data);
@@ -307,7 +308,7 @@ describe("Service Hooks", async () => {
   describe("Hook execution order", () => {
     it("executes pre-hook before and post-hook after processing", async () => {
       const service = new TestServiceWithHooks(config, database);
-      const data = { name: "OrderTest", latitude: 35, countryCode: "ES" };
+      const data = { countryCode: "ES", latitude: 35, name: "OrderTest" };
 
       const result = await service.create(data);
 
@@ -323,9 +324,9 @@ describe("Service Hooks", async () => {
 
       // First create a record to update
       const createData = {
-        name: "ToBeUpdated",
-        latitude: 10,
         countryCode: "US",
+        latitude: 10,
+        name: "ToBeUpdated",
       };
       const created = await service.create(createData);
 
@@ -387,7 +388,7 @@ describe("Service Hooks", async () => {
     it("calls pre-hooks with data for write operations", async () => {
       const service = new TestServiceWithHooks(config, database);
 
-      const createData = { name: "WithData", latitude: 40, countryCode: "JP" };
+      const createData = { countryCode: "JP", latitude: 40, name: "WithData" };
       const created = await service.create(createData);
 
       const updateData = { name: "UpdatedWithData" };
@@ -411,7 +412,7 @@ describe("Service Hooks", async () => {
       }
 
       const service = new ErrorService(config, database);
-      const data = { name: "ErrorTest", latitude: 20, countryCode: "FR" };
+      const data = { countryCode: "FR", latitude: 20, name: "ErrorTest" };
 
       // Should throw the error from the pre-hook
       await expect(service.create(data)).rejects.toThrow("Pre-hook error");
@@ -429,7 +430,7 @@ describe("Service Hooks", async () => {
       }
 
       const service = new ErrorService(config, database);
-      const data = { name: "ErrorTest", latitude: 20, countryCode: "FR" };
+      const data = { countryCode: "FR", latitude: 20, name: "ErrorTest" };
 
       // Should throw the error from the post-hook
       await expect(service.create(data)).rejects.toThrow("Post-hook error");

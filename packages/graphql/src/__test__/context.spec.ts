@@ -1,18 +1,22 @@
 import type { FastifyInstance } from "fastify";
 
-import fastify from "fastify";
-import { beforeEach, describe, expect, it } from "vitest";
+import Fastify from "fastify";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import graphqlPlugin from "../plugin";
 import createConfig from "./helpers/createConfig";
 import testPlugin from "./helpers/testPlugin";
 import testPluginAsync from "./helpers/testPluginAsync";
 
-describe("Graphql Context", async () => {
+describe("Graphql Context", () => {
   let api: FastifyInstance;
 
-  beforeEach(async () => {
-    api = await fastify();
+  beforeEach(() => {
+    api = Fastify({ logger: false });
+  });
+
+  afterEach(async () => {
+    await api.close();
   });
 
   it("Should add context property and value from callback test plugin", async () => {

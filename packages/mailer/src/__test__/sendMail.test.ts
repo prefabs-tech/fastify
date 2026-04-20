@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import Fastify from "fastify";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import "../index";
 import createMailerConfig from "./helpers/createMailerConfig";
@@ -36,6 +36,10 @@ describe("mailerPlugin — sendMail › template data", async () => {
   beforeEach(async () => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: false });
+  });
+
+  afterEach(async () => {
+    await fastify.close();
   });
 
   it("passes empty templateData when neither global nor per-email is set", async () => {
@@ -139,6 +143,22 @@ describe("mailerPlugin — sendMail › template data", async () => {
     expect(calledWith.templateData.appName).toBe("MyApp");
   });
 
+  it("resolves with the transporter sendMail result when using the promise API", async () => {
+    const sentInfo = { messageId: "<msg@test>", response: "250 OK" };
+    sendMailMock.mockResolvedValueOnce(sentInfo);
+
+    await fastify.register(plugin, createMailerConfig());
+    await fastify.ready();
+
+    const result = await fastify.mailer.sendMail({
+      html: "<p>Hi</p>",
+      subject: "Test",
+      to: "user@example.com",
+    });
+
+    expect(result).toEqual(sentInfo);
+  });
+
   it("global templateData is not mutated by per-email overrides", async () => {
     const globalData = { env: "production" };
     await fastify.register(plugin, {
@@ -175,6 +195,10 @@ describe("mailerPlugin — sendMail › callback", async () => {
     fastify = Fastify({ logger: false });
     await fastify.register(plugin, createMailerConfig());
     await fastify.ready();
+  });
+
+  afterEach(async () => {
+    await fastify.close();
   });
 
   it("invokes callback on success", async () => {

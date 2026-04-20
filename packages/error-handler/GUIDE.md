@@ -40,15 +40,15 @@ await fastify.register(errorHandlerPlugin, {
 
 ## Base Libraries
 
-### @fastify/sensible — Full Passthrough
+### @fastify/sensible — Modified
 
 Provides HTTP error factory methods and the `HttpError` class.
 
 → **Their docs:** [@fastify/sensible](https://github.com/fastify/fastify-sensible)
 
-All `@fastify/sensible` functionality is registered automatically — no separate registration needed. See their docs for the full API.
+`@fastify/sensible` is registered automatically with its defaults, but this package does not expose `@fastify/sensible` plugin options.
 
-**What we add on top:** Unified error handling for `HttpError` instances with severity-based logging, response shaping, and optional stack trace output.
+**What we add on top:** Unified error handling for `HttpError` instances with severity-based logging, response shaping, optional stack trace output, and pre-handler interception via `preErrorHandler`.
 
 ### stacktracey — Modified
 
@@ -260,13 +260,15 @@ fastify.post("/pay", async () => {
 });
 ```
 
-### Development vs. production error detail
+### Toggle response detail by app config
 
-Enable stack traces in development to get full error detail in API responses, and keep them off in production to prevent leaking internals:
+Use an application config flag to control whether stack traces are exposed in error responses:
 
 ```typescript
+const appConfig = { exposeErrorStacks: false };
+
 await fastify.register(errorHandlerPlugin, {
-  stackTrace: process.env.NODE_ENV !== "production",
+  stackTrace: appConfig.exposeErrorStacks,
 });
 ```
 

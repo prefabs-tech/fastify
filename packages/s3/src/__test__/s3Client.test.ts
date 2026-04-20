@@ -1,11 +1,15 @@
+import { Readable } from "node:stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
 
-const { mockGetSignedUrl, mockSend } = vi.hoisted(() => ({
-  mockGetSignedUrl: vi.fn(),
-  mockSend: vi.fn(),
-}));
+const { mockGetSignedUrl, mockSend, mockUploadCtor, mockUploadDone } =
+  vi.hoisted(() => ({
+    mockGetSignedUrl: vi.fn(),
+    mockSend: vi.fn(),
+    mockUploadCtor: vi.fn(),
+    mockUploadDone: vi.fn(),
+  }));
 
 vi.mock("@aws-sdk/client-s3", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@aws-sdk/client-s3")>();
@@ -17,6 +21,13 @@ vi.mock("@aws-sdk/client-s3", async (importOriginal) => {
 
 vi.mock("@aws-sdk/s3-request-presigner", () => ({
   getSignedUrl: mockGetSignedUrl,
+}));
+
+vi.mock("@aws-sdk/lib-storage", () => ({
+  Upload: vi.fn().mockImplementation((arguments_: unknown) => {
+    mockUploadCtor(arguments_);
+    return { done: mockUploadDone };
+  }),
 }));
 
 // ── Tests ─────────────────────────────────────────────────────────────────────
@@ -110,5 +121,91 @@ describe("S3Client — generatePresignedUrl", async () => {
   it("returns the signed URL from the presigner", async () => {
     const url = await client.generatePresignedUrl("file.pdf", "file.pdf");
     expect(url).toBe("https://presigned.url/file.pdf");
+  });
+});
+
+describe("S3Client — object operations", async () => {
+  const { default: S3ClientWrapper } = await import("../utils/s3Client");
+
+  let client: InstanceType<typeof S3ClientWrapper>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    client = new S3ClientWrapper({});
+    client.bucket = "test-bucket";
+  });
+
+  it("sends DeleteObjectCommand with bucket and key", async () => {
+    const { DeleteObjectCommand } = await import("@aws-sdk/client-s3");
+    mockSend.mockResolvedValue({ DeleteMarker: true });
+
+    await client.delete("docs/report.pdf");
+
+    expect(mockSend).toHaveBeenCalledOnce();
+    const commandArgument = mockSend.mock.calls[0][0];
+    expect(commandArgument).toBeInstanceOf(DeleteObjectCommand);
+    expect(commandArgument.input).toEqual({
+      Bucket: "test-bucket",
+      Key: "docs/report.pdf",
+    });
+  });
+
+  it("sends GetObjectCommand and returns buffered body with content type", async () => {
+    const { GetObjectCommand } = await import("@aws-sdk/client-s3");
+    mockSend.mockResolvedValue({
+      Body: Readable.from([Buffer.from("hello"), Buffer.from(" world")]),
+      ContentType: "text/plain",
+    });
+
+    const response = await client.get("docs/report.txt");
+
+    expect(mockSend).toHaveBeenCalledOnce();
+    const commandArgument = mockSend.mock.calls[0][0];
+    expect(commandArgument).toBeInstanceOf(GetObjectCommand);
+    expect(commandArgument.input).toEqual({
+      Bucket: "test-bucket",
+      Key: "docs/report.txt",
+    });
+    expect(response.Body.toString()).toBe("hello world");
+    expect(response.ContentType).toBe("text/plain");
+  });
+
+  it("sends ListObjectsCommand with the requested prefix", async () => {
+    const { ListObjectsCommand } = await import("@aws-sdk/client-s3");
+    mockSend.mockResolvedValue({ Contents: [] });
+
+    await client.getObjects("docs/report");
+
+    expect(mockSend).toHaveBeenCalledOnce();
+    const commandArgument = mockSend.mock.calls[0][0];
+    expect(commandArgument).toBeInstanceOf(ListObjectsCommand);
+    expect(commandArgument.input).toEqual({
+      Bucket: "test-bucket",
+      Prefix: "docs/report",
+    });
+  });
+
+  it("creates Upload with S3 params and returns done() result", async () => {
+    mockUploadDone.mockResolvedValue({ ETag: "etag-value" });
+    const payload = Buffer.from("content");
+
+    const result = await client.upload(
+      payload,
+      "docs/report.txt",
+      "text/plain",
+    );
+
+    expect(mockUploadCtor).toHaveBeenCalledOnce();
+    expect(mockUploadCtor).toHaveBeenCalledWith({
+      client: expect.anything(),
+      params: {
+        Body: payload,
+        Bucket: "test-bucket",
+        ContentType: "text/plain",
+        Key: "docs/report.txt",
+      },
+    });
+    expect(mockUploadDone).toHaveBeenCalledOnce();
+    expect(result).toEqual({ ETag: "etag-value" });
   });
 });

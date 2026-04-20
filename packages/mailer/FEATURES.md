@@ -32,7 +32,7 @@
 
 ## `fastify.mailer` Decorator
 
-10. **Full nodemailer `Transporter` API** — `fastify.mailer` exposes the entire nodemailer transporter interface (`verify()`, transport introspection, event hooks, etc.).
+10. **Transporter-backed `fastify.mailer` decorator** — `fastify.mailer` is built from the created nodemailer transporter and overrides `sendMail` with plugin-specific behavior (template data merge + optional recipient override).
 
 11. **Promise-based `sendMail`** — resolves with nodemailer's `SentMessageInfo`.
 

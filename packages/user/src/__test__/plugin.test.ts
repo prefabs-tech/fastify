@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import Fastify from "fastify";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   ROUTE_INVITATIONS,
@@ -13,10 +13,12 @@ import {
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
-const mockRunMigrations = vi.fn().mockResolvedValue();
-const mockSeedRoles = vi.fn().mockResolvedValue();
+const mockRunMigrations = vi.fn(async () => {});
+const mockSeedRoles = vi.fn(async () => {});
 const { mockMercuriusAuthPlugin } = vi.hoisted(() => ({
-  mockMercuriusAuthPlugin: vi.fn().mockResolvedValue(),
+  mockMercuriusAuthPlugin: vi.fn<(...parameters: unknown[]) => Promise<void>>(
+    async () => {},
+  ),
 }));
 
 vi.mock("../migrations/runMigrations", () => ({ default: mockRunMigrations }));
@@ -25,16 +27,12 @@ vi.mock("../mercurius-auth/plugin", () => ({
   default: mockMercuriusAuthPlugin,
 }));
 
-// Mock the supertokens plugin as a noop so it doesn't try to connect to a
-// real SuperTokens server. verifySession is pre-decorated in buildFastify below.
 vi.mock("../supertokens", () => ({
   default: async () => {},
 }));
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-// The route schemas reference "ErrorResponse#" which is registered by
-// @prefabs.tech/fastify-error-handler in production. Register it manually here.
 const errorResponseSchema = {
   $id: "ErrorResponse",
   additionalProperties: true,
@@ -47,13 +45,13 @@ const errorResponseSchema = {
   type: "object",
 };
 
+const defaultSlonik = { pool: "default-test-pool" };
+
 const buildFastify = (
   userConfig: Record<string, unknown> = {},
   rootConfig: Record<string, unknown> = {},
+  slonik: unknown = defaultSlonik,
 ) => {
-  // Disable AJV strict mode so that custom keywords registered by
-  // peer plugins (e.g. `isFile` from @fastify/multipart) do not
-  // cause schema-compilation errors in the test environment.
   const fastify = Fastify({
     ajv: { customOptions: { strict: false } },
     logger: false,
@@ -70,11 +68,8 @@ const buildFastify = (
     },
     ...rootConfig,
   });
-  fastify.decorate("slonik", {});
+  fastify.decorate("slonik", slonik);
 
-  // verifySession is normally added by the supertokens plugin. Since that plugin
-  // is mocked as a noop (to avoid real network calls), we add it here instead.
-  // It must return a function (a preHandler) when called with any options.
   fastify.decorate(
     "verifySession",
     vi.fn().mockReturnValue(async () => {}),
@@ -87,263 +82,253 @@ const buildFastify = (
       Object.assign(new Error(message), { statusCode: 404 }),
     unauthorized: (message: string) =>
       Object.assign(new Error(message), { statusCode: 401 }),
-  });
+  } as FastifyInstance["httpErrors"]);
 
   return fastify;
 };
 
-// ── Tests ─────────────────────────────────────────────────────────────────────
+/** Host instance shape after registering the user plugin (decorators not on base Fastify types). */
+type UserPluginHost = {
+  config: Record<string, unknown>;
+  hasPermission: unknown;
+} & FastifyInstance;
 
-describe("userPlugin — decorators", async () => {
+describe("userPlugin", async () => {
   const { default: plugin } = await import("../plugin");
   let fastify: FastifyInstance;
 
-  beforeEach(() => vi.clearAllMocks());
-
-  it("decorates the instance with hasPermission", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(fastify.hasPermission).toBeDefined();
-    expect(typeof fastify.hasPermission).toBe("function");
+  afterEach(async () => {
     await fastify.close();
   });
 
-  it("calls runMigrations during registration", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(mockRunMigrations).toHaveBeenCalledOnce();
-    await fastify.close();
+  beforeEach(() => {
+    vi.clearAllMocks();
   });
 
-  it("calls seedRoles on ready", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
+  describe("decorators", () => {
+    it("decorates the instance with hasPermission", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(mockSeedRoles).toHaveBeenCalledOnce();
-    await fastify.close();
-  });
-});
+      const app = fastify as UserPluginHost;
+      expect(app.hasPermission).toBeDefined();
+      expect(typeof app.hasPermission).toBe("function");
+    });
 
-describe("userPlugin — invitations routes", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
+    it("calls runMigrations during registration", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-  beforeEach(() => vi.clearAllMocks());
+      expect(mockRunMigrations).toHaveBeenCalledOnce();
+    });
 
-  it("registers GET /invitations by default", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
+    it("calls seedRoles on ready", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_INVITATIONS })).toBe(
-      true,
-    );
-    await fastify.close();
-  });
+      expect(mockSeedRoles).toHaveBeenCalledOnce();
+    });
 
-  it("skips invitations routes when routes.invitations.disabled === true", async () => {
-    fastify = buildFastify({ routes: { invitations: { disabled: true } } });
-    await fastify.register(plugin);
-    await fastify.ready();
+    it("passes fastify config and slonik to runMigrations", async () => {
+      const slonikReference = { pool: "test-pool" };
+      fastify = buildFastify({}, {}, slonikReference);
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_INVITATIONS })).toBe(
-      false,
-    );
-    await fastify.close();
-  });
-});
-
-describe("userPlugin — permissions routes", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
-
-  beforeEach(() => vi.clearAllMocks());
-
-  it("registers GET /permissions by default", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_PERMISSIONS })).toBe(
-      true,
-    );
-    await fastify.close();
+      const app = fastify as UserPluginHost;
+      expect(mockRunMigrations).toHaveBeenCalledWith(
+        app.config,
+        slonikReference,
+      );
+    });
   });
 
-  it("skips permissions routes when routes.permissions.disabled === true", async () => {
-    fastify = buildFastify({ routes: { permissions: { disabled: true } } });
-    await fastify.register(plugin);
-    await fastify.ready();
+  describe("invitations routes", () => {
+    it("registers GET /invitations by default", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_PERMISSIONS })).toBe(
-      false,
-    );
-    await fastify.close();
-  });
-});
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_INVITATIONS })).toBe(
+        true,
+      );
+    });
 
-describe("userPlugin — roles routes", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
+    it("skips invitations routes when routes.invitations.disabled === true", async () => {
+      fastify = buildFastify({ routes: { invitations: { disabled: true } } });
+      await fastify.register(plugin);
+      await fastify.ready();
 
-  beforeEach(() => vi.clearAllMocks());
-
-  it("registers GET /roles by default", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_ROLES })).toBe(true);
-    await fastify.close();
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_INVITATIONS })).toBe(
+        false,
+      );
+    });
   });
 
-  it("skips roles routes when routes.roles.disabled === true", async () => {
-    fastify = buildFastify({ routes: { roles: { disabled: true } } });
-    await fastify.register(plugin);
-    await fastify.ready();
+  describe("permissions routes", () => {
+    it("registers GET /permissions by default", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_ROLES })).toBe(false);
-    await fastify.close();
-  });
-});
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_PERMISSIONS })).toBe(
+        true,
+      );
+    });
 
-describe("userPlugin — users routes", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
+    it("skips permissions routes when routes.permissions.disabled === true", async () => {
+      fastify = buildFastify({ routes: { permissions: { disabled: true } } });
+      await fastify.register(plugin);
+      await fastify.ready();
 
-  beforeEach(() => vi.clearAllMocks());
-
-  it("registers GET /users by default", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_USERS })).toBe(true);
-    await fastify.close();
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_PERMISSIONS })).toBe(
+        false,
+      );
+    });
   });
 
-  it("registers GET /me by default", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
+  describe("roles routes", () => {
+    it("registers GET /roles by default", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_ME })).toBe(true);
-    await fastify.close();
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_ROLES })).toBe(true);
+    });
+
+    it("skips roles routes when routes.roles.disabled === true", async () => {
+      fastify = buildFastify({ routes: { roles: { disabled: true } } });
+      await fastify.register(plugin);
+      await fastify.ready();
+
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_ROLES })).toBe(false);
+    });
   });
 
-  it("skips users routes when routes.users.disabled === true", async () => {
-    fastify = buildFastify({ routes: { users: { disabled: true } } });
-    await fastify.register(plugin);
-    await fastify.ready();
+  describe("users routes", () => {
+    it("registers GET /users by default", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_USERS })).toBe(false);
-    await fastify.close();
-  });
-});
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_USERS })).toBe(true);
+    });
 
-describe("userPlugin — routePrefix", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
+    it("registers GET /me by default", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-  beforeEach(() => vi.clearAllMocks());
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_ME })).toBe(true);
+    });
 
-  it("mounts routes under the configured routePrefix", async () => {
-    fastify = buildFastify({ routePrefix: "/api/v1" });
-    await fastify.register(plugin);
-    await fastify.ready();
+    it("skips users routes when routes.users.disabled === true", async () => {
+      fastify = buildFastify({ routes: { users: { disabled: true } } });
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(
-      fastify.hasRoute({ method: "GET", url: `/api/v1${ROUTE_USERS}` }),
-    ).toBe(true);
-    expect(fastify.hasRoute({ method: "GET", url: `/api/v1${ROUTE_ME}` })).toBe(
-      true,
-    );
-    await fastify.close();
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_USERS })).toBe(false);
+    });
   });
 
-  it("mounts routes without a prefix when routePrefix is not set", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
+  describe("routePrefix", () => {
+    it("mounts routes under the configured routePrefix", async () => {
+      fastify = buildFastify({ routePrefix: "/api/v1" });
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    // Routes should exist at the root path (no prefix)
-    expect(fastify.hasRoute({ method: "GET", url: ROUTE_USERS })).toBe(true);
-    await fastify.close();
+      expect(
+        fastify.hasRoute({ method: "GET", url: `/api/v1${ROUTE_USERS}` }),
+      ).toBe(true);
+      expect(
+        fastify.hasRoute({ method: "GET", url: `/api/v1${ROUTE_ME}` }),
+      ).toBe(true);
+    });
+
+    it("mounts routes without a prefix when routePrefix is not set", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
+
+      expect(fastify.hasRoute({ method: "GET", url: ROUTE_USERS })).toBe(true);
+    });
   });
-});
 
-describe("userPlugin — seedRoles receives user config", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
+  describe("seedRoles receives user config", () => {
+    it("passes the user config to seedRoles", async () => {
+      const customRoles = ["MODERATOR", "EDITOR"];
+      fastify = buildFastify({ roles: customRoles });
+      await fastify.register(plugin);
+      await fastify.ready();
 
-  beforeEach(() => vi.clearAllMocks());
-
-  it("passes the user config to seedRoles", async () => {
-    const customRoles = ["MODERATOR", "EDITOR"];
-    fastify = buildFastify({ roles: customRoles });
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(mockSeedRoles).toHaveBeenCalledWith(
-      expect.objectContaining({ roles: customRoles }),
-    );
-    await fastify.close();
+      expect(mockSeedRoles).toHaveBeenCalledWith(
+        expect.objectContaining({ roles: customRoles }),
+      );
+    });
   });
-});
 
-describe("userPlugin — GraphQL auth wiring", async () => {
-  const { default: plugin } = await import("../plugin");
-  let fastify: FastifyInstance;
-
-  beforeEach(() => vi.clearAllMocks());
-
-  it("does not register mercurius auth when graphql is disabled", async () => {
-    fastify = buildFastify(
-      {},
-      {
-        graphql: {
-          enabled: false,
-          resolvers: {},
-          schema: "type Query { _: Boolean }",
+  describe("GraphQL mercurius-auth wiring", () => {
+    it("does not register mercurius auth when graphql is disabled", async () => {
+      fastify = buildFastify(
+        {},
+        {
+          graphql: {
+            enabled: false,
+            resolvers: {},
+            schema: "type Query { _: Boolean }",
+          },
         },
-      },
-    );
-    await fastify.register(plugin);
-    await fastify.ready();
+      );
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
-    await fastify.close();
-  });
+      expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
+    });
 
-  it("does not register mercurius auth when graphql is omitted from config", async () => {
-    fastify = buildFastify();
-    await fastify.register(plugin);
-    await fastify.ready();
+    it("does not register mercurius auth when graphql is omitted from config", async () => {
+      fastify = buildFastify();
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
-    await fastify.close();
-  });
+      expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
+    });
 
-  it("registers mercurius auth when graphql.enabled is true", async () => {
-    fastify = buildFastify(
-      {},
-      {
-        graphql: {
-          enabled: true,
-          resolvers: {},
-          schema: "type Query { _: Boolean }",
+    it("does not register mercurius-auth when graphql.enabled is false", async () => {
+      fastify = buildFastify({}, { graphql: { enabled: false } });
+      await fastify.register(plugin);
+      await fastify.ready();
+
+      expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
+    });
+
+    it("registers mercurius auth when graphql.enabled is true", async () => {
+      fastify = buildFastify(
+        {},
+        {
+          graphql: {
+            enabled: true,
+            resolvers: {},
+            schema: "type Query { _: Boolean }",
+          },
         },
-      },
-    );
-    await fastify.register(plugin);
-    await fastify.ready();
+      );
+      await fastify.register(plugin);
+      await fastify.ready();
 
-    expect(mockMercuriusAuthPlugin).toHaveBeenCalledOnce();
-    await fastify.close();
+      expect(mockMercuriusAuthPlugin.mock.calls.length).toBe(1);
+      expect(mockMercuriusAuthPlugin.mock.calls[0]?.[2]).toBeTypeOf("function");
+    });
+  });
+});
+
+describe("userPlugin — default export", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  it("exposes updateContext for Mercurius context wiring", () => {
+    expect(plugin.updateContext).toBeDefined();
+    expect(typeof plugin.updateContext).toBe("function");
   });
 });

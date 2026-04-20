@@ -72,7 +72,7 @@
 
 ## Utility Functions
 
-24. **`convertStreamToBuffer(stream)`** — Consumes a `Readable` stream and resolves with a single concatenated `Buffer`.
+24. **`convertStreamToBuffer(stream)`** — Internal utility used by `S3Client.get` to consume a `Readable` stream and resolve a single concatenated `Buffer` (not exported from the package root).
 
 25. **`getPreferredBucket(optionsBucket?, fileFieldsBucket?, bucketChoice?)`** — Determines which bucket to use. With explicit `bucketChoice` the named bucket wins; without it, `fileFieldsBucket` takes precedence over `optionsBucket` when both are present.
 

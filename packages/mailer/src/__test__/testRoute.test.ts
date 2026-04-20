@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import Fastify from "fastify";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import "../index";
 import createMailerConfig from "./helpers/createMailerConfig";
@@ -31,12 +31,20 @@ vi.mock("nodemailer-html-to-text", () => ({
 describe("mailerPlugin — test route › conditional registration", async () => {
   const { default: plugin } = await import("../plugin");
 
+  let fastify: FastifyInstance | undefined;
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  afterEach(async () => {
+    if (fastify) {
+      await fastify.close();
+    }
+  });
+
   it("does not register a route when test option is omitted", async () => {
-    const fastify = Fastify({ logger: false });
+    fastify = Fastify({ logger: false });
     const config = createMailerConfig();
     delete (config as { test?: unknown }).test;
 
@@ -48,7 +56,7 @@ describe("mailerPlugin — test route › conditional registration", async () =>
   });
 
   it("does not register a route when test.enabled is false", async () => {
-    const fastify = Fastify({ logger: false });
+    fastify = Fastify({ logger: false });
     await fastify.register(plugin, {
       ...createMailerConfig(),
       test: { enabled: false, path: "/test/email", to: "dev@example.com" },
@@ -60,7 +68,7 @@ describe("mailerPlugin — test route › conditional registration", async () =>
   });
 
   it("registers a GET route at test.path when test.enabled is true", async () => {
-    const fastify = Fastify({ logger: false });
+    fastify = Fastify({ logger: false });
     await fastify.register(plugin, {
       ...createMailerConfig(),
       test: { enabled: true, path: "/custom/test-mail", to: "dev@example.com" },
@@ -86,6 +94,10 @@ describe("mailerPlugin — test route › HTTP response", async () => {
     fastify = Fastify({ logger: false });
     await fastify.register(plugin, testConfig);
     await fastify.ready();
+  });
+
+  afterEach(async () => {
+    await fastify.close();
   });
 
   it("GET test route returns status 200", async () => {
@@ -137,5 +149,14 @@ describe("mailerPlugin — test route › HTTP response", async () => {
     await fastify.inject({ method: "GET", url: testConfig.test.path });
     const calledWith = sendMailMock.mock.calls[0][0];
     expect(calledWith.html).toContain("<!doctype html>");
+  });
+
+  it("returns 500 when sendMail rejects", async () => {
+    sendMailMock.mockRejectedValueOnce(new Error("SMTP failure"));
+    const res = await fastify.inject({
+      method: "GET",
+      url: testConfig.test.path,
+    });
+    expect(res.statusCode).toBe(500);
   });
 });

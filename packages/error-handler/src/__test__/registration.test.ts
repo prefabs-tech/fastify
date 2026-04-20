@@ -34,4 +34,12 @@ describe("errorHandlerPlugin — registration", () => {
     expect(fastify.getSchema("ErrorResponse")).toBeDefined();
     await fastify.close();
   });
+
+  it("registers @fastify/sensible helpers on the fastify instance", async () => {
+    const fastify = await buildFastify();
+    await fastify.ready();
+    expect(fastify.httpErrors).toBeDefined();
+    expect(typeof fastify.httpErrors.badRequest).toBe("function");
+    await fastify.close();
+  });
 });

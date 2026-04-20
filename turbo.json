@@ -5,6 +5,9 @@
       "dependsOn": ["^build"],
       "outputs": ["dist/**"]
     },
+    "clean": {
+      "cache": false
+    },
     "lint": {
       "env": ["NODE_ENV"],
       "outputs": []
@@ -12,26 +15,11 @@
     "lint:fix": {
       "outputs": []
     },
-    "publish": {
-      "outputs": []
-    },
-    "release": {
-      "outputs": []
-    },
     "sort-package": {
       "outputs": []
     },
     "test": {
-      "outputs": []
-    },
-    "test:ci": {
-      "outputs": []
-    },
-    "test:integration": {
-      "outputs": []
-    },
-    "test:unit": {
-      "outputs": []
+      "outputs": ["coverage/**"]
     },
     "typecheck": {
       "outputs": []

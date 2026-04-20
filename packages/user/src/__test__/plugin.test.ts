@@ -15,9 +15,15 @@ import {
 
 const mockRunMigrations = vi.fn().mockResolvedValue();
 const mockSeedRoles = vi.fn().mockResolvedValue();
+const { mockMercuriusAuthPlugin } = vi.hoisted(() => ({
+  mockMercuriusAuthPlugin: vi.fn().mockResolvedValue(),
+}));
 
 vi.mock("../migrations/runMigrations", () => ({ default: mockRunMigrations }));
 vi.mock("../lib/seedRoles", () => ({ default: mockSeedRoles }));
+vi.mock("../mercurius-auth/plugin", () => ({
+  default: mockMercuriusAuthPlugin,
+}));
 
 // Mock the supertokens plugin as a noop so it doesn't try to connect to a
 // real SuperTokens server. verifySession is pre-decorated in buildFastify below.
@@ -41,7 +47,10 @@ const errorResponseSchema = {
   type: "object",
 };
 
-const buildFastify = (userConfig: Record<string, unknown> = {}) => {
+const buildFastify = (
+  userConfig: Record<string, unknown> = {},
+  rootConfig: Record<string, unknown> = {},
+) => {
   // Disable AJV strict mode so that custom keywords registered by
   // peer plugins (e.g. `isFile` from @fastify/multipart) do not
   // cause schema-compilation errors in the test environment.
@@ -59,6 +68,7 @@ const buildFastify = (userConfig: Record<string, unknown> = {}) => {
       supertokens: { connectionUri: "http://localhost:3567" },
       ...userConfig,
     },
+    ...rootConfig,
   });
   fastify.decorate("slonik", {});
 
@@ -282,6 +292,58 @@ describe("userPlugin — seedRoles receives user config", async () => {
     expect(mockSeedRoles).toHaveBeenCalledWith(
       expect.objectContaining({ roles: customRoles }),
     );
+    await fastify.close();
+  });
+});
+
+describe("userPlugin — GraphQL auth wiring", async () => {
+  const { default: plugin } = await import("../plugin");
+  let fastify: FastifyInstance;
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("does not register mercurius auth when graphql is disabled", async () => {
+    fastify = buildFastify(
+      {},
+      {
+        graphql: {
+          enabled: false,
+          resolvers: {},
+          schema: "type Query { _: Boolean }",
+        },
+      },
+    );
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
+    await fastify.close();
+  });
+
+  it("does not register mercurius auth when graphql is omitted from config", async () => {
+    fastify = buildFastify();
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(mockMercuriusAuthPlugin).not.toHaveBeenCalled();
+    await fastify.close();
+  });
+
+  it("registers mercurius auth when graphql.enabled is true", async () => {
+    fastify = buildFastify(
+      {},
+      {
+        graphql: {
+          enabled: true,
+          resolvers: {},
+          schema: "type Query { _: Boolean }",
+        },
+      },
+    );
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(mockMercuriusAuthPlugin).toHaveBeenCalledOnce();
     await fastify.close();
   });
 });

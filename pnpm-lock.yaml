@@ -36,8 +36,8 @@ importers:
         specifier: 0.5.0
         version: 0.5.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -82,8 +82,8 @@ importers:
         specifier: 0.5.0
         version: 0.5.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -140,8 +140,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -201,8 +201,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -268,8 +268,8 @@ importers:
         specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/mjml':
         specifier: 4.7.4
         version: 4.7.4
@@ -359,8 +359,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -420,8 +420,8 @@ importers:
         specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@slonik/driver':
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
@@ -481,8 +481,8 @@ importers:
         specifier: 0.5.0
         version: 0.5.0(@typescript-eslint/parser@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.2(jiti@2.6.1))(prettier@3.8.1)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/node':
         specifier: 24.10.13
         version: 24.10.13
@@ -542,8 +542,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.5.0
-        version: 0.5.0(@types/node@24.10.13)
+        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig
+        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig
       '@types/humps':
         specifier: 2.0.6
         version: 2.0.6
@@ -1560,8 +1560,9 @@ packages:
     engines: {node: '>10.17.0'}
     hasBin: true
 
-  '@prefabs.tech/tsconfig@0.5.0':
-    resolution: {integrity: sha512-lpu9UPVDpbpMKlClhImF8x0YIqSm6dTtBpVK8/BFkhfOrJR1hp5l1EBlvbkzEL2hxx1vx/cQ43dEDobAZvBBQA==}
+  '@prefabs.tech/tsconfig@https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig':
+    resolution: {path: packages/tsconfig, tarball: https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52}
+    version: 0.5.0
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -2298,14 +2299,6 @@ packages:
 
   '@vitest/utils@3.2.4':
     resolution: {integrity: sha512-fB2V0JFrQSMsCo9HiSq3Ezpdv4iYaXRG1Sx8edX3MwxfyNn83mKiGzOcH+Fkxt4MHxr3y42fQi1oeAInqgX2QA==}
-
-  '@vue/tsconfig@0.1.3':
-    resolution: {integrity: sha512-kQVsh8yyWPvHpb8gIc9l/HIDiiVUy1amynLNpCy8p+FoCiZXCo6fQos5/097MmnNZc9AtseDsCrfkhqCrJ8Olg==}
-    peerDependencies:
-      '@types/node': '*'
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
 
   '@whatwg-node/promise-helpers@1.3.2':
     resolution: {integrity: sha512-Nst5JdK47VIl9UcGwtv2Rcgyn5lWtZ0/mhRQ4G8NN2isxpq2TO30iqHzmwoJycjWuyUfg3GFXqP/gFHXeV57IA==}
@@ -7197,11 +7190,7 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
 
-  '@prefabs.tech/tsconfig@0.5.0(@types/node@24.10.13)':
-    dependencies:
-      '@vue/tsconfig': 0.1.3(@types/node@24.10.13)
-    transitivePeerDependencies:
-      - '@types/node'
+  '@prefabs.tech/tsconfig@https://codeload.github.com/prefabs-tech/tools/tar.gz/2794762828d2eb539f7635bef34da7ccda9c0b52#path:packages/tsconfig': {}
 
   '@protobufjs/aspromise@1.1.2':
     optional: true
@@ -8050,10 +8039,6 @@ snapshots:
       '@vitest/pretty-format': 3.2.4
       loupe: 3.2.1
       tinyrainbow: 2.0.0
-
-  '@vue/tsconfig@0.1.3(@types/node@24.10.13)':
-    optionalDependencies:
-      '@types/node': 24.10.13
 
   '@whatwg-node/promise-helpers@1.3.2':
     dependencies:

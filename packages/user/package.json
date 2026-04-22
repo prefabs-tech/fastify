@@ -40,7 +40,7 @@
     "@prefabs.tech/fastify-mailer": "0.93.5",
     "@prefabs.tech/fastify-s3": "0.93.5",
     "@prefabs.tech/fastify-slonik": "0.93.5",
-    "@prefabs.tech/tsconfig": "0.5.0",
+    "@prefabs.tech/tsconfig": "git+https://github.com/prefabs-tech/tools.git#refactor/tsconfig&path:packages/tsconfig",
     "@types/humps": "2.0.6",
     "@types/node": "24.10.13",
     "@types/validator": "13.15.10",

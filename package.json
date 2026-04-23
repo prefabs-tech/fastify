@@ -35,6 +35,9 @@
       "@typescript-eslint/parser": "8.58.0",
       "@typescript-eslint/typescript-estree": "8.58.0",
       "@typescript-eslint/utils": "8.58.0",
+      "fast-xml-parser": "5.7.1",
+      "handlebars": "4.7.9",
+      "protobufjs": "7.5.5",
       "typescript-eslint": "8.58.0"
     }
   }

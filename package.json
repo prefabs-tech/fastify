@@ -28,5 +28,10 @@
   "engines": {
     "node": ">=20",
     "pnpm": ">=10"
+  },
+  "pnpm": {
+    "overrides": {
+      "handlebars": "4.7.9"
+    }
   }
 }

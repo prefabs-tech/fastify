@@ -31,6 +31,7 @@
   },
   "pnpm": {
     "overrides": {
+      "fast-xml-parser": "5.7.1",
       "handlebars": "4.7.9",
       "protobufjs": "7.5.5"
     }

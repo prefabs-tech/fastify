@@ -23,5 +23,7 @@ jobs:
               args: [--frozen-lockfile, --strict-peer-dependencies]
       - name: Build packages
         run: pnpm build
+      - name: Verify LLM docs
+        run: pnpm verify:llm-docs
       - name: Run tests
         run: pnpm test

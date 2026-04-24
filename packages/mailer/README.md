@@ -1,5 +1,11 @@
 # @prefabs.tech/fastify-mailer
 
+> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#mailer) before reading source.
+
+## AI Quickstart
+
+Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#mailer)
+
 A [Fastify](https://github.com/fastify/fastify) plugin that when registered on a Fastify instance, will decorate it with a `mailer` object for email.
 
 ## Why this plugin?

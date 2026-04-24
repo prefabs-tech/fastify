@@ -1,5 +1,11 @@
 # @prefabs.tech/fastify-error-handler
 
+> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#error-handler) before reading source.
+
+## AI Quickstart
+
+Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#error-handler)
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides a standardized, production-safe global error handler for APIs.
 
 ## Why This Plugin?

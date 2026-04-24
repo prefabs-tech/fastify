@@ -20,7 +20,10 @@
   "module": "./dist/prefabs-tech-fastify-config.js",
   "types": "./dist/types/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "docs/llm",
+    "AGENTS.md",
+    "llms.txt"
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",

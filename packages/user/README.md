@@ -1,5 +1,11 @@
 # @prefabs.tech/fastify-user
 
+> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#user) before reading source.
+
+## AI Quickstart
+
+Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#user)
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of user model (service, controller, resolver) in a fastify API.
 
 ## Why this plugin?

@@ -1,5 +1,11 @@
 # @prefabs.tech/fastify-slonik
 
+> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#slonik) before reading source.
+
+## AI Quickstart
+
+Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#slonik)
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of slonik in a fastify API.
 
 The plugin is a thin wrapper around the [`fastify-slonik`](https://github.com/spa5k/fastify-slonik) plugin.

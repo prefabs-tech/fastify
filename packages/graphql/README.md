@@ -1,5 +1,11 @@
 # @prefabs.tech/fastify-graphql
 
+> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#graphql) before reading source.
+
+## AI Quickstart
+
+Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#graphql)
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of mercurius graphql server in a fastify API.
 
 The plugin is a thin wrapper around the [mercurius](https://mercurius.dev/#/) plugin.

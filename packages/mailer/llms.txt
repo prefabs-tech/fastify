@@ -1,0 +1,4 @@
+@prefabs.tech/fastify-mailer — agent / LLM hints
+Instructions: ./AGENTS.md
+Package index: ./docs/llm/INDEX.md
+Workspace REFERENCE (GitHub): https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#mailer

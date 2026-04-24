@@ -1,0 +1,7 @@
+# @prefabs.tech/fastify — LLM / agent entry
+
+Primary instructions: see AGENTS.md in this repository root.
+
+Quick path: docs/llm/INDEX.md → packages/<name>/docs/llm/INDEX.md → docs/llm/REFERENCE.md (#anchor for that package).
+
+Do not scan full package source until those docs are insufficient.

@@ -13,8 +13,7 @@
     "prepare": "husky",
     "sort-package": "npx sort-package-json && turbo run sort-package",
     "test": "turbo run test --parallel",
-    "typecheck": "turbo run typecheck",
-    "verify:llm-docs": "node scripts/verify-llm-docs.mjs"
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
     "@commitlint/cli": "20.4.4",

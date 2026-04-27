@@ -94,7 +94,7 @@ Paths below are **relative to the monorepo root** (the `fastify` folder containi
 
 ## meta
 
-- **Last verified:** `5a209913753cc03cbd80ca456de8f90872bc42b9` — docs layout and links were checked against this commit; after meaningful public API, config, or route behavior changes, update [CHANGES.md](./CHANGES.md) if needed and bump this SHA with `pnpm docs:update-verified` once docs match reality.
+- **Last verified:** `23c0cd1d035907df75a8dcb4d79d467e0883e221` — docs layout and links were checked against this commit; after meaningful public API, config, or route behavior changes, update [CHANGES.md](./CHANGES.md) if needed and bump this SHA with `pnpm docs:update-verified` once docs match reality.
 - **This index + reference:** [docs/llm/INDEX.md](./INDEX.md) · [docs/llm/REFERENCE.md](./REFERENCE.md) (this file)
 - **Workspace scripts:** [package.json](../../package.json) (`build`, `test`, `lint`, `typecheck` via Turborepo)
 

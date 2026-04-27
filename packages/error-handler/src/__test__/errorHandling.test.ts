@@ -5,7 +5,7 @@ import { CustomError } from "../index";
 import { buildFastify } from "./helpers";
 
 describe("errorHandlerPlugin — CustomError handling", () => {
-  it("responds with 500 for CustomError", async () => {
+  it("responds with 500 for CustomError, as default if nothing handles the error", async () => {
     const fastify = await buildFastify();
     fastify.get("/test", async () => {
       throw new CustomError("internal failure", "MY_CODE");

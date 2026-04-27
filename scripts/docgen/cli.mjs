@@ -57,9 +57,7 @@ function discoverPackages(manifest) {
   return out;
 }
 
-/**
- * Collect `*.test.ts` / `*.spec.ts` paths under `src/**/__test__/**` (repo-relative to package root).
- */
+// Collect *.test.ts / *.spec.ts paths under src/**/__test__/** (repo-relative to package root).
 function findTestFiles(packageRoot) {
   const srcRoot = join(packageRoot, "src");
   if (!existsSync(srcRoot)) return [];

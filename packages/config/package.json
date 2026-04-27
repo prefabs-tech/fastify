@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.5.0",
-    "@prefabs.tech/tsconfig": "0.5.0",
+    "@prefabs.tech/tsconfig": "0.6.0",
     "@types/node": "24.10.15",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.4",

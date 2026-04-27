@@ -20,6 +20,7 @@ const MARKER_END = "<!-- docgen:packages:end -->";
 const README_START = "<!-- docgen:readme:start -->";
 const README_END = "<!-- docgen:readme:end -->";
 
+/** Read `docgen.manifest.json` at the repo root; return empty defaults if missing. */
 function loadManifest() {
   if (!existsSync(MANIFEST_PATH)) {
     return { githubBlobBase: "", packages: {} };
@@ -27,6 +28,10 @@ function loadManifest() {
   return JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
 }
 
+/**
+ * Find published plugin packages under `packages/*` (`@prefabs.tech/fastify-*`).
+ * Order: `manifest.packageOrder` first, then any remaining dirs alphabetically.
+ */
 function discoverPackages(manifest) {
   const packagesDir = join(REPO_ROOT, "packages");
   const byDir = new Map();
@@ -52,6 +57,9 @@ function discoverPackages(manifest) {
   return out;
 }
 
+/**
+ * Collect `*.test.ts` / `*.spec.ts` paths under `src/**/__test__/**` (repo-relative to package root).
+ */
 function findTestFiles(packageRoot) {
   const srcRoot = join(packageRoot, "src");
   if (!existsSync(srcRoot)) return [];
@@ -74,10 +82,15 @@ function findTestFiles(packageRoot) {
   return [...new Set(out)].sort();
 }
 
+/** Turn `__test__` path segments into `**test**` for markdown link display (REFERENCE style). */
 function testDisplayPath(relFromPackageRoot) {
   return relFromPackageRoot.replace(/\/__test__\//g, "/**test**/");
 }
 
+/**
+ * Markdown link as written from `docs/llm/REFERENCE.md`: `../../packages/...`.
+ * `displayOverride` can supply the bracket text (e.g. with `**test**` in the path).
+ */
 function mdLinkFromDocsLlrel(repoRelPath, displayOverride) {
   const mdRel = `../../${repoRelPath}`;
   const display =
@@ -85,6 +98,10 @@ function mdLinkFromDocsLlrel(repoRelPath, displayOverride) {
   return `[${display}](${mdRel})`;
 }
 
+/**
+ * One REFERENCE bullet: demo test links. Uses `testFilesOnly` + `usageDemoExtraPaths` when curated,
+ * otherwise all tests from {@link findTestFiles} (sorted). Optional `usageSuffix` for prose after links.
+ */
 function buildUsageDemoLine(pkg, manifestEntry) {
   const pkgRoot = join(REPO_ROOT, "packages", pkg.dir);
   const curated = Boolean(manifestEntry?.testFilesOnly?.length);
@@ -111,6 +128,7 @@ function buildUsageDemoLine(pkg, manifestEntry) {
   return `- **usage / “demo”:** ${body}`;
 }
 
+/** Single `## {dir}` block for {@link REFERENCE_PATH} (npm, docs, source, usage line). */
 function buildPackageReferenceSection(pkg, manifest) {
   const m = manifest.packages?.[pkg.dir] ?? {};
   const base = `packages/${pkg.dir}`;
@@ -138,6 +156,7 @@ function buildPackageReferenceSection(pkg, manifest) {
   ].join("\n");
 }
 
+/** Write each `packages/<dir>/llms.txt` and root `llms.txt` from Handlebars templates. */
 function phaseLlms(packages, manifest) {
   const githubBase =
     manifest.githubBlobBase || "https://github.com/prefabs-tech/fastify/blob/main";
@@ -163,6 +182,7 @@ function phaseLlms(packages, manifest) {
   writeFileSync(join(REPO_ROOT, "llms.txt"), rootText);
 }
 
+/** Replace the `MARKER_START`…`MARKER_END` region in REFERENCE with generated package sections. */
 function phaseReference(packages, manifest) {
   if (!existsSync(REFERENCE_PATH)) {
     console.warn("REFERENCE.md missing, skip phase 2");
@@ -182,6 +202,7 @@ function phaseReference(packages, manifest) {
   writeFileSync(REFERENCE_PATH, content);
 }
 
+/** First line of JSDoc description on `decl` (or a resolvable symbol), normalized and capped. */
 function docSummary(decl) {
   let d = decl;
   if (typeof d.getJsDocs !== "function") {
@@ -195,6 +216,10 @@ function docSummary(decl) {
   return text.replace(/\s+/gu, " ").slice(0, 240) || "—";
 }
 
+/**
+ * Map a ts-morph export declaration to a README table kind and the node to read JSDoc from.
+ * Resolves `export { x } from "pkg"` (`ExportSpecifier`) via {@link Symbol#getAliasedSymbol}.
+ */
 function readmeExportKindAndDocHost(decl) {
   if (!decl) return { kind: "const", docHost: null };
   let d = decl;
@@ -226,6 +251,7 @@ function readmeExportKindAndDocHost(decl) {
   return { kind, docHost: d };
 }
 
+/** Markdown fragment: “Public API (generated)” table from `src/index.ts` named exports (via ts-morph). */
 function buildReadmeApiTable(pkg) {
   const indexPath = join(REPO_ROOT, "packages", pkg.dir, "src", "index.ts");
   if (!existsSync(indexPath)) {
@@ -269,6 +295,7 @@ function buildReadmeApiTable(pkg) {
   return lines.join("\n");
 }
 
+/** For each package README with docgen markers, replace the inner block with {@link buildReadmeApiTable}. */
 function phaseReadme(packages) {
   for (const pkg of packages) {
     const readmePath = join(REPO_ROOT, "packages", pkg.dir, "README.md");
@@ -286,6 +313,7 @@ function phaseReadme(packages) {
   }
 }
 
+/** CLI `--update-verified`: set the `**Last verified:** \`sha\`` value in REFERENCE to current `git HEAD`. */
 function updateVerifiedSha() {
   if (!existsSync(REFERENCE_PATH)) return;
   const sha = execSync("git rev-parse HEAD", {
@@ -307,6 +335,7 @@ if (args.includes("--update-verified")) {
   process.exit(0);
 }
 
+// Default run: full doc generation (no `--update-verified`).
 const manifest = loadManifest();
 const packages = discoverPackages(manifest);
 phaseLlms(packages, manifest);

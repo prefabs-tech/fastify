@@ -6,12 +6,14 @@ Paths below are **relative to the monorepo root** (the `fastify` folder containi
 
 ---
 
+<!-- docgen:packages:start -->
+
 ## config
 
 - **npm:** `@prefabs.tech/fastify-config`
 - **docs:** [packages/config/GUIDE.md](../../packages/config/GUIDE.md) · [packages/config/README.md](../../packages/config/README.md)
 - **source:** [packages/config/src/index.ts](../../packages/config/src/index.ts) · [packages/config/src/plugin.ts](../../packages/config/src/plugin.ts)
-- **usage / “demo”:** [packages/config/src/**test**/plugin.test.ts](../../packages/config/src/__test__/plugin.test.ts) · [packages/config/src/**test**/parse.test.ts](../../packages/config/src/__test__/parse.test.ts)
+- **usage / “demo”:** [packages/config/src/**test**/parse.test.ts](../../packages/config/src/__test__/parse.test.ts) · [packages/config/src/**test**/plugin.test.ts](../../packages/config/src/__test__/plugin.test.ts)
 
 ---
 
@@ -38,7 +40,7 @@ Paths below are **relative to the monorepo root** (the `fastify` folder containi
 - **npm:** `@prefabs.tech/fastify-slonik`
 - **docs:** [packages/slonik/GUIDE.md](../../packages/slonik/GUIDE.md) · [packages/slonik/README.md](../../packages/slonik/README.md) · [packages/slonik/feature.md](../../packages/slonik/feature.md)
 - **source:** [packages/slonik/src/index.ts](../../packages/slonik/src/index.ts) · [packages/slonik/src/plugin.ts](../../packages/slonik/src/plugin.ts)
-- **usage / “demo”:** [packages/slonik/src/**test**/plugin.test.ts](../../packages/slonik/src/__test__/plugin.test.ts) · [packages/slonik/src/**test**/service.test.ts](../../packages/slonik/src/__test__/service.test.ts) · [packages/slonik/src/**test**/migrationPlugin.test.ts](../../packages/slonik/src/__test__/migrationPlugin.test.ts)
+- **usage / “demo”:** [packages/slonik/src/**test**/filters.test.ts](../../packages/slonik/src/__test__/filters.test.ts) · [packages/slonik/src/**test**/formatDate.spec.ts](../../packages/slonik/src/__test__/formatDate.spec.ts) · [packages/slonik/src/**test**/migrate.test.ts](../../packages/slonik/src/__test__/migrate.test.ts) · [packages/slonik/src/**test**/migrationPlugin.test.ts](../../packages/slonik/src/__test__/migrationPlugin.test.ts) · [packages/slonik/src/**test**/plugin.test.ts](../../packages/slonik/src/__test__/plugin.test.ts) · [packages/slonik/src/**test**/service.test.ts](../../packages/slonik/src/__test__/service.test.ts) · [packages/slonik/src/**test**/serviceWithHooks.test.ts](../../packages/slonik/src/__test__/serviceWithHooks.test.ts) · [packages/slonik/src/**test**/sql.test.ts](../../packages/slonik/src/__test__/sql.test.ts) · [packages/slonik/src/**test**/sqlFactory.test.ts](../../packages/slonik/src/__test__/sqlFactory.test.ts) · [packages/slonik/src/factories/**test**/createClientConfiguration.test.ts](../../packages/slonik/src/factories/__test__/createClientConfiguration.test.ts) · [packages/slonik/src/interceptors/**test**/fieldNameCaseConverter.test.ts](../../packages/slonik/src/interceptors/__test__/fieldNameCaseConverter.test.ts) · [packages/slonik/src/interceptors/**test**/resultParser.test.ts](../../packages/slonik/src/interceptors/__test__/resultParser.test.ts) · [packages/slonik/src/migrations/**test**/queryToCreateExtensions.test.ts](../../packages/slonik/src/migrations/__test__/queryToCreateExtensions.test.ts) · [packages/slonik/src/migrations/**test**/runMigrations.test.ts](../../packages/slonik/src/migrations/__test__/runMigrations.test.ts) · [packages/slonik/src/typeParsers/**test**/createBigintTypeParser.test.ts](../../packages/slonik/src/typeParsers/__test__/createBigintTypeParser.test.ts)
 
 ---
 
@@ -85,11 +87,14 @@ Paths below are **relative to the monorepo root** (the `fastify` folder containi
 - **source:** [packages/user/src/index.ts](../../packages/user/src/index.ts) · [packages/user/src/plugin.ts](../../packages/user/src/plugin.ts)
 - **usage / “demo”:** [packages/user/src/**test**/plugin.test.ts](../../packages/user/src/__test__/plugin.test.ts) (Additional behavior is covered in nested `**/__test__` under [packages/user/src](../../packages/user/src).)
 
+
+<!-- docgen:packages:end -->
+
 ---
 
 ## meta
 
-- **Last verified:** `5a209913753cc03cbd80ca456de8f90872bc42b9` — docs layout and links were checked against this commit; after meaningful public API, config, or route behavior changes, update [CHANGES.md](./CHANGES.md) if needed and bump this SHA with `pnpm verify:llm-docs --update-verified` once docs match reality.
+- **Last verified:** `5a209913753cc03cbd80ca456de8f90872bc42b9` — docs layout and links were checked against this commit; after meaningful public API, config, or route behavior changes, update [CHANGES.md](./CHANGES.md) if needed and bump this SHA with `pnpm docs:update-verified` once docs match reality.
 - **This index + reference:** [docs/llm/INDEX.md](./INDEX.md) · [docs/llm/REFERENCE.md](./REFERENCE.md) (this file)
 - **Workspace scripts:** [package.json](../../package.json) (`build`, `test`, `lint`, `typecheck` via Turborepo)
 

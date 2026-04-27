@@ -6,6 +6,112 @@
 
 Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#user)
 
+<!-- docgen:readme:start -->
+
+## Public API (generated)
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `areRolesExist` | const | — |
+| `AuthUser` | interface | — |
+| `ChangeEmailInput` | interface | — |
+| `ChangePasswordInput` | interface | — |
+| `computeInvitationExpiresAt` | const | — |
+| `createInvitationsTableQuery` | const | — |
+| `createRoleSortFragment` | const | — |
+| `createUserContext` | const | — |
+| `createUserFilterFragment` | const | — |
+| `createUsersTableQuery` | const | — |
+| `DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB` | const | — |
+| `EMAIL_VERIFICATION_MODE` | const | — |
+| `EMAIL_VERIFICATION_PATH` | const | — |
+| `EmailErrorMessages` | interface | — |
+| `EmailOptions` | interface | — |
+| `EmailVerificationRecipe` | interface | — |
+| `ERROR_CODES` | const | — |
+| `formatDate` | const | — |
+| `getInvitationService` | const | — |
+| `getOrigin` | const | — |
+| `getUserService` | const | — |
+| `hasUserPermission` | const | — |
+| `INVITATION_ACCEPT_LINK_PATH` | const | — |
+| `INVITATION_EXPIRE_AFTER_IN_DAYS` | const | — |
+| `Invitation` | interface | — |
+| `InvitationCreateInput` | type | — |
+| `invitationResolver` | const | — |
+| `invitationRoutes` | const | — |
+| `InvitationService` | class | — |
+| `InvitationSqlFactory` | class | — |
+| `InvitationUpdateInput` | type | — |
+| `IsEmailOptions` | interface | — |
+| `isInvitationValid` | const | — |
+| `isRoleExists` | const | — |
+| `PasswordErrorMessages` | interface | — |
+| `permissionResolver` | const | — |
+| `permissionRoutes` | const | — |
+| `PERMISSIONS_INVITATIONS_CREATE` | const | — |
+| `PERMISSIONS_INVITATIONS_DELETE` | const | — |
+| `PERMISSIONS_INVITATIONS_LIST` | const | — |
+| `PERMISSIONS_INVITATIONS_RESEND` | const | — |
+| `PERMISSIONS_INVITATIONS_REVOKE` | const | — |
+| `PERMISSIONS_USERS_DISABLE` | const | — |
+| `PERMISSIONS_USERS_ENABLE` | const | — |
+| `PERMISSIONS_USERS_LIST` | const | — |
+| `PERMISSIONS_USERS_READ` | const | — |
+| `ProfileValidationClaim` | class | — |
+| `RESET_PASSWORD_PATH` | const | — |
+| `Resolver` | interface | — |
+| `ROLE_ADMIN` | const | — |
+| `ROLE_SUPERADMIN` | const | — |
+| `ROLE_USER` | const | — |
+| `roleResolver` | const | — |
+| `roleRoutes` | const | — |
+| `RoleService` | class | — |
+| `ROUTE_CHANGE_EMAIL` | const | — |
+| `ROUTE_CHANGE_PASSWORD` | const | — |
+| `ROUTE_INVITATIONS_ACCEPT` | const | — |
+| `ROUTE_INVITATIONS_CREATE` | const | — |
+| `ROUTE_INVITATIONS_DELETE` | const | — |
+| `ROUTE_INVITATIONS_GET_BY_TOKEN` | const | — |
+| `ROUTE_INVITATIONS_RESEND` | const | — |
+| `ROUTE_INVITATIONS_REVOKE` | const | — |
+| `ROUTE_INVITATIONS` | const | — |
+| `ROUTE_ME_PHOTO` | const | — |
+| `ROUTE_ME` | const | — |
+| `ROUTE_PERMISSIONS` | const | — |
+| `ROUTE_ROLES_PERMISSIONS` | const | — |
+| `ROUTE_ROLES` | const | — |
+| `ROUTE_SIGNUP_ADMIN` | const | — |
+| `ROUTE_USERS_DISABLE` | const | — |
+| `ROUTE_USERS_ENABLE` | const | — |
+| `ROUTE_USERS_FIND_BY_ID` | const | — |
+| `ROUTE_USERS` | const | — |
+| `sendEmail` | const | — |
+| `sendInvitation` | const | — |
+| `SessionRecipe` | interface | — |
+| `StrongPasswordOptions` | interface | — |
+| `SUPERTOKENS_CORS_HEADERS` | const | — |
+| `supertokensErrorHandler` | const | — |
+| `TABLE_INVITATIONS` | const | — |
+| `TABLE_USERS` | const | — |
+| `ThirdPartyEmailPasswordRecipe` | interface | — |
+| `User` | interface | — |
+| `UserConfig` | interface | — |
+| `UserCreateInput` | type | — |
+| `userResolver` | const | — |
+| `userRoutes` | const | — |
+| `userSchema` | const | — |
+| `UserService` | class | — |
+| `UserSqlFactory` | class | — |
+| `UserUpdateInput` | type | — |
+| `validateEmail` | const | — |
+| `validatePassword` | const | — |
+| `verifyEmail` | const | — |
+
+Regenerate with `pnpm docs:generate`.
+
+<!-- docgen:readme:end -->
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of user model (service, controller, resolver) in a fastify API.
 
 ## Why this plugin?

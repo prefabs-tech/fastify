@@ -6,6 +6,20 @@
 
 Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#mailer)
 
+<!-- docgen:readme:start -->
+
+## Public API (generated)
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `FastifyMailer` | type | — |
+| `FastifyMailerNamedInstance` | interface | — |
+| `MailerConfig` | interface | — |
+
+Regenerate with `pnpm docs:generate`.
+
+<!-- docgen:readme:end -->
+
 A [Fastify](https://github.com/fastify/fastify) plugin that when registered on a Fastify instance, will decorate it with a `mailer` object for email.
 
 ## Why this plugin?

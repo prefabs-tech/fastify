@@ -4,4 +4,15 @@ Primary instructions: see AGENTS.md in this repository root.
 
 Quick path: docs/llm/INDEX.md → packages/<name>/docs/llm/INDEX.md → docs/llm/REFERENCE.md (#anchor for that package).
 
+Published packages (deterministic list):
+- @prefabs.tech/fastify-config — [packages/config/docs/llm/INDEX.md](packages/config/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-error-handler — [packages/error-handler/docs/llm/INDEX.md](packages/error-handler/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-swagger — [packages/swagger/docs/llm/INDEX.md](packages/swagger/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-slonik — [packages/slonik/docs/llm/INDEX.md](packages/slonik/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-graphql — [packages/graphql/docs/llm/INDEX.md](packages/graphql/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-s3 — [packages/s3/docs/llm/INDEX.md](packages/s3/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-mailer — [packages/mailer/docs/llm/INDEX.md](packages/mailer/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-firebase — [packages/firebase/docs/llm/INDEX.md](packages/firebase/docs/llm/INDEX.md)
+- @prefabs.tech/fastify-user — [packages/user/docs/llm/INDEX.md](packages/user/docs/llm/INDEX.md)
+
 Do not scan full package source until those docs are insufficient.

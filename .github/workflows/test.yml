@@ -21,6 +21,8 @@ jobs:
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
+      - name: Verify generated LLM docs
+        run: pnpm verify:llm-docs
       - name: Build packages
         run: pnpm build
       - name: Run tests

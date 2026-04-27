@@ -1,0 +1,60 @@
+{
+  "githubBlobBase": "https://github.com/prefabs-tech/fastify/blob/main",
+  "packageOrder": [
+    "config",
+    "error-handler",
+    "swagger",
+    "slonik",
+    "graphql",
+    "s3",
+    "mailer",
+    "firebase",
+    "user"
+  ],
+  "packages": {
+    "error-handler": {
+      "testFilesOnly": [
+        "src/__test__/registration.test.ts",
+        "src/__test__/errorHandling.test.ts",
+        "src/__test__/preErrorHandler.test.ts"
+      ]
+    },
+    "slonik": {
+      "extraDocs": ["feature.md"]
+    },
+    "graphql": {
+      "testFilesOnly": [
+        "src/__test__/plugin.test.ts",
+        "src/__test__/context.spec.ts",
+        "src/__test__/baseSchema.test.ts"
+      ]
+    },
+    "s3": {
+      "testFilesOnly": [
+        "src/__test__/plugin.test.ts",
+        "src/__test__/service.test.ts",
+        "src/plugins/__test__/graphqlUpload.test.ts"
+      ]
+    },
+    "firebase": {
+      "extraDocs": ["FEATURES.md"],
+      "testFilesOnly": [
+        "src/__test__/plugin.test.ts",
+        "src/__test__/initializeFirebase.test.ts",
+        "src/__test__/service.test.ts"
+      ]
+    },
+    "mailer": {
+      "testFilesOnly": [
+        "src/__test__/registration.test.ts",
+        "src/__test__/testRoute.test.ts",
+        "src/__test__/sendMail.test.ts"
+      ],
+      "usageDemoExtraPaths": ["src/__test__/helpers/createMailerConfig.ts"]
+    },
+    "user": {
+      "testFilesOnly": ["src/__test__/plugin.test.ts"],
+      "usageSuffix": "(Additional behavior is covered in nested `**/__test__` under [packages/user/src](../../packages/user/src).)"
+    }
+  }
+}

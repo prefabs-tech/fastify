@@ -108,3 +108,7 @@ The file content is the same as what you printed: passthrough analysis + summary
 ```
 <!-- Package analysis — produced by /analyze-package. Do not edit manually. -->
 ```
+
+### After changing public `src/index.ts` exports
+
+Run `pnpm docs:generate` at the repo root so README **Public API (generated)** tables and `llms.txt` stay aligned; do not hand-edit `llms.txt`.

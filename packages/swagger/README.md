@@ -6,6 +6,18 @@
 
 Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#swagger)
 
+<!-- docgen:readme:start -->
+
+## Public API (generated)
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `SwaggerOptions` | type | — |
+
+Regenerate with `pnpm docs:generate`.
+
+<!-- docgen:readme:end -->
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of swagger in fastify API.
 
 ## Why this plugin?

@@ -8,19 +8,24 @@
   },
   "scripts": {
     "build": "turbo run build",
+    "docs:generate": "node scripts/docgen/cli.mjs",
+    "docs:update-verified": "node scripts/docgen/cli.mjs --update-verified",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "prepare": "husky",
     "sort-package": "npx sort-package-json && turbo run sort-package",
     "test": "turbo run test --parallel",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "verify:llm-docs": "pnpm docs:generate && git diff --exit-code"
   },
   "devDependencies": {
     "@commitlint/cli": "20.4.4",
     "@commitlint/config-conventional": "20.4.4",
     "@types/node": "24.10.15",
+    "handlebars": "4.7.9",
     "husky": "9.1.7",
     "shipjs": "0.28.3",
+    "ts-morph": "25.0.1",
     "turbo": "2.8.21",
     "typescript": "5.9.3"
   },

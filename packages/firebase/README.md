@@ -6,6 +6,30 @@
 
 Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#firebase)
 
+<!-- docgen:readme:start -->
+
+## Public API (generated)
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `createUserDevicesTableQuery` | const | — |
+| `firebaseSchema` | const | — |
+| `initializeFirebase` | const | — |
+| `notificationResolver` | const | — |
+| `notificationRoutes` | const | — |
+| `ROUTE_SEND_NOTIFICATION` | const | — |
+| `ROUTE_USER_DEVICE_ADD` | const | — |
+| `ROUTE_USER_DEVICE_REMOVE` | const | — |
+| `sendPushNotification` | const | — |
+| `TABLE_USER_DEVICES` | const | — |
+| `userDeviceResolver` | const | — |
+| `userDeviceRoutes` | const | — |
+| `UserDeviceService` | class | — |
+
+Regenerate with `pnpm docs:generate`.
+
+<!-- docgen:readme:end -->
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of Firebase Admin in a fastify API.
 
 ## Why this plugin?

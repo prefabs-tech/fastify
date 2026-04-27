@@ -6,6 +6,20 @@
 
 Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#config)
 
+<!-- docgen:readme:start -->
+
+## Public API (generated)
+
+| Export | Kind | Description |
+| --- | --- | --- |
+| `ApiConfig` | interface | — |
+| `AppConfig` | interface | — |
+| `parse` | const | — |
+
+Regenerate with `pnpm docs:generate`.
+
+<!-- docgen:readme:end -->
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides opinionated, typed configuration management for APIs.
 
 ## Why This Plugin?

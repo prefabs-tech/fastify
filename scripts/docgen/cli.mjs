@@ -195,6 +195,37 @@ function docSummary(decl) {
   return text.replace(/\s+/gu, " ").slice(0, 240) || "—";
 }
 
+function readmeExportKindAndDocHost(decl) {
+  if (!decl) return { kind: "const", docHost: null };
+  let d = decl;
+  let kind = d.getKindName();
+  if (kind === "ExportSpecifier") {
+    const sym = d.getSymbol();
+    const aliased = sym?.getAliasedSymbol?.();
+    const target = aliased?.getDeclarations()?.[0];
+    if (target) {
+      d = target;
+      kind = target.getKindName();
+    } else {
+      return { kind: "const", docHost: null };
+    }
+  }
+  if (kind === "VariableDeclaration") kind = "const";
+  if (kind === "FunctionDeclaration") kind = "function";
+  if (kind === "InterfaceDeclaration") kind = "interface";
+  if (kind === "TypeAliasDeclaration") kind = "type";
+  if (kind === "ClassDeclaration") kind = "class";
+  if (kind === "EnumDeclaration") kind = "enum";
+  if (
+    kind === "ObjectLiteralExpression" ||
+    kind === "CallExpression" ||
+    kind === "ArrayLiteralExpression"
+  ) {
+    kind = "const";
+  }
+  return { kind, docHost: d };
+}
+
 function buildReadmeApiTable(pkg) {
   const indexPath = join(REPO_ROOT, "packages", pkg.dir, "src", "index.ts");
   if (!existsSync(indexPath)) {
@@ -210,25 +241,15 @@ function buildReadmeApiTable(pkg) {
   for (const [name, decls] of sf.getExportedDeclarations()) {
     if (name === "default") continue;
     const d = decls[0];
-    if (!d) continue;
-    let kind = d.getKindName();
-    if (kind === "VariableDeclaration") kind = "const";
-    if (kind === "FunctionDeclaration") kind = "function";
-    if (kind === "InterfaceDeclaration") kind = "interface";
-    if (kind === "TypeAliasDeclaration") kind = "type";
-    if (kind === "ClassDeclaration") kind = "class";
-    if (kind === "EnumDeclaration") kind = "enum";
-    if (
-      kind === "ObjectLiteralExpression" ||
-      kind === "CallExpression" ||
-      kind === "ArrayLiteralExpression"
-    ) {
-      kind = "const";
+    if (!d) {
+      rows.push({ name: `\`${name}\``, kind: "const", doc: "—" });
+      continue;
     }
+    const { kind, docHost } = readmeExportKindAndDocHost(d);
     rows.push({
       name: `\`${name}\``,
       kind,
-      doc: docSummary(d).replaceAll("|", "\\|"),
+      doc: (docHost ? docSummary(docHost) : "—").replaceAll("|", "\\|"),
     });
   }
   rows.sort((a, b) => a.name.localeCompare(b.name));

@@ -18,6 +18,7 @@ Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace referen
 | `ErrorHandlerOptions` | interface | — |
 | `ErrorResponse` | type | — |
 | `HttpErrors` | type | — |
+| `StackTracey` | const | — |
 
 Regenerate with `pnpm docs:generate`.
 

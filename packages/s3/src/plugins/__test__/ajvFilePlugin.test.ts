@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import plugin from "../ajvFile";
 
@@ -15,20 +15,20 @@ describe("ajvFile plugin", () => {
     plugin(ajv);
 
     const schema = {
-      type: "object",
       properties: {
         file: { isFile: true },
       },
       required: ["file"],
+      type: "object",
     };
 
     const validate = ajv.compile(schema);
 
     const validData = {
       file: {
+        data: Buffer.from("test"),
         filename: "test.txt",
         mimetype: "text/plain",
-        data: Buffer.from("test"),
       },
     };
     const invalidData = { file: { name: "test.txt" } }; // Missing `filename` and `mimetype`
@@ -51,14 +51,14 @@ describe("ajvFile plugin", () => {
     plugin(ajv);
 
     const schema = {
-      type: "object",
       properties: {
         files: {
-          type: "array",
           items: { isFile: true },
+          type: "array",
         },
       },
       required: ["files"],
+      type: "object",
     };
 
     const validate = ajv.compile(schema);
@@ -66,14 +66,14 @@ describe("ajvFile plugin", () => {
     const validData = {
       files: [
         {
+          data: Buffer.from("test"),
           filename: "test1.txt",
           mimetype: "text/plain",
-          data: Buffer.from("test"),
         },
         {
+          data: Buffer.from("test"),
           filename: "test2.jpg",
           mimetype: "image/jpeg",
-          data: Buffer.from("test"),
         },
       ],
     };

@@ -1,9 +1,10 @@
+import type { FastifyInstance } from "fastify";
+
+import type { Invitation } from "../types/invitation";
+
 import getInvitationLink from "./getInvitationLink";
 import getOrigin from "./getOrigin";
 import sendEmail from "./sendEmail";
-
-import type { Invitation } from "../types/invitation";
-import type { FastifyInstance } from "fastify";
 
 const sendInvitation = async (
   fastify: FastifyInstance,
@@ -24,8 +25,8 @@ const sendInvitation = async (
         config.user.emailOverrides?.invitation?.subject ||
         "Invitation for sign up",
       templateData: {
-        invitationLink: getInvitationLink(config, invitation, origin),
         invitation,
+        invitationLink: getInvitationLink(config, invitation, origin),
       },
       templateName:
         config.user.emailOverrides?.invitation?.templateName ||

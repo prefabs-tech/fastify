@@ -6,16 +6,16 @@ import type { PasswordErrorMessages, StrongPasswordOptions } from "../types";
 const defaultOptions = {
   minLength: 8,
   minLowercase: 0,
-  minUppercase: 0,
   minNumbers: 0,
   minSymbols: 0,
-  returnScore: false,
-  pointsPerUnique: 1,
-  pointsPerRepeat: 0.5,
+  minUppercase: 0,
   pointsForContainingLower: 10,
-  pointsForContainingUpper: 10,
   pointsForContainingNumber: 10,
   pointsForContainingSymbol: 10,
+  pointsForContainingUpper: 10,
+  pointsPerRepeat: 0.5,
+  pointsPerUnique: 1,
+  returnScore: false,
 };
 
 const schema = (
@@ -35,9 +35,9 @@ const schema = (
       (value): boolean => {
         return validator.isStrongPassword(
           value,
-          _options as StrongPasswordOptions & {
+          _options as {
             returnScore: false | undefined;
-          },
+          } & StrongPasswordOptions,
         );
       },
       {

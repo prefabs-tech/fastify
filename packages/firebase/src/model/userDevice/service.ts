@@ -1,18 +1,26 @@
 import { BaseService } from "@prefabs.tech/fastify-slonik";
 
-import UserDeviceSqlFactory from "./sqlFactory";
 import {
   UserDevice,
   UserDeviceCreateInput,
   UserDeviceUpdateInput,
 } from "../../types";
+import UserDeviceSqlFactory from "./sqlFactory";
 
 class UserDeviceService extends BaseService<
   UserDevice,
   UserDeviceCreateInput,
   UserDeviceUpdateInput
 > {
-  async getByUserId(userId: string): Promise<UserDevice[] | undefined> {
+  get factory(): UserDeviceSqlFactory {
+    return super.factory as UserDeviceSqlFactory;
+  }
+
+  get sqlFactoryClass() {
+    return UserDeviceSqlFactory;
+  }
+
+  async getByUserId(userId: string): Promise<undefined | UserDevice[]> {
     const query = this.factory.getFindByUserIdSql(userId);
 
     const result = await this.database.connect((connection) => {
@@ -24,7 +32,7 @@ class UserDeviceService extends BaseService<
 
   async removeByDeviceToken(
     deviceToken: string,
-  ): Promise<UserDevice | undefined> {
+  ): Promise<undefined | UserDevice> {
     const query = this.factory.getDeleteExistingTokenSql(deviceToken);
 
     const result = await this.database.connect((connection) => {
@@ -32,14 +40,6 @@ class UserDeviceService extends BaseService<
     });
 
     return result;
-  }
-
-  get factory(): UserDeviceSqlFactory {
-    return super.factory as UserDeviceSqlFactory;
-  }
-
-  get sqlFactoryClass() {
-    return UserDeviceSqlFactory;
   }
 
   protected async preCreate(

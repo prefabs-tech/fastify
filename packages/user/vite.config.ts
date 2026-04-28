@@ -1,6 +1,5 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { defineConfig, loadEnv } from "vite";
 
 import { dependencies, peerDependencies } from "./package.json";
@@ -26,6 +25,8 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
+            "@fastify/cors": "FastifyCors",
+            "@fastify/formbody": "FastifyFormbody",
             "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
             "@prefabs.tech/fastify-error-handler":
               "PrefabsTechFastifyErrorHandler",
@@ -33,8 +34,6 @@ export default defineConfig(({ mode }) => {
             "@prefabs.tech/fastify-mailer": "PrefabsTechFastifyMailer",
             "@prefabs.tech/fastify-s3": "PrefabsTechFastifyS3",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
-            "@fastify/cors": "FastifyCors",
-            "@fastify/formbody": "FastifyFormbody",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
             humps: "Humps",
@@ -48,9 +47,9 @@ export default defineConfig(({ mode }) => {
             "supertokens-node/lib/build/recipe/session/claims": "claims",
             "supertokens-node/lib/build/recipe/session/recipe": "SessionRecipe",
             "supertokens-node/recipe/emailverification": "EmailVerification",
+            "supertokens-node/recipe/session": "SupertokensSession",
             "supertokens-node/recipe/session/framework/fastify":
               "SupertokensSessionFastify",
-            "supertokens-node/recipe/session": "SupertokensSession",
             "supertokens-node/recipe/thirdpartyemailpassword":
               "SupertokensThirdPartyEmailPassword",
             "supertokens-node/recipe/userroles": "SupertokensUserRoles",

@@ -1,11 +1,12 @@
+import type { FastifyInstance } from "fastify";
+
 import fastifySensible from "@fastify/sensible";
 import FastifyPlugin from "fastify-plugin";
 
+import type { ErrorHandlerOptions } from "./types";
+
 import { errorHandler } from "./errorHandler";
 import { errorSchema } from "./utils/errorSchema";
-
-import type { ErrorHandlerOptions } from "./types";
-import type { FastifyInstance } from "fastify";
 
 const plugin = async (
   fastify: FastifyInstance,

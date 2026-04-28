@@ -1,13 +1,13 @@
+import type { ListObjectsOutput } from "@aws-sdk/client-s3";
+import type { FastifyRequest } from "fastify";
+
+import Busboy, { FileInfo } from "busboy";
 import { IncomingMessage } from "node:http";
 import { Readable } from "node:stream";
 
-import Busboy, { FileInfo } from "busboy";
+import type { BucketChoice, Multipart } from "../types";
 
 import { BUCKET_FROM_FILE_FIELDS, BUCKET_FROM_OPTIONS } from "../constants";
-
-import type { BucketChoice, Multipart } from "../types";
-import type { ListObjectsOutput } from "@aws-sdk/client-s3";
-import type { FastifyRequest } from "fastify";
 
 const convertStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -124,8 +124,8 @@ const processMultipartFormData = (
 
         files[fieldName].push({
           ...fileInfo,
-          mimetype: fileInfo.mimeType,
           data: fileBuffer,
+          mimetype: fileInfo.mimeType,
         });
       });
     },
@@ -152,7 +152,7 @@ export {
   convertStreamToBuffer,
   getBaseName,
   getFileExtension,
-  getPreferredBucket,
   getFilenameWithSuffix,
+  getPreferredBucket,
   processMultipartFormData,
 };

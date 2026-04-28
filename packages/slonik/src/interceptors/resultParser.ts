@@ -1,12 +1,12 @@
-import { SchemaValidationError } from "slonik";
-
 import type {
   Field,
   Interceptor,
-  QueryResultRow,
   Query,
   QueryContext,
+  QueryResultRow,
 } from "slonik";
+
+import { SchemaValidationError } from "slonik";
 
 const createResultParser: Interceptor = {
   // If you are not going to transform results using Zod, then you should use `afterQueryExecution` instead.

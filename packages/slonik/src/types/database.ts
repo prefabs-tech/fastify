@@ -1,47 +1,47 @@
 import type { ConnectionRoutine, DatabasePool, QueryFunction } from "slonik";
 
+type BaseFilterInput = {
+  insensitive?: boolean | string;
+  key: string;
+  not?: boolean | string;
+  operator: operator;
+  value: string;
+};
+
 type Database = {
   connect: <T>(connectionRoutine: ConnectionRoutine<T>) => Promise<T>;
   pool: DatabasePool;
   query: QueryFunction;
 };
 
-type operator =
-  | "ct"
-  | "dwithin"
-  | "sw"
-  | "ew"
-  | "eq"
-  | "gt"
-  | "gte"
-  | "lte"
-  | "lt"
-  | "in"
-  | "bt";
-
-type BaseFilterInput = {
-  key: string;
-  operator: operator;
-  not?: boolean | string;
-  value: string;
-  insensitive?: boolean | string;
-};
-
 type FilterInput =
-  | BaseFilterInput
   | {
       AND: FilterInput[];
     }
   | {
       OR: FilterInput[];
-    };
+    }
+  | BaseFilterInput;
+
+type operator =
+  | "bt"
+  | "ct"
+  | "dwithin"
+  | "eq"
+  | "ew"
+  | "gt"
+  | "gte"
+  | "in"
+  | "lt"
+  | "lte"
+  | "sw";
 
 type SortDirection = "ASC" | "DESC";
 
 type SortInput = {
-  key: string;
   direction: SortDirection;
   insensitive?: boolean | string;
+  key: string;
 };
 
 export type {

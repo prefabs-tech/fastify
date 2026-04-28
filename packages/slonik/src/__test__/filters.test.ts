@@ -1,62 +1,70 @@
-import { sql } from "slonik";
-import { describe, it, expect } from "vitest";
-
-import { applyFiltersToQuery, applyFilter } from "../filters";
-
-import type { FilterInput, BaseFilterInput } from "../types";
 import type { IdentifierSqlToken } from "slonik";
+
+import { sql } from "slonik";
+import { describe, expect, it } from "vitest";
+
+import type { BaseFilterInput, FilterInput } from "../types";
+
+import {
+  applyFilter,
+  applyFiltersToQuery,
+  buildFilterFragment,
+} from "../filters";
 
 // Comprehensive dataset of filter combinations for testing
 const getFilterDataset = (): Array<{
-  name: string;
-  filter: FilterInput;
+  description: string;
   expectedSQL: RegExp;
   expectedValues: string[];
-  description: string;
+  filter: FilterInput;
+  name: string;
 }> => {
   return [
     {
-      name: "Simple equality filter",
-      filter: { key: "name", operator: "eq", value: "test" },
+      description: "Basic equality operation",
       expectedSQL: /WHERE "users"\."name" = \$slonik_\d+$/,
       expectedValues: ["test"],
-      description: "Basic equality operation",
+      filter: { key: "name", operator: "eq", value: "test" },
+      name: "Simple equality filter",
     },
     {
-      name: "Simple starts with filter",
-      filter: { key: "name", operator: "sw", value: "test" },
+      description: "Starts with operation",
       expectedSQL: /WHERE "users"\."name" ILIKE \$slonik_\d+$/,
       expectedValues: ["test%"],
-      description: "Starts with operation",
+      filter: { key: "name", operator: "sw", value: "test" },
+      name: "Simple starts with filter",
     },
     {
-      name: "Simple AND operation",
+      description: "Simple AND with two conditions",
+      expectedSQL:
+        /WHERE \("users"\."name" ILIKE \$slonik_\d+ AND "users"\."age" > \$slonik_\d+\)/,
+      expectedValues: ["test%", "25"],
       filter: {
         AND: [
           { key: "name", operator: "sw", value: "test" },
           { key: "age", operator: "gt", value: "25" },
         ],
       },
-      expectedSQL:
-        /WHERE \("users"\."name" ILIKE \$slonik_\d+ AND "users"\."age" > \$slonik_\d+\)/,
-      expectedValues: ["test%", "25"],
-      description: "Simple AND with two conditions",
+      name: "Simple AND operation",
     },
     {
-      name: "Simple OR operation",
+      description: "Simple OR with two conditions",
+      expectedSQL:
+        /WHERE \("users"\."name" ILIKE \$slonik_\d+ OR "users"\."name" ILIKE \$slonik_\d+\)/,
+      expectedValues: ["Test%", "%t1"],
       filter: {
         OR: [
           { key: "name", operator: "sw", value: "Test" },
           { key: "name", operator: "ew", value: "t1" },
         ],
       },
-      expectedSQL:
-        /WHERE \("users"\."name" ILIKE \$slonik_\d+ OR "users"\."name" ILIKE \$slonik_\d+\)/,
-      expectedValues: ["Test%", "%t1"],
-      description: "Simple OR with two conditions",
+      name: "Simple OR operation",
     },
     {
-      name: "AND with nested OR",
+      description: "AND containing OR - tests proper nesting",
+      expectedSQL:
+        /WHERE \("users"\."id" > \$slonik_\d+ AND \("users"\."name" ILIKE \$slonik_\d+ OR "users"\."name" ILIKE \$slonik_\d+\)\)/,
+      expectedValues: ["10", "Test%", "%t1"],
       filter: {
         AND: [
           { key: "id", operator: "gt", value: "10" },
@@ -68,13 +76,13 @@ const getFilterDataset = (): Array<{
           },
         ],
       },
-      expectedSQL:
-        /WHERE \("users"\."id" > \$slonik_\d+ AND \("users"\."name" ILIKE \$slonik_\d+ OR "users"\."name" ILIKE \$slonik_\d+\)\)/,
-      expectedValues: ["10", "Test%", "%t1"],
-      description: "AND containing OR - tests proper nesting",
+      name: "AND with nested OR",
     },
     {
-      name: "OR with nested AND",
+      description: "OR containing AND - tests proper nesting",
+      expectedSQL:
+        /WHERE \("users"\."id" > \$slonik_\d+ OR \("users"\."name" ILIKE \$slonik_\d+ AND "users"\."name" ILIKE \$slonik_\d+\)\)/,
+      expectedValues: ["10", "Test%", "%t1"],
       filter: {
         OR: [
           { key: "id", operator: "gt", value: "10" },
@@ -86,13 +94,13 @@ const getFilterDataset = (): Array<{
           },
         ],
       },
-      expectedSQL:
-        /WHERE \("users"\."id" > \$slonik_\d+ OR \("users"\."name" ILIKE \$slonik_\d+ AND "users"\."name" ILIKE \$slonik_\d+\)\)/,
-      expectedValues: ["10", "Test%", "%t1"],
-      description: "OR containing AND - tests proper nesting",
+      name: "OR with nested AND",
     },
     {
-      name: "OR with multiple AND blocks",
+      description: "OR with multiple AND blocks - tests complex grouping",
+      expectedSQL:
+        /WHERE \(\("users"\."name" ILIKE \$slonik_\d+ AND "users"\."age" > \$slonik_\d+\) OR \("users"\."email" ILIKE \$slonik_\d+ AND "users"\."status" = \$slonik_\d+\)\)/,
+      expectedValues: ["Test%", "25", "%@test.com", "active"],
       filter: {
         OR: [
           {
@@ -109,13 +117,13 @@ const getFilterDataset = (): Array<{
           },
         ],
       },
-      expectedSQL:
-        /WHERE \(\("users"\."name" ILIKE \$slonik_\d+ AND "users"\."age" > \$slonik_\d+\) OR \("users"\."email" ILIKE \$slonik_\d+ AND "users"\."status" = \$slonik_\d+\)\)/,
-      expectedValues: ["Test%", "25", "%@test.com", "active"],
-      description: "OR with multiple AND blocks - tests complex grouping",
+      name: "OR with multiple AND blocks",
     },
     {
-      name: "Complex nested structure",
+      description: "Deep nesting: OR[AND[condition, OR[...]], AND[...]]",
+      expectedSQL:
+        /WHERE \(\("users"\."name" ILIKE \$slonik_\d+ AND \("users"\."department" = \$slonik_\d+ OR "users"\."department" = \$slonik_\d+\)\) OR \("users"\."role" = \$slonik_\d+ AND "users"\."verified" = \$slonik_\d+\)\)/,
+      expectedValues: ["Test%", "engineering", "design", "admin", "true"],
       filter: {
         OR: [
           {
@@ -137,13 +145,13 @@ const getFilterDataset = (): Array<{
           },
         ],
       },
-      expectedSQL:
-        /WHERE \(\("users"\."name" ILIKE \$slonik_\d+ AND \("users"\."department" = \$slonik_\d+ OR "users"\."department" = \$slonik_\d+\)\) OR \("users"\."role" = \$slonik_\d+ AND "users"\."verified" = \$slonik_\d+\)\)/,
-      expectedValues: ["Test%", "engineering", "design", "admin", "true"],
-      description: "Deep nesting: OR[AND[condition, OR[...]], AND[...]]",
+      name: "Complex nested structure",
     },
     {
-      name: "Triple nested structure",
+      description: "Triple nesting: AND[condition, OR[AND[...], OR[...]]]",
+      expectedSQL:
+        /WHERE \("users"\."status" = \$slonik_\d+ AND \(\("users"\."age" >= \$slonik_\d+ AND "users"\."age" <= \$slonik_\d+\) OR \("users"\."role" = \$slonik_\d+ OR "users"\."special" = \$slonik_\d+\)\)\)/,
+      expectedValues: ["active", "18", "65", "admin", "true"],
       filter: {
         AND: [
           { key: "status", operator: "eq", value: "active" },
@@ -165,31 +173,31 @@ const getFilterDataset = (): Array<{
           },
         ],
       },
-      expectedSQL:
-        /WHERE \("users"\."status" = \$slonik_\d+ AND \(\("users"\."age" >= \$slonik_\d+ AND "users"\."age" <= \$slonik_\d+\) OR \("users"\."role" = \$slonik_\d+ OR "users"\."special" = \$slonik_\d+\)\)\)/,
-      expectedValues: ["active", "18", "65", "admin", "true"],
-      description: "Triple nesting: AND[condition, OR[AND[...], OR[...]]]",
+      name: "Triple nested structure",
     },
     {
-      name: "Single condition in AND array",
+      description: "Single condition should not have extra parentheses",
+      expectedSQL: /WHERE "users"\."name" = \$slonik_\d+$/,
+      expectedValues: ["test"],
       filter: {
         AND: [{ key: "name", operator: "eq", value: "test" }],
       },
-      expectedSQL: /WHERE "users"\."name" = \$slonik_\d+$/,
-      expectedValues: ["test"],
-      description: "Single condition should not have extra parentheses",
+      name: "Single condition in AND array",
     },
     {
-      name: "Single condition in OR array",
+      description: "Single condition should not have extra parentheses",
+      expectedSQL: /WHERE "users"\."status" = \$slonik_\d+$/,
+      expectedValues: ["active"],
       filter: {
         OR: [{ key: "status", operator: "eq", value: "active" }],
       },
-      expectedSQL: /WHERE "users"\."status" = \$slonik_\d+$/,
-      expectedValues: ["active"],
-      description: "Single condition should not have extra parentheses",
+      name: "Single condition in OR array",
     },
     {
-      name: "Multiple operators test",
+      description: "Tests all different operators",
+      expectedSQL:
+        /WHERE \("users"\."name" ILIKE \$slonik_\d+ AND "users"\."age" BETWEEN \$slonik_\d+ AND \$slonik_\d+ AND "users"\."status" IN \(\$slonik_\d+, \$slonik_\d+\) AND "users"\."deleted_at" IS NULL\)/,
+      expectedValues: ["%test%", "25", "65", "active", "pending"],
       filter: {
         AND: [
           { key: "name", operator: "ct", value: "test" },
@@ -198,28 +206,25 @@ const getFilterDataset = (): Array<{
           { key: "deletedAt", operator: "eq", value: "null" },
         ],
       },
-      expectedSQL:
-        /WHERE \("users"\."name" ILIKE \$slonik_\d+ AND "users"\."age" BETWEEN \$slonik_\d+ AND \$slonik_\d+ AND "users"\."status" IN \(\$slonik_\d+, \$slonik_\d+\) AND "users"\."deleted_at" IS NULL\)/,
-      expectedValues: ["%test%", "25", "65", "active", "pending"],
-      description: "Tests all different operators",
+      name: "Multiple operators test",
     },
     {
-      name: "NOT flag operations",
-      filter: {
-        AND: [
-          { key: "name", operator: "eq", value: "test", not: true },
-          {
-            key: "status",
-            operator: "in",
-            value: "inactive,banned",
-            not: true,
-          },
-        ],
-      },
+      description: "Tests NOT flag with different operators",
       expectedSQL:
         /WHERE \("users"\."name" != \$slonik_\d+ AND "users"\."status" NOT IN \(\$slonik_\d+, \$slonik_\d+\)\)/,
       expectedValues: ["test", "inactive", "banned"],
-      description: "Tests NOT flag with different operators",
+      filter: {
+        AND: [
+          { key: "name", not: true, operator: "eq", value: "test" },
+          {
+            key: "status",
+            not: true,
+            operator: "in",
+            value: "inactive,banned",
+          },
+        ],
+      },
+      name: "NOT flag operations",
     },
   ];
 };
@@ -248,9 +253,9 @@ describe("dbFilters", () => {
     it("should handle equality operator with not flag", () => {
       const filter: BaseFilterInput = {
         key: "name",
+        not: true,
         operator: "eq",
         value: "John",
-        not: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -275,9 +280,9 @@ describe("dbFilters", () => {
     it("should handle null values with not flag", () => {
       const filter: BaseFilterInput = {
         key: "deletedAt",
+        not: true,
         operator: "eq",
         value: "NULL",
-        not: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -486,9 +491,9 @@ describe("dbFilters", () => {
       it("should handle join table key with NOT flag", () => {
         const filter: BaseFilterInput = {
           key: "posts.status",
+          not: true,
           operator: "in",
           value: "draft,archived",
-          not: true,
         };
 
         const result = applyFilter(mockTableIdentifier, filter);
@@ -513,9 +518,9 @@ describe("dbFilters", () => {
       it("should handle join table key with null values and NOT flag", () => {
         const filter: BaseFilterInput = {
           key: "comments.deletedAt",
+          not: true,
           operator: "eq",
           value: "NULL",
-          not: true,
         };
 
         const result = applyFilter(mockTableIdentifier, filter);
@@ -529,10 +534,10 @@ describe("dbFilters", () => {
   describe("applyFilter > case insensitive", () => {
     it("should handle equality operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "name",
         operator: "eq",
         value: "John",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -545,11 +550,11 @@ describe("dbFilters", () => {
 
     it("should handle equality operator with not flag", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "name",
+        not: true,
         operator: "eq",
         value: "John",
-        not: true,
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -562,10 +567,10 @@ describe("dbFilters", () => {
 
     it("should handle null values", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "deletedAt",
         operator: "eq",
         value: "null",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -576,11 +581,11 @@ describe("dbFilters", () => {
 
     it("should handle null values with not flag", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "deletedAt",
+        not: true,
         operator: "eq",
         value: "NULL",
-        not: true,
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -591,10 +596,10 @@ describe("dbFilters", () => {
 
     it("should handle contains operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "name",
         operator: "ct",
         value: "John",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -607,10 +612,10 @@ describe("dbFilters", () => {
 
     it("should handle starts with operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "name",
         operator: "sw",
         value: "John",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -623,10 +628,10 @@ describe("dbFilters", () => {
 
     it("should handle ends with operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "name",
         operator: "ew",
         value: "son",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -639,10 +644,10 @@ describe("dbFilters", () => {
 
     it("should handle greater than operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "age",
         operator: "gt",
         value: "25",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -655,10 +660,10 @@ describe("dbFilters", () => {
 
     it("should handle greater than or equal operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "age",
         operator: "gte",
         value: "25",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -671,10 +676,10 @@ describe("dbFilters", () => {
 
     it("should handle less than operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "age",
         operator: "lt",
         value: "65",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -687,10 +692,10 @@ describe("dbFilters", () => {
 
     it("should handle less than or equal operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "age",
         operator: "lte",
         value: "65",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -703,10 +708,10 @@ describe("dbFilters", () => {
 
     it("should handle in operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "status",
         operator: "in",
         value: "active,inactive,pending",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -719,10 +724,10 @@ describe("dbFilters", () => {
 
     it("should handle between operator", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "age",
         operator: "bt",
         value: "25,65",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -735,10 +740,10 @@ describe("dbFilters", () => {
 
     it("should convert camelCase keys to snake_case", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "firstName",
         operator: "eq",
         value: "John",
-        insensitive: true,
       };
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -751,10 +756,10 @@ describe("dbFilters", () => {
 
     it("should handle schema.table identifiers", () => {
       const filter: BaseFilterInput = {
+        insensitive: true,
         key: "name",
         operator: "eq",
         value: "John",
-        insensitive: true,
       };
 
       const result = applyFilter(mockSchemaTableIdentifier, filter);
@@ -822,9 +827,9 @@ describe("dbFilters", () => {
       it("should handle join table key with NOT flag", () => {
         const filter: BaseFilterInput = {
           key: "posts.status",
+          not: true,
           operator: "in",
           value: "draft,archived",
-          not: true,
         };
 
         const result = applyFilter(mockTableIdentifier, filter);
@@ -849,9 +854,9 @@ describe("dbFilters", () => {
       it("should handle join table key with null values and NOT flag", () => {
         const filter: BaseFilterInput = {
           key: "comments.deletedAt",
+          not: true,
           operator: "eq",
           value: "NULL",
-          not: true,
         };
 
         const result = applyFilter(mockTableIdentifier, filter);
@@ -866,8 +871,8 @@ describe("dbFilters", () => {
     it("should default to eq operator if not provided", () => {
       const filter = {
         key: "name",
-        value: "John",
         operator: "eq",
+        value: "John",
       } as BaseFilterInput;
 
       const result = applyFilter(mockTableIdentifier, filter);
@@ -890,9 +895,9 @@ describe("dbFilters", () => {
     it("should throw error for empty IN list with NOT", () => {
       const filter: BaseFilterInput = {
         key: "status",
+        not: true,
         operator: "in",
         value: "",
-        not: true,
       };
 
       expect(() => applyFilter(mockTableIdentifier, filter)).toThrow(
@@ -1195,17 +1200,17 @@ describe("dbFilters", () => {
           AND: [
             {
               key: "posts.status",
+              not: true,
               operator: "eq",
               value: "published",
-              not: true,
             },
             {
               key: "comments.isSpam",
+              not: true,
               operator: "eq",
               value: "true",
-              not: true,
             },
-            { key: "tags.isHidden", operator: "eq", value: "null", not: true },
+            { key: "tags.isHidden", not: true, operator: "eq", value: "null" },
           ],
         };
 
@@ -1271,5 +1276,89 @@ describe("dbFilters", () => {
         expect(result.values).toEqual(["My First Post"]);
       });
     });
+  });
+});
+
+describe("applyFilter — dwithin operator", () => {
+  const mockTableIdentifier: IdentifierSqlToken = sql.identifier(["locations"]);
+
+  it("generates ST_DWithin SQL with lat, lng, radius from value string", () => {
+    const filter: BaseFilterInput = {
+      key: "coordinates",
+      operator: "dwithin",
+      value: "48.8566,2.3522,1000",
+    };
+
+    const result = applyFilter(mockTableIdentifier, filter);
+
+    expect(result.sql).toMatch(/ST_DWithin/);
+    expect(result.sql).toMatch(/ST_SetSRID/);
+    expect(result.sql).toMatch(/ST_MakePoint/);
+  });
+
+  it("places longitude before latitude in ST_MakePoint (GeoJSON order)", () => {
+    const filter: BaseFilterInput = {
+      key: "coordinates",
+      operator: "dwithin",
+      value: "48.8566,2.3522,500",
+    };
+
+    const result = applyFilter(mockTableIdentifier, filter);
+
+    // ST_MakePoint(longitude, latitude) — values[0]=lng=2.3522, values[1]=lat=48.8566
+    expect(result.values).toContain("2.3522");
+    expect(result.values).toContain("48.8566");
+  });
+
+  it("includes the radius value", () => {
+    const filter: BaseFilterInput = {
+      key: "coordinates",
+      operator: "dwithin",
+      value: "40.7128,-74.0060,5000",
+    };
+
+    const result = applyFilter(mockTableIdentifier, filter);
+    expect(result.values).toContain("5000");
+  });
+});
+
+describe("buildFilterFragment — empty input paths", () => {
+  const mockTableIdentifier: IdentifierSqlToken = sql.identifier(["users"]);
+
+  it("returns undefined for empty AND array", () => {
+    const result = buildFilterFragment({ AND: [] }, mockTableIdentifier);
+    expect(result).toBeUndefined();
+  });
+
+  it("returns undefined for empty OR array", () => {
+    const result = buildFilterFragment({ OR: [] }, mockTableIdentifier);
+    expect(result).toBeUndefined();
+  });
+
+  it("returns single fragment directly when AND has one item (no extra parens)", () => {
+    const result = buildFilterFragment(
+      { AND: [{ key: "name", operator: "eq", value: "alice" }] },
+      mockTableIdentifier,
+    );
+    expect(result?.sql).not.toMatch(/^\(/);
+    expect(result?.sql).toMatch(/"users"\."name"/);
+  });
+
+  it("returns single fragment directly when OR has one item (no extra parens)", () => {
+    const result = buildFilterFragment(
+      { OR: [{ key: "name", operator: "eq", value: "alice" }] },
+      mockTableIdentifier,
+    );
+    expect(result?.sql).not.toMatch(/^\(/);
+    expect(result?.sql).toMatch(/"users"\."name"/);
+  });
+
+  it("returns undefined for null/undefined filter", () => {
+    const result = buildFilterFragment(
+      // eslint-disable-next-line unicorn/no-null
+      null as unknown as FilterInput,
+      mockTableIdentifier,
+    );
+    expect(result).toBeUndefined();
   });
 });

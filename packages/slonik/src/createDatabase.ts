@@ -1,9 +1,10 @@
+import type { ClientConfiguration, DatabasePool } from "slonik";
+
 import { createPool } from "slonik";
 
-import createClientConfiguration from "./factories/createClientConfiguration";
-
 import type { Database } from "./types";
-import type { ClientConfiguration, DatabasePool } from "slonik";
+
+import createClientConfiguration from "./factories/createClientConfiguration";
 
 const createDatabase = async (
   connectionString: string,

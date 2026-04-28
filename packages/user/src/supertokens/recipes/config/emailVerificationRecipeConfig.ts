@@ -1,17 +1,18 @@
-import sendEmailVerificationEmail from "./email-verification/sendEmailVerificationEmail";
-import { EMAIL_VERIFICATION_MODE } from "../../../constants";
-import getUserService from "../../../lib/getUserService";
-
-import type {
-  SendEmailWrapper,
-  EmailVerificationRecipe,
-} from "../../types/emailVerificationRecipe";
 import type { FastifyInstance } from "fastify";
 import type {
   APIInterface,
-  RecipeInterface,
   TypeInput as EmailVerificationRecipeConfig,
+  RecipeInterface,
 } from "supertokens-node/recipe/emailverification/types";
+
+import type {
+  EmailVerificationRecipe,
+  SendEmailWrapper,
+} from "../../types/emailVerificationRecipe";
+
+import { EMAIL_VERIFICATION_MODE } from "../../../constants";
+import getUserService from "../../../lib/getUserService";
+import sendEmailVerificationEmail from "./email-verification/sendEmailVerificationEmail";
 
 const getEmailVerificationRecipeConfig = (
   fastify: FastifyInstance,
@@ -25,7 +26,6 @@ const getEmailVerificationRecipeConfig = (
   }
 
   return {
-    mode: emailVerification?.mode || EMAIL_VERIFICATION_MODE,
     emailDelivery: {
       override: (originalImplementation) => {
         let sendEmailConfig: SendEmailWrapper | undefined;
@@ -42,6 +42,7 @@ const getEmailVerificationRecipeConfig = (
         };
       },
     },
+    mode: emailVerification?.mode || EMAIL_VERIFICATION_MODE,
     override: {
       apis: (originalImplementation) => {
         const apiInterface: Partial<APIInterface> = {};

@@ -1,8 +1,8 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
 import { beforeEach, describe, expect, it } from "vitest";
 
 import validateEmail from "../email";
-
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 describe("validateEmail", () => {
   let config = {} as unknown as ApiConfig;
@@ -68,5 +68,18 @@ describe("validateEmail", () => {
     expect(emailValidation).toEqual({
       success: true,
     });
+  });
+
+  it("returns success object when config.user.email is undefined (uses empty options fallback)", () => {
+    const configWithoutEmail = {
+      user: {},
+    } as unknown as ApiConfig;
+
+    const emailValidation = validateEmail(
+      "user@example.com",
+      configWithoutEmail,
+    );
+
+    expect(emailValidation).toEqual({ success: true });
   });
 });

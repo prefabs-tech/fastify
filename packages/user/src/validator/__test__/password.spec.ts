@@ -1,8 +1,8 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
 import { beforeEach, describe, expect, it } from "vitest";
 
 import validatePassword from "../password";
-
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 describe("validatePassword", () => {
   let config = {} as unknown as ApiConfig;
@@ -77,9 +77,9 @@ describe("validatePassword", () => {
     config.user.password = {
       minLength: 1,
       minLowercase: 1,
-      minUppercase: 1,
       minNumbers: 1,
       minSymbols: 1,
+      minUppercase: 1,
     };
 
     const password = "Qwerty12";
@@ -97,9 +97,9 @@ describe("validatePassword", () => {
     config.user.password = {
       minLength: 1,
       minLowercase: 1,
-      minUppercase: 1,
       minNumbers: 1,
       minSymbols: 1,
+      minUppercase: 1,
     };
 
     const password = "Qwerty1!";
@@ -115,9 +115,9 @@ describe("validatePassword", () => {
     config.user.password = {
       minLength: 2,
       minLowercase: 2,
-      minUppercase: 2,
       minNumbers: 2,
       minSymbols: 2,
+      minUppercase: 2,
     };
 
     const password = "Qwerty12";
@@ -135,9 +135,9 @@ describe("validatePassword", () => {
     config.user.password = {
       minLength: 2,
       minLowercase: 2,
-      minUppercase: 2,
       minNumbers: 2,
       minSymbols: 2,
+      minUppercase: 2,
     };
 
     const password = "QwertY12!@";

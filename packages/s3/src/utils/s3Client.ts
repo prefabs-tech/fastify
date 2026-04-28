@@ -1,18 +1,3 @@
-import { ReadStream } from "node:fs";
-import { Readable } from "node:stream";
-
-import {
-  S3Client,
-  GetObjectCommand,
-  DeleteObjectCommand,
-  HeadObjectCommand,
-  ListObjectsCommand,
-} from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-import { convertStreamToBuffer } from ".";
-
 import type {
   AbortMultipartUploadCommandOutput,
   CompleteMultipartUploadCommandOutput,
@@ -21,26 +6,40 @@ import type {
   S3ClientConfig,
 } from "@aws-sdk/client-s3";
 
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+  ListObjectsCommand,
+  S3Client,
+} from "@aws-sdk/client-s3";
+import { Upload } from "@aws-sdk/lib-storage";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { ReadStream } from "node:fs";
+import { Readable } from "node:stream";
+
+import { convertStreamToBuffer } from ".";
+
 class s3Client {
+  get bucket() {
+    return this._bucket;
+  }
+  set bucket(bucket: string) {
+    this._bucket = bucket;
+  }
+  get config() {
+    return this._config;
+  }
+
   protected _bucket: string = undefined as unknown as string;
+
   protected _config: S3ClientConfig;
+
   protected _storageClient: S3Client;
 
   constructor(config: S3ClientConfig) {
     this._config = config;
     this._storageClient = this.init();
-  }
-
-  get config() {
-    return this._config;
-  }
-
-  get bucket() {
-    return this._bucket;
-  }
-
-  set bucket(bucket: string) {
-    this._bucket = bucket;
   }
 
   /**
@@ -100,37 +99,24 @@ class s3Client {
     const streamValue = await convertStreamToBuffer(stream);
 
     return {
-      ContentType: response.ContentType,
       Body: streamValue,
+      ContentType: response.ContentType,
     };
   }
 
   /**
-   * Uploads a file to the specified S3 bucket.
+   * Retrieves a list of objects from the S3 bucket with a specified prefix.
    *
-   * @param {Buffer} fileStream - The file content as a Buffer.
-   * @param {string} key - The key (file name) to use when storing the file in the bucket.
-   * @param {string} mimetype - The MIME type of the file.
-   * @returns {Promise<PutObjectCommandOutput>} A Promise that resolves with information about the uploaded object.
+   * @param {string} baseName - The prefix used to filter objects within the S3 bucket.
+   * @returns {Promise<ListObjectsCommandOutput>} A Promise that resolves to the result of the list operation.
    */
-  public async upload(
-    fileStream: Buffer | ReadStream,
-    key: string,
-    mimetype: string,
-  ): Promise<
-    AbortMultipartUploadCommandOutput | CompleteMultipartUploadCommandOutput
-  > {
-    const putCommand = new Upload({
-      client: this._storageClient,
-      params: {
+  public async getObjects(baseName: string): Promise<ListObjectsCommandOutput> {
+    return await this._storageClient.send(
+      new ListObjectsCommand({
         Bucket: this.bucket,
-        Key: key,
-        Body: fileStream,
-        ContentType: mimetype,
-      },
-    });
-
-    return await putCommand.done();
+        Prefix: baseName,
+      }),
+    );
   }
 
   /**
@@ -159,18 +145,31 @@ class s3Client {
   }
 
   /**
-   * Retrieves a list of objects from the S3 bucket with a specified prefix.
+   * Uploads a file to the specified S3 bucket.
    *
-   * @param {string} baseName - The prefix used to filter objects within the S3 bucket.
-   * @returns {Promise<ListObjectsCommandOutput>} A Promise that resolves to the result of the list operation.
+   * @param {Buffer} fileStream - The file content as a Buffer.
+   * @param {string} key - The key (file name) to use when storing the file in the bucket.
+   * @param {string} mimetype - The MIME type of the file.
+   * @returns {Promise<PutObjectCommandOutput>} A Promise that resolves with information about the uploaded object.
    */
-  public async getObjects(baseName: string): Promise<ListObjectsCommandOutput> {
-    return await this._storageClient.send(
-      new ListObjectsCommand({
+  public async upload(
+    fileStream: Buffer | ReadStream,
+    key: string,
+    mimetype: string,
+  ): Promise<
+    AbortMultipartUploadCommandOutput | CompleteMultipartUploadCommandOutput
+  > {
+    const putCommand = new Upload({
+      client: this._storageClient,
+      params: {
+        Body: fileStream,
         Bucket: this.bucket,
-        Prefix: baseName,
-      }),
-    );
+        ContentType: mimetype,
+        Key: key,
+      },
+    });
+
+    return await putCommand.done();
   }
 
   protected init(): S3Client {

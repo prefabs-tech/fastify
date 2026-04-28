@@ -3,9 +3,9 @@ import type { BaseRequest } from "supertokens-node/lib/build/framework";
 import type { TypeInput as OpenIdTypeInput } from "supertokens-node/lib/build/recipe/openid/types";
 import type {
   APIInterface,
+  ErrorHandlers,
   RecipeInterface,
   TokenTransferMethod,
-  ErrorHandlers,
 } from "supertokens-node/recipe/session/types";
 
 type APIInterfaceWrapper = {
@@ -23,27 +23,27 @@ type RecipeInterfaceWrapper = {
 };
 
 interface SessionRecipe {
-  useDynamicAccessTokenSigningKey?: boolean;
-  sessionExpiredStatusCode?: number;
-  invalidClaimStatusCode?: number;
   accessTokenPath?: string;
-  cookieSecure?: boolean;
-  cookieSameSite?: "strict" | "lax" | "none";
+  antiCsrf?: "NONE" | "VIA_CUSTOM_HEADER" | "VIA_TOKEN";
   cookieDomain?: string;
+  cookieSameSite?: "lax" | "none" | "strict";
+  cookieSecure?: boolean;
+  errorHandlers?: ErrorHandlers;
+  exposeAccessTokenToFrontendInCookieBasedAuth?: boolean;
   getTokenTransferMethod?: (input: {
-    req: BaseRequest;
     forCreateNewSession: boolean;
+    req: BaseRequest;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     userContext: any;
-  }) => TokenTransferMethod | "any";
-  errorHandlers?: ErrorHandlers;
-  antiCsrf?: "VIA_TOKEN" | "VIA_CUSTOM_HEADER" | "NONE";
-  exposeAccessTokenToFrontendInCookieBasedAuth?: boolean;
+  }) => "any" | TokenTransferMethod;
+  invalidClaimStatusCode?: number;
   override?: {
     apis?: APIInterfaceWrapper;
     functions?: RecipeInterfaceWrapper;
     openIdFeature?: OpenIdTypeInput["override"];
   };
+  sessionExpiredStatusCode?: number;
+  useDynamicAccessTokenSigningKey?: boolean;
 }
 
 export type { APIInterfaceWrapper, RecipeInterfaceWrapper, SessionRecipe };

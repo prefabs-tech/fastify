@@ -6,6 +6,10 @@ import { TABLE_USER_DEVICES } from "../../constants";
 class UserDeviceSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_USER_DEVICES;
 
+  get table() {
+    return this.config.firebase.table?.userDevices?.name || super.table;
+  }
+
   getDeleteExistingTokenSql(token: string): QuerySqlToken {
     return sql.type(this.validationSchema)`
       DELETE
@@ -21,10 +25,6 @@ class UserDeviceSqlFactory extends DefaultSqlFactory {
       FROM ${this.tableFragment}
       ${this.getWhereFragment({ filterFragment: sql.fragment`user_id = ${userId}` })};
     `;
-  }
-
-  get table() {
-    return this.config.firebase.table?.userDevices?.name || super.table;
   }
 }
 

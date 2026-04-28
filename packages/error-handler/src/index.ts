@@ -7,14 +7,14 @@ declare module "fastify" {
   }
 }
 
+export { errorHandler } from "./errorHandler";
+
 export { default } from "./plugin";
 
-export { errorHandler } from "./errorHandler";
+export type * from "./types";
 
 export { CustomError } from "./utils/error";
 
 export type { HttpErrors } from "@fastify/sensible";
 
 export { default as StackTracey } from "stacktracey";
-
-export type * from "./types";

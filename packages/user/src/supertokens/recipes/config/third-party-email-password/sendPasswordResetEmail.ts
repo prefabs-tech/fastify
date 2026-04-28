@@ -1,13 +1,13 @@
+import type { AppConfig } from "@prefabs.tech/fastify-config";
+import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
+import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types";
+
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import { RESET_PASSWORD_PATH } from "../../../../constants";
 import getOrigin from "../../../../lib/getOrigin";
 import sendEmail from "../../../../lib/sendEmail";
-
-import type { AppConfig } from "@prefabs.tech/fastify-config";
-import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
-import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types";
 
 const sendPasswordResetEmail = (
   originalImplementation: EmailDeliveryInterface<TypeEmailPasswordPasswordResetEmailDeliveryInput>,
@@ -48,14 +48,14 @@ const sendPasswordResetEmail = (
       subject:
         fastify.config.user.emailOverrides?.resetPassword?.subject ||
         "Reset password",
-      templateName:
-        fastify.config.user.emailOverrides?.resetPassword?.templateName ||
-        "reset-password",
-      to: input.user.email,
       templateData: {
         passwordResetLink,
         user: input.user,
       },
+      templateName:
+        fastify.config.user.emailOverrides?.resetPassword?.templateName ||
+        "reset-password",
+      to: input.user.email,
     });
   };
 };

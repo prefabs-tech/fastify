@@ -1,12 +1,12 @@
-import { applyFilter } from "@prefabs.tech/fastify-slonik";
-import humps from "humps";
-import { sql } from "slonik";
-
 import type {
   BaseFilterInput,
   FilterInput,
 } from "@prefabs.tech/fastify-slonik";
-import type { IdentifierSqlToken, FragmentSqlToken } from "slonik";
+import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
+
+import { applyFilter } from "@prefabs.tech/fastify-slonik";
+import humps from "humps";
+import { sql } from "slonik";
 
 const applyFiltersToQuery = (
   filters: FilterInput,

@@ -1,5 +1,7 @@
 import type { ClientConfigurationInput, ConnectionOptions } from "slonik";
 
+type SlonikConfig = SlonikOptions;
+
 type SlonikOptions = {
   clientConfiguration?: ClientConfigurationInput;
   db: ConnectionOptions;
@@ -15,7 +17,5 @@ type SlonikOptions = {
     enabled: boolean;
   };
 };
-
-type SlonikConfig = SlonikOptions;
 
 export type { SlonikConfig, SlonikOptions };

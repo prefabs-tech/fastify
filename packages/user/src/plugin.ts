@@ -1,3 +1,6 @@
+import type { GraphqlEnabledPlugin } from "@prefabs.tech/fastify-graphql";
+import type { FastifyPluginAsync } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 
 import seedRoles from "./lib/seedRoles";
@@ -10,9 +13,6 @@ import rolesRoutes from "./model/roles/controller";
 import usersRoutes from "./model/users/controller";
 import supertokensPlugin from "./supertokens";
 import userContext from "./userContext";
-
-import type { GraphqlEnabledPlugin } from "@prefabs.tech/fastify-graphql";
-import type { FastifyPluginAsync } from "fastify";
 
 const userPlugin: FastifyPluginAsync = async (fastify) => {
   const { graphql, user } = fastify.config;

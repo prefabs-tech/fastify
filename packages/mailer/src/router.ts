@@ -1,8 +1,8 @@
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+
 import mjml2html from "mjml";
 
 import { testEmailSchema } from "./schema";
-
-import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 const router = async (
   fastify: FastifyInstance,
@@ -46,9 +46,9 @@ const router = async (
       });
 
       reply.send({
-        status: "ok",
-        message: "Email successfully sent",
         info,
+        message: "Email successfully sent",
+        status: "ok",
       });
     },
   );

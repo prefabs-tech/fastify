@@ -1,12 +1,6 @@
 # @prefabs.tech/fastify
 
-> **AI/agents:** Start with [docs/llm/INDEX.md](docs/llm/INDEX.md) and [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md) before reading source.
-
 A set of fastify libraries
-
-## AI Quickstart
-
-Workspace map: [docs/llm/INDEX.md](docs/llm/INDEX.md) · API, config, and deep links: [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md)
 
 ## Packages
 

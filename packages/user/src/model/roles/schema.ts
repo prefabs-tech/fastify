@@ -1,36 +1,36 @@
 export const createRoleSchema = {
+  body: {
+    properties: {
+      permissions: {
+        items: { type: "string" },
+        type: "array",
+      },
+      role: { type: "string" },
+    },
+    required: ["role"],
+    type: "object",
+  },
   description: "Create a new role with optional permissions",
   operationId: "createRole",
-  body: {
-    type: "object",
-    required: ["role"],
-    properties: {
-      role: { type: "string" },
-      permissions: {
-        type: "array",
-        items: { type: "string" },
-      },
-    },
-  },
   response: {
     201: {
       description: "Role created successfully",
-      type: "object",
       properties: {
         status: { type: "string" },
       },
+      type: "object",
     },
     400: {
-      description: "Bad Request",
       $ref: "ErrorResponse#",
+      description: "Bad Request",
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     403: {
-      description: "Forbidden",
       $ref: "ErrorResponse#",
+      description: "Forbidden",
     },
     500: {
       $ref: "ErrorResponse#",
@@ -43,10 +43,10 @@ export const deleteRoleSchema = {
   description: "Delete a role by name",
   operationId: "deleteRole",
   querystring: {
-    type: "object",
     properties: {
       role: { type: "string" },
     },
+    type: "object",
   },
   response: {
     200: {
@@ -57,16 +57,16 @@ export const deleteRoleSchema = {
       type: "object",
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     403: {
-      description: "Forbidden",
       $ref: "ErrorResponse#",
+      description: "Forbidden",
     },
     422: {
-      description: "Unprocessable Entity",
       $ref: "ErrorResponse#",
+      description: "Unprocessable Entity",
     },
     500: {
       $ref: "ErrorResponse#",
@@ -79,33 +79,33 @@ export const getRolePermissionsSchema = {
   description: "Get permissions for a specific role",
   operationId: "getRolePermissions",
   querystring: {
-    type: "object",
     properties: {
       role: { type: "string" },
     },
+    type: "object",
   },
   response: {
     200: {
       description: "Role permissions retrieved successfully",
-      type: "object",
       properties: {
         permissions: {
-          type: "array",
           items: { type: "string" },
+          type: "array",
         },
       },
+      type: "object",
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     403: {
-      description: "Forbidden",
       $ref: "ErrorResponse#",
+      description: "Forbidden",
     },
     404: {
-      description: "Role not found",
       $ref: "ErrorResponse#",
+      description: "Role not found",
     },
     500: {
       $ref: "ErrorResponse#",
@@ -119,30 +119,30 @@ export const getRolesSchema = {
   operationId: "getRoles",
   response: {
     200: {
-      type: "object",
       properties: {
         roles: {
-          type: "array",
           items: {
-            type: "object",
             properties: {
-              role: { type: "string" },
               permissions: {
-                type: "array",
                 items: { type: "string" },
+                type: "array",
               },
+              role: { type: "string" },
             },
+            type: "object",
           },
+          type: "array",
         },
       },
+      type: "object",
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     403: {
-      description: "Forbidden",
       $ref: "ErrorResponse#",
+      description: "Forbidden",
     },
     500: {
       $ref: "ErrorResponse#",
@@ -152,42 +152,42 @@ export const getRolesSchema = {
 };
 
 export const updateRoleSchema = {
+  body: {
+    properties: {
+      permissions: {
+        items: { type: "string" },
+        type: "array",
+      },
+      role: { type: "string" },
+    },
+    required: ["role"],
+    type: "object",
+  },
   description: "Update a role's permissions",
   operationId: "updateRole",
-  body: {
-    type: "object",
-    required: ["role"],
-    properties: {
-      role: { type: "string" },
-      permissions: {
-        type: "array",
-        items: { type: "string" },
-      },
-    },
-  },
   response: {
     200: {
       description: "Role updated successfully",
-      type: "object",
       properties: {
-        status: { type: "string" },
         permissions: {
-          type: "array",
           items: { type: "string" },
+          type: "array",
         },
+        status: { type: "string" },
       },
+      type: "object",
     },
     400: {
-      description: "Bad Request",
       $ref: "ErrorResponse#",
+      description: "Bad Request",
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     403: {
-      description: "Forbidden",
       $ref: "ErrorResponse#",
+      description: "Forbidden",
     },
     500: {
       $ref: "ErrorResponse#",

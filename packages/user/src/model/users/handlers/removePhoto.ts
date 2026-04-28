@@ -1,12 +1,12 @@
+import type { FastifyReply } from "fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify";
+
 import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
 import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import getUserService from "../../../lib/getUserService";
 import createUserContext from "../../../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
-
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 const removePhoto = async (request: SessionRequest, reply: FastifyReply) => {
   const { config, dbSchema, server, slonik, user } = request;

@@ -2,28 +2,77 @@ import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { BaseService, formatDate } from "@prefabs.tech/fastify-slonik";
 import { v4 as uuidv4 } from "uuid";
 
-import FileSqlFactory from "./sqlFactory";
-import { ADD_SUFFIX, ERROR, ERROR_CODES } from "../../constants";
-import {
-  getPreferredBucket,
-  getFileExtension,
-  getFilenameWithSuffix,
-  getBaseName,
-} from "../../utils";
-import S3Client from "../../utils/s3Client";
-
 import type {
-  PresignedUrlOptions,
   File,
-  FilePayload,
   FileCreateInput,
+  FilePayload,
   FileUpdateInput,
+  PresignedUrlOptions,
 } from "../../types";
 
+import { ADD_SUFFIX, ERROR, ERROR_CODES } from "../../constants";
+import {
+  getBaseName,
+  getFileExtension,
+  getFilenameWithSuffix,
+  getPreferredBucket,
+} from "../../utils";
+import S3Client from "../../utils/s3Client";
+import FileSqlFactory from "./sqlFactory";
+
 class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
-  protected _filename: string = undefined as unknown as string;
+  get fileExtension() {
+    return this._fileExtension;
+  }
+  set fileExtension(fileExtension: string) {
+    this._fileExtension = fileExtension;
+  }
+  get filename() {
+    if (this._filename && !this._filename.endsWith(this.fileExtension)) {
+      return `${this._filename}.${this.fileExtension}`;
+    }
+
+    return this._filename || `${uuidv4()}.${this.fileExtension}`;
+  }
+  set filename(filename: string) {
+    this._filename = filename;
+  }
+
+  get key() {
+    let formattedPath = "";
+
+    if (this.path) {
+      formattedPath = this.path.endsWith("/") ? this.path : this.path + "/";
+    }
+
+    return `${formattedPath}${this.filename}`;
+  }
+
+  get path() {
+    return this._path;
+  }
+
+  set path(path: string) {
+    this._path = path;
+  }
+
+  get s3Client() {
+    return (
+      this._s3Client ??
+      (this._s3Client = new S3Client(this.config.s3.clientConfig))
+    );
+  }
+
+  get sqlFactoryClass() {
+    return FileSqlFactory;
+  }
+
   protected _fileExtension: string = undefined as unknown as string;
+
+  protected _filename: string = undefined as unknown as string;
+
   protected _path: string = undefined as unknown as string;
+
   protected _s3Client: S3Client | undefined;
 
   async deleteFile(fileId: number, options?: { bucket?: string }) {
@@ -63,8 +112,8 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
 
     return {
       ...file,
-      mimeType: s3Object?.ContentType,
       fileStream: s3Object.Body,
+      mimeType: s3Object?.ContentType,
     };
   }
 
@@ -94,12 +143,12 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
 
   async upload(data: FilePayload) {
     const { fileContent, fileFields } = data.file;
-    const { filename, mimetype, data: fileData } = fileContent;
+    const { data: fileData, filename, mimetype } = fileContent;
     const {
-      path = "",
       bucket = "",
       bucketChoice,
       filenameResolutionStrategy,
+      path = "",
     } = data.options || {};
 
     const fileExtension = getFileExtension(filename);
@@ -155,62 +204,13 @@ class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
       ...(fileFields?.lastDownloadedAt && {
         lastDownloadedAt: formatDate(new Date(fileFields.lastDownloadedAt)),
       }),
-      originalFileName: filename,
       key: key,
+      originalFileName: filename,
     } as unknown as FileCreateInput;
 
     const result = this.create(fileInput);
 
     return result;
-  }
-
-  get fileExtension() {
-    return this._fileExtension;
-  }
-
-  get filename() {
-    if (this._filename && !this._filename.endsWith(this.fileExtension)) {
-      return `${this._filename}.${this.fileExtension}`;
-    }
-
-    return this._filename || `${uuidv4()}.${this.fileExtension}`;
-  }
-
-  get key() {
-    let formattedPath = "";
-
-    if (this.path) {
-      formattedPath = this.path.endsWith("/") ? this.path : this.path + "/";
-    }
-
-    return `${formattedPath}${this.filename}`;
-  }
-
-  get path() {
-    return this._path;
-  }
-
-  get s3Client() {
-    return (
-      this._s3Client ??
-      (this._s3Client = new S3Client(this.config.s3.clientConfig))
-    );
-  }
-
-  get sqlFactoryClass() {
-    return FileSqlFactory;
-  }
-
-  set fileExtension(fileExtension: string) {
-    this._fileExtension = fileExtension;
-  }
-
-  set filename(filename: string) {
-    this._filename = filename;
-  }
-
-  set path(path: string) {
-    this._path = path;
   }
 }
 

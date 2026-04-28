@@ -1,3 +1,5 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
+
 import { createNewSession } from "supertokens-node/recipe/session";
 import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
 import UserRoles from "supertokens-node/recipe/userroles";
@@ -5,8 +7,6 @@ import UserRoles from "supertokens-node/recipe/userroles";
 import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
-
-import type { FastifyReply, FastifyRequest } from "fastify";
 
 interface FieldInput {
   email: string;
@@ -56,16 +56,16 @@ const adminSignUp = async (request: FastifyRequest, reply: FastifyReply) => {
 
   // signup
   const signUpResponse = await emailPasswordSignUp(email, password, {
-    autoVerifyEmail: true,
-    roles: [
-      ROLE_ADMIN,
-      ...(superAdminUsers.status === "OK" ? [ROLE_SUPERADMIN] : []),
-    ],
     _default: {
       request: {
         request,
       },
     },
+    autoVerifyEmail: true,
+    roles: [
+      ROLE_ADMIN,
+      ...(superAdminUsers.status === "OK" ? [ROLE_SUPERADMIN] : []),
+    ],
   });
 
   if (signUpResponse.status !== "OK") {

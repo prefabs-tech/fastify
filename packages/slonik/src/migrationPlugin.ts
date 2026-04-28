@@ -1,9 +1,10 @@
+import type { FastifyInstance } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 
-import migrate from "./migrate";
-
 import type { SlonikOptions } from "./types";
-import type { FastifyInstance } from "fastify";
+
+import migrate from "./migrate";
 
 const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
   fastify.log.info("Running database migrations");

@@ -1,8 +1,8 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
+
 import UserRoles from "supertokens-node/recipe/userroles";
 
 import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
-
-import type { FastifyReply, FastifyRequest } from "fastify";
 
 const canAdminSignUp = async (request: FastifyRequest, reply: FastifyReply) => {
   const { server } = request;

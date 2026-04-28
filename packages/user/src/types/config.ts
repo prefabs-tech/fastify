@@ -1,14 +1,15 @@
-import invitationHandlers from "../model/invitations/handlers";
-import InvitationService from "../model/invitations/service";
-import userHandlers from "../model/users/handlers";
-import UserService from "../model/users/service";
+import type { FastifyRequest } from "fastify";
 
 import type { SupertokensConfig } from "../supertokens";
 import type { Invitation } from "./invitation";
 import type { IsEmailOptions } from "./isEmailOptions";
 import type { StrongPasswordOptions } from "./strongPasswordOptions";
 import type { User, UserUpdateInput } from "./user";
-import type { FastifyRequest } from "fastify";
+
+import invitationHandlers from "../model/invitations/handlers";
+import InvitationService from "../model/invitations/service";
+import userHandlers from "../model/users/handlers";
+import UserService from "../model/users/service";
 
 interface EmailOptions {
   subject?: string;
@@ -38,13 +39,13 @@ interface UserConfig {
     };
     signUp?: {
       /**
-       * @default true
-       */
-      enabled?: boolean;
-      /**
        * @default false
        */
       emailVerification?: boolean;
+      /**
+       * @default true
+       */
+      enabled?: boolean;
     };
     updateEmail?: {
       enabled?: boolean;

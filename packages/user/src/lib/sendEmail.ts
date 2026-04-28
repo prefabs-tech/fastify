@@ -20,12 +20,12 @@ const sendEmail = async ({
   return mailer
     .sendMail({
       subject: subject,
-      templateName: templateName,
-      to: to,
       templateData: {
         appName: config.appName,
         ...templateData,
       },
+      templateName: templateName,
+      to: to,
     })
     .catch((error: Error) => {
       log.error(error.stack);

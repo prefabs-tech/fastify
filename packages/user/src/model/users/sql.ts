@@ -1,10 +1,10 @@
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
+import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
+
 import humps from "humps";
 import { sql } from "slonik";
 
 import { applyFiltersToQuery } from "./dbFilters";
-
-import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
-import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
 
 const createRoleSortFragment = (
   identifier: IdentifierSqlToken,

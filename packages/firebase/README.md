@@ -2,23 +2,41 @@
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of Firebase Admin in a fastify API.
 
+## Why this plugin?
+
+Integrating Firebase Admin into a Node.js API typically involves much more than just calling `initializeApp()`. To support features like push notifications securely, you must manage user device tokens in a database, expose REST routes or GraphQL mutations to clients to register those devices, and define secure dispatch handlers. We created this plugin to:
+
+- **Provide a Complete Feature Slice**: Rather than just wrapping the SDK, this plugin provides a fully functioning User Device and Notification management system out-of-the-box, automatically taking advantage of your `@prefabs.tech/fastify-slonik` database setup.
+- **Bootstrap APIs Instantly**: It automatically provides and wires up both REST routes and GraphQL resolvers/schemas (`userDevice`, `notification`) so you don't have to manually write the boilerplate to add, remove, and manage FCM tokens across your applications.
+- **Centralize Configuration**: By extending our `@prefabs.tech/fastify-config` interface, we ensure that your Firebase credentials, database table preferences, and route configurations are strictly typed and managed in one central place alongside the rest of your app.
+- **Allow Clean Overrides**: While we provide default controllers and services for handling devices and notifications, the plugin architecture allows you to easily override them via the config (`config.firebase.handlers`) whenever your business logic requires custom behavior.
+
 ## Requirements
 
-* [@prefabs.tech/fastify-config](../config/)
-* [@prefabs.tech/fastify-slonik](../slonik/)
+Peer dependencies (install compatible versions — see [package.json](./package.json)):
+
+- [@prefabs.tech/fastify-config](../config/)
+- [@prefabs.tech/fastify-error-handler](../error-handler/)
+- [@prefabs.tech/fastify-graphql](../graphql/)
+- [@prefabs.tech/fastify-slonik](../slonik/)
+- [`fastify`](https://www.npmjs.com/package/fastify)
+- [`fastify-plugin`](https://www.npmjs.com/package/fastify-plugin)
+- [`mercurius`](https://www.npmjs.com/package/mercurius)
+- [`slonik`](https://www.npmjs.com/package/slonik)
+- [`supertokens-node`](https://www.npmjs.com/package/supertokens-node)
 
 ## Installation
 
 Install with npm:
 
 ```bash
-npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase fastify fastify-plugin mercurius slonik supertokens-node
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase fastify fastify-plugin mercurius slonik supertokens-node
 ```
 
 ## Usage
@@ -28,32 +46,35 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 Register the fastify-firebase plugin with your Fastify instance:
 
 ```typescript
-import firebasePlugin from "@prefabs.tech/fastify-firebase";
 import configPlugin from "@prefabs.tech/fastify-config";
+import errorHandlerPlugin from "@prefabs.tech/fastify-error-handler";
+import firebasePlugin from "@prefabs.tech/fastify-firebase";
+import graphqlPlugin from "@prefabs.tech/fastify-graphql";
+import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
 import config from "./config";
 
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
-import type { FastifyInstance } from "fastify";
 
 const start = async () => {
-  // Create fastify instance
   const fastify = Fastify({
     logger: config.logger,
   });
 
-  // Register fastify-config plugin
   await fastify.register(configPlugin, { config });
-
-  // Register fastify-firebase plugin
+  await fastify.register(errorHandlerPlugin, {
+    stackTrace: process.env.NODE_ENV === "development",
+  });
+  await fastify.register(slonikPlugin, config.slonik);
+  await fastify.register(graphqlPlugin, config.graphql);
   await fastify.register(firebasePlugin);
 
   await fastify.listen({
-    port: config.port,
     host: "0.0.0.0",
+    port: config.port,
   });
-}
+};
 
 start();
 ```
@@ -107,7 +128,7 @@ To load and merge this schema with your application's custom schemas, update you
 ```typescript
 import { firebaseSchema } from "@prefabs.tech/fastify-firebase";
 import { loadFilesSync } from "@graphql-tools/load-files";
-import { mergeTypeDefs } from "";
+import { mergeTypeDefs } from "@graphql-tools/merge";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 
 const schemas: string[] = loadFilesSync("./src/**/*.gql");
@@ -123,7 +144,10 @@ export default schema;
 To integrate the resolvers provided by this package, import them and merge with your application's resolvers:
 
 ```typescript
-import { notificationResolver, userDeviceResolver } from "@prefabs.tech/fastify-firebase";
+import {
+  notificationResolver,
+  userDeviceResolver,
+} from "@prefabs.tech/fastify-firebase";
 
 import type { IResolvers } from "mercurius";
 

@@ -3,23 +3,23 @@ export const getPermissionsSchema = {
   operationId: "getPermissions",
   response: {
     200: {
-      type: "object",
       properties: {
         permissions: {
-          type: "array",
           items: {
             type: "string",
           },
+          type: "array",
         },
       },
+      type: "object",
     },
     401: {
-      description: "Unauthorized",
       $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     403: {
-      description: "Forbidden",
       $ref: "ErrorResponse#",
+      description: "Forbidden",
     },
     500: {
       $ref: "ErrorResponse#",

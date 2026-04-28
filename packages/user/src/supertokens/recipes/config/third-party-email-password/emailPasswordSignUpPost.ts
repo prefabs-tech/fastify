@@ -1,7 +1,7 @@
-import { ROLE_USER } from "../../../../constants";
-
 import type { FastifyInstance } from "fastify";
 import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+
+import { ROLE_USER } from "../../../../constants";
 
 const emailPasswordSignUpPOST = (
   originalImplementation: APIInterface,
@@ -23,9 +23,9 @@ const emailPasswordSignUpPOST = (
 
     if (originalResponse.status === "OK") {
       return {
+        session: originalResponse.session,
         status: "OK",
         user: originalResponse.user,
-        session: originalResponse.session,
       };
     }
 

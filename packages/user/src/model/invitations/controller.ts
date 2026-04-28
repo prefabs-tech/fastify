@@ -1,13 +1,5 @@
-import handlers from "./handlers";
-import {
-  acceptInvitationSchema,
-  createInvitationSchema,
-  deleteInvitationSchema,
-  getInvitationByTokenSchema,
-  getInvitationsListSchema,
-  resendInvitationSchema,
-  revokeInvitationSchema,
-} from "./schema";
+import type { FastifyInstance } from "fastify";
+
 import {
   PERMISSIONS_INVITATIONS_CREATE,
   PERMISSIONS_INVITATIONS_DELETE,
@@ -22,8 +14,16 @@ import {
   ROUTE_INVITATIONS_RESEND,
   ROUTE_INVITATIONS_REVOKE,
 } from "../../constants";
-
-import type { FastifyInstance } from "fastify";
+import handlers from "./handlers";
+import {
+  acceptInvitationSchema,
+  createInvitationSchema,
+  deleteInvitationSchema,
+  getInvitationByTokenSchema,
+  getInvitationsListSchema,
+  resendInvitationSchema,
+  revokeInvitationSchema,
+} from "./schema";
 
 const plugin = async (fastify: FastifyInstance) => {
   const handlersConfig = fastify.config.user.handlers?.invitation;

@@ -1,14 +1,15 @@
+import type { FastifyReply, FastifyRequest } from "fastify";
+
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { createNewSession } from "supertokens-node/recipe/session";
 import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
+
+import type { User } from "../../../types";
 
 import getInvitationService from "../../../lib/getInvitationService";
 import isInvitationValid from "../../../lib/isInvitationValid";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
-
-import type { User } from "../../../types";
-import type { FastifyReply, FastifyRequest } from "fastify";
 
 interface FieldInput {
   email: string;
@@ -66,8 +67,8 @@ const acceptInvitation = async (
 
   // signup
   const signUpResponse = await emailPasswordSignUp(email, password, {
-    roles: [invitation.role],
     autoVerifyEmail: true,
+    roles: [invitation.role],
   });
 
   if (signUpResponse.status !== "OK") {

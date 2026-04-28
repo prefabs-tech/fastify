@@ -14,11 +14,12 @@ const flatten = (arr) => arr.reduce((acc, item) => acc.concat(item), []);
 
 function expandPackageList(list, dir = ".") {
   const isPackageIgnored = (package) => {
-    return expandPackageList(list
-      .filter(value => value.startsWith("!"))
-      .map(item => item.slice(1))
+    return expandPackageList(
+      list
+        .filter((value) => value.startsWith("!"))
+        .map((item) => item.slice(1)),
     ).includes(package);
-  }
+  };
 
   return flatten(
     list.map((item) => {
@@ -49,8 +50,10 @@ function expandPackageList(list, dir = ".") {
       } else {
         return resolve(dir, item);
       }
-    })
-  ).filter((package) => !isPackageIgnored(package)).filter(hasPackageJson)
+    }),
+  )
+    .filter((package) => !isPackageIgnored(package))
+    .filter(hasPackageJson);
 }
 
 // ship.js config

@@ -56,8 +56,8 @@ class RoleService {
     return permissions;
   }
 
-  async getRoles(): Promise<{ role: string; permissions: string[] }[]> {
-    let roles: { role: string; permissions: string[] }[] = [];
+  async getRoles(): Promise<{ permissions: string[]; role: string }[]> {
+    let roles: { permissions: string[]; role: string }[] = [];
 
     const response = await UserRoles.getAllRoles();
 
@@ -68,8 +68,8 @@ class RoleService {
           const response = await UserRoles.getPermissionsForRole(role);
 
           return {
-            role,
             permissions: response.status === "OK" ? response.permissions : [],
+            role,
           };
         }),
       );
@@ -81,7 +81,7 @@ class RoleService {
   async updateRolePermissions(
     role: string,
     permissions: string[],
-  ): Promise<{ status: "OK"; permissions: string[] }> {
+  ): Promise<{ permissions: string[]; status: "OK" }> {
     const response = await UserRoles.getPermissionsForRole(role);
 
     if (response.status === "UNKNOWN_ROLE_ERROR") {
@@ -104,8 +104,8 @@ class RoleService {
     const permissionsResponse = await this.getPermissionsForRole(role);
 
     return {
-      status: "OK",
       permissions: permissionsResponse,
+      status: "OK",
     };
   }
 }

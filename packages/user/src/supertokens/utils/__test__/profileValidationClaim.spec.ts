@@ -5,7 +5,7 @@ import ProfileValidationClaim from "../profileValidationClaim";
 const FIXED_NOW = new Date("2024-06-15T12:00:00.000Z").getTime();
 
 const makePayload = (
-  value: { gracePeriodEndsAt?: number; isVerified: boolean } | undefined,
+  value: undefined | { gracePeriodEndsAt?: number; isVerified: boolean },
 ) => {
   if (value === undefined) {
     return {};

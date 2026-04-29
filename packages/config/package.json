@@ -31,12 +31,11 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.5.0",
+    "@prefabs.tech/eslint-config": "git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config",
     "@prefabs.tech/tsconfig": "0.6.0",
     "@types/node": "24.10.15",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.4",
-    "eslint-plugin-perfectionist": "5.8.0",
     "fastify": "5.7.4",
     "fastify-plugin": "5.1.0",
     "pino": "8.21.0",

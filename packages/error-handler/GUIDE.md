@@ -33,6 +33,7 @@ const fastify = Fastify();
 await fastify.register(errorHandlerPlugin, {
   stackTrace: false, // optional, default: false
   preErrorHandler: undefined, // optional
+  domainErrorStatusMap: undefined, // optional: error.name → HTTP status (e.g. { UnprocessableEntityError: 422 })
 });
 ```
 
@@ -86,9 +87,27 @@ fastify.get("/forbidden", async () => {
 });
 ```
 
-### Non-HttpError handling — error masking
+### Domain error status map (`domainErrorStatusMap`)
 
-All non-`HttpError` errors (plain `Error`, `CustomError`, and any subclass) always respond with status `500`. When `stackTrace: false` (the default), internal details are masked:
+After `HttpError` handling, non-`HttpError` errors whose **`name`** appears in **`domainErrorStatusMap`** respond with the configured status and the same general `ErrorResponse` shape as `HttpError` responses: `statusCode`, `error` (HTTP status text), `message`, `name`, and optional `code` when the error is a `CustomError`. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
+
+```typescript
+await fastify.register(errorHandlerPlugin, {
+  domainErrorStatusMap: {
+    UnprocessableEntityError: 422,
+  },
+});
+
+fastify.get("/validate", async () => {
+  const err = new Error("Invalid payload");
+  err.name = "UnprocessableEntityError";
+  throw err;
+});
+```
+
+### Non-HttpError handling — error masking (unmapped)
+
+Non-`HttpError` errors that are **not** listed in **`domainErrorStatusMap`** (plain `Error`, `CustomError`, and any subclass) respond with status `500`. When `stackTrace: false` (the default), internal details are masked:
 
 - `message` → `"Server error, please contact support"`
 - `name` → `"Error"`
@@ -106,7 +125,7 @@ The log level depends on the error's status code:
 - `4xx` → logged at `info` level
 - below `400` → logged at `error` level
 
-Non-HttpErrors are always logged at `error` level regardless of `stackTrace` setting.
+Non-HttpErrors are logged at `error` level unless handled via **`domainErrorStatusMap`** (then logging follows status ranges like `HttpError`).
 
 ### `stackTrace` option and decorator
 

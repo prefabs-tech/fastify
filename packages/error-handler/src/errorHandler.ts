@@ -54,6 +54,34 @@ export const errorHandler = (
     return;
   }
 
+  const mappedStatusCode = request.server.domainErrorStatusMap?.get(error.name);
+
+  if (mappedStatusCode !== undefined) {
+    if (mappedStatusCode >= 500) {
+      logger.error(error);
+    } else if (mappedStatusCode >= 400) {
+      logger.info(error);
+    } else {
+      logger.error(error);
+    }
+
+    const response: ErrorResponse = {
+      code: error instanceof CustomError ? error.code : undefined,
+      error: getHttpStatusText(mappedStatusCode),
+      message: error.message,
+      name: error.name,
+      statusCode: mappedStatusCode,
+    };
+
+    if (isStackTraceEnabled && error.stack) {
+      response.stack = stack.items;
+    }
+
+    void reply.code(mappedStatusCode).send(response);
+
+    return;
+  }
+
   let code = "INTERNAL_SERVER_ERROR";
   let message = "Server error, please contact support";
 

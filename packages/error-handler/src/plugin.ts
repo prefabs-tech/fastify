@@ -16,6 +16,12 @@ const plugin = async (
 
   fastify.decorate("stackTrace", options.stackTrace || false);
 
+  const domainErrorStatusMap = new Map<string, number>(
+    Object.entries(options.domainErrorStatusMap ?? {}),
+  );
+
+  fastify.decorate("domainErrorStatusMap", domainErrorStatusMap);
+
   await fastify.register(fastifySensible);
 
   fastify.setErrorHandler(async (error, request, reply) => {

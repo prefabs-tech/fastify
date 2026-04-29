@@ -26,6 +26,7 @@ All options from [@fastify/sensible](https://www.npmjs.com/package/@fastify/sens
 - **`stackTrace` decorator** — `fastify.stackTrace` (boolean) reflects the active setting, accessible to other plugins and hooks
 - **`ErrorResponse` JSON schema** — registered as `$id: "ErrorResponse"` for use in route response schemas via `$ref: "ErrorResponse#"`
 - **Severity-aware logging** — 4xx errors log at `info`, 5xx at `error`; non-Error thrown values are normalized and logged safely
+- **`domainErrorStatusMap`** — optional map from `error.name` to HTTP status (for domain-specific subclasses or named errors such as validation failures returning `422`), formatted like `HttpError` responses
 
 → [Full feature list](FEATURES.md) · [Developer guide](GUIDE.md)
 
@@ -91,6 +92,18 @@ fastify.get("/example", async () => {
 });
 
 await fastify.listen({ port: 3000, host: "0.0.0.0" });
+```
+
+### Domain status codes
+
+Use **`domainErrorStatusMap`** when domain errors should return non-500 statuses — keys must match thrown **`error.name`**.
+
+```typescript
+await fastify.register(errorHandlerPlugin, {
+  domainErrorStatusMap: {
+    UnprocessableEntityError: 422,
+  },
+});
 ```
 
 ## Installation

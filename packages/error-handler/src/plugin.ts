@@ -8,16 +8,18 @@ import type { ErrorHandlerOptions } from "./types";
 import { errorHandler } from "./errorHandler";
 import { errorSchema } from "./utils/errorSchema";
 
-const DOMAIN_STATUS_MIN = 100;
+const DOMAIN_STATUS_MIN = 400;
 const DOMAIN_STATUS_MAX = 599;
 
 function buildDomainErrorStatusMap(
   map: Readonly<Record<string, number>> | undefined,
 ): Map<string, number> {
   const result = new Map<string, number>();
+
   if (map === undefined) {
     return result;
   }
+
   for (const [errorName, statusCode] of Object.entries(map)) {
     if (
       typeof statusCode !== "number" ||
@@ -31,6 +33,7 @@ function buildDomainErrorStatusMap(
     }
     result.set(errorName, statusCode);
   }
+
   return result;
 }
 

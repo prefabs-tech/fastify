@@ -8,7 +8,7 @@
 
 2. **Adds `ErrorResponse` JSON schema** — registers the `ErrorResponse` schema (`$id: "ErrorResponse"`) with Fastify so routes can reference it in response schemas.
 
-3. **`stackTrace` and `domainErrorStatusMap` decorators** — decorates the Fastify instance with `fastify.stackTrace: boolean` (default `false`) and `fastify.domainErrorStatusMap: Map<string, number>` built from the optional registration option (empty map when omitted).
+3. **`stackTrace` and `domainErrorStatusMap` decorators** — decorates the Fastify instance with `fastify.stackTrace: boolean` (default `false`) and `fastify.domainErrorStatusMap: Map<string, number>` built from the optional registration option (empty map when omitted). Each configured status code must be an integer in **`100`–`599`** or registration throws.
 
 ## Error Handler
 
@@ -18,7 +18,7 @@
 
 6. **HttpError branch** — errors that are `instanceof HttpError` (thrown via `fastify.httpErrors.*`) respond with the original status code, HTTP status text in `error`, and the original message and name.
 
-7. **Optional `domainErrorStatusMap` branch** — when `error.name` exists as a key in the configured map, the error responds with that HTTP status and `ErrorResponse` fields aligned with the `HttpError` path (including `CustomError.code` when applicable); logging follows the same status-range rules as **severity-based logging** below.
+7. **Optional `domainErrorStatusMap` branch** — when `error.name` exists as a key in the configured map, the error responds with that HTTP status, `error` (HTTP status text), and (when `stackTrace: true`) `message`, `name`, and `code` aligned with **item 9** below. When `stackTrace: false`, **`message`**, **`name`**, and **`code`** use the same safe values as **item 10** (plain `Error` vs `CustomError`). Logging follows the same status-range rules as **severity-based logging** below.
 
 8. **Non-mapped non-HttpError branch** — all other plain `Error`, `CustomError`, and subclass errors that are not matched by item 7 respond with status `500`.
 
@@ -49,10 +49,10 @@
 17. **Consistent `ErrorResponse` shape** — every error response conforms to:
     ```typescript
     {
-      code?: string;              // error code (HttpErrors / mapped CustomErrors: from .code; masked unmapped non-HttpErrors: "INTERNAL_SERVER_ERROR")
+      code?: string;              // error code (HttpErrors: from .code; mapped / unmapped non-HttpErrors: see items 7, 9–10 for stackTrace)
       error?: string;             // HTTP status text (HttpErrors and mapped domain errors)
-      message: string;            // error message (masked for unmapped non-HttpErrors when stackTrace: false)
-      name: string;               // error class name (masked to "Error" for unmapped non-HttpErrors when stackTrace: false)
+      message: string;            // error message (masked per item 7 / 10 when stackTrace: false)
+      name: string;               // error class name (masked per item 7 / 10 when stackTrace: false)
       stack?: StackTracey.Entry[] // parsed stack frames (only when stackTrace: true)
       statusCode: number;         // HTTP status code
     }
@@ -60,7 +60,7 @@
 
 ## Exports
 
-18. **`errorHandler` function** — exported standalone for use outside the plugin registration context.
+18. **`errorHandler` function** — exported standalone for use outside the plugin registration context; the `Fastify` instance must still provide **`stackTrace`** and **`domainErrorStatusMap`** (e.g. empty `new Map()` when unused) the same way the plugin decorates them, or lookups will throw.
 
 19. **`CustomError` class** — base class for application errors with a `code` string field.
 

@@ -32,7 +32,7 @@ describe("errorHandlerPlugin — registration", () => {
     const fastify = await buildFastify();
     await fastify.ready();
     expect(fastify.domainErrorStatusMap).toBeInstanceOf(Map);
-    expect(fastify.domainErrorStatusMap?.size).toBe(0);
+    expect(fastify.domainErrorStatusMap.size).toBe(0);
     await fastify.close();
   });
 
@@ -41,7 +41,27 @@ describe("errorHandlerPlugin — registration", () => {
       domainErrorStatusMap: { FooError: 418 },
     });
     await fastify.ready();
-    expect(fastify.domainErrorStatusMap?.get("FooError")).toBe(418);
+    expect(fastify.domainErrorStatusMap.get("FooError")).toBe(418);
+    await fastify.close();
+  });
+
+  it("throws when domainErrorStatusMap has invalid HTTP status", async () => {
+    const fastify = Fastify({ logger: false });
+    await expect(
+      fastify.register(errorHandlerPlugin, {
+        domainErrorStatusMap: { Bad: 99 },
+      }),
+    ).rejects.toThrow(/domainErrorStatusMap/);
+    await fastify.close();
+  });
+
+  it("throws when domainErrorStatusMap status is not an integer", async () => {
+    const fastify = Fastify({ logger: false });
+    await expect(
+      fastify.register(errorHandlerPlugin, {
+        domainErrorStatusMap: { Bad: 422.5 },
+      }),
+    ).rejects.toThrow(/domainErrorStatusMap/);
     await fastify.close();
   });
 

@@ -8,7 +8,7 @@ type ErrorHandler = (
 ) => Promise<void> | void;
 
 interface ErrorHandlerOptions {
-  /** Maps `error.name` (domain error class names or constants) to HTTP status codes (e.g. 422). */
+  /** Maps `error.name` (domain error class names or constants) to HTTP status codes (integers `100`–`599`; invalid values throw at registration). */
   domainErrorStatusMap?: Readonly<Record<string, number>>;
   preErrorHandler?: ErrorHandler;
   stackTrace?: boolean;

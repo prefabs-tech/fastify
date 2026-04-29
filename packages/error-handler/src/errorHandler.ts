@@ -10,6 +10,45 @@ import { CustomError } from "./utils/error";
 const getHttpStatusText = (statusCode: number): string =>
   STATUS_CODES[statusCode] ?? "Internal Server Error";
 
+function trySendDomainMappedError(
+  error: Error,
+  request: FastifyRequest,
+  reply: FastifyReply,
+  logger: FastifyRequest["log"],
+  isStackTraceEnabled: boolean,
+  stack: StackTracey,
+): boolean {
+  const mappedStatusCode = request.server.domainErrorStatusMap?.get(error.name);
+
+  if (mappedStatusCode === undefined) {
+    return false;
+  }
+
+  if (mappedStatusCode >= 500) {
+    logger.error(error);
+  } else if (mappedStatusCode >= 400) {
+    logger.info(error);
+  } else {
+    logger.error(error);
+  }
+
+  const response: ErrorResponse = {
+    code: error instanceof CustomError ? error.code : undefined,
+    error: getHttpStatusText(mappedStatusCode),
+    message: error.message,
+    name: error.name,
+    statusCode: mappedStatusCode,
+  };
+
+  if (isStackTraceEnabled && error.stack) {
+    response.stack = stack.items;
+  }
+
+  void reply.code(mappedStatusCode).send(response);
+
+  return true;
+}
+
 export const errorHandler = (
   unknownError: unknown,
   request: FastifyRequest,
@@ -54,31 +93,16 @@ export const errorHandler = (
     return;
   }
 
-  const mappedStatusCode = request.server.domainErrorStatusMap?.get(error.name);
-
-  if (mappedStatusCode !== undefined) {
-    if (mappedStatusCode >= 500) {
-      logger.error(error);
-    } else if (mappedStatusCode >= 400) {
-      logger.info(error);
-    } else {
-      logger.error(error);
-    }
-
-    const response: ErrorResponse = {
-      code: error instanceof CustomError ? error.code : undefined,
-      error: getHttpStatusText(mappedStatusCode),
-      message: error.message,
-      name: error.name,
-      statusCode: mappedStatusCode,
-    };
-
-    if (isStackTraceEnabled && error.stack) {
-      response.stack = stack.items;
-    }
-
-    void reply.code(mappedStatusCode).send(response);
-
+  if (
+    trySendDomainMappedError(
+      error,
+      request,
+      reply,
+      logger,
+      isStackTraceEnabled,
+      stack,
+    )
+  ) {
     return;
   }
 

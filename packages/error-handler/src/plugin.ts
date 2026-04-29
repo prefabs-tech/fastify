@@ -31,6 +31,7 @@ function buildDomainErrorStatusMap(
         `domainErrorStatusMap: invalid HTTP status for "${errorName}": ${String(statusCode)} (expected integer ${DOMAIN_STATUS_MIN}-${DOMAIN_STATUS_MAX})`,
       );
     }
+
     result.set(errorName, statusCode);
   }
 

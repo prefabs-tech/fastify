@@ -89,9 +89,9 @@ fastify.get("/forbidden", async () => {
 
 ### Domain error status map (`domainErrorStatusMap`)
 
-After `HttpError` handling, non-`HttpError` errors whose **`name`** appears in **`domainErrorStatusMap`** respond with the configured `statusCode` and `error` (HTTP status text). Map values must be **integers from `100` to `599`** or plugin registration throws.
+After `HttpError` handling, non-`HttpError` errors whose **`name`** appears in **`domainErrorStatusMap`** respond with the configured `statusCode` and `error` (HTTP status text), and include the thrown **`message`** and **`name`** (and **`code`** when the error is a **`CustomError`**) regardless of **`stackTrace`**; **`stackTrace: true`** only adds the parsed **`stack`** field when present. Map values must be **integers from `100` to `599`** or plugin registration throws. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
 
-When **`stackTrace: true`**, `message` and `name` come from the error, and `code` follows the same rules as unmapped `CustomError` / plain `Error` responses (see **Non-HttpError handling — error masking (unmapped)** below for the `stackTrace: true` case). When **`stackTrace: false`** (the default), `message`, `name`, and `code` are masked the same way as unmapped non-`HttpError` errors (generic messages, `name` → `"Error"`, `code` → `"INTERNAL_SERVER_ERROR"`). Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
+**Standalone `errorHandler`:** if you reuse the exported handler without the plugin, decorate **`stackTrace`** as the plugin does; **`domainErrorStatusMap`** is optional—omit it or pass an empty `Map` if you do not use the map.
 
 ```typescript
 await fastify.register(errorHandlerPlugin, {

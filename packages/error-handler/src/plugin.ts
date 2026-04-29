@@ -11,11 +11,12 @@ import { errorSchema } from "./utils/errorSchema";
 const DOMAIN_STATUS_MIN = 100;
 const DOMAIN_STATUS_MAX = 599;
 
-function assertDomainErrorStatusMap(
+function buildDomainErrorStatusMap(
   map: Readonly<Record<string, number>> | undefined,
-): void {
+): Map<string, number> {
+  const result = new Map<string, number>();
   if (map === undefined) {
-    return;
+    return result;
   }
   for (const [errorName, statusCode] of Object.entries(map)) {
     if (
@@ -28,7 +29,9 @@ function assertDomainErrorStatusMap(
         `domainErrorStatusMap: invalid HTTP status for "${errorName}": ${String(statusCode)} (expected integer ${DOMAIN_STATUS_MIN}-${DOMAIN_STATUS_MAX})`,
       );
     }
+    result.set(errorName, statusCode);
   }
+  return result;
 }
 
 const plugin = async (
@@ -39,10 +42,8 @@ const plugin = async (
 
   fastify.decorate("stackTrace", options.stackTrace || false);
 
-  assertDomainErrorStatusMap(options.domainErrorStatusMap);
-
-  const domainErrorStatusMap = new Map<string, number>(
-    Object.entries(options.domainErrorStatusMap ?? {}),
+  const domainErrorStatusMap = buildDomainErrorStatusMap(
+    options.domainErrorStatusMap,
   );
 
   fastify.decorate("domainErrorStatusMap", domainErrorStatusMap);

@@ -15,7 +15,6 @@ describe("errorHandler — standalone export", () => {
   it("handles errors the same way as the plugin when wired with sensible and stackTrace", async () => {
     fastify = Fastify({ logger: false });
     fastify.decorate("stackTrace", false);
-    fastify.decorate("domainErrorStatusMap", new Map<string, number>());
     await fastify.register(fastifySensible);
     fastify.setErrorHandler((err, request, reply) => {
       errorHandler(err, request, reply);

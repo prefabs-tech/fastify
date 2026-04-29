@@ -54,7 +54,7 @@ export const errorHandler = (
     return;
   }
 
-  const mappedStatusCode = request.server.domainErrorStatusMap.get(error.name);
+  const mappedStatusCode = request.server.domainErrorStatusMap?.get(error.name);
 
   if (mappedStatusCode !== undefined) {
     if (mappedStatusCode >= 500) {
@@ -65,20 +65,11 @@ export const errorHandler = (
       logger.error(error);
     }
 
-    let responseCode = "INTERNAL_SERVER_ERROR";
-    let maskedMessage = "Server error, please contact support";
-
-    if (error instanceof CustomError) {
-      responseCode = error.code || responseCode;
-      maskedMessage =
-        "Server has an error that is not handled, please contact support";
-    }
-
     const response: ErrorResponse = {
-      code: isStackTraceEnabled ? responseCode : "INTERNAL_SERVER_ERROR",
+      code: error instanceof CustomError ? error.code : undefined,
       error: getHttpStatusText(mappedStatusCode),
-      message: isStackTraceEnabled ? error.message : maskedMessage,
-      name: isStackTraceEnabled ? error.name : "Error",
+      message: error.message,
+      name: error.name,
       statusCode: mappedStatusCode,
     };
 

@@ -26,7 +26,7 @@ All options from [@fastify/sensible](https://www.npmjs.com/package/@fastify/sens
 - **`stackTrace` decorator** — `fastify.stackTrace` (boolean) reflects the active setting, accessible to other plugins and hooks
 - **`ErrorResponse` JSON schema** — registered as `$id: "ErrorResponse"` for use in route response schemas via `$ref: "ErrorResponse#"`
 - **Severity-aware logging** — 4xx errors log at `info`, 5xx at `error`; non-Error thrown values are normalized and logged safely
-- **`domainErrorStatusMap`** — optional map from `error.name` to an HTTP status integer **`100`–`599`** (invalid entries fail at registration); mapped errors return that status with message/name (and `CustomError` `code`) in the body—only **unmapped** non-`HttpError` errors use generic masking when `stackTrace` is false
+- **`domainErrorStatusMap`** — optional map from `error.name` to an HTTP status integer **`400`–`599`** (invalid entries fail at registration); mapped errors return that status with message/name (and `CustomError` `code`) in the body—only **unmapped** non-`HttpError` errors use generic masking when `stackTrace` is false
 
 → [Full feature list](FEATURES.md) · [Developer guide](GUIDE.md)
 
@@ -96,7 +96,7 @@ await fastify.listen({ port: 3000, host: "0.0.0.0" });
 
 ### Domain status codes
 
-Use **`domainErrorStatusMap`** when domain errors should return non-500 statuses — keys must match thrown **`error.name`**, and each value must be an integer **`100`–`599`**. Mapped responses include the thrown message and name (and `CustomError` codes); generic masking applies only to **unmapped** internal errors when **`stackTrace`** is off.
+Use **`domainErrorStatusMap`** when domain errors should return non-500 statuses — keys must match thrown **`error.name`**, and each value must be an integer **`400`–`599`**. Mapped responses include the thrown message and name (and `CustomError` codes); generic masking applies only to **unmapped** internal errors when **`stackTrace`** is off.
 
 ```typescript
 await fastify.register(errorHandlerPlugin, {

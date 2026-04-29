@@ -89,7 +89,7 @@ fastify.get("/forbidden", async () => {
 
 ### Domain error status map (`domainErrorStatusMap`)
 
-After `HttpError` handling, non-`HttpError` errors whose **`name`** appears in **`domainErrorStatusMap`** respond with the configured `statusCode` and `error` (HTTP status text), and include the thrown **`message`** and **`name`** (and **`code`** when the error is a **`CustomError`**) regardless of **`stackTrace`**; **`stackTrace: true`** only adds the parsed **`stack`** field when present. Map values must be **integers from `100` to `599`** or plugin registration throws. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
+After `HttpError` handling, non-`HttpError` errors whose **`name`** appears in **`domainErrorStatusMap`** respond with the configured `statusCode` and `error` (HTTP status text), and include the thrown **`message`** and **`name`** (and **`code`** when the error is a **`CustomError`**) regardless of **`stackTrace`**; **`stackTrace: true`** only adds the parsed **`stack`** field when present. Map values must be **integers from `400` to `599`** or plugin registration throws. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
 
 **Standalone `errorHandler`:** if you reuse the exported handler without the plugin, decorate **`stackTrace`** as the plugin does; **`domainErrorStatusMap`** is optional—omit it or pass an empty `Map` if you do not use the map.
 

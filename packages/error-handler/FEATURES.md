@@ -8,7 +8,7 @@
 
 2. **Adds `ErrorResponse` JSON schema** — registers the `ErrorResponse` schema (`$id: "ErrorResponse"`) with Fastify so routes can reference it in response schemas.
 
-3. **`stackTrace` decorator** — decorates the Fastify instance with `fastify.stackTrace: boolean`, defaulting to `false`.
+3. **`stackTrace` and `domainErrorStatusMap` options** — plugin options control stack visibility and optional domain status mapping (`ReadonlyMap<string, number>`). `domainErrorStatusMap` is validated at registration and copied internally (empty map when omitted). Each configured status code must be an integer in **`400`–`599`** or registration throws.
 
 ## Error Handler
 
@@ -18,17 +18,17 @@
 
 6. **HttpError branch** — errors that are `instanceof HttpError` (thrown via `fastify.httpErrors.*`) respond with the original status code, HTTP status text in `error`, and the original message and name.
 
-7. **Non-HttpError branch** — all other errors (plain `Error`, `CustomError`, subclasses) always respond with status `500`.
+7. **Optional `domainErrorStatusMap` branch** — when `error.name` exists as a key in the configured map, the error responds with that HTTP status, `error` (HTTP status text), `message`, `name`, and (for `CustomError`) `code`; **`stackTrace`** only adds the parsed `stack` field (it does not mask or replace these fields for mapped errors). Logging follows the same status-range rules as **severity-based logging** below.
 
-8. **`CustomError` code extraction** — when the thrown error is `instanceof CustomError`, its `.code` is used in the response (only when `stackTrace: true`; otherwise `"INTERNAL_SERVER_ERROR"` is used).
+8. **Non-mapped non-HttpError branch** — all other plain `Error`, `CustomError`, and subclass errors that are not matched by item 7 respond with status `500`.
 
-9. **Error detail masking** (`stackTrace: false`) — for non-HttpErrors, the response replaces message, name, and code with safe generic values:
+9. **`CustomError` code extraction (unmapped)** — when the thrown error is `instanceof CustomError` and not handled by item 7, its `.code` is used in the response (only when `stackTrace: true`; otherwise `"INTERNAL_SERVER_ERROR"` is used).
+
+10. **Error detail masking (`stackTrace: false`, unmapped only)** — for non-HttpErrors not handled by item 7, the response replaces message, name, and code with safe generic values:
    - Plain `Error`: message → `"Server error, please contact support"`, name → `"Error"`, code → `"INTERNAL_SERVER_ERROR"`
    - `CustomError`: message → `"Server has an error that is not handled, please contact support"`, name → `"Error"`, code → `"INTERNAL_SERVER_ERROR"`
 
-10. **Severity-based logging for HttpErrors** — `5xx` logged at `error` level; `4xx` logged at `info` level; below `400` logged at `error` level.
-
-11. **Non-HttpError always logged at `error` level** — regardless of `stackTrace` setting.
+11. **Severity-based logging** — `HttpError` instances and **`domainErrorStatusMap`** matches use status ranges (`5xx` logged at `error` level; `4xx` at `info`; below `400` at `error`). Non-mapped non-HttpErrors log at `error` level regardless of `stackTrace`.
 
 ## Stack Traces
 
@@ -49,10 +49,10 @@
 17. **Consistent `ErrorResponse` shape** — every error response conforms to:
     ```typescript
     {
-      code?: string;              // error code (HttpErrors: from .code; non-HttpErrors: custom or "INTERNAL_SERVER_ERROR")
-      error?: string;             // HTTP status text (HttpErrors only)
-      message: string;            // error message (masked for non-HttpErrors when stackTrace: false)
-      name: string;               // error class name (masked to "Error" for non-HttpErrors when stackTrace: false)
+      code?: string;              // error code (HttpErrors / mapped CustomError: from .code; unmapped: see items 9–10)
+      error?: string;             // HTTP status text (HttpErrors and mapped domain errors)
+      message: string;            // error message (masked for unmapped non-HttpErrors when stackTrace: false; mapped errors use the thrown message)
+      name: string;               // error class name (masked for unmapped non-HttpErrors when stackTrace: false; mapped errors use the thrown name)
       stack?: StackTracey.Entry[] // parsed stack frames (only when stackTrace: true)
       statusCode: number;         // HTTP status code
     }
@@ -60,7 +60,7 @@
 
 ## Exports
 
-18. **`errorHandler` function** — exported standalone for use outside the plugin registration context.
+18. **`errorHandler` function** — exported standalone for use outside the plugin registration context. Pass **`stackTrace`** and optional **`domainErrorStatusMap`** through the 4th argument (`ErrorHandlerOptions`). If `domainErrorStatusMap` is absent, the domain-map branch is skipped (same as an empty map).
 
 19. **`CustomError` class** — base class for application errors with a `code` string field.
 

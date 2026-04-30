@@ -3,7 +3,6 @@ import type { HttpErrors } from "@fastify/sensible";
 declare module "fastify" {
   interface FastifyInstance {
     httpErrors: HttpErrors;
-    stackTrace: boolean;
   }
 }
 

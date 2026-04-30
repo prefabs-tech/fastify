@@ -14,17 +14,39 @@ describe("errorHandlerPlugin — registration", () => {
     await fastify.close();
   });
 
-  it("decorates fastify with stackTrace: false by default", async () => {
-    const fastify = await buildFastify();
+  it("accepts stackTrace option without decorating fastify", async () => {
+    const fastify = await buildFastify({ stackTrace: true });
     await fastify.ready();
-    expect(fastify.stackTrace).toBe(false);
+    expect("stackTrace" in fastify).toBe(false);
     await fastify.close();
   });
 
-  it("decorates fastify with stackTrace: true when option is set", async () => {
-    const fastify = await buildFastify({ stackTrace: true });
+  it("accepts domainErrorStatusMap option without decorating fastify", async () => {
+    const fastify = await buildFastify({
+      domainErrorStatusMap: new Map([["FooError", 418]]),
+    });
     await fastify.ready();
-    expect(fastify.stackTrace).toBe(true);
+    expect("domainErrorStatusMap" in fastify).toBe(false);
+    await fastify.close();
+  });
+
+  it("throws when domainErrorStatusMap has invalid HTTP status", async () => {
+    const fastify = Fastify({ logger: false });
+    await expect(
+      fastify.register(errorHandlerPlugin, {
+        domainErrorStatusMap: new Map([["Bad", 99]]),
+      }),
+    ).rejects.toThrow(/domainErrorStatusMap/);
+    await fastify.close();
+  });
+
+  it("throws when domainErrorStatusMap status is not an integer", async () => {
+    const fastify = Fastify({ logger: false });
+    await expect(
+      fastify.register(errorHandlerPlugin, {
+        domainErrorStatusMap: new Map([["Bad", 422.5]]),
+      }),
+    ).rejects.toThrow(/domainErrorStatusMap/);
     await fastify.close();
   });
 

@@ -14,34 +14,19 @@ describe("errorHandlerPlugin — registration", () => {
     await fastify.close();
   });
 
-  it("decorates fastify with stackTrace: false by default", async () => {
-    const fastify = await buildFastify();
-    await fastify.ready();
-    expect(fastify.stackTrace).toBe(false);
-    await fastify.close();
-  });
-
-  it("decorates fastify with stackTrace: true when option is set", async () => {
+  it("accepts stackTrace option without decorating fastify", async () => {
     const fastify = await buildFastify({ stackTrace: true });
     await fastify.ready();
-    expect(fastify.stackTrace).toBe(true);
+    expect("stackTrace" in fastify).toBe(false);
     await fastify.close();
   });
 
-  it("decorates fastify with domainErrorStatusMap as empty Map when omitted", async () => {
-    const fastify = await buildFastify();
-    await fastify.ready();
-    expect(fastify.domainErrorStatusMap).toBeInstanceOf(Map);
-    expect(fastify.domainErrorStatusMap.size).toBe(0);
-    await fastify.close();
-  });
-
-  it("decorates domainErrorStatusMap from registration option", async () => {
+  it("accepts domainErrorStatusMap option without decorating fastify", async () => {
     const fastify = await buildFastify({
       domainErrorStatusMap: new Map([["FooError", 418]]),
     });
     await fastify.ready();
-    expect(fastify.domainErrorStatusMap.get("FooError")).toBe(418);
+    expect("domainErrorStatusMap" in fastify).toBe(false);
     await fastify.close();
   });
 

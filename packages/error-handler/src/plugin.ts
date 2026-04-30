@@ -43,14 +43,10 @@ const plugin = async (
   options: ErrorHandlerOptions,
 ) => {
   fastify.log.info("Registering fastify-error-handler plugin");
-
-  fastify.decorate("stackTrace", options.stackTrace || false);
-
-  const domainErrorStatusMap = buildDomainErrorStatusMap(
+  options.stackTrace = options.stackTrace || false;
+  options.domainErrorStatusMap = buildDomainErrorStatusMap(
     options.domainErrorStatusMap,
   );
-
-  fastify.decorate("domainErrorStatusMap", domainErrorStatusMap);
 
   await fastify.register(fastifySensible);
 
@@ -67,7 +63,7 @@ const plugin = async (
       }
     }
 
-    return errorHandler(error, request, reply);
+    return errorHandler(error, request, reply, options);
   });
 
   fastify.addSchema(errorSchema);

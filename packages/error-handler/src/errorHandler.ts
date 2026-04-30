@@ -3,7 +3,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { STATUS_CODES } from "node:http";
 import StackTracey from "stacktracey";
 
-import type { ErrorResponse } from "./types";
+import type { ErrorHandlerOptions, ErrorResponse } from "./types";
 
 import { CustomError } from "./utils/error";
 
@@ -12,13 +12,13 @@ const getHttpStatusText = (statusCode: number): string =>
 
 function trySendDomainMappedError(
   error: Error,
-  request: FastifyRequest,
+  domainErrorStatusMap: ReadonlyMap<string, number> | undefined,
   reply: FastifyReply,
   logger: FastifyRequest["log"],
   isStackTraceEnabled: boolean,
   stack: StackTracey,
 ): boolean {
-  const mappedStatusCode = request.server.domainErrorStatusMap?.get(error.name);
+  const mappedStatusCode = domainErrorStatusMap?.get(error.name);
 
   if (mappedStatusCode === undefined) {
     return false;
@@ -53,13 +53,14 @@ export const errorHandler = (
   unknownError: unknown,
   request: FastifyRequest,
   reply: FastifyReply,
+  options: ErrorHandlerOptions = {},
 ) => {
   const error =
     unknownError instanceof Error ? unknownError : new Error("UNKNOWN_ERROR");
 
   const { log: logger } = request;
 
-  const isStackTraceEnabled = request.server.stackTrace || false;
+  const isStackTraceEnabled = options.stackTrace || false;
 
   const stack = new StackTracey(error);
 
@@ -96,7 +97,7 @@ export const errorHandler = (
   if (
     trySendDomainMappedError(
       error,
-      request,
+      options.domainErrorStatusMap,
       reply,
       logger,
       isStackTraceEnabled,

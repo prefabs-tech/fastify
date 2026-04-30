@@ -2,9 +2,7 @@ import type { HttpErrors } from "@fastify/sensible";
 
 declare module "fastify" {
   interface FastifyInstance {
-    domainErrorStatusMap?: Map<string, number>;
     httpErrors: HttpErrors;
-    stackTrace: boolean;
   }
 }
 

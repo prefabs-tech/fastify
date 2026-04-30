@@ -8,7 +8,7 @@
 
 2. **Adds `ErrorResponse` JSON schema** — registers the `ErrorResponse` schema (`$id: "ErrorResponse"`) with Fastify so routes can reference it in response schemas.
 
-3. **`stackTrace` and `domainErrorStatusMap` decorators** — decorates the Fastify instance with `fastify.stackTrace: boolean` (default `false`) and `fastify.domainErrorStatusMap: Map<string, number>` built from the optional app-provided **`ReadonlyMap<string, number>`** (validated copy; empty map when omitted). Each configured status code must be an integer in **`400`–`599`** or registration throws.
+3. **`stackTrace` and `domainErrorStatusMap` options** — plugin options control stack visibility and optional domain status mapping (`ReadonlyMap<string, number>`). `domainErrorStatusMap` is validated at registration and copied internally (empty map when omitted). Each configured status code must be an integer in **`400`–`599`** or registration throws.
 
 ## Error Handler
 
@@ -60,7 +60,7 @@
 
 ## Exports
 
-18. **`errorHandler` function** — exported standalone for use outside the plugin registration context. The instance should still provide **`stackTrace`** (decorator). **`domainErrorStatusMap`** is optional: if absent, the domain-map branch is skipped (same as an empty map).
+18. **`errorHandler` function** — exported standalone for use outside the plugin registration context. Pass **`stackTrace`** and optional **`domainErrorStatusMap`** through the 4th argument (`ErrorHandlerOptions`). If `domainErrorStatusMap` is absent, the domain-map branch is skipped (same as an empty map).
 
 19. **`CustomError` class** — base class for application errors with a `code` string field.
 

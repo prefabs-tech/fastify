@@ -12,7 +12,7 @@ const DOMAIN_STATUS_MIN = 400;
 const DOMAIN_STATUS_MAX = 599;
 
 function buildDomainErrorStatusMap(
-  map: Readonly<Record<string, number>> | undefined,
+  map: ReadonlyMap<string, number> | undefined,
 ): Map<string, number> {
   const result = new Map<string, number>();
 
@@ -20,7 +20,7 @@ function buildDomainErrorStatusMap(
     return result;
   }
 
-  for (const [errorName, statusCode] of Object.entries(map)) {
+  for (const [errorName, statusCode] of map.entries()) {
     if (
       typeof statusCode !== "number" ||
       !Number.isInteger(statusCode) ||

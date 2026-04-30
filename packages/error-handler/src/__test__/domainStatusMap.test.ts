@@ -13,7 +13,7 @@ describe("errorHandlerPlugin — domainErrorStatusMap", () => {
 
   it("responds with mapped status when error.name matches", async () => {
     fastify = await buildFastify({
-      domainErrorStatusMap: { UnprocessableEntityError: 422 },
+      domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
     });
     fastify.get("/test", async () => {
       const err = new Error("validation failed");
@@ -40,7 +40,7 @@ describe("errorHandlerPlugin — domainErrorStatusMap", () => {
     }
 
     fastify = await buildFastify({
-      domainErrorStatusMap: { UnprocessableEntityError: 422 },
+      domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
     });
     fastify.get("/test", async () => {
       throw new UnprocessableEntityError("bad");
@@ -54,7 +54,7 @@ describe("errorHandlerPlugin — domainErrorStatusMap", () => {
 
   it("includes stack when stackTrace is true", async () => {
     fastify = await buildFastify({
-      domainErrorStatusMap: { MappedError: 409 },
+      domainErrorStatusMap: new Map([["MappedError", 409]]),
       stackTrace: true,
     });
     fastify.get("/test", async () => {
@@ -77,10 +77,10 @@ describe("errorHandlerPlugin — domainErrorStatusMap logging", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     fastify = Fastify({ loggerInstance: logSpy as any });
     await fastify.register(errorHandlerPlugin, {
-      domainErrorStatusMap: {
-        ClientErr: 422,
-        ServerMapped: 503,
-      },
+      domainErrorStatusMap: new Map([
+        ["ClientErr", 422],
+        ["ServerMapped", 503],
+      ]),
     });
     fastify.get("/422", async () => {
       const err = new Error("x");

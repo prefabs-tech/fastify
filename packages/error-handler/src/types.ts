@@ -8,7 +8,7 @@ type ErrorHandler = (
 ) => Promise<void> | void;
 
 interface ErrorHandlerOptions {
-  domainErrorStatusMap?: Readonly<Record<string, number>>;
+  domainErrorStatusMap?: ReadonlyMap<string, number>;
   preErrorHandler?: ErrorHandler;
   stackTrace?: boolean;
 }

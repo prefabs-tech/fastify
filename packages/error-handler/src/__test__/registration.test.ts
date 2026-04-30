@@ -38,7 +38,7 @@ describe("errorHandlerPlugin — registration", () => {
 
   it("decorates domainErrorStatusMap from registration option", async () => {
     const fastify = await buildFastify({
-      domainErrorStatusMap: { FooError: 418 },
+      domainErrorStatusMap: new Map([["FooError", 418]]),
     });
     await fastify.ready();
     expect(fastify.domainErrorStatusMap.get("FooError")).toBe(418);
@@ -49,7 +49,7 @@ describe("errorHandlerPlugin — registration", () => {
     const fastify = Fastify({ logger: false });
     await expect(
       fastify.register(errorHandlerPlugin, {
-        domainErrorStatusMap: { Bad: 99 },
+        domainErrorStatusMap: new Map([["Bad", 99]]),
       }),
     ).rejects.toThrow(/domainErrorStatusMap/);
     await fastify.close();
@@ -59,7 +59,7 @@ describe("errorHandlerPlugin — registration", () => {
     const fastify = Fastify({ logger: false });
     await expect(
       fastify.register(errorHandlerPlugin, {
-        domainErrorStatusMap: { Bad: 422.5 },
+        domainErrorStatusMap: new Map([["Bad", 422.5]]),
       }),
     ).rejects.toThrow(/domainErrorStatusMap/);
     await fastify.close();

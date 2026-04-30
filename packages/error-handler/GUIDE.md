@@ -33,7 +33,7 @@ const fastify = Fastify();
 await fastify.register(errorHandlerPlugin, {
   stackTrace: false, // optional, default: false
   preErrorHandler: undefined, // optional
-  domainErrorStatusMap: undefined, // optional: error.name → HTTP status (e.g. { UnprocessableEntityError: 422 })
+  domainErrorStatusMap: undefined, // optional: Map<error.name, HTTP status> (e.g. new Map([["UnprocessableEntityError", 422]]))
 });
 ```
 
@@ -89,15 +89,13 @@ fastify.get("/forbidden", async () => {
 
 ### Domain error status map (`domainErrorStatusMap`)
 
-After `HttpError` handling, non-`HttpError` errors whose **`name`** appears in **`domainErrorStatusMap`** respond with the configured `statusCode` and `error` (HTTP status text), and include the thrown **`message`** and **`name`** (and **`code`** when the error is a **`CustomError`**) regardless of **`stackTrace`**; **`stackTrace: true`** only adds the parsed **`stack`** field when present. Map values must be **integers from `400` to `599`** or plugin registration throws. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
+After `HttpError` handling, non-`HttpError` errors whose **`name`** appears as a key in the app-provided **`domainErrorStatusMap`** (`Map<string, number>`) respond with the configured `statusCode` and `error` (HTTP status text), and include the thrown **`message`** and **`name`** (and **`code`** when the error is a **`CustomError`**) regardless of **`stackTrace`**; **`stackTrace: true`** only adds the parsed **`stack`** field when present. Map values must be **integers from `400` to `599`** or plugin registration throws. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
 
 **Standalone `errorHandler`:** if you reuse the exported handler without the plugin, decorate **`stackTrace`** as the plugin does; **`domainErrorStatusMap`** is optional—omit it or pass an empty `Map` if you do not use the map.
 
 ```typescript
 await fastify.register(errorHandlerPlugin, {
-  domainErrorStatusMap: {
-    UnprocessableEntityError: 422,
-  },
+  domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
 });
 
 fastify.get("/validate", async () => {

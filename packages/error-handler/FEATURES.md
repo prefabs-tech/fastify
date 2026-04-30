@@ -8,7 +8,7 @@
 
 2. **Adds `ErrorResponse` JSON schema** — registers the `ErrorResponse` schema (`$id: "ErrorResponse"`) with Fastify so routes can reference it in response schemas.
 
-3. **`stackTrace` and `domainErrorStatusMap` decorators** — decorates the Fastify instance with `fastify.stackTrace: boolean` (default `false`) and `fastify.domainErrorStatusMap: Map<string, number>` built from the optional registration option (empty map when omitted). Each configured status code must be an integer in **`400`–`599`** or registration throws.
+3. **`stackTrace` and `domainErrorStatusMap` decorators** — decorates the Fastify instance with `fastify.stackTrace: boolean` (default `false`) and `fastify.domainErrorStatusMap: Map<string, number>` built from the optional app-provided **`ReadonlyMap<string, number>`** (validated copy; empty map when omitted). Each configured status code must be an integer in **`400`–`599`** or registration throws.
 
 ## Error Handler
 

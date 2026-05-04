@@ -43,11 +43,11 @@ importers:
   packages/config:
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -89,11 +89,11 @@ importers:
         version: 2.1.8
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -135,8 +135,8 @@ importers:
         version: 3.25.76
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -150,8 +150,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -205,8 +205,8 @@ importers:
         version: 2.12.6(graphql@16.12.0)
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -214,8 +214,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -275,14 +275,14 @@ importers:
         version: 1.6.0(nodemailer@7.0.13)
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/mjml':
         specifier: 4.7.4
         version: 4.7.4
@@ -357,8 +357,8 @@ importers:
         version: 9.0.1
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -372,8 +372,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -427,14 +427,14 @@ importers:
         version: 46.8.0(slonik@46.8.0(zod@3.25.76))
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@slonik/driver':
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
@@ -491,11 +491,11 @@ importers:
         version: 5.2.6
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -534,8 +534,8 @@ importers:
         version: 13.15.35
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config
-        version: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -555,8 +555,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/humps':
         specifier: 2.0.6
         version: 2.0.6
@@ -1567,32 +1567,20 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@prefabs.tech/eslint-config@https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config':
-    resolution: {path: packages/eslint-config, tarball: https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76}
-    version: 0.6.0
+  '@prefabs.tech/eslint-config@0.7.0':
+    resolution: {integrity: sha512-kMLs+ksinlNKa5FfhTb2qNisnU/On+IGrRHbZ3aHq1INF8NsjVRB7Wm0Q9vdnBipco9YOady0qSx1goVnhhC3w==}
     peerDependencies:
       eslint: '>=9.0.0'
       prettier: '>=3.3.3'
-      stylelint: '>=17.0.0'
-      stylelint-config-recommended-vue: '>=1.6.0'
-      stylelint-config-standard: '>=40.0.0'
-      stylelint-order: '>=8.0.0'
       typescript: '>=4.9.5'
-    peerDependenciesMeta:
-      stylelint-config-recommended-vue:
-        optional: true
-      stylelint-config-standard:
-        optional: true
-      stylelint-order:
-        optional: true
 
   '@prefabs.tech/postgres-migrations@5.4.3':
     resolution: {integrity: sha512-9cpcwgI0nZaUWmmybYuqhvroCEZHXy9IQmjdM83UF/yUXNu25ASZ09xfw96Q5Ixq0nYwtqkivorvpayBm+/XXg==}
     engines: {node: '>10.17.0'}
     hasBin: true
 
-  '@prefabs.tech/tsconfig@0.6.0':
-    resolution: {integrity: sha512-CuXKJujWd6S/Jqci04Nk7fVA0j66v9A8uGQTscTMrTRGHcfLNSmNkvvmqZG9jEvSahmXmrlJbmyTcwEwXrSBew==}
+  '@prefabs.tech/tsconfig@0.7.0':
+    resolution: {integrity: sha512-MiEvKeoNVPSy79tYQOkFeaBoVViW27JYfSiEbCBT+Fvuk1XEkXyBpSxlpdKQDV5bsAg0C5VNSjRh4qH3eDjA+w==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -7243,7 +7231,7 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
-  '@prefabs.tech/eslint-config@https://codeload.github.com/prefabs-tech/tools/tar.gz/3b5cc95fd560ce8f4b5279daa5050ac146bc8f76#path:packages/eslint-config(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)':
+  '@prefabs.tech/eslint-config@0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)':
     dependencies:
       '@eslint/js': 9.39.4
       eslint: 9.39.4(jiti@2.6.1)
@@ -7280,7 +7268,7 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
 
-  '@prefabs.tech/tsconfig@0.6.0': {}
+  '@prefabs.tech/tsconfig@0.7.0': {}
 
   '@protobufjs/aspromise@1.1.2':
     optional: true

@@ -34,8 +34,8 @@
     "stacktracey": "2.1.8"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config",
-    "@prefabs.tech/tsconfig": "0.6.0",
+    "@prefabs.tech/eslint-config": "0.7.0",
+    "@prefabs.tech/tsconfig": "0.7.0",
     "@types/node": "24.10.15",
     "@types/stack-trace": "0.0.33",
     "@vitest/coverage-istanbul": "3.2.4",

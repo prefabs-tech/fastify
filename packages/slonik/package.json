@@ -37,9 +37,9 @@
     "slonik-interceptor-query-logging": "46.8.0"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config",
+    "@prefabs.tech/eslint-config": "0.7.0",
     "@prefabs.tech/fastify-config": "0.93.5",
-    "@prefabs.tech/tsconfig": "0.6.0",
+    "@prefabs.tech/tsconfig": "0.7.0",
     "@slonik/driver": "46.8.0",
     "@types/humps": "2.0.6",
     "@types/node": "24.10.15",

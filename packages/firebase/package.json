@@ -35,12 +35,12 @@
     "zod": "3.25.76"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "git+https://github.com/prefabs-tech/tools.git#refactor/eslint-config&path:packages/eslint-config",
+    "@prefabs.tech/eslint-config": "0.7.0",
     "@prefabs.tech/fastify-config": "0.93.5",
     "@prefabs.tech/fastify-error-handler": "0.93.5",
     "@prefabs.tech/fastify-graphql": "0.93.5",
     "@prefabs.tech/fastify-slonik": "0.93.5",
-    "@prefabs.tech/tsconfig": "0.6.0",
+    "@prefabs.tech/tsconfig": "0.7.0",
     "@types/node": "24.10.15",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.4",

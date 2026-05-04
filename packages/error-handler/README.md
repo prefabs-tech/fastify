@@ -1,29 +1,5 @@
 # @prefabs.tech/fastify-error-handler
 
-> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#error-handler) before reading source.
-
-## AI Quickstart
-
-Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#error-handler)
-
-<!-- docgen:readme:start -->
-
-## Public API (generated)
-
-| Export | Kind | Description |
-| --- | --- | --- |
-| `CustomError` | class | — |
-| `errorHandler` | const | — |
-| `ErrorHandler` | type | — |
-| `ErrorHandlerOptions` | interface | — |
-| `ErrorResponse` | type | — |
-| `HttpErrors` | type | — |
-| `StackTracey` | const | — |
-
-Keep this table in sync when you change public exports in `src/index.ts` (same PR).
-
-<!-- docgen:readme:end -->
-
 A [Fastify](https://github.com/fastify/fastify) plugin that provides a standardized, production-safe global error handler for APIs.
 
 ## Why This Plugin?

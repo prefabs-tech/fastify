@@ -1,35 +1,5 @@
 # @prefabs.tech/fastify-firebase
 
-> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#firebase) before reading source.
-
-## AI Quickstart
-
-Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#firebase)
-
-<!-- docgen:readme:start -->
-
-## Public API (generated)
-
-| Export | Kind | Description |
-| --- | --- | --- |
-| `createUserDevicesTableQuery` | const | — |
-| `firebaseSchema` | const | — |
-| `initializeFirebase` | const | — |
-| `notificationResolver` | const | — |
-| `notificationRoutes` | const | — |
-| `ROUTE_SEND_NOTIFICATION` | const | — |
-| `ROUTE_USER_DEVICE_ADD` | const | — |
-| `ROUTE_USER_DEVICE_REMOVE` | const | — |
-| `sendPushNotification` | const | — |
-| `TABLE_USER_DEVICES` | const | — |
-| `userDeviceResolver` | const | — |
-| `userDeviceRoutes` | const | — |
-| `UserDeviceService` | class | — |
-
-Keep this table in sync when you change public exports in `src/index.ts` (same PR).
-
-<!-- docgen:readme:end -->
-
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of Firebase Admin in a fastify API.
 
 ## Why this plugin?

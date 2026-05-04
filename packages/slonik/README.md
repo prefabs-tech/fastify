@@ -1,49 +1,5 @@
 # @prefabs.tech/fastify-slonik
 
-> **AI/agents:** Start with this package’s [docs/llm/INDEX.md](docs/llm/INDEX.md) and workspace [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#slonik) before reading source.
-
-## AI Quickstart
-
-Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace reference: [docs/llm/REFERENCE.md](../../../docs/llm/REFERENCE.md#slonik)
-
-<!-- docgen:readme:start -->
-
-## Public API (generated)
-
-| Export | Kind | Description |
-| --- | --- | --- |
-| `applyFilter` | const | — |
-| `applyFiltersToQuery` | const | — |
-| `BaseFilterInput` | type | — |
-| `BaseService` | class | — |
-| `buildFilterFragment` | const | — |
-| `createBigintTypeParser` | const | — |
-| `createDatabase` | const | — |
-| `createFilterFragment` | const | — |
-| `createLimitFragment` | const | — |
-| `createSortFragment` | const | — |
-| `createTableFragment` | const | — |
-| `createTableIdentifier` | const | — |
-| `createWhereFragment` | const | — |
-| `createWhereIdFragment` | const | — |
-| `Database` | type | — |
-| `DefaultSqlFactory` | class | — |
-| `FilterInput` | type | — |
-| `formatDate` | const | — |
-| `isValueExpression` | const | — |
-| `migrationPlugin` | const | — |
-| `PaginatedList` | type | — |
-| `Service` | interface | — |
-| `SlonikConfig` | type | — |
-| `SlonikOptions` | type | — |
-| `SortDirection` | type | — |
-| `SortInput` | type | — |
-| `SqlFactory` | interface | — |
-
-Keep this table in sync when you change public exports in `src/index.ts` (same PR).
-
-<!-- docgen:readme:end -->
-
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of slonik in a fastify API.
 
 The plugin is a thin wrapper around the [`fastify-slonik`](https://github.com/spa5k/fastify-slonik) plugin.

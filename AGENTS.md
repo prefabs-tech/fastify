@@ -2,7 +2,7 @@
 
 Humans and coding agents should **default to documentation** in this repo before reading or editing package source.
 
-**Published packages:** each `packages/<name>/` directory ships `AGENTS.md` and `docs/llm/**` on npm (see each `package.json` → `files`). When you add a package or change the public API, update the `<!-- docgen:packages:start -->` region in [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md) and the `<!-- docgen:readme:start -->` API tables in package READMEs by hand. When you change agent read-order for humans, update **both** the repo-root doc flow below **and** that package’s `AGENTS.md` (keep the GitHub `REFERENCE.md#<name>` URL consistent).
+**Published packages:** each `packages/<name>/` directory ships `AGENTS.md` and `docs/llm/**` on npm (see each `package.json` → `files`). When you add a package or change the public API, update the `<!-- docgen:packages:start -->` region in [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md). When you change agent read-order for humans, update **both** the repo-root doc flow below **and** that package’s `AGENTS.md` (keep the GitHub `REFERENCE.md#<name>` URL consistent).
 
 ## Read order
 
@@ -39,6 +39,6 @@ Public API: `packages/<name>/src/index.ts`. Fastify plugin implementation: `pack
 
 Breaking changes and migrations for agent-facing notes: [docs/llm/CHANGES.md](docs/llm/CHANGES.md).
 
-## Keeping REFERENCE and README API tables in sync
+## Keeping REFERENCE in sync
 
-The `<!-- docgen:readme:start -->` / `<!-- docgen:packages:start -->` marker regions are **maintained manually** (there is no repo docgen script). When you change public exports in `src/index.ts`, paths to tests, or the package list, edit [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md) and the affected package README(s) in the same PR. Set **Last verified** in REFERENCE to the current `git` commit once the links match reality.
+The `<!-- docgen:packages:start -->` region in [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md) is **maintained manually**. When you change public exports in `src/index.ts`, paths to tests, or the package list, edit that section in the same PR. Set **Last verified** in REFERENCE to the current `git` commit once the links match reality.

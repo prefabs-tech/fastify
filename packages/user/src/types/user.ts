@@ -20,20 +20,17 @@ interface User {
   signedUpAt: number;
 }
 
-type UserCreateInput = {
-  lastLoginAt?: string;
-  signedUpAt?: string;
-} & Partial<
+type UserCreateInput = Partial<
   Omit<
     User,
     "deletedAt" | "disabled" | "lastLoginAt" | "photo" | "roles" | "signedUpAt"
   >
->;
-
-type UserUpdateInput = {
+> & {
   lastLoginAt?: string;
-  photo?: Multipart;
-} & Partial<
+  signedUpAt?: string;
+};
+
+type UserUpdateInput = Partial<
   Omit<
     User,
     | "deletedAt"
@@ -44,6 +41,9 @@ type UserUpdateInput = {
     | "roles"
     | "signedUpAt"
   >
->;
+> & {
+  lastLoginAt?: string;
+  photo?: Multipart;
+};
 
 export type { AuthUser, User, UserCreateInput, UserUpdateInput };

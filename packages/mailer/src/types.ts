@@ -10,12 +10,12 @@ interface FastifyMailerNamedInstance {
 }
 
 interface MailerConfig {
-  defaults: {
+  defaults: Partial<Options> & {
     from: {
       address: string;
       name: string;
     };
-  } & Partial<Options>;
+  };
   /**
    * Any email sent from the API will be directed to these addresses.
    */

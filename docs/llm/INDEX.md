@@ -4,6 +4,8 @@ This repo is the `@prefabs.tech/fastify` workspace: **nine published Fastify plu
 
 **Read order:** stay on this page for orientation → open **one** row’s package LLM index (`packages/<name>/docs/llm/INDEX.md`) → open the matching **EXAMPLES** in the same folder (`packages/<name>/docs/llm/EXAMPLES.md`) → open [REFERENCE.md](./REFERENCE.md) for that package’s anchor only → follow links to tests / source. Do not read unrelated packages’ `src/` trees in the same pass.
 
+**Published package directory** (npm tarball / `node_modules`): `README.md` (**For AI agents**) → `AGENTS.md` → `docs/llm/INDEX.md` → `docs/llm/EXAMPLES.md` → this repo’s [REFERENCE.md](./REFERENCE.md) for that package’s anchor (same links as in the package README / AGENTS). Keeps context small before opening source.
+
 **Common intents** (pick **one** REFERENCE anchor; then use that package’s EXAMPLES + INDEX task router):
 
 - **App config / env / Ajv** → [config](./REFERENCE.md#config)

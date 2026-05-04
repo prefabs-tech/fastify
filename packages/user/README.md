@@ -1,5 +1,9 @@
 # @prefabs.tech/fastify-user
 
+## For AI agents
+
+**Read order:** [AGENTS.md](./AGENTS.md) → [docs/llm/INDEX.md](./docs/llm/INDEX.md) → [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md). Deep links to source and tests: [REFERENCE (user)](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#user). Avoid scanning `dist/` or large trees unless those docs are stale or insufficient.
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of user model (service, controller, resolver) in a fastify API.
 
 ## Why this plugin?

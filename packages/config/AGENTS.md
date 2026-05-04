@@ -1,18 +1,16 @@
 # Agent instructions — @prefabs.tech/fastify-config
 
-This file is published **with the npm package**. Use it when the repo root is not available (for example under `node_modules`).
+Published **with the npm package**. Use **[README.md](./README.md)** first (see **For AI agents** there), then this file when the monorepo root isn’t available (for example under `node_modules`). The steps below minimize tokens and avoid broad `dist/`/`src/` scans.
 
 ## Read order
 
-1. [docs/llm/INDEX.md](./docs/llm/INDEX.md) — orientation for this package.
+1. [docs/llm/INDEX.md](./docs/llm/INDEX.md) — package orientation and boundaries.
 2. [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md) — task → smallest source/test files.
-3. Workspace reference (deep links to GUIDE, `src/index.ts`, `plugin.ts`, tests — **not** inside this tarball):  
-   https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#config
-4. Workspace map (all packages):  
-   https://github.com/prefabs-tech/fastify/blob/main/docs/llm/INDEX.md
+3. Workspace **[REFERENCE](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#config)** — deep links to GUIDE, `src/index.ts`, `plugin.ts`, and tests (**not** in this tarball).
+4. Workspace **[INDEX](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/INDEX.md)** — map of all packages.
 
-Open sources through links on that REFERENCE page on GitHub. Avoid scanning entire monorepo trees unless those docs are stale or insufficient.
+Open sources and tests **only** via links on the REFERENCE page. Avoid scanning the full monorepo or large compiled trees unless these docs are missing, incomplete, or obviously stale.
 
 ## In this install
 
-You typically have `dist/`, `docs/llm/`, and this file. For full source and tests, use the repository URL from `package.json` → `repository`.
+Per `package.json` → `files`, you typically have `dist/`, `docs/llm/`, and this file. For full source and tests, use **repository** in `package.json`.

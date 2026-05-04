@@ -2,9 +2,18 @@
 
 Humans and coding agents should **default to documentation** in this repo before reading or editing package source.
 
-**Published packages:** each `packages/<name>/` directory ships `AGENTS.md` and `docs/llm/**` on npm (see each `package.json` → `files`). When you add a package or change the public API, update the `<!-- docgen:packages:start -->` region in [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md). When you change agent read-order for humans, update **both** the repo-root doc flow below **and** that package’s `AGENTS.md` (keep the GitHub `REFERENCE.md#<name>` URL consistent).
+**Published packages:** each `packages/<name>/` directory ships `AGENTS.md` and `docs/llm/**` on npm (see each `package.json` → `files`). When you add a package or change the public API, update the `<!-- docgen:packages:start -->` region in [docs/llm/REFERENCE.md](docs/llm/REFERENCE.md). When you change agent read-order for humans, update **both** the repo-root doc flow below **and** that package’s `AGENTS.md` and **For AI agents** section in its `README.md` (keep the GitHub `REFERENCE.md#<name>` URL consistent).
 
 ## Read order
+
+**Published package directory only** (after `npm install` / build artifact: typically `README.md`, `AGENTS.md`, `docs/llm/`, `dist/`):
+
+1. `README.md` — **For AI agents** (routing stub; stay shallow).
+2. `AGENTS.md` — package agent entrypoint.
+3. `docs/llm/INDEX.md` → `docs/llm/EXAMPLES.md`.
+4. GitHub [`docs/llm/REFERENCE.md`](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md) — **only** the anchor for this package (URL in README / AGENTS).
+
+**Monorepo checkout** (this repository):
 
 1. [docs/llm/INDEX.md](docs/llm/INDEX.md) — workspace map and boundaries.
 2. **One** package: `packages/<name>/docs/llm/INDEX.md` (see table below), then `packages/<name>/docs/llm/EXAMPLES.md` (task → file).

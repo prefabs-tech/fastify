@@ -43,11 +43,11 @@ importers:
   packages/config:
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -57,9 +57,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -92,11 +89,11 @@ importers:
         version: 2.1.8
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -109,9 +106,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -141,8 +135,8 @@ importers:
         version: 3.25.76
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -156,8 +150,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -167,9 +161,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -214,8 +205,8 @@ importers:
         version: 2.12.6(graphql@16.12.0)
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -223,8 +214,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -234,9 +225,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -287,14 +275,14 @@ importers:
         version: 1.6.0(nodemailer@7.0.13)
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/mjml':
         specifier: 4.7.4
         version: 4.7.4
@@ -313,9 +301,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -372,8 +357,8 @@ importers:
         version: 9.0.1
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -387,8 +372,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -398,9 +383,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -445,14 +427,14 @@ importers:
         version: 46.8.0(slonik@46.8.0(zod@3.25.76))
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@slonik/driver':
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
@@ -471,9 +453,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -512,11 +491,11 @@ importers:
         version: 5.2.6
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/node':
         specifier: 24.10.15
         version: 24.10.15
@@ -526,9 +505,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -558,8 +534,8 @@ importers:
         version: 13.15.35
     devDependencies:
       '@prefabs.tech/eslint-config':
-        specifier: 0.5.0
-        version: 0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
         specifier: 0.93.5
         version: link:../config
@@ -579,8 +555,8 @@ importers:
         specifier: 0.93.5
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.6.0
-        version: 0.6.0
+        specifier: 0.7.0
+        version: 0.7.0
       '@types/humps':
         specifier: 2.0.6
         version: 2.0.6
@@ -596,9 +572,6 @@ importers:
       eslint:
         specifier: 9.39.4
         version: 9.39.4(jiti@2.6.1)
-      eslint-plugin-perfectionist:
-        specifier: 5.8.0
-        version: 5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       fastify:
         specifier: 5.7.4
         version: 5.7.4
@@ -1158,10 +1131,6 @@ packages:
     resolution: {integrity: sha512-4IlJx0X0qftVsN5E+/vGujTRIFtwuLbNsVUe7TO6zYPDR1O6nFwvwhIKEKSrl6dZchmYBITazxKoUYOjdtjlRg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@eslint/js@9.39.2':
-    resolution: {integrity: sha512-q1mjIoW1VX4IvSocvM/vbTiveKC4k9eLrajNEuSsmjymSDEbpGddtpfOoN7YGAqBK3NG+uqo8ia4PDTt8buCYA==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
   '@eslint/js@9.39.4':
     resolution: {integrity: sha512-nE7DEIchvtiFTwBw4Lfbu59PG+kCofhjsKaCWzxTpt4lfRjRMqG6uMBzKXuEcyXhOHoUp9riAm7/aWYGhXZ9cw==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
@@ -1598,8 +1567,8 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
-  '@prefabs.tech/eslint-config@0.5.0':
-    resolution: {integrity: sha512-GFzcgTUqi25770aeQ7I89dk9y/ct5PEnUzburmISIewufejcTHcQtqU9EVGmuYECg8ZXRB6OyStULTeCKapAtA==}
+  '@prefabs.tech/eslint-config@0.7.0':
+    resolution: {integrity: sha512-kMLs+ksinlNKa5FfhTb2qNisnU/On+IGrRHbZ3aHq1INF8NsjVRB7Wm0Q9vdnBipco9YOady0qSx1goVnhhC3w==}
     peerDependencies:
       eslint: '>=9.0.0'
       prettier: '>=3.3.3'
@@ -1610,8 +1579,8 @@ packages:
     engines: {node: '>10.17.0'}
     hasBin: true
 
-  '@prefabs.tech/tsconfig@0.6.0':
-    resolution: {integrity: sha512-CuXKJujWd6S/Jqci04Nk7fVA0j66v9A8uGQTscTMrTRGHcfLNSmNkvvmqZG9jEvSahmXmrlJbmyTcwEwXrSBew==}
+  '@prefabs.tech/tsconfig@0.7.0':
+    resolution: {integrity: sha512-MiEvKeoNVPSy79tYQOkFeaBoVViW27JYfSiEbCBT+Fvuk1XEkXyBpSxlpdKQDV5bsAg0C5VNSjRh4qH3eDjA+w==}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -3199,8 +3168,8 @@ packages:
     peerDependencies:
       eslint: '>=8.23.0'
 
-  eslint-plugin-perfectionist@5.8.0:
-    resolution: {integrity: sha512-k8uIptWIxkUclonCFGyDzgYs9NI+Qh0a7cUXS3L7IYZDEsjXuimFBVbxXPQQngWqMiaxJRwbtYB4smMGMqF+cw==}
+  eslint-plugin-perfectionist@5.9.0:
+    resolution: {integrity: sha512-8TWzg02zmnBdZwCkWLi8jhzqXI+fE7Z/RwV8SL6xD45tJ8Bp3wGuYL2XtQgfe/Wd0eBqOUX+s6ey73IyszvKTA==}
     engines: {node: ^20.0.0 || >=22.0.0}
     peerDependencies:
       eslint: ^8.45.0 || ^9.0.0 || ^10.0.0
@@ -4337,9 +4306,6 @@ packages:
   minimatch@10.2.5:
     resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
     engines: {node: 18 || 20 || >=22}
-
-  minimatch@3.1.2:
-    resolution: {integrity: sha512-J7p63hRiAjw1NDEww1W7i37+ByIrOWO5XQQAzZ3VOcL0PNybwpfmV/N05zFAzwQ9USyEcX6t3UO+K5aqBQOIHw==}
 
   minimatch@3.1.5:
     resolution: {integrity: sha512-VgjWUsnnT6n+NUk6eZq77zeFdpW2LWDzP6zFGrCbHXiYNul5Dzqk2HHQ5uFH2DNW5Xbp8+jVzaeNt94ssEEl4w==}
@@ -6744,8 +6710,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@eslint/js@9.39.2': {}
-
   '@eslint/js@9.39.4': {}
 
   '@eslint/object-schema@2.1.7': {}
@@ -7267,9 +7231,9 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
-  '@prefabs.tech/eslint-config@0.5.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)':
+  '@prefabs.tech/eslint-config@0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)':
     dependencies:
-      '@eslint/js': 9.39.2
+      '@eslint/js': 9.39.4
       eslint: 9.39.4(jiti@2.6.1)
       eslint-config-prettier: 10.1.8(eslint@9.39.4(jiti@2.6.1))
       eslint-import-resolver-alias: 1.1.2(eslint-plugin-import@2.32.0)
@@ -7277,6 +7241,7 @@ snapshots:
       eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-n: 17.20.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      eslint-plugin-perfectionist: 5.9.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       eslint-plugin-prettier: 5.5.5(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)
       eslint-plugin-promise: 7.2.1(eslint@9.39.4(jiti@2.6.1))
       eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.6.1))
@@ -7303,7 +7268,7 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
 
-  '@prefabs.tech/tsconfig@0.6.0': {}
+  '@prefabs.tech/tsconfig@0.7.0': {}
 
   '@protobufjs/aspromise@1.1.2':
     optional: true
@@ -9078,7 +9043,7 @@ snapshots:
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
-      minimatch: 3.1.2
+      minimatch: 3.1.5
       object.fromentries: 2.0.8
       object.groupby: 1.0.3
       object.values: 1.2.1
@@ -9106,7 +9071,7 @@ snapshots:
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
       language-tags: 1.0.9
-      minimatch: 3.1.2
+      minimatch: 3.1.5
       object.fromentries: 2.0.8
       safe-regex-test: 1.1.0
       string.prototype.includes: 2.0.1
@@ -9128,7 +9093,7 @@ snapshots:
       - supports-color
       - typescript
 
-  eslint-plugin-perfectionist@5.8.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3):
+  eslint-plugin-perfectionist@5.9.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3):
     dependencies:
       '@typescript-eslint/utils': 8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.4(jiti@2.6.1)
@@ -9174,7 +9139,7 @@ snapshots:
       estraverse: 5.3.0
       hasown: 2.0.2
       jsx-ast-utils: 3.3.5
-      minimatch: 3.1.2
+      minimatch: 3.1.5
       object.entries: 1.1.9
       object.fromentries: 2.0.8
       object.values: 1.2.1
@@ -10491,10 +10456,6 @@ snapshots:
   minimatch@10.2.5:
     dependencies:
       brace-expansion: 5.0.5
-
-  minimatch@3.1.2:
-    dependencies:
-      brace-expansion: 1.1.12
 
   minimatch@3.1.5:
     dependencies:

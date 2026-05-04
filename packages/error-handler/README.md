@@ -27,9 +27,10 @@ All options from [@fastify/sensible](https://www.npmjs.com/package/@fastify/sens
 - **Safe message masking** — 5xx errors hide implementation details behind generic messages by default; `stackTrace: true` disables masking for development
 - **`preErrorHandler` hook** — run custom logic (e.g. SuperTokens, Passport) before the default handler; short-circuits if your handler sends the reply, swallows exceptions otherwise
 - **`CustomError` base class** — extend it to create domain errors with a custom `code` field; subclasses are handled safely
-- **`stackTrace` decorator** — `fastify.stackTrace` (boolean) reflects the active setting, accessible to other plugins and hooks
+- **`stackTrace` option** — controls whether parsed stack frames are included in error responses
 - **`ErrorResponse` JSON schema** — registered as `$id: "ErrorResponse"` for use in route response schemas via `$ref: "ErrorResponse#"`
 - **Severity-aware logging** — 4xx errors log at `info`, 5xx at `error`; non-Error thrown values are normalized and logged safely
+- **`domainErrorStatusMap`** — optional app-provided `Map<string, number>` from `error.name` to an HTTP status integer **`400`–`599`** (invalid entries fail at registration); the plugin stores a validated copy. Mapped errors return that status with message/name (and `CustomError` `code`) in the body—only **unmapped** non-`HttpError` errors use generic masking when `stackTrace` is false
 
 → [Full feature list](FEATURES.md) · [Developer guide](GUIDE.md)
 
@@ -95,6 +96,31 @@ fastify.get("/example", async () => {
 });
 
 await fastify.listen({ port: 3000, host: "0.0.0.0" });
+```
+
+### Domain status codes
+
+Use **`domainErrorStatusMap`** when domain errors should return non-500 statuses — pass a **`Map`** whose keys match thrown **`error.name`**; each value must be an integer **`400`–`599`**. Mapped responses include the thrown message and name (and `CustomError` codes); generic masking applies only to **unmapped** internal errors when **`stackTrace`** is off.
+
+```typescript
+await fastify.register(errorHandlerPlugin, {
+  domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
+});
+```
+
+### Standalone `errorHandler` usage
+
+If you use the exported `errorHandler` directly (without registering the plugin), pass options as the 4th argument:
+
+```typescript
+import { errorHandler } from "@prefabs.tech/fastify-error-handler";
+
+fastify.setErrorHandler((error, request, reply) => {
+  return errorHandler(error, request, reply, {
+    stackTrace: true,
+    domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
+  });
+});
 ```
 
 ## Installation

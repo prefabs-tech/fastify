@@ -35,9 +35,9 @@ const schema = (
       (value): boolean => {
         return validator.isStrongPassword(
           value,
-          _options as {
+          _options as StrongPasswordOptions & {
             returnScore: false | undefined;
-          } & StrongPasswordOptions,
+          },
         );
       },
       {

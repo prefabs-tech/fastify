@@ -15,13 +15,13 @@ type Database = {
 };
 
 type FilterInput =
+  | BaseFilterInput
   | {
       AND: FilterInput[];
     }
   | {
       OR: FilterInput[];
-    }
-  | BaseFilterInput;
+    };
 
 type operator =
   | "bt"

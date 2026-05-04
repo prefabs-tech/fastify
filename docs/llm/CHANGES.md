@@ -2,7 +2,7 @@
 
 Concise notes for **breaking or behavior-visible** changes that agents and integrators should know. Routine patch releases with no API surface change need no entry.
 
-When you change public exports, default plugin options, env/config keys, or HTTP/GraphQL routes in a package, add a dated one-line (or short list) entry under that package, run `pnpm docs:generate` so `llms.txt`, REFERENCE package sections, and README API tables stay in sync, then bump **Last verified** in [REFERENCE.md](./REFERENCE.md) via `pnpm docs:update-verified` when the layout is correct.
+When you change public exports, default plugin options, env/config keys, or HTTP/GraphQL routes in a package, add a dated one-line (or short list) entry under that package, update the `<!-- docgen:readme:start -->` table in that package’s README and the package section in [REFERENCE.md](./REFERENCE.md) if needed, then bump **Last verified** in [REFERENCE.md](./REFERENCE.md) to the commit where the docs match reality.
 
 ## config
 

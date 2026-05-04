@@ -22,8 +22,7 @@
   "files": [
     "dist",
     "docs/llm",
-    "AGENTS.md",
-    "llms.txt"
+    "AGENTS.md"
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",

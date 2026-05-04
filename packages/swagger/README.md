@@ -14,7 +14,7 @@ Package orientation: [docs/llm/INDEX.md](docs/llm/INDEX.md) · Workspace referen
 | --- | --- | --- |
 | `SwaggerOptions` | type | — |
 
-Regenerate with `pnpm docs:generate`.
+Keep this table in sync when you change public exports in `src/index.ts` (same PR).
 
 <!-- docgen:readme:end -->
 

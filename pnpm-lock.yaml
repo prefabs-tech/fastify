@@ -128,8 +128,8 @@ importers:
   packages/firebase:
     dependencies:
       firebase-admin:
-        specifier: 13.7.0
-        version: 13.7.0
+        specifier: 13.8.0
+        version: 13.8.0
       zod:
         specifier: 3.25.76
         version: 3.25.76
@@ -168,11 +168,11 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       graphql:
-        specifier: 16.12.0
-        version: 16.12.0
+        specifier: 16.13.2
+        version: 16.13.2
       mercurius:
-        specifier: 16.7.0
-        version: 16.7.0(graphql@16.12.0)
+        specifier: 16.9.0
+        version: 16.9.0(graphql@16.13.2)
       pg-mem:
         specifier: 3.0.14
         version: 3.0.14(slonik@46.8.0(zod@3.25.76))
@@ -199,10 +199,10 @@ importers:
     dependencies:
       '@graphql-tools/merge':
         specifier: 9.1.8
-        version: 9.1.8(graphql@16.12.0)
+        version: 9.1.8(graphql@16.13.2)
       graphql-tag:
         specifier: 2.12.6
-        version: 2.12.6(graphql@16.12.0)
+        version: 2.12.6(graphql@16.13.2)
     devDependencies:
       '@prefabs.tech/eslint-config':
         specifier: 0.7.0
@@ -232,11 +232,11 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       graphql:
-        specifier: 16.12.0
-        version: 16.12.0
+        specifier: 16.13.2
+        version: 16.13.2
       mercurius:
-        specifier: 16.7.0
-        version: 16.7.0(graphql@16.12.0)
+        specifier: 16.9.0
+        version: 16.9.0(graphql@16.13.2)
       prettier:
         specifier: 3.8.3
         version: 3.8.3
@@ -351,7 +351,7 @@ importers:
         version: 1.6.0
       graphql-upload-minimal:
         specifier: 1.6.4
-        version: 1.6.4(graphql@16.12.0)
+        version: 1.6.4(graphql@16.13.2)
       uuid:
         specifier: 9.0.1
         version: 9.0.1
@@ -390,8 +390,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       graphql:
-        specifier: 16.12.0
-        version: 16.12.0
+        specifier: 16.13.2
+        version: 16.13.2
       prettier:
         specifier: 3.8.3
         version: 3.8.3
@@ -579,11 +579,11 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       graphql:
-        specifier: 16.12.0
-        version: 16.12.0
+        specifier: 16.13.2
+        version: 16.13.2
       mercurius:
-        specifier: 16.7.0
-        version: 16.7.0(graphql@16.12.0)
+        specifier: 16.9.0
+        version: 16.9.0(graphql@16.13.2)
       mercurius-auth:
         specifier: 6.0.0
         version: 6.0.0
@@ -3407,8 +3407,8 @@ packages:
     resolution: {integrity: sha512-78/PXT1wlLLDgTzDs7sjq9hzz0vXD+zn+7wypEe4fXQxCmdmqfGsEPQxmiCSQI3ajFV91bVSsvNtrJRiW6nGng==}
     engines: {node: '>=10'}
 
-  firebase-admin@13.7.0:
-    resolution: {integrity: sha512-o3qS8zCJbApe7aKzkO2Pa380t9cHISqeSd3blqYTtOuUUUua3qZTLwNWgGUOss3td6wbzrZhiHIj3c8+fC046Q==}
+  firebase-admin@13.8.0:
+    resolution: {integrity: sha512-iawoQkmZbsA+2DY5UEuB8f6jSlskzzySoye0D2F6e3zlDZX9DUcXf0HhZqLUn/P6WhLGvTf6ZtCmshZvhAgTYg==}
     engines: {node: '>=18'}
 
   flat-cache@4.0.1:
@@ -3631,8 +3631,8 @@ packages:
     peerDependencies:
       graphql: 0.13.1 - 16
 
-  graphql@16.12.0:
-    resolution: {integrity: sha512-DKKrynuQRne0PNpEbzuEdHlYOMksHSUI8Zc9Unei5gTsMNA2/vMpoMz/yKba50pejK56qj98qM0SjYxAKi13gQ==}
+  graphql@16.13.2:
+    resolution: {integrity: sha512-5bJ+nf/UCpAjHM8i06fl7eLyVC9iuNAjm9qzkiu2ZGhM0VscSvS6WDPfAwkdkBuoXGM9FJSbKl6wylMwP9Ktig==}
     engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
 
   gtoken@7.1.0:
@@ -4258,8 +4258,8 @@ packages:
   mercurius-auth@6.0.0:
     resolution: {integrity: sha512-pwxoF2xrYaItu9GFpNMFzNULmC7JCC3XCRzYtUOG8TgmrCtQ5N0SSKnA92FGkt/Q/5/3FfFJIiF4GSW6iRbolQ==}
 
-  mercurius@16.7.0:
-    resolution: {integrity: sha512-xCu0qfOIvCm52jKKXFzl9VfPp+9DQrP/5cS0qt8OAA1xZomjTniK4ZlodOP1Q6dsgdfp1RtLx/KQcP7283febw==}
+  mercurius@16.9.0:
+    resolution: {integrity: sha512-3td+e+SZyA7Gp/Tb51ncYdOGD5OsXh6zK4FjUJx+2pSHbJJEWE11EjKAAqhf3Xrp2JjMlg6dBrmRWsdM9E5G1Q==}
     engines: {node: ^20.9.0 || >=22.0.0}
     peerDependencies:
       graphql: ^16.0.0
@@ -6891,23 +6891,23 @@ snapshots:
       - supports-color
     optional: true
 
-  '@graphql-tools/merge@9.1.8(graphql@16.12.0)':
+  '@graphql-tools/merge@9.1.8(graphql@16.13.2)':
     dependencies:
-      '@graphql-tools/utils': 11.1.0(graphql@16.12.0)
-      graphql: 16.12.0
+      '@graphql-tools/utils': 11.1.0(graphql@16.13.2)
+      graphql: 16.13.2
       tslib: 2.8.1
 
-  '@graphql-tools/utils@11.1.0(graphql@16.12.0)':
+  '@graphql-tools/utils@11.1.0(graphql@16.13.2)':
     dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.12.0)
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.13.2)
       '@whatwg-node/promise-helpers': 1.3.2
       cross-inspect: 1.0.1
-      graphql: 16.12.0
+      graphql: 16.13.2
       tslib: 2.8.1
 
-  '@graphql-typed-document-node/core@3.2.0(graphql@16.12.0)':
+  '@graphql-typed-document-node/core@3.2.0(graphql@16.13.2)':
     dependencies:
-      graphql: 16.12.0
+      graphql: 16.13.2
 
   '@grpc/grpc-js@1.14.3':
     dependencies:
@@ -9366,7 +9366,7 @@ snapshots:
       locate-path: 6.0.0
       path-exists: 4.0.0
 
-  firebase-admin@13.7.0:
+  firebase-admin@13.8.0:
     dependencies:
       '@fastify/busboy': 3.2.0
       '@firebase/database-compat': 2.1.3
@@ -9662,27 +9662,27 @@ snapshots:
 
   graceful-fs@4.2.11: {}
 
-  graphql-jit@0.8.7(graphql@16.12.0):
+  graphql-jit@0.8.7(graphql@16.13.2):
     dependencies:
-      '@graphql-typed-document-node/core': 3.2.0(graphql@16.12.0)
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.13.2)
       fast-json-stringify: 5.16.1
       generate-function: 2.3.1
-      graphql: 16.12.0
+      graphql: 16.13.2
       lodash.memoize: 4.1.2
       lodash.merge: 4.6.2
       lodash.mergewith: 4.6.2
 
-  graphql-tag@2.12.6(graphql@16.12.0):
+  graphql-tag@2.12.6(graphql@16.13.2):
     dependencies:
-      graphql: 16.12.0
+      graphql: 16.13.2
       tslib: 2.8.1
 
-  graphql-upload-minimal@1.6.4(graphql@16.12.0):
+  graphql-upload-minimal@1.6.4(graphql@16.13.2):
     dependencies:
       busboy: 1.6.0
-      graphql: 16.12.0
+      graphql: 16.13.2
 
-  graphql@16.12.0: {}
+  graphql@16.13.2: {}
 
   gtoken@7.1.0:
     dependencies:
@@ -10359,16 +10359,16 @@ snapshots:
     dependencies:
       '@fastify/error': 4.2.0
       fastify-plugin: 5.1.0
-      graphql: 16.12.0
+      graphql: 16.13.2
 
-  mercurius@16.7.0(graphql@16.12.0):
+  mercurius@16.9.0(graphql@16.13.2):
     dependencies:
       '@fastify/error': 4.2.0
       '@fastify/static': 9.1.3
       '@fastify/websocket': 11.2.0
       fastify-plugin: 5.1.0
-      graphql: 16.12.0
-      graphql-jit: 0.8.7(graphql@16.12.0)
+      graphql: 16.13.2
+      graphql-jit: 0.8.7(graphql@16.13.2)
       mqemitter: 7.1.0
       p-map: 4.0.0
       quick-lru: 7.3.0

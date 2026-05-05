@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@fastify/sensible": "6.0.4",
-    "stacktracey": "2.1.8"
+    "stacktracey": "2.2.0"
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.7.0",

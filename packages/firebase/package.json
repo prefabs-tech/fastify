@@ -31,7 +31,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "firebase-admin": "13.7.0",
+    "firebase-admin": "13.8.0",
     "zod": "3.25.76"
   },
   "devDependencies": {
@@ -46,8 +46,8 @@
     "eslint": "9.39.4",
     "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
-    "graphql": "16.12.0",
-    "mercurius": "16.7.0",
+    "graphql": "16.13.2",
+    "mercurius": "16.9.0",
     "pg-mem": "3.0.14",
     "prettier": "3.8.3",
     "slonik": "46.8.0",

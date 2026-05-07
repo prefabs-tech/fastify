@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-mailer",
-  "version": "0.93.5",
+  "version": "0.94.0",
   "description": "Fastify mailer plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/mailer#readme",
   "repository": {
@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.7.0",
-    "@prefabs.tech/fastify-config": "0.93.5",
+    "@prefabs.tech/fastify-config": "0.94.0",
     "@prefabs.tech/tsconfig": "0.7.0",
     "@types/mjml": "4.7.4",
     "@types/node": "24.10.15",
@@ -56,7 +56,7 @@
     "vitest": "3.2.4"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.93.5",
+    "@prefabs.tech/fastify-config": "0.94.0",
     "fastify": ">=5.2.2",
     "fastify-plugin": ">=5.0.1",
     "mjml": ">=4.15.3"

@@ -28,6 +28,7 @@ Thrown domain errors must set **`error.name`** to one of the map keys (for examp
 ### Tooling
 
 - **shipjs:** installed pnpm before using it on CI.
+- **shipjs:** fixed config
 
 ## [0.93.5](https://github.com/prefabs-tech/fastify/compare/v0.93.4...v0.93.5) (2026-02-11)
 

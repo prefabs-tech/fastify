@@ -33,6 +33,7 @@ const fastify = Fastify();
 await fastify.register(errorHandlerPlugin, {
   stackTrace: false, // optional, default: false
   preErrorHandler: undefined, // optional
+  domainErrorStatusMap: undefined, // optional: Map<error.name, HTTP status> (e.g. new Map([["UnprocessableEntityError", 422]]))
 });
 ```
 
@@ -86,9 +87,27 @@ fastify.get("/forbidden", async () => {
 });
 ```
 
-### Non-HttpError handling — error masking
+### Domain error status map (`domainErrorStatusMap`)
 
-All non-`HttpError` errors (plain `Error`, `CustomError`, and any subclass) always respond with status `500`. When `stackTrace: false` (the default), internal details are masked:
+After `HttpError` handling, non-`HttpError` errors whose **`name`** appears as a key in the app-provided **`domainErrorStatusMap`** (`Map<string, number>`) respond with the configured `statusCode` and `error` (HTTP status text), and include the thrown **`message`** and **`name`** (and **`code`** when the error is a **`CustomError`**) regardless of **`stackTrace`**; **`stackTrace: true`** only adds the parsed **`stack`** field when present. Map values must be **integers from `400` to `599`** or plugin registration throws. Logging follows the same rules as `HttpError` (5xx → `error`, 4xx → `info`, below 400 → `error`).
+
+**Standalone `errorHandler`:** if you reuse the exported handler without the plugin, pass **`stackTrace`** and optional **`domainErrorStatusMap`** via the handler's 4th argument (`ErrorHandlerOptions`).
+
+```typescript
+await fastify.register(errorHandlerPlugin, {
+  domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
+});
+
+fastify.get("/validate", async () => {
+  const err = new Error("Invalid payload");
+  err.name = "UnprocessableEntityError";
+  throw err;
+});
+```
+
+### Non-HttpError handling — error masking (unmapped)
+
+Non-`HttpError` errors that are **not** listed in **`domainErrorStatusMap`** (plain `Error`, `CustomError`, and any subclass) respond with status `500`. When `stackTrace: false` (the default), internal details are masked:
 
 - `message` → `"Server error, please contact support"`
 - `name` → `"Error"`
@@ -106,22 +125,14 @@ The log level depends on the error's status code:
 - `4xx` → logged at `info` level
 - below `400` → logged at `error` level
 
-Non-HttpErrors are always logged at `error` level regardless of `stackTrace` setting.
+Non-HttpErrors are logged at `error` level unless handled via **`domainErrorStatusMap`** (then logging follows status ranges like `HttpError`).
 
-### `stackTrace` option and decorator
+### `stackTrace` option
 
 Controls whether parsed stack frames appear in error responses. Defaults to `false`.
 
 ```typescript
 await fastify.register(errorHandlerPlugin, { stackTrace: true });
-```
-
-The current value is accessible at runtime via `fastify.stackTrace`:
-
-```typescript
-fastify.get("/debug", async () => {
-  return { stackTraceEnabled: fastify.stackTrace };
-});
 ```
 
 When enabled, error responses include a `stack` array of `StackTracey.Entry` objects (file, line, column, callee). The field is omitted if the error has no `.stack` property.
@@ -186,7 +197,10 @@ import { errorHandler } from "@prefabs.tech/fastify-error-handler";
 
 fastify.setErrorHandler((error, request, reply) => {
   // custom pre-processing...
-  return errorHandler(error, request, reply);
+  return errorHandler(error, request, reply, {
+    stackTrace: true,
+    domainErrorStatusMap: new Map([["UnprocessableEntityError", 422]]),
+  });
 });
 ```
 

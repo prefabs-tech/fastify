@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-config",
-  "version": "0.93.5",
+  "version": "0.94.0",
   "description": "Fastify config plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/config#readme",
   "repository": {
@@ -31,13 +31,12 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.5.0",
-    "@prefabs.tech/tsconfig": "0.6.0",
+    "@prefabs.tech/eslint-config": "0.7.0",
+    "@prefabs.tech/tsconfig": "0.7.0",
     "@types/node": "24.10.15",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.4",
-    "eslint-plugin-perfectionist": "5.8.0",
-    "fastify": "5.7.4",
+    "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
     "pino": "8.21.0",
     "prettier": "3.8.3",

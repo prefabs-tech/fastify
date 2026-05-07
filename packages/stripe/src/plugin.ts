@@ -1,7 +1,8 @@
-import { FastifyInstance } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 
 import webhookController from "./webhook/controller";
+
+import type { FastifyInstance } from "fastify";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;
@@ -21,4 +22,8 @@ const plugin = async (fastify: FastifyInstance) => {
   }
 };
 
-export default fastifyPlugin(plugin);
+const stripePlugin: ReturnType<typeof fastifyPlugin> = fastifyPlugin(
+  plugin as unknown as Parameters<typeof fastifyPlugin>[0],
+);
+
+export default stripePlugin;

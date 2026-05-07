@@ -22,9 +22,9 @@ describe("errorHandlerPlugin — error logging", () => {
       throw fastify.httpErrors.internalServerError("server error");
     });
     fastify.get("/3xx", async () => {
-      const error = new Error("redirect error") as {
+      const error = new Error("redirect error") as Error & {
         statusCode: number;
-      } & Error;
+      };
       error.statusCode = 302;
       Object.setPrototypeOf(
         error,

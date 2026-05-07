@@ -16,10 +16,7 @@ interface Invitation {
   updatedAt: number;
 }
 
-type InvitationCreateInput = {
-  expiresAt?: string;
-  payload?: string;
-} & Omit<
+type InvitationCreateInput = Omit<
   Invitation,
   | "acceptedAt"
   | "createdAt"
@@ -30,14 +27,13 @@ type InvitationCreateInput = {
   | "revokedAt"
   | "token"
   | "updatedAt"
->;
+> & {
+  expiresAt?: string;
+  payload?: string;
+};
 
 type InvitationUpdateInput = Partial<
-  {
-    acceptedAt: string;
-    expiresAt: string;
-    revokedAt: string;
-  } & Omit<
+  Omit<
     Invitation,
     | "acceptedAt"
     | "appId"
@@ -52,7 +48,11 @@ type InvitationUpdateInput = Partial<
     | "role"
     | "token"
     | "updatedAt"
-  >
+  > & {
+    acceptedAt: string;
+    expiresAt: string;
+    revokedAt: string;
+  }
 >;
 
 export type { Invitation, InvitationCreateInput, InvitationUpdateInput };

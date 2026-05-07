@@ -1,19 +1,5 @@
 # [0.94.0](https://github.com/prefabs-tech/fastify/compare/v0.93.5...v0.94.0) (2026-05-07)
 
-
-### Bug Fixes
-
-* **firebase:** upgrade firebase-admin to 13.7.0 to address CVE-2026-25896 ([021c207](https://github.com/prefabs-tech/fastify/commit/021c20714ea5e746cb11bf8398507671cf2cbf5b))
-
-
-### Features
-
-* **error-handler:** add domainErrorStatusMap for HTTP status by error name ([#1097](https://github.com/prefabs-tech/fastify/issues/1097)) ([7acc7b0](https://github.com/prefabs-tech/fastify/commit/7acc7b07024a33b85ab94960833b1a194c94ff84))
-
-
-
-# [0.94.0](https://github.com/prefabs-tech/fastify/compare/v0.93.5...v0.94.0) (2026-05-07)
-
 ### Features
 
 - **error-handler:** add optional `domainErrorStatusMap` (`Map<string, number>`) so non-`HttpError` errors can map `error.name` to HTTP status codes `400`–`599`; standalone `errorHandler` accepts the same options via its 4th argument ([#1097](https://github.com/prefabs-tech/fastify/issues/1097)) ([7acc7b0](https://github.com/prefabs-tech/fastify/commit/7acc7b07024a33b85ab94960833b1a194c94ff84))

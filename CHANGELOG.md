@@ -1,3 +1,30 @@
+# [0.94.0](https://github.com/prefabs-tech/fastify/compare/v0.93.5...v0.94.0) (2026-05-07)
+
+### Features
+
+- **error-handler:** add optional `domainErrorStatusMap` (`Map<string, number>`) so non-`HttpError` errors can map `error.name` to HTTP status codes `400`–`599`; standalone `errorHandler` accepts the same options via its 4th argument ([#1097](https://github.com/prefabs-tech/fastify/issues/1097)) ([7acc7b0](https://github.com/prefabs-tech/fastify/commit/7acc7b07024a33b85ab94960833b1a194c94ff84))
+
+Example:
+
+```typescript
+const config: ApiConfig = {
+  errorHandler: {
+    domainErrorStatusMap: new Map<string, number>([
+      [Exception.UNPROCESSABLE_ENTITY_ERROR, 422],
+      [ThingException.THING_NOT_FOUND, 404],
+    ]),
+  },
+};
+
+await fastify.register(errorHandlerPlugin, config.errorHandler);
+```
+
+Thrown domain errors must set **`error.name`** to one of the map keys (for example `Exception.UNPROCESSABLE_ENTITY_ERROR` or `ThingException.THING_NOT_FOUND`).
+
+### Bug Fixes
+
+- **firebase:** upgrade `firebase-admin` to 13.7.0 to address CVE-2026-25896 (XSS via transitive `fast-xml-parser`) ([021c207](https://github.com/prefabs-tech/fastify/commit/021c20714ea5e746cb11bf8398507671cf2cbf5b))
+
 ## [0.93.5](https://github.com/prefabs-tech/fastify/compare/v0.93.4...v0.93.5) (2026-02-11)
 
 ## [0.93.4](https://github.com/prefabs-tech/fastify/compare/v0.93.3...v0.93.4) (2026-01-15)

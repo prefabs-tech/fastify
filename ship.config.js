@@ -66,5 +66,5 @@ module.exports = {
     packagesToBump: expandPackageList(["packages/*"]),
     packagesToPublish: expandPackageList(["packages/*"]),
   },
-  publishCommand: "pnpm publish --access public",
+  publishCommand: () => "pnpm publish --access public",
 };

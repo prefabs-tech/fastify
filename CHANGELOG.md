@@ -25,6 +25,11 @@ Thrown domain errors must set **`error.name`** to one of the map keys (for examp
 
 - **firebase:** upgrade `firebase-admin` to 13.7.0 to address CVE-2026-25896 (XSS via transitive `fast-xml-parser`) ([021c207](https://github.com/prefabs-tech/fastify/commit/021c20714ea5e746cb11bf8398507671cf2cbf5b))
 
+### Tooling
+
+- **shipjs:** installed pnpm before using it on CI.
+- **shipjs:** fixed config
+
 ## [0.93.5](https://github.com/prefabs-tech/fastify/compare/v0.93.4...v0.93.5) (2026-02-11)
 
 ## [0.93.4](https://github.com/prefabs-tech/fastify/compare/v0.93.3...v0.93.4) (2026-01-15)

@@ -38,9 +38,9 @@
     "nodemailer-mjml": "1.6.0"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.7.0",
+    "@prefabs.tech/eslint-config": "0.8.0",
     "@prefabs.tech/fastify-config": "0.94.0",
-    "@prefabs.tech/tsconfig": "0.7.0",
+    "@prefabs.tech/tsconfig": "0.8.0",
     "@types/mjml": "4.7.4",
     "@types/node": "24.10.15",
     "@types/nodemailer": "6.4.23",

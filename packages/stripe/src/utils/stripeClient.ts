@@ -1,14 +1,22 @@
 import { ApiConfig } from "@prefabs.tech/fastify-config";
 import Stripe from "stripe";
 
-import { CreateSessionInput } from "../types";
+import { CreateSessionInput, StripeConfig } from "../types";
 
 class StripeClient {
   public stripe: Stripe;
   protected _config: ApiConfig;
+  protected _stripeConfig: StripeConfig;
 
   constructor(config: ApiConfig) {
+    if (!config.stripe) {
+      throw new Error(
+        "StripeClient requires config.stripe to be set on the provided ApiConfig.",
+      );
+    }
+
     this._config = config;
+    this._stripeConfig = config.stripe;
     this.stripe = new Stripe(config.stripe.apiKey, config.stripe.clientConfig);
   }
 
@@ -19,12 +27,12 @@ class StripeClient {
     const mode = input.mode ?? "payment";
 
     const parameters: Stripe.Checkout.SessionCreateParams = {
-      allow_promotion_codes: this._config.stripe.allowPromotionCodes,
-      cancel_url: input.cancelUrl ?? this._config.stripe.urls.cancel,
+      allow_promotion_codes: this._stripeConfig.allowPromotionCodes,
+      cancel_url: input.cancelUrl ?? this._stripeConfig.urls.cancel,
       line_items: [
         {
           price_data: {
-            currency: input.currency ?? this._config.stripe.defaultCurrency,
+            currency: input.currency ?? this._stripeConfig.defaultCurrency,
             product_data: {
               name: input.productName,
             },
@@ -33,25 +41,29 @@ class StripeClient {
           quantity: input.quantity ?? 1,
         },
       ],
-      metadata: metadata,
       mode,
-      success_url: input.successUrl ?? this._config.stripe.urls.success,
+      success_url: input.successUrl ?? this._stripeConfig.urls.success,
     };
 
+    // Only populate metadata fields when metadata was actually supplied.
     // Stripe rejects mode-specific `*_data` blocks for the wrong mode, so
     // route metadata to the field that matches the selected mode.
-    switch (mode) {
-      case "payment": {
-        parameters.payment_intent_data = { metadata: metadata };
-        break;
-      }
-      case "setup": {
-        parameters.setup_intent_data = { metadata: metadata };
-        break;
-      }
-      case "subscription": {
-        parameters.subscription_data = { metadata: metadata };
-        break;
+    if (metadata) {
+      parameters.metadata = metadata;
+
+      switch (mode) {
+        case "payment": {
+          parameters.payment_intent_data = { metadata };
+          break;
+        }
+        case "setup": {
+          parameters.setup_intent_data = { metadata };
+          break;
+        }
+        case "subscription": {
+          parameters.subscription_data = { metadata };
+          break;
+        }
       }
     }
 

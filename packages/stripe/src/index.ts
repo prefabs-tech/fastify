@@ -4,7 +4,7 @@ import { StripeConfig } from "./types";
 
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
-    stripe: StripeConfig;
+    stripe?: StripeConfig;
   }
 }
 

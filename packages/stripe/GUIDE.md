@@ -152,7 +152,9 @@ console.log(ROUTE_STRIPE_WEBHOOK); // "/payment/webhook"
 
 ### Custom webhook handler (`handlers.webhook`)
 
-Provide a function on `config.stripe.handlers.webhook` to receive the verified event. It is called with the Fastify `request` and a `Stripe.Event`. If you omit it, calling the webhook will return a 500 because the default handler throws `"Webhook handler not implemented"`.
+Provide a function on `config.stripe.handlers.webhook` to receive the verified event. It is called with the Fastify `request` and a `Stripe.Event`.
+
+If you omit it but still set `enablePaymentWebhook: true`, the plugin logs a warning at registration time and the route falls back to a default handler that **acknowledges the event with HTTP 200 and logs an error** containing the event id and type. This is intentional: returning a non-2xx status would cause Stripe to retry the delivery with exponential backoff, so the package optimizes for "your logs scream that you forgot to wire a handler" rather than "Stripe retries indefinitely".
 
 ```typescript
 import type { StripeEvent } from "@prefabs.tech/fastify-stripe";
@@ -255,6 +257,13 @@ function logEvent(event: StripeEvent) {
 - `createCheckoutSession(input, metadata?)` — one-product Checkout session helper.
 - `getActivePromotionCode(code)` — promo code lookup (active-only, first match).
 
+The constructor throws if `config.stripe` is unset:
+
+```typescript
+new StripeClient({} as ApiConfig);
+// Error: StripeClient requires config.stripe to be set on the provided ApiConfig.
+```
+
 ```typescript
 import { StripeClient } from "@prefabs.tech/fastify-stripe";
 
@@ -285,7 +294,7 @@ console.log(session.url);
 
 `config.stripe.allowPromotionCodes` is forwarded as `allow_promotion_codes` (passing `undefined` is fine — Stripe ignores it).
 
-The optional `metadata` argument is always written to `session.metadata`, and additionally to the mode-specific data block so it surfaces on the downstream object too:
+When the optional `metadata` argument is provided, it is written to `session.metadata` *and* to the mode-specific data block so it surfaces on the downstream object too:
 
 | Mode             | Mode-specific placement              |
 | ---------------- | ------------------------------------ |
@@ -293,7 +302,7 @@ The optional `metadata` argument is always written to `session.metadata`, and ad
 | `"subscription"` | `subscription_data.metadata`         |
 | `"setup"`        | `setup_intent_data.metadata`         |
 
-Only the placement matching the selected mode is set — Stripe rejects mode-specific `*_data` blocks that don't match the session mode, so the helper picks the right one for you:
+Only the placement matching the selected mode is set — Stripe rejects mode-specific `*_data` blocks that don't match the session mode, so the helper picks the right one for you. When `metadata` is omitted, the helper leaves `metadata` and every `*_data` block off the payload entirely.
 
 ```typescript
 await client.createCheckoutSession(
@@ -340,8 +349,8 @@ if (promo) {
 
 Importing this package's default export brings two ambient TypeScript augmentations into scope:
 
-- `ApiConfig` (from `@prefabs.tech/fastify-config`) gains a `stripe: StripeConfig` field.
-- `FastifyRequest` gains an optional `rawBody?: Buffer | string`.
+- `ApiConfig` (from `@prefabs.tech/fastify-config`) gains an optional `stripe?: StripeConfig` field. Optional so other consumers of `ApiConfig` aren't forced to declare a Stripe block; the plugin checks for and warns when it is missing.
+- `FastifyRequest` gains optional `rawBody?: Buffer` and `stripeEvent?: Stripe.Event` fields.
 
 You do not need to redeclare either — just import the plugin once in your entry file.
 

@@ -40,7 +40,7 @@
 - If `config.stripe` is missing: Logs a warning and returns without registering anything.
 - If `config.stripe.enablePaymentWebhook` is truthy: Registers the webhook controller route and raw body parser.
 - If `config.stripe.webhookPath` is defined: Uses it instead of the default `ROUTE_STRIPE_WEBHOOK`.
-- If `config.stripe.handlers?.webhook` is defined: Delegates the Stripe event to this custom handler. Otherwise, falls through to a default handler that throws `"Webhook handler not implemented"`.
+- If `config.stripe.handlers?.webhook` is defined: Delegates the Stripe event to this custom handler. Otherwise, falls through to a default handler that logs an error containing the event id and type and resolves (responds 200) so Stripe stops retrying. The plugin also warns at registration time when a webhook handler is not configured.
 - In `verifyStripeSignature`: Early returns HTTP 400 if `webhookSecret` is missing, `stripe-signature` header is missing, `request.rawBody` is missing, or `Stripe.webhooks.constructEvent` throws an error.
 
 ### Default Values

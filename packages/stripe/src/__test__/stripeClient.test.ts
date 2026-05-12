@@ -57,6 +57,15 @@ describe("StripeClient — constructor", async () => {
     expect(client.stripe).toBeDefined();
     expect(client.stripe.checkout.sessions.create).toBe(sessionsCreateMock);
   });
+
+  it("throws when constructed with an ApiConfig that has no `stripe` block", () => {
+    expect(
+      () =>
+        new StripeClient({} as unknown as Parameters<typeof StripeClient>[0]),
+    ).toThrow(
+      "StripeClient requires config.stripe to be set on the provided ApiConfig.",
+    );
+  });
 });
 
 describe("StripeClient — createCheckoutSession synthesis", async () => {
@@ -233,7 +242,7 @@ describe("StripeClient — createCheckoutSession synthesis", async () => {
     expect(arguments_.setup_intent_data).toBeUndefined();
   });
 
-  it("metadata is undefined on both session and payment_intent_data placements when not provided", async () => {
+  it("omits session.metadata and the mode-specific *_data block entirely when metadata is not provided", async () => {
     const client = buildClient();
     await client.createCheckoutSession({
       productName: "Hat",
@@ -242,7 +251,9 @@ describe("StripeClient — createCheckoutSession synthesis", async () => {
 
     const arguments_ = sessionsCreateMock.mock.calls[0][0];
     expect(arguments_.metadata).toBeUndefined();
-    expect(arguments_.payment_intent_data.metadata).toBeUndefined();
+    expect(arguments_.payment_intent_data).toBeUndefined();
+    expect(arguments_.subscription_data).toBeUndefined();
+    expect(arguments_.setup_intent_data).toBeUndefined();
   });
 
   it("routes metadata to subscription_data and omits payment_intent_data for subscription mode", async () => {

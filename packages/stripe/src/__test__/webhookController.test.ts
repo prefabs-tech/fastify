@@ -129,7 +129,7 @@ describe("webhookController — dispatch", async () => {
     expect(webhookHandlerMock.mock.calls[0][1]).toEqual(SAMPLE_EVENT);
   });
 
-  it("returns 500 with 'Webhook handler not implemented' when no custom handler is configured", async () => {
+  it("responds 200 with the default fallback handler when no custom handler is configured (to suppress Stripe retries)", async () => {
     fastify = Fastify({ logger: false });
     fastify.decorate("config", {
       stripe: createStripeConfig({ enablePaymentWebhook: true }),
@@ -140,8 +140,41 @@ describe("webhookController — dispatch", async () => {
 
     const res = await injectWebhook(fastify, "/payment/webhook");
 
-    expect(res.statusCode).toBe(500);
-    expect(res.json().message).toBe("Webhook handler not implemented");
+    expect(res.statusCode).toBe(200);
+  });
+
+  it("warns at registration time when enablePaymentWebhook is true but handlers.webhook is unset", async () => {
+    fastify = Fastify({ logger: { level: "silent" } });
+    fastify.decorate("config", {
+      stripe: createStripeConfig({ enablePaymentWebhook: true }),
+    });
+    const warnSpy = vi.spyOn(fastify.log, "warn");
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("config.stripe.handlers.webhook is not set"),
+    );
+  });
+
+  it("does NOT warn at registration time when handlers.webhook is configured", async () => {
+    const webhookHandlerMock = vi.fn().mockResolvedValue();
+    fastify = Fastify({ logger: { level: "silent" } });
+    fastify.decorate("config", {
+      stripe: createStripeConfig({
+        enablePaymentWebhook: true,
+        handlers: { webhook: webhookHandlerMock },
+      }),
+    });
+    const warnSpy = vi.spyOn(fastify.log, "warn");
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(warnSpy).not.toHaveBeenCalledWith(
+      expect.stringContaining("config.stripe.handlers.webhook is not set"),
+    );
   });
 
   it("does not call the default handler when handlers.webhook is configured", async () => {
@@ -164,8 +197,9 @@ describe("webhookController — dispatch", async () => {
   });
 });
 
-describe("webhookController — defensive guard", async () => {
+describe("webhookController — defensive guards", async () => {
   const { default: plugin } = await import("../plugin");
+  const { default: webhookController } = await import("../webhook/controller");
 
   let fastify: FastifyInstance;
 
@@ -177,7 +211,25 @@ describe("webhookController — defensive guard", async () => {
     await fastify.close();
   });
 
-  it("returns 500 with 'Stripe event not found on request' when preHandler did not attach the event", async () => {
+  it("logs an error and does NOT register the route when registered directly without config.stripe", async () => {
+    fastify = Fastify({ logger: { level: "silent" } });
+    fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
+    const errorSpy = vi.spyOn(fastify.log, "error");
+
+    await fastify.register(webhookController);
+    await fastify.ready();
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringContaining(
+        "Stripe webhook controller registered without config.stripe",
+      ),
+    );
+    expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
+      false,
+    );
+  });
+
+  it("returns 500 with { error: 'Stripe event not found on request' } when preHandler did not attach the event", async () => {
     // Force constructEvent to return a falsy value so verifyStripeSignature
     // assigns `request.stripeEvent = undefined` and the controller's
     // defensive guard fires.
@@ -196,6 +248,8 @@ describe("webhookController — defensive guard", async () => {
     const res = await injectWebhook(fastify, "/payment/webhook");
 
     expect(res.statusCode).toBe(500);
-    expect(res.json().message).toBe("Stripe event not found on request");
+    expect(res.json()).toEqual({
+      error: "Stripe event not found on request",
+    });
   });
 });

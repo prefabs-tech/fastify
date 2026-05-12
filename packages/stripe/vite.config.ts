@@ -24,16 +24,10 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
-            "@prefabs.tech/fastify-error-handler":
-              "PrefabsTechFastifyErrorHandler",
-            "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
-            "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
+            "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
-            mercurius: "mercurius",
-            slonik: "Slonik",
             stripe: "Stripe",
-            zod: "zod",
           },
         },
       },

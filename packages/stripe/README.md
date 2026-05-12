@@ -115,7 +115,7 @@ const session = await stripeClient.createCheckoutSession({
 
 ### Custom Webhook Handler
 
-You can provide a custom webhook handler to process Stripe events:
+When `enablePaymentWebhook` is `true` you should provide a `handlers.webhook` function to process Stripe events. If you don't, the plugin logs a warning at registration time and the route falls back to a default handler that acknowledges the event with HTTP 200 and logs an error — so Stripe does not retry the delivery indefinitely, but the misconfiguration is loud in the logs.
 
 ```typescript
 import type { FastifyRequest } from "fastify";

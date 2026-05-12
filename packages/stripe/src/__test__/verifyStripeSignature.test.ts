@@ -86,7 +86,7 @@ describe("verifyStripeSignature — webhookSecret missing", async () => {
     });
 
     expect(errorSpy).toHaveBeenCalledWith(
-      "Stripe webhook secret is not configured. Skipping signature verification.",
+      "Stripe webhook secret is not configured; rejecting webhook request.",
     );
   });
 });

@@ -6,11 +6,11 @@ const verifyStripeSignature = async (
   reply: FastifyReply,
 ): Promise<void> => {
   const { config, log } = request.server;
-  const webhookSecret = config.stripe.webhookSecret;
+  const webhookSecret = config.stripe?.webhookSecret;
 
   if (!webhookSecret) {
     log.error(
-      "Stripe webhook secret is not configured. Skipping signature verification.",
+      "Stripe webhook secret is not configured; rejecting webhook request.",
     );
 
     return reply.status(400).send({ error: "Webhook secret not configured" });

@@ -19,6 +19,13 @@ const getPasswordlessRecipeConfig = (
   const isDevelopment = config.user.passwordLessConfig.enableDevMode;
   const developmentModeOtp = config.user.passwordLessConfig.devModeOtp;
 
+  const isDevelopmentNumber = (phoneNumber: string) => {
+    const developmentModeNumbers =
+      config.user.passwordLessConfig.bypassSmsFor || [];
+
+    return developmentModeNumbers.includes(phoneNumber);
+  };
+
   let passwordless: PasswordlessRecipe = {};
 
   if (typeof config.user.supertokens.recipes?.passwordless === "object") {
@@ -49,11 +56,15 @@ const getPasswordlessRecipeConfig = (
   return {
     contactMethod: passwordless?.contactMethod || "PHONE",
     flowType: passwordless?.flowType || "USER_INPUT_CODE",
-    ...(isDevelopment
-      ? {
-          getCustomUserInputCode: () => developmentModeOtp,
-        }
-      : {}),
+    getCustomUserInputCode: async (userContext) => {
+      const phoneNumber = userContext?.phoneNumber as string | undefined;
+
+      if (isDevelopment || (phoneNumber && isDevelopmentNumber(phoneNumber))) {
+        return developmentModeOtp;
+      }
+
+      return Math.floor(100_000 + Math.random() * 900_000).toString();
+    },
     override: {
       apis: (originalImplementation) => {
         const apiInterface: Partial<APIInterface> = {};
@@ -79,6 +90,13 @@ const getPasswordlessRecipeConfig = (
         return {
           ...originalImplementation,
           consumeCodePOST: consumeCodePOST(originalImplementation, fastify),
+          createCodePOST: async (input) => {
+            if ("phoneNumber" in input) {
+              input.userContext.phoneNumber = input.phoneNumber;
+            }
+
+            return originalImplementation.createCodePOST!(input);
+          },
           ...apiInterface,
         };
       },
@@ -135,6 +153,14 @@ const getPasswordlessRecipeConfig = (
                     };
                   },
                   sendRawSms: async (input) => {
+                    if (isDevelopmentNumber(input.toPhoneNumber)) {
+                      fastify.log.info(
+                        `Skipping SMS for test number ${input.toPhoneNumber}. SMS body: [${input.body}]`,
+                      );
+
+                      return;
+                    }
+
                     await originalImplementation.sendRawSms(input);
                   },
                 };

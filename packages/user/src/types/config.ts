@@ -91,6 +91,7 @@ interface UserConfig {
   };
   password?: StrongPasswordOptions;
   passwordLessConfig: {
+    bypassSmsFor?: string[];
     devModeOtp: string;
     enableDevMode: boolean;
     fallbackEmailDomain?: string;

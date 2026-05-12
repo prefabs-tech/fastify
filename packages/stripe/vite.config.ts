@@ -1,6 +1,5 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { defineConfig, loadEnv } from "vite";
 
 import { dependencies, peerDependencies } from "./package.json";
@@ -27,13 +26,13 @@ export default defineConfig(({ mode }) => {
           globals: {
             "@prefabs.tech/fastify-error-handler":
               "PrefabsTechFastifyErrorHandler",
-            "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
+            "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
-            stripe: "Stripe",
             mercurius: "mercurius",
             slonik: "Slonik",
+            stripe: "Stripe",
             zod: "zod",
           },
         },

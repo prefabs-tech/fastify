@@ -4,8 +4,8 @@ import Stripe from "stripe";
 import { CreateSessionInput } from "../types";
 
 class StripeClient {
-  protected _config: ApiConfig;
   public stripe: Stripe;
+  protected _config: ApiConfig;
 
   constructor(config: ApiConfig) {
     this._config = config;
@@ -32,10 +32,10 @@ class StripeClient {
         },
       ],
       metadata: metadata,
+      mode: input.mode ?? "payment",
       payment_intent_data: {
         metadata: metadata,
       },
-      mode: input.mode ?? "payment",
       success_url: input.successUrl ?? this._config.stripe.urls.success,
     });
 

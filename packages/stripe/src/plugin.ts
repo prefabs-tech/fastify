@@ -1,8 +1,8 @@
+import type { FastifyInstance } from "fastify";
+
 import fastifyPlugin from "fastify-plugin";
 
 import webhookController from "./webhook/controller";
-
-import type { FastifyInstance } from "fastify";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;

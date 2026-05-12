@@ -2,6 +2,16 @@ import Stripe from "stripe";
 
 import webhookHandler from "../webhook/handler";
 
+export type CreateSessionInput = {
+  cancelUrl?: string;
+  currency?: string;
+  mode?: Stripe.Checkout.SessionCreateParams.Mode;
+  productName: string;
+  quantity?: number;
+  successUrl?: string;
+  unitAmount: number;
+};
+
 export type StripeConfig = {
   allowPromotionCodes?: boolean;
   apiKey: string;
@@ -17,14 +27,4 @@ export type StripeConfig = {
   };
   webhookPath?: string;
   webhookSecret?: string;
-};
-
-export type CreateSessionInput = {
-  cancelUrl?: string;
-  currency?: string;
-  mode?: Stripe.Checkout.SessionCreateParams.Mode;
-  productName: string;
-  quantity?: number;
-  successUrl?: string;
-  unitAmount: number;
 };

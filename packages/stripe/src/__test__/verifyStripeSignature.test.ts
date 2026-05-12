@@ -1,0 +1,371 @@
+import Fastify, { type FastifyInstance } from "fastify";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import "../index";
+import createStripeConfig from "./helpers/createStripeConfig";
+
+const { constructEventMock, stripeMock } = vi.hoisted(() => {
+  const constructEventMock = vi.fn();
+  const stripeMock = vi.fn().mockImplementation(() => ({
+    webhooks: { constructEvent: constructEventMock },
+  }));
+  return { constructEventMock, stripeMock };
+});
+
+vi.mock("stripe", () => ({ default: stripeMock }));
+
+const SAMPLE_EVENT = {
+  id: "evt_test_1",
+  object: "event",
+  type: "checkout.session.completed",
+};
+
+const buildFastify = (stripeOverrides: Record<string, unknown> = {}) => {
+  const fastify = Fastify({ logger: { level: "silent" } });
+  fastify.decorate("config", {
+    stripe: createStripeConfig(stripeOverrides),
+  });
+  return fastify;
+};
+
+describe("verifyStripeSignature — webhookSecret missing", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    constructEventMock.mockReturnValue(SAMPLE_EVENT);
+  });
+
+  afterEach(async () => {
+    await fastify.close();
+  });
+
+  it("responds with 400 and 'Webhook secret not configured' when webhookSecret is unset", async () => {
+    fastify = buildFastify({
+      enablePaymentWebhook: true,
+      webhookSecret: undefined,
+    });
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    const res = await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=sig",
+      },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toEqual({ error: "Webhook secret not configured" });
+  });
+
+  it("logs an error when webhookSecret is unset", async () => {
+    fastify = buildFastify({
+      enablePaymentWebhook: true,
+      webhookSecret: undefined,
+    });
+    const errorSpy = vi.spyOn(fastify.log, "error");
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=sig",
+      },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      "Stripe webhook secret is not configured. Skipping signature verification.",
+    );
+  });
+});
+
+describe("verifyStripeSignature — signature header missing", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    constructEventMock.mockReturnValue(SAMPLE_EVENT);
+    fastify = buildFastify({ enablePaymentWebhook: true });
+  });
+
+  afterEach(async () => {
+    await fastify.close();
+  });
+
+  it("responds with 400 and 'Missing stripe-signature header' when the header is absent", async () => {
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    const res = await fastify.inject({
+      headers: { "content-type": "application/json" },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toEqual({ error: "Missing stripe-signature header" });
+  });
+
+  it("does not invoke stripe.webhooks.constructEvent when the signature header is missing", async () => {
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    await fastify.inject({
+      headers: { "content-type": "application/json" },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(constructEventMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("verifyStripeSignature — signature verification failure", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    fastify = buildFastify({ enablePaymentWebhook: true });
+  });
+
+  afterEach(async () => {
+    await fastify.close();
+  });
+
+  it("responds with 400 and 'Webhook signature verification failed' when constructEvent throws", async () => {
+    constructEventMock.mockImplementation(() => {
+      throw new Error("invalid signature");
+    });
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    const res = await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=sig",
+      },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(res.statusCode).toBe(400);
+    expect(res.json()).toEqual({
+      error: "Webhook signature verification failed",
+    });
+  });
+
+  it("logs the underlying error when constructEvent throws", async () => {
+    const verificationError = new Error("invalid signature");
+    constructEventMock.mockImplementation(() => {
+      throw verificationError;
+    });
+    const errorSpy = vi.spyOn(fastify.log, "error");
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=sig",
+      },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(errorSpy).toHaveBeenCalledWith(
+      { err: verificationError },
+      "Stripe webhook signature verification failed",
+    );
+  });
+});
+
+describe("verifyStripeSignature — success", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+  let capturedEvent: unknown;
+  const webhookHandlerMock = vi.fn(async (_request, event) => {
+    capturedEvent = event;
+  });
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    capturedEvent = undefined;
+    constructEventMock.mockReturnValue(SAMPLE_EVENT);
+
+    fastify = Fastify({ logger: false });
+    fastify.decorate("config", {
+      stripe: createStripeConfig({
+        enablePaymentWebhook: true,
+        handlers: { webhook: webhookHandlerMock },
+      }),
+    });
+  });
+
+  afterEach(async () => {
+    await fastify.close();
+  });
+
+  it("attaches the verified Stripe.Event to the request before the route handler runs", async () => {
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    const res = await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=sig",
+      },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(res.statusCode).toBe(200);
+    expect(capturedEvent).toEqual(SAMPLE_EVENT);
+  });
+
+  it("calls stripe.webhooks.constructEvent with the raw body, signature, and configured secret", async () => {
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    const payload = JSON.stringify({ id: "evt_test" });
+    await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=expected",
+      },
+      method: "POST",
+      payload,
+      url: "/payment/webhook",
+    });
+
+    expect(constructEventMock).toHaveBeenCalledTimes(1);
+    const [rawBody, signature, secret] = constructEventMock.mock.calls[0];
+    expect(Buffer.isBuffer(rawBody)).toBe(true);
+    expect(rawBody.toString()).toBe(payload);
+    expect(signature).toBe("t=1,v1=expected");
+    expect(secret).toBe("whsec_test_dummy");
+  });
+
+  it("constructs a fresh Stripe client per request using config.apiKey and clientConfig", async () => {
+    await fastify.close();
+    const clientConfig = { apiVersion: "2025-12-15.clover" as const };
+    fastify = Fastify({ logger: false });
+    fastify.decorate("config", {
+      stripe: createStripeConfig({
+        apiKey: "sk_custom_key",
+        clientConfig,
+        enablePaymentWebhook: true,
+        handlers: { webhook: webhookHandlerMock },
+      }),
+    });
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    await fastify.inject({
+      headers: {
+        "content-type": "application/json",
+        "stripe-signature": "t=1,v1=sig",
+      },
+      method: "POST",
+      payload: JSON.stringify({}),
+      url: "/payment/webhook",
+    });
+
+    expect(stripeMock).toHaveBeenCalledWith("sk_custom_key", clientConfig);
+  });
+});
+
+const buildBareRequest = () => ({
+  headers: { "stripe-signature": "t=1,v1=sig" },
+  rawBody: undefined,
+  server: {
+    config: { stripe: createStripeConfig() },
+    log: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
+  },
+});
+
+const buildBareReply = () => ({
+  send: vi.fn().mockReturnThis(),
+  status: vi.fn().mockReturnThis(),
+});
+
+describe("verifyStripeSignature — raw body missing", async () => {
+  // The raw body parser is installed by the webhook controller, so it is
+  // always set on requests that hit the route via fastify.inject. To exercise
+  // the `if (!rawBody)` branch we call the middleware directly with a request
+  // that has no rawBody.
+  const { default: verifyStripeSignature } =
+    await import("../middlewares/verifyStripeSignature");
+
+  type VerifyArguments = Parameters<typeof verifyStripeSignature>;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+    constructEventMock.mockReturnValue(SAMPLE_EVENT);
+  });
+
+  it("responds with 400 and 'Raw body is not available for signature verification' when rawBody is unset", async () => {
+    const request = buildBareRequest();
+    const reply = buildBareReply();
+
+    await verifyStripeSignature(
+      request as unknown as VerifyArguments[0],
+      reply as unknown as VerifyArguments[1],
+    );
+
+    expect(reply.status).toHaveBeenCalledWith(400);
+    expect(reply.send).toHaveBeenCalledWith({
+      error: "Raw body is not available for signature verification",
+    });
+  });
+
+  it("logs an error when rawBody is unset", async () => {
+    const request = buildBareRequest();
+    const reply = buildBareReply();
+
+    await verifyStripeSignature(
+      request as unknown as VerifyArguments[0],
+      reply as unknown as VerifyArguments[1],
+    );
+
+    expect(request.server.log.error).toHaveBeenCalledWith(
+      "Raw body is not available for signature verification",
+    );
+  });
+
+  it("does not call constructEvent when rawBody is unset", async () => {
+    const request = buildBareRequest();
+    const reply = buildBareReply();
+
+    await verifyStripeSignature(
+      request as unknown as VerifyArguments[0],
+      reply as unknown as VerifyArguments[1],
+    );
+
+    expect(constructEventMock).not.toHaveBeenCalled();
+  });
+});

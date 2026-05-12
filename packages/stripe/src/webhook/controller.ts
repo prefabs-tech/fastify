@@ -1,10 +1,10 @@
 import { FastifyInstance, FastifyRequest } from "fastify";
 import Stripe from "stripe";
 
-import webhookHandler from "./handler";
 import { ROUTE_STRIPE_WEBHOOK } from "../constants";
 import verifyStripeSignature from "../middlewares/verifyStripeSignature";
 import stripeRawBodyParser from "../utils/stripeRawBodyParser";
+import webhookHandler from "./handler";
 
 const plugin = async (fastify: FastifyInstance) => {
   if (fastify.config.stripe.enablePaymentWebhook) {

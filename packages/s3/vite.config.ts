@@ -1,6 +1,5 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { defineConfig, loadEnv } from "vite";
 
 import { dependencies, peerDependencies } from "./package.json";
@@ -29,21 +28,21 @@ export default defineConfig(({ mode }) => {
             "@aws-sdk/client-s3": "AWSClientS3",
             "@aws-sdk/lib-storage": "AWSLibStorage",
             "@aws-sdk/s3-request-presigner": "AWSS3RequestPresigner",
+            "@fastify/cors": "FastifyCors",
+            "@fastify/formbody": "FastifyFormbody",
+            "@fastify/multipart": "FastifyMultipart",
             "@prefabs.tech/fastify-config": "PrefabsTechFastifyConfig",
             "@prefabs.tech/fastify-error-handler":
               "PrefabsTechFastifyErrorHandler",
             "@prefabs.tech/fastify-graphql": "PrefabsTechFastifyGraphql",
             "@prefabs.tech/fastify-slonik": "PrefabsTechFastifySlonik",
-            "@fastify/cors": "FastifyCors",
-            "@fastify/formbody": "FastifyFormbody",
-            "@fastify/multipart": "FastifyMultipart",
             busboy: "Busboy",
             fastify: "Fastify",
             "fastify-plugin": "FastifyPlugin",
             "graphql-upload-minimal": "graphqlUploadMinimal",
             slonik: "Slonik",
-            zod: "zod",
             uuid: "uuid",
+            zod: "zod",
           },
         },
       },

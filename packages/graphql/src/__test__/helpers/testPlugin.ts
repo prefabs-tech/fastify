@@ -1,8 +1,9 @@
+import type { FastifyInstance } from "fastify";
+import type { MercuriusContext } from "mercurius";
+
 import FastifyPlugin from "fastify-plugin";
 
 import type { GraphqlEnabledPlugin } from "../../types";
-import type { FastifyInstance } from "fastify";
-import type { MercuriusContext } from "mercurius";
 
 declare module "mercurius" {
   interface MercuriusContext {

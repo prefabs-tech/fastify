@@ -1,10 +1,10 @@
-import { sql } from "slonik";
-
-import { TABLE_USER_DEVICES } from "../constants";
-
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { QuerySqlToken } from "slonik";
 import type { ZodTypeAny } from "zod";
+
+import { sql } from "slonik";
+
+import { TABLE_USER_DEVICES } from "../constants";
 
 const createUserDevicesTableQuery = (
   config: ApiConfig,

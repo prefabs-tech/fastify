@@ -1,6 +1,21 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import type {
+  FragmentSqlToken,
+  IdentifierSqlToken,
+  QuerySqlToken,
+} from "slonik";
+
 import humps from "humps";
 import { sql } from "slonik";
 import { z } from "zod";
+
+import type {
+  Database,
+  FilterInput,
+  SortDirection,
+  SortInput,
+  SqlFactory,
+} from "./types";
 
 import {
   createFilterFragment,
@@ -12,33 +27,73 @@ import {
   isValueExpression,
 } from "./sql";
 
-import type {
-  Database,
-  FilterInput,
-  SqlFactory,
-  SortInput,
-  SortDirection,
-} from "./types";
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
-import type {
-  FragmentSqlToken,
-  IdentifierSqlToken,
-  QuerySqlToken,
-} from "slonik";
-
 class DefaultSqlFactory implements SqlFactory {
-  static readonly TABLE = undefined as unknown as string;
   static readonly LIMIT_DEFAULT: number = 20;
   static readonly LIMIT_MAX: number = 50;
   static readonly SORT_DIRECTION: SortDirection = "ASC";
   static readonly SORT_KEY: string = "id";
+  static readonly TABLE = undefined as unknown as string;
+
+  get config(): ApiConfig {
+    return this._config;
+  }
+  get database(): Database {
+    return this._database;
+  }
+  get limitDefault(): number {
+    return (
+      this.config.slonik?.pagination?.defaultLimit ||
+      (this.constructor as typeof DefaultSqlFactory).LIMIT_DEFAULT
+    );
+  }
+  get limitMax(): number {
+    return (
+      this.config.slonik?.pagination?.maxLimit ||
+      (this.constructor as typeof DefaultSqlFactory).LIMIT_MAX
+    );
+  }
+  get schema(): string {
+    return this._schema || "public";
+  }
+  get softDeleteEnabled(): boolean {
+    return this._softDeleteEnabled;
+  }
+
+  get sortDirection(): SortDirection {
+    return (this.constructor as typeof DefaultSqlFactory).SORT_DIRECTION;
+  }
+
+  get sortKey(): string {
+    return (this.constructor as typeof DefaultSqlFactory).SORT_KEY;
+  }
+
+  get table(): string {
+    return (this.constructor as typeof DefaultSqlFactory).TABLE;
+  }
+
+  get tableFragment(): FragmentSqlToken {
+    return createTableFragment(this.table, this.schema);
+  }
+
+  get tableIdentifier(): IdentifierSqlToken {
+    return createTableIdentifier(this.table);
+  }
+
+  get validationSchema(): z.ZodTypeAny {
+    return this._validationSchema || z.any();
+  }
 
   protected _config: ApiConfig;
+
   protected _database: Database;
+
   protected _factory: SqlFactory | undefined;
+
   protected _schema = "public";
-  protected _validationSchema: z.ZodTypeAny = z.any();
+
   protected _softDeleteEnabled: boolean = false;
+
+  protected _validationSchema: z.ZodTypeAny = z.any();
 
   constructor(config: ApiConfig, database: Database, schema?: string) {
     this._config = config;
@@ -200,90 +255,8 @@ class DefaultSqlFactory implements SqlFactory {
     `;
   }
 
-  get config(): ApiConfig {
-    return this._config;
-  }
-
-  get database(): Database {
-    return this._database;
-  }
-
-  get limitDefault(): number {
-    return (
-      this.config.slonik?.pagination?.defaultLimit ||
-      (this.constructor as typeof DefaultSqlFactory).LIMIT_DEFAULT
-    );
-  }
-
-  get limitMax(): number {
-    return (
-      this.config.slonik?.pagination?.maxLimit ||
-      (this.constructor as typeof DefaultSqlFactory).LIMIT_MAX
-    );
-  }
-
-  get schema(): string {
-    return this._schema || "public";
-  }
-
-  get sortDirection(): SortDirection {
-    return (this.constructor as typeof DefaultSqlFactory).SORT_DIRECTION;
-  }
-
-  get sortKey(): string {
-    return (this.constructor as typeof DefaultSqlFactory).SORT_KEY;
-  }
-
-  get table(): string {
-    return (this.constructor as typeof DefaultSqlFactory).TABLE;
-  }
-
-  get tableFragment(): FragmentSqlToken {
-    return createTableFragment(this.table, this.schema);
-  }
-
-  get tableIdentifier(): IdentifierSqlToken {
-    return createTableIdentifier(this.table);
-  }
-
-  get validationSchema(): z.ZodTypeAny {
-    return this._validationSchema || z.any();
-  }
-
-  get softDeleteEnabled(): boolean {
-    return this._softDeleteEnabled;
-  }
-
   protected getAdditionalFilterFragments(): FragmentSqlToken[] {
     return [];
-  }
-
-  protected getWhereFragment(options?: {
-    filters?: FilterInput;
-    filterFragment?: FragmentSqlToken;
-    includeSoftDelete?: boolean;
-    tableIdentifier?: IdentifierSqlToken;
-  }): FragmentSqlToken {
-    const {
-      filters,
-      includeSoftDelete = true,
-      filterFragment,
-      tableIdentifier = this.tableIdentifier,
-    } = options || {};
-
-    const fragments: FragmentSqlToken[] = [];
-
-    if (filterFragment) {
-      fragments.push(filterFragment);
-    }
-
-    if (includeSoftDelete && this.softDeleteEnabled) {
-      fragments.push(sql.fragment`${this.tableIdentifier}.deleted_at IS NULL`);
-    }
-
-    fragments.push(...this.getAdditionalFilterFragments());
-
-    return this.getCreateWhereFragment(tableIdentifier, filters, fragments);
   }
 
   protected getCreateWhereFragment(
@@ -323,11 +296,39 @@ class DefaultSqlFactory implements SqlFactory {
     return (
       sort || [
         {
-          key: this.sortKey,
           direction: this.sortDirection,
+          key: this.sortKey,
         },
       ]
     );
+  }
+
+  protected getWhereFragment(options?: {
+    filterFragment?: FragmentSqlToken;
+    filters?: FilterInput;
+    includeSoftDelete?: boolean;
+    tableIdentifier?: IdentifierSqlToken;
+  }): FragmentSqlToken {
+    const {
+      filterFragment,
+      filters,
+      includeSoftDelete = true,
+      tableIdentifier = this.tableIdentifier,
+    } = options || {};
+
+    const fragments: FragmentSqlToken[] = [];
+
+    if (filterFragment) {
+      fragments.push(filterFragment);
+    }
+
+    if (includeSoftDelete && this.softDeleteEnabled) {
+      fragments.push(sql.fragment`${this.tableIdentifier}.deleted_at IS NULL`);
+    }
+
+    fragments.push(...this.getAdditionalFilterFragments());
+
+    return this.getCreateWhereFragment(tableIdentifier, filters, fragments);
   }
 }
 

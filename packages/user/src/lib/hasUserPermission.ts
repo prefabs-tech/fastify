@@ -1,8 +1,8 @@
+import type { FastifyInstance } from "fastify";
+
 import UserRoles from "supertokens-node/recipe/userroles";
 
 import { ROLE_SUPERADMIN } from "../constants";
-
-import type { FastifyInstance } from "fastify";
 
 const getPermissions = async (roles: string[]) => {
   let permissions: string[] = [];

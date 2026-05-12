@@ -1,15 +1,16 @@
-import createNewSession from "./session/createNewSession";
-import getGlobalClaimValidators from "./session/getGlobalClaimValidators";
-import getSession from "./session/getSession";
-import verifySession from "./session/verifySession";
-
-import type { SessionRecipe } from "../../types/sessionRecipe";
 import type { FastifyInstance } from "fastify";
 import type {
   APIInterface,
   RecipeInterface,
   TypeInput as SessionRecipeConfig,
 } from "supertokens-node/recipe/session/types";
+
+import type { SessionRecipe } from "../../types/sessionRecipe";
+
+import createNewSession from "./session/createNewSession";
+import getGlobalClaimValidators from "./session/getGlobalClaimValidators";
+import getSession from "./session/getSession";
+import verifySession from "./session/verifySession";
 
 const getSessionRecipeConfig = (
   fastify: FastifyInstance,
@@ -80,11 +81,11 @@ const getSessionRecipeConfig = (
         return {
           ...originalImplementation,
           createNewSession: createNewSession(originalImplementation, fastify),
-          getSession: getSession(originalImplementation, fastify),
           getGlobalClaimValidators: getGlobalClaimValidators(
             originalImplementation,
             fastify,
           ),
+          getSession: getSession(originalImplementation, fastify),
           ...recipeInterface,
         };
       },

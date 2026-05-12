@@ -46,13 +46,32 @@ interface SupertokensConfig {
    */
   checkSessionInDatabase?: boolean;
   connectionUri: string;
+  emailVerificationPath?: string;
   providers?: SupertokensThirdPartyProvider;
   recipes?: SupertokensRecipes;
   refreshTokenCookiePath?: string;
   resetPasswordPath?: string;
-  emailVerificationPath?: string;
   sendUserAlreadyExistsWarning?: boolean;
   setErrorHandler?: boolean;
+}
+
+interface SupertokensRecipes {
+  emailVerification?:
+    | ((fastify: FastifyInstance) => EmailVerificationRecipeConfig)
+    | EmailVerificationRecipe;
+  session?: ((fastify: FastifyInstance) => SessionRecipeConfig) | SessionRecipe;
+  thirdPartyEmailPassword?:
+    | ((fastify: FastifyInstance) => ThirdPartyEmailPasswordRecipeConfig)
+    | ThirdPartyEmailPasswordRecipe;
+  userRoles?: (fastify: FastifyInstance) => UserRolesRecipeConfig;
+}
+
+interface SupertokensThirdPartyProvider {
+  apple?: Parameters<typeof Apple>[0][];
+  custom?: TypeProvider[];
+  facebook?: Parameters<typeof Facebook>[0];
+  github?: Parameters<typeof Github>[0];
+  google?: Parameters<typeof Google>[0];
 }
 
 export type { SupertokensConfig, SupertokensRecipes };

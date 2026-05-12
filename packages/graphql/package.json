@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-graphql",
-  "version": "0.93.5",
+  "version": "0.94.0",
   "description": "Fastify graphql plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/graphql#readme",
   "repository": {
@@ -19,7 +19,9 @@
   "main": "./dist/prefabs-tech-fastify-graphql.cjs",
   "module": "./dist/prefabs-tech-fastify-graphql.js",
   "types": "./dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -29,32 +31,32 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "@graphql-tools/merge": "9.1.7",
+    "@graphql-tools/merge": "9.1.8",
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.5.0",
-    "@prefabs.tech/fastify-config": "0.93.5",
-    "@prefabs.tech/fastify-slonik": "0.93.5",
-    "@prefabs.tech/tsconfig": "0.5.0",
-    "@types/node": "24.10.13",
+    "@prefabs.tech/eslint-config": "0.7.0",
+    "@prefabs.tech/fastify-config": "0.94.0",
+    "@prefabs.tech/fastify-slonik": "0.94.0",
+    "@prefabs.tech/tsconfig": "0.7.0",
+    "@types/node": "24.10.15",
     "@vitest/coverage-istanbul": "3.2.4",
-    "eslint": "9.39.2",
-    "fastify": "5.7.4",
+    "eslint": "9.39.4",
+    "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
-    "graphql": "16.12.0",
-    "mercurius": "16.7.0",
-    "prettier": "3.8.1",
+    "graphql": "16.13.2",
+    "mercurius": "16.9.0",
+    "prettier": "3.8.3",
     "slonik": "46.8.0",
     "typescript": "5.9.3",
-    "vite": "6.4.1",
+    "vite": "6.4.2",
     "vitest": "3.2.4",
     "zod": "3.25.76"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.93.5",
-    "@prefabs.tech/fastify-slonik": "0.93.5",
-    "fastify": ">=5.2.1",
+    "@prefabs.tech/fastify-config": "0.94.0",
+    "@prefabs.tech/fastify-slonik": "0.94.0",
+    "fastify": ">=5.2.2",
     "fastify-plugin": ">=5.0.1",
     "graphql": ">=16.9.0",
     "mercurius": ">=16.1.0",

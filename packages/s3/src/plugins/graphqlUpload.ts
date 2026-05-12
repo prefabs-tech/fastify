@@ -1,7 +1,7 @@
+import type { FastifyPluginCallback } from "fastify";
+
 import fastifyPlugin from "fastify-plugin";
 import { processRequest, UploadOptions } from "graphql-upload-minimal";
-
-import type { FastifyPluginCallback } from "fastify";
 
 declare module "fastify" {
   interface FastifyRequest {

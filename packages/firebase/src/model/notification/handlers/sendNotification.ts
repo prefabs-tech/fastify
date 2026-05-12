@@ -1,10 +1,11 @@
-import { sendPushNotification } from "../../../lib";
-import DeviceService from "../../userDevice/service";
-
-import type { TestNotificationInput } from "../../../types";
 import type { FastifyReply } from "fastify";
 import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
+
+import type { TestNotificationInput } from "../../../types";
+
+import { sendPushNotification } from "../../../lib";
+import DeviceService from "../../userDevice/service";
 
 const testPushNotification = async (
   request: SessionRequest,
@@ -18,8 +19,8 @@ const testPushNotification = async (
 
   const {
     body,
-    title,
     data,
+    title,
     userId: receiverId,
   } = request.body as TestNotificationInput;
 
@@ -41,10 +42,10 @@ const testPushNotification = async (
 
   const message: MulticastMessage = {
     android: {
-      priority: "high",
       notification: {
         sound: "default",
       },
+      priority: "high",
     },
     apns: {
       payload: {
@@ -53,16 +54,16 @@ const testPushNotification = async (
         },
       },
     },
-    tokens,
-    notification: {
-      title,
-      body,
-    },
     data: {
       ...data,
-      title,
       body,
+      title,
     },
+    notification: {
+      body,
+      title,
+    },
+    tokens,
   };
 
   await sendPushNotification(message);

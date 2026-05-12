@@ -1,20 +1,24 @@
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
+
 import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 import humps from "humps";
 import { FragmentSqlToken, QuerySqlToken, sql } from "slonik";
 import { z } from "zod";
 
+import { TABLE_USERS } from "../../constants";
+import { ChangeEmailInput, UserUpdateInput } from "../../types";
 import {
   createRoleSortFragment,
   createUserFilterFragment,
   createUserSortFragment,
 } from "./sql";
-import { TABLE_USERS } from "../../constants";
-import { ChangeEmailInput, UserUpdateInput } from "../../types";
-
-import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
 
 class UserSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_USERS;
+
+  get table() {
+    return this.config.user?.tables?.users?.name || super.table;
+  }
 
   protected _softDeleteEnabled: boolean = true;
 
@@ -79,7 +83,7 @@ class UserSqlFactory extends DefaultSqlFactory {
 
   getUpdateSql(
     id: number | string,
-    data: UserUpdateInput | ChangeEmailInput,
+    data: ChangeEmailInput | UserUpdateInput,
   ): QuerySqlToken {
     const columns = [];
 
@@ -107,10 +111,6 @@ class UserSqlFactory extends DefaultSqlFactory {
         ${this.getWhereFragment({ filterFragment: sql.fragment`id = ${id}` })}
       ) as roles;
     `;
-  }
-
-  get table() {
-    return this.config.user?.tables?.users?.name || super.table;
   }
 
   protected getFilterFragment(filters?: FilterInput): FragmentSqlToken {

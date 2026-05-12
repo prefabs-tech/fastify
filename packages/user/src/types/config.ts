@@ -40,13 +40,13 @@ interface UserConfig {
     };
     signUp?: {
       /**
-       * @default true
-       */
-      enabled?: boolean;
-      /**
        * @default false
        */
       emailVerification?: boolean;
+      /**
+       * @default true
+       */
+      enabled?: boolean;
     };
     updateEmail?: {
       enabled?: boolean;

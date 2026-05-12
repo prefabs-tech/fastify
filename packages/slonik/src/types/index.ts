@@ -1,11 +1,11 @@
 export type { SlonikConfig, SlonikOptions } from "./config";
 
 export type {
+  BaseFilterInput,
   Database,
   FilterInput,
   SortDirection,
   SortInput,
-  BaseFilterInput,
 } from "./database";
 
 export type { PaginatedList, Service } from "./service";

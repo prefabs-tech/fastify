@@ -1,16 +1,15 @@
+import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { RecipeInterface } from "supertokens-node/recipe/passwordless/types";
+
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { formatDate } from "@prefabs.tech/fastify-slonik";
+import { User, UserCreateInput } from "src/types";
 import { deleteUser, getRequestFromUserContext } from "supertokens-node";
 import UserRoles from "supertokens-node/recipe/userroles";
-
-import { User, UserCreateInput } from "src/types";
 
 import { ROLE_USER } from "../../../../constants";
 import getUserService from "../../../../lib/getUserService";
 import areRolesExist from "../../../utils/areRolesExist";
-
-import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/passwordless/types";
 
 const consumeCode = (
   originalImplementation: RecipeInterface,
@@ -60,13 +59,13 @@ const consumeCode = (
       throw new Error("Passwordless user missing phoneNumber or email");
     }
 
-    let user: User | null | undefined;
+    let user: null | undefined | User;
 
     if (originalResponse.createdNewUser) {
       try {
         user = await userService.create({
-          id: originalResponse.user.id,
           email,
+          id: originalResponse.user.id,
           phoneNumber,
         } as UserCreateInput);
 

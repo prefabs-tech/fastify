@@ -1,7 +1,7 @@
-import { ROLE_USER } from "../../../../constants";
-
 import type { FastifyInstance } from "fastify";
 import type { APIInterface } from "supertokens-node/recipe/passwordless/types";
+
+import { ROLE_USER } from "../../../../constants";
 
 const consumeCodePOST = (
   originalImplementation: APIInterface,

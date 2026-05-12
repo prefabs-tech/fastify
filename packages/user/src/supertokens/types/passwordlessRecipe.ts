@@ -1,9 +1,9 @@
-import { FastifyInstance } from "fastify";
-
 import type {
   APIInterface,
   RecipeInterface,
 } from "supertokens-node/recipe/passwordless/types";
+
+import { FastifyInstance } from "fastify";
 
 type APIInterfaceWrapper = {
   [key in keyof APIInterface]?: (
@@ -12,15 +12,8 @@ type APIInterfaceWrapper = {
   ) => APIInterface[key];
 };
 
-type RecipeInterfaceWrapper = {
-  [key in keyof RecipeInterface]?: (
-    originalImplementation: RecipeInterface,
-    fastify: FastifyInstance,
-  ) => RecipeInterface[key];
-};
-
 interface PasswordlessRecipe {
-  contactMethod?: "EMAIL" | "PHONE" | "EMAIL_OR_PHONE";
+  contactMethod?: "EMAIL" | "EMAIL_OR_PHONE" | "PHONE";
   flowType?: "USER_INPUT_CODE";
   override?: {
     apis?: APIInterfaceWrapper;
@@ -28,4 +21,11 @@ interface PasswordlessRecipe {
   };
 }
 
-export type { APIInterfaceWrapper, RecipeInterfaceWrapper, PasswordlessRecipe };
+type RecipeInterfaceWrapper = {
+  [key in keyof RecipeInterface]?: (
+    originalImplementation: RecipeInterface,
+    fastify: FastifyInstance,
+  ) => RecipeInterface[key];
+};
+
+export type { APIInterfaceWrapper, PasswordlessRecipe, RecipeInterfaceWrapper };

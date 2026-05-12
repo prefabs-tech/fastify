@@ -1,17 +1,16 @@
-import { FastifyInstance } from "fastify";
-import { TwilioService } from "supertokens-node/recipe/passwordless/smsdelivery";
-
-import { PasswordlessRecipe } from "src/supertokens/types/passwordlessRecipe";
-
-import consumeCode from "./passwordless/consumeCode";
-import consumeCodePOST from "./passwordless/consumeCodePost";
-
 import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
 import type {
   APIInterface,
-  RecipeInterface,
   TypeInput as PasswordlessRecipeConfig,
+  RecipeInterface,
 } from "supertokens-node/recipe/passwordless/types";
+
+import { FastifyInstance } from "fastify";
+import { PasswordlessRecipe } from "src/supertokens/types/passwordlessRecipe";
+import { TwilioService } from "supertokens-node/recipe/passwordless/smsdelivery";
+
+import consumeCode from "./passwordless/consumeCode";
+import consumeCodePOST from "./passwordless/consumeCodePost";
 
 const getPasswordlessRecipeConfig = (
   fastify: FastifyInstance,
@@ -122,7 +121,6 @@ const getPasswordlessRecipeConfig = (
       : {
           smsDelivery: {
             service: new TwilioService({
-              twilioSettings: twilioSettings as TwilioServiceConfig,
               override: (originalImplementation) => {
                 return {
                   ...originalImplementation,
@@ -141,6 +139,7 @@ const getPasswordlessRecipeConfig = (
                   },
                 };
               },
+              twilioSettings: twilioSettings as TwilioServiceConfig,
             }),
           },
         }),

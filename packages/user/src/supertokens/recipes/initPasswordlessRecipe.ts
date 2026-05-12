@@ -1,9 +1,9 @@
 import { FastifyInstance } from "fastify";
 import Passwordless from "supertokens-node/recipe/passwordless";
 
-import getPasswordlessRecipeConfig from "./config/passwordlessRecipeConfig";
-
 import type { SupertokensRecipes } from "../types";
+
+import getPasswordlessRecipeConfig from "./config/passwordlessRecipeConfig";
 
 const init = (fastify: FastifyInstance) => {
   const passwordless: SupertokensRecipes["passwordless"] =

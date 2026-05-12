@@ -63,6 +63,7 @@ const getPasswordlessRecipeConfig = (
         return developmentModeOtp;
       }
 
+      // TODO [AJ 20260512] Check how supertokens generates OTP by default and use that logic here
       return Math.floor(100_000 + Math.random() * 900_000).toString();
     },
     override: {

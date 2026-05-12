@@ -63,7 +63,7 @@ describe("stripeRawBodyParser — direct registration", () => {
     expect(receivedBody).toEqual({ foo: "bar", n: 42 });
   });
 
-  it("forwards JSON parse errors via done(error) so the route handler does not run", async () => {
+  it("responds with 400 on invalid JSON and does not invoke the route handler", async () => {
     const handlerSpy = vi.fn().mockReturnValue({ ok: true });
     fastify.post("/test", async () => handlerSpy());
 
@@ -74,11 +74,7 @@ describe("stripeRawBodyParser — direct registration", () => {
       url: "/test",
     });
 
-    // NOTE: FEATURES.md item 22 claims this produces a 400, but because our
-    // custom parser does not decorate the SyntaxError with `statusCode: 400`,
-    // Fastify's default error handler treats it as an unhandled error and
-    // returns 500. Reported as a concern, see Output Summary.
-    expect(res.statusCode).toBeGreaterThanOrEqual(400);
+    expect(res.statusCode).toBe(400);
     expect(handlerSpy).not.toHaveBeenCalled();
   });
 });
@@ -97,12 +93,9 @@ describe("stripeRawBodyParser — scoping when installed by the webhook controll
   });
 
   it("does NOT apply the raw body parser to routes registered outside the webhook controller scope", async () => {
-    // NOTE: FEATURES.md item 23 and ANALYSIS.md both claim the raw body parser
-    // applies globally to every application/json route on the same Fastify
-    // instance. That is incorrect: the webhook controller is registered
-    // without `fastify-plugin`, so its content-type parser is encapsulated
-    // to the controller's plugin scope and does NOT bleed into the parent
-    // instance. Reported as a concern, see Output Summary.
+    // The webhook controller is registered without `fastify-plugin`, so its
+    // content-type parser is encapsulated to the controller's plugin scope
+    // and does NOT bleed into the parent instance.
     fastify = Fastify({ logger: false });
     fastify.decorate("config", {
       stripe: createStripeConfig({ enablePaymentWebhook: true }),

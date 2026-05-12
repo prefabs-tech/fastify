@@ -25,8 +25,6 @@ const verifyStripeSignature = async (
   }
 
   try {
-    const stripe = new Stripe(config.stripe.apiKey, config.stripe.clientConfig);
-
     const rawBody = request.rawBody;
 
     if (!rawBody) {
@@ -37,14 +35,13 @@ const verifyStripeSignature = async (
       });
     }
 
-    const event = stripe.webhooks.constructEvent(
+    const event = Stripe.webhooks.constructEvent(
       rawBody,
       signature,
       webhookSecret,
     );
 
-    (request as FastifyRequest & { stripeEvent: Stripe.Event }).stripeEvent =
-      event;
+    request.stripeEvent = event;
   } catch (error) {
     log.error({ err: error }, "Stripe webhook signature verification failed");
     return reply

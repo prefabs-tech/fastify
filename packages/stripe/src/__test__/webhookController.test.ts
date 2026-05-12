@@ -6,9 +6,9 @@ import createStripeConfig from "./helpers/createStripeConfig";
 
 const { constructEventMock, stripeMock } = vi.hoisted(() => {
   const constructEventMock = vi.fn();
-  const stripeMock = vi.fn().mockImplementation(() => ({
+  const stripeMock = Object.assign(vi.fn(), {
     webhooks: { constructEvent: constructEventMock },
-  }));
+  });
   return { constructEventMock, stripeMock };
 });
 

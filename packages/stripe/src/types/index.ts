@@ -2,6 +2,12 @@ import Stripe from "stripe";
 
 import webhookHandler from "../webhook/handler";
 
+declare module "fastify" {
+  interface FastifyRequest {
+    stripeEvent?: Stripe.Event;
+  }
+}
+
 export type CreateSessionInput = {
   cancelUrl?: string;
   currency?: string;

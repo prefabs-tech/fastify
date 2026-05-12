@@ -6,9 +6,9 @@ import createStripeConfig from "./helpers/createStripeConfig";
 
 const { constructEventMock, stripeMock } = vi.hoisted(() => {
   const constructEventMock = vi.fn();
-  const stripeMock = vi.fn().mockImplementation(() => ({
+  const stripeMock = Object.assign(vi.fn(), {
     webhooks: { constructEvent: constructEventMock },
-  }));
+  });
   return { constructEventMock, stripeMock };
 });
 
@@ -267,35 +267,6 @@ describe("verifyStripeSignature — success", async () => {
     expect(rawBody.toString()).toBe(payload);
     expect(signature).toBe("t=1,v1=expected");
     expect(secret).toBe("whsec_test_dummy");
-  });
-
-  it("constructs a fresh Stripe client per request using config.apiKey and clientConfig", async () => {
-    await fastify.close();
-    const clientConfig = { apiVersion: "2025-12-15.clover" as const };
-    fastify = Fastify({ logger: false });
-    fastify.decorate("config", {
-      stripe: createStripeConfig({
-        apiKey: "sk_custom_key",
-        clientConfig,
-        enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
-      }),
-    });
-
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    await fastify.inject({
-      headers: {
-        "content-type": "application/json",
-        "stripe-signature": "t=1,v1=sig",
-      },
-      method: "POST",
-      payload: JSON.stringify({}),
-      url: "/payment/webhook",
-    });
-
-    expect(stripeMock).toHaveBeenCalledWith("sk_custom_key", clientConfig);
   });
 });
 

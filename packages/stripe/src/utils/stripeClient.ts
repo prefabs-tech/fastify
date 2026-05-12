@@ -16,7 +16,9 @@ class StripeClient {
     input: CreateSessionInput,
     metadata?: Record<string, string>,
   ): Promise<Stripe.Response<Stripe.Checkout.Session>> {
-    const session = await this.stripe.checkout.sessions.create({
+    const mode = input.mode ?? "payment";
+
+    const parameters: Stripe.Checkout.SessionCreateParams = {
       allow_promotion_codes: this._config.stripe.allowPromotionCodes,
       cancel_url: input.cancelUrl ?? this._config.stripe.urls.cancel,
       line_items: [
@@ -32,14 +34,28 @@ class StripeClient {
         },
       ],
       metadata: metadata,
-      mode: input.mode ?? "payment",
-      payment_intent_data: {
-        metadata: metadata,
-      },
+      mode,
       success_url: input.successUrl ?? this._config.stripe.urls.success,
-    });
+    };
 
-    return session;
+    // Stripe rejects mode-specific `*_data` blocks for the wrong mode, so
+    // route metadata to the field that matches the selected mode.
+    switch (mode) {
+      case "payment": {
+        parameters.payment_intent_data = { metadata: metadata };
+        break;
+      }
+      case "setup": {
+        parameters.setup_intent_data = { metadata: metadata };
+        break;
+      }
+      case "subscription": {
+        parameters.subscription_data = { metadata: metadata };
+        break;
+      }
+    }
+
+    return this.stripe.checkout.sessions.create(parameters);
   }
 
   public async getActivePromotionCode(

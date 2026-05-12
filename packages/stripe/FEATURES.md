@@ -12,7 +12,7 @@
 ## Configuration & Type Exports
 
 5. Module augmentation of `@prefabs.tech/fastify-config` adds `stripe: StripeConfig` to `ApiConfig`.
-6. Module augmentation of `fastify` adds `rawBody?: Buffer | string` to `FastifyRequest`.
+6. Module augmentation of `fastify` adds `rawBody?: Buffer | string` and `stripeEvent?: Stripe.Event` to `FastifyRequest`.
 7. `StripeConfig` type is exported (curated subset; not a direct passthrough of any Stripe SDK type).
 8. `StripeEvent` type is exported as an alias for `Stripe.Event`.
 9. `CreateSessionInput` type describes the checkout helper input shape.
@@ -34,13 +34,13 @@ The `verifyStripeSignature` preHandler runs on the webhook route and performs th
 17. Responds with 400 `{ error: "Missing stripe-signature header" }` and logs an error when the `stripe-signature` request header is absent.
 18. Responds with 400 `{ error: "Raw body is not available for signature verification" }` and logs an error when `request.rawBody` is unset.
 19. Responds with 400 `{ error: "Webhook signature verification failed" }` and logs the underlying error when `stripe.webhooks.constructEvent` throws.
-20. On success, attaches the verified `Stripe.Event` to `request.stripeEvent` (via inline type cast — not module-augmented).
+20. On success, attaches the verified `Stripe.Event` to `request.stripeEvent` (available via module augmentation).
 
 ## Raw Body Parser
 
 21. `registerRawBodyParser(fastify)` registers a Fastify content-type parser for `application/json` that captures the request buffer to `request.rawBody` and parses JSON for downstream handlers.
-22. JSON parse errors are forwarded through `done(error)` so Fastify produces a standard 400 response.
-23. The raw body parser is installed automatically by the webhook controller, which means it applies **globally** to every `application/json` route on the same Fastify instance (not only the webhook route).
+22. JSON parse errors are tagged with `statusCode: 400` and forwarded through `done(error)`, so Fastify's default error handler produces a 400 response.
+23. When the webhook controller installs the raw body parser, the parser is scoped to the webhook controller's plugin encapsulation. It applies to the webhook route but does **not** bleed into other `application/json` routes registered on the parent Fastify instance. Calling `registerRawBodyParser(fastify)` directly on the parent installs it on that instance instead.
 
 ## `StripeClient` Helper
 
@@ -53,5 +53,10 @@ The `verifyStripeSignature` preHandler runs on the webhook route and performs th
 30. `createCheckoutSession` defaults `success_url` to `config.stripe.urls.success` when `input.successUrl` is unset.
 31. `createCheckoutSession` defaults `cancel_url` to `config.stripe.urls.cancel` when `input.cancelUrl` is unset.
 32. `createCheckoutSession` forwards `config.stripe.allowPromotionCodes` as the `allow_promotion_codes` parameter (passed as-is — `undefined` is allowed).
-33. `createCheckoutSession` writes the `metadata` argument onto **both** `session.metadata` and `session.payment_intent_data.metadata`.
+33. `createCheckoutSession` always writes the `metadata` argument onto `session.metadata`. It additionally writes it onto the mode-specific data block:
+    - `mode: "payment"` → `payment_intent_data.metadata`
+    - `mode: "subscription"` → `subscription_data.metadata`
+    - `mode: "setup"` → `setup_intent_data.metadata`
+
+    Only the block matching the selected mode is set; the others are left unset so Stripe does not reject the call.
 34. `getActivePromotionCode(code)` calls `promotionCodes.list({ active: true, code })` and returns only the first matching `Stripe.PromotionCode` (or `undefined` when there is no match).

@@ -218,7 +218,7 @@ describe("StripeClient — createCheckoutSession synthesis", async () => {
     ).toBeUndefined();
   });
 
-  it("writes metadata onto both session.metadata and payment_intent_data.metadata", async () => {
+  it("writes metadata onto both session.metadata and payment_intent_data.metadata for payment mode", async () => {
     const client = buildClient();
     const metadata = { orderId: "ord_123", userId: "u_42" };
     await client.createCheckoutSession(
@@ -229,9 +229,11 @@ describe("StripeClient — createCheckoutSession synthesis", async () => {
     const arguments_ = sessionsCreateMock.mock.calls[0][0];
     expect(arguments_.metadata).toEqual(metadata);
     expect(arguments_.payment_intent_data.metadata).toEqual(metadata);
+    expect(arguments_.subscription_data).toBeUndefined();
+    expect(arguments_.setup_intent_data).toBeUndefined();
   });
 
-  it("metadata is undefined on both placements when not provided", async () => {
+  it("metadata is undefined on both session and payment_intent_data placements when not provided", async () => {
     const client = buildClient();
     await client.createCheckoutSession({
       productName: "Hat",
@@ -241,6 +243,36 @@ describe("StripeClient — createCheckoutSession synthesis", async () => {
     const arguments_ = sessionsCreateMock.mock.calls[0][0];
     expect(arguments_.metadata).toBeUndefined();
     expect(arguments_.payment_intent_data.metadata).toBeUndefined();
+  });
+
+  it("routes metadata to subscription_data and omits payment_intent_data for subscription mode", async () => {
+    const client = buildClient();
+    const metadata = { plan: "annual", userId: "u_42" };
+    await client.createCheckoutSession(
+      { mode: "subscription", productName: "Plan", unitAmount: 9900 },
+      metadata,
+    );
+
+    const arguments_ = sessionsCreateMock.mock.calls[0][0];
+    expect(arguments_.metadata).toEqual(metadata);
+    expect(arguments_.subscription_data.metadata).toEqual(metadata);
+    expect(arguments_.payment_intent_data).toBeUndefined();
+    expect(arguments_.setup_intent_data).toBeUndefined();
+  });
+
+  it("routes metadata to setup_intent_data and omits payment_intent_data for setup mode", async () => {
+    const client = buildClient();
+    const metadata = { customerId: "cus_123" };
+    await client.createCheckoutSession(
+      { mode: "setup", productName: "Card setup", unitAmount: 0 },
+      metadata,
+    );
+
+    const arguments_ = sessionsCreateMock.mock.calls[0][0];
+    expect(arguments_.metadata).toEqual(metadata);
+    expect(arguments_.setup_intent_data.metadata).toEqual(metadata);
+    expect(arguments_.payment_intent_data).toBeUndefined();
+    expect(arguments_.subscription_data).toBeUndefined();
   });
 
   it("returns the session returned by stripe.checkout.sessions.create", async () => {

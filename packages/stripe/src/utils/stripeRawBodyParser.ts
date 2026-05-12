@@ -19,7 +19,11 @@ const stripeRawBodyParser = (fastify: FastifyInstance): void => {
         // eslint-disable-next-line unicorn/no-null
         done(null, json);
       } catch (error) {
-        done(error as Error);
+        // Tag the error so Fastify's default error handler responds 400
+        // instead of falling back to a generic 500.
+        const parseError = error as Error & { statusCode?: number };
+        parseError.statusCode = 400;
+        done(parseError);
       }
     },
   );

@@ -163,4 +163,16 @@ const config: ApiConfig = {
 
 ## API Version
 
-This package uses Stripe API version: `2025-12-15.clover`
+This package does not pin a Stripe API version — it forwards `config.stripe.clientConfig` (including `apiVersion`) unmodified to the [`Stripe`](https://github.com/stripe/stripe-node) constructor. When `apiVersion` is omitted, the default pinned by the installed `stripe` SDK is used. For production deployments, pin `apiVersion` explicitly via `clientConfig.apiVersion` so SDK upgrades don't silently change the API version:
+
+```typescript
+const config: ApiConfig = {
+  stripe: {
+    apiKey: process.env.STRIPE_API_KEY!,
+    // ...
+    clientConfig: {
+      apiVersion: "2026-01-28.clover",
+    },
+  },
+};
+```

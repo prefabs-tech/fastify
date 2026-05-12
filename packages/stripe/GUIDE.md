@@ -16,12 +16,13 @@ npm install @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config stripe fas
 pnpm add @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config stripe fastify fastify-plugin
 ```
 
-Peer dependencies enforced by `package.json`: `fastify >= 5.2.1`, `fastify-plugin >= 5.0.1`, `@prefabs.tech/fastify-config 0.93.5`, `supertokens-node >= 14.1.3`. (Note: `supertokens-node` is declared as a peer but is not actually imported by this package.)
+Peer dependencies enforced by `package.json`: `fastify >= 5.2.2`, `fastify-plugin >= 5.0.1`, `@prefabs.tech/fastify-config 0.94.0`.
 
 ### For monorepo development
 
 ```bash
 pnpm install
+pnpm --filter @prefabs.tech/fastify-stripe test
 pnpm --filter @prefabs.tech/fastify-stripe build
 pnpm --filter @prefabs.tech/fastify-stripe typecheck
 pnpm --filter @prefabs.tech/fastify-stripe lint
@@ -67,7 +68,7 @@ await fastify.listen({ port: 3000, host: "0.0.0.0" });
 
 All examples below assume this setup is in place. Examples will only show the relevant subset of `config.stripe` rather than repeating the whole object.
 
-> **Heads up:** registering this plugin with `enablePaymentWebhook: true` installs a *global* `application/json` content-type parser on the Fastify instance. Every JSON route on the same instance will get `request.rawBody` populated. See the [Raw Body Parser](#raw-body-parser-registerrawbodyparser) section.
+> **Heads up:** registering this plugin with `enablePaymentWebhook: true` installs an `application/json` content-type parser scoped to the webhook controller's plugin encapsulation. The webhook route gets `request.rawBody` populated; other JSON routes on the parent instance are unaffected. If you want `request.rawBody` on a route you control, call `registerRawBodyParser(fastify)` yourself — see the [Raw Body Parser](#raw-body-parser-registerrawbodyparser) section.
 
 ---
 
@@ -194,24 +195,24 @@ The webhook route runs the `verifyStripeSignature` preHandler before invoking yo
 | `request.rawBody` missing                              | 400    | `{ error: "Raw body is not available for signature verification" }` |
 | `stripe.webhooks.constructEvent` throws                | 400    | `{ error: "Webhook signature verification failed" }`                |
 
-On success, the verified `Stripe.Event` is attached to `request.stripeEvent`. The field is typed via inline cast, so if you read it from outside the package you need to repeat the cast:
+On success, the verified `Stripe.Event` is attached to `request.stripeEvent`. The field is typed via module augmentation, so it is automatically available on `FastifyRequest`:
 
 ```typescript
 import type { FastifyRequest } from "fastify";
-import type Stripe from "stripe";
 
 function readEvent(request: FastifyRequest) {
-  const event = (request as FastifyRequest & { stripeEvent?: Stripe.Event })
-    .stripeEvent;
+  const event = request.stripeEvent;
   // ...
 }
 ```
 
 ### Raw body parser (`registerRawBodyParser`)
 
-Stripe's signature verification requires the *exact* raw request bytes. The webhook controller installs an `application/json` content-type parser that retains the raw buffer on `request.rawBody` while still parsing JSON for normal handlers. The parser is applied to the Fastify instance globally — so any `application/json` route on the same instance will have `request.rawBody` populated.
+Stripe's signature verification requires the *exact* raw request bytes. The webhook controller installs an `application/json` content-type parser that retains the raw buffer on `request.rawBody` while still parsing JSON for downstream handlers. JSON parse errors are tagged with `statusCode: 400`, so Fastify responds 400 instead of a generic 500.
 
-If you want to install the parser without enabling the webhook route (e.g. for a custom raw-body-aware endpoint), import it directly:
+The parser is installed inside the webhook controller's plugin scope, so it applies to the webhook route but **does not** override `application/json` parsing on other routes registered on the parent Fastify instance.
+
+If you want the raw body on routes you control (e.g. a custom raw-body-aware endpoint), import the parser directly and register it on the instance where those routes live:
 
 ```typescript
 import { registerRawBodyParser } from "@prefabs.tech/fastify-stripe";
@@ -284,7 +285,15 @@ console.log(session.url);
 
 `config.stripe.allowPromotionCodes` is forwarded as `allow_promotion_codes` (passing `undefined` is fine — Stripe ignores it).
 
-The optional `metadata` argument is written to **both** `session.metadata` and `session.payment_intent_data.metadata`, so it surfaces on the Checkout session *and* on the resulting PaymentIntent:
+The optional `metadata` argument is always written to `session.metadata`, and additionally to the mode-specific data block so it surfaces on the downstream object too:
+
+| Mode             | Mode-specific placement              |
+| ---------------- | ------------------------------------ |
+| `"payment"`      | `payment_intent_data.metadata`       |
+| `"subscription"` | `subscription_data.metadata`         |
+| `"setup"`        | `setup_intent_data.metadata`         |
+
+Only the placement matching the selected mode is set — Stripe rejects mode-specific `*_data` blocks that don't match the session mode, so the helper picks the right one for you:
 
 ```typescript
 await client.createCheckoutSession(

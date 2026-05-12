@@ -1,5 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { TypeInput as EmailVerificationRecipeConfig } from "supertokens-node/recipe/emailverification/types";
+import type { TypeInput as PasswordlessRecipeConfig } from "supertokens-node/recipe/passwordless/types";
 import type { TypeInput as SessionRecipeConfig } from "supertokens-node/recipe/session/types";
 import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
 import type { TypeInput as ThirdPartyEmailPasswordRecipeConfig } from "supertokens-node/recipe/thirdpartyemailpassword/types";
@@ -13,6 +14,7 @@ import {
 } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import type { EmailVerificationRecipe } from "./emailVerificationRecipe";
+import type { PasswordlessRecipe } from "./passwordlessRecipe";
 import type { SessionRecipe } from "./sessionRecipe";
 import type { ThirdPartyEmailPasswordRecipe } from "./thirdPartyEmailPasswordRecipe";
 
@@ -36,11 +38,33 @@ interface SupertokensRecipes {
   emailVerification?:
     | ((fastify: FastifyInstance) => EmailVerificationRecipeConfig)
     | EmailVerificationRecipe;
+  passwordless?:
+    | ((fastify: FastifyInstance) => PasswordlessRecipeConfig)
+    | PasswordlessRecipe;
   session?: ((fastify: FastifyInstance) => SessionRecipeConfig) | SessionRecipe;
   thirdPartyEmailPassword?:
     | ((fastify: FastifyInstance) => ThirdPartyEmailPasswordRecipeConfig)
     | ThirdPartyEmailPasswordRecipe;
   userRoles?: (fastify: FastifyInstance) => UserRolesRecipeConfig;
+}
+
+interface SupertokensRecipes {
+  emailVerification?:
+    | ((fastify: FastifyInstance) => EmailVerificationRecipeConfig)
+    | EmailVerificationRecipe;
+  session?: ((fastify: FastifyInstance) => SessionRecipeConfig) | SessionRecipe;
+  thirdPartyEmailPassword?:
+    | ((fastify: FastifyInstance) => ThirdPartyEmailPasswordRecipeConfig)
+    | ThirdPartyEmailPasswordRecipe;
+  userRoles?: (fastify: FastifyInstance) => UserRolesRecipeConfig;
+}
+
+interface SupertokensThirdPartyProvider {
+  apple?: Parameters<typeof Apple>[0][];
+  custom?: TypeProvider[];
+  facebook?: Parameters<typeof Facebook>[0];
+  github?: Parameters<typeof Github>[0];
+  google?: Parameters<typeof Google>[0];
 }
 
 interface SupertokensThirdPartyProvider {

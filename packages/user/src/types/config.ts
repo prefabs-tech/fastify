@@ -1,4 +1,5 @@
 import type { FastifyRequest } from "fastify";
+import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
 
 import type { SupertokensConfig } from "../supertokens";
 import type { Invitation } from "./invitation";
@@ -15,6 +16,7 @@ interface EmailOptions {
   subject?: string;
   templateName?: string;
 }
+
 interface UserConfig {
   email?: IsEmailOptions;
   emailOverrides?: {
@@ -88,6 +90,14 @@ interface UserConfig {
     ) => Promise<void>;
   };
   password?: StrongPasswordOptions;
+  passwordLessConfig: {
+    bypassSmsFor?: string[];
+    devModeOtp: string;
+    enableDevMode: boolean;
+    fallbackEmailDomain?: string;
+    smsMessage?: string;
+    twilio?: TwilioServiceConfig;
+  };
   permissions?: string[];
   photoMaxSizeInMB?: number;
   role?: string;

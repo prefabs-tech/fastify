@@ -1,20 +1,21 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 import StackTracey from "stacktracey";
 
 type ErrorHandler = (
   error: unknown,
   request: FastifyRequest,
   reply: FastifyReply,
-) => void | Promise<void>;
+) => Promise<void> | void;
 
 interface ErrorHandlerOptions {
+  domainErrorStatusMap?: ReadonlyMap<string, number>;
   preErrorHandler?: ErrorHandler;
   stackTrace?: boolean;
 }
 
 type ErrorResponse = {
-  error?: string;
   code?: string;
+  error?: string;
   message: string;
   name: string;
   stack?: StackTracey.Entry[];

@@ -1,23 +1,23 @@
 import "@prefabs.tech/fastify-error-handler";
 
-interface UserDevice {
+interface TestNotificationInput {
+  body: string;
+  data?: {
+    [key: string]: string;
+  };
+  title: string;
   userId: string;
-  deviceToken: string;
-  createdAt: number;
-  updatedAt: number;
 }
 
 interface User {
   id: string;
 }
 
-interface TestNotificationInput {
+interface UserDevice {
+  createdAt: number;
+  deviceToken: string;
+  updatedAt: number;
   userId: string;
-  title: string;
-  body: string;
-  data?: {
-    [key: string]: string;
-  };
 }
 
 type UserDeviceCreateInput = Partial<
@@ -25,7 +25,7 @@ type UserDeviceCreateInput = Partial<
 >;
 
 type UserDeviceUpdateInput = Partial<
-  Omit<UserDevice, "userId" | "createdAt" | "updatedAt">
+  Omit<UserDevice, "createdAt" | "updatedAt" | "userId">
 >;
 
 export type {

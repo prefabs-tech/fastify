@@ -4,12 +4,24 @@ A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy int
 
 The plugin is a thin wrapper around the [mercurius](https://mercurius.dev/#/) plugin.
 
+## Why this plugin?
+
+While registering `mercurius` directly perfectly enables GraphQL in a Fastify backend, enterprise APIs require deep context injection—such as database connections and application configurations—to function effectively within resolvers. We created this plugin to:
+
+- **Automate Context Injection**: Instead of manually building context objects on every request, this plugin automatically populates the `MercuriusContext` with the `fastify.config`, `slonik` database connection, and `dbSchema`, making them instantly and safely available to all your GraphQL resolvers out-of-the-box.
+- **Unify Configuration**: By integrating seamlessly with `@prefabs.tech/fastify-config`, it ensures that your GraphQL schema paths, options, and boolean flags are strictly typed and managed in one centralized location.
+
+### Design Decisions: Why not Apollo Server or bare Mercurius?
+
+- **Why Mercurius instead of Apollo**: Mercurius is specifically built for Fastify, leveraging Fastify's lifecycle hooks to deliver significantly better performance and lower latency than typical Apollo setups.
+- **Why intercept Mercurius**: Using bare Mercurius means maintaining your own context factory methods to inject database connections and app configurations recursively. By wrapping it, we enforce a standard, highly-typed context shape that is guaranteed to match the rest of our ecosystem, eliminating setup boilerplate completely.
+
 ## Requirements
 
-* [@prefabs.tech/fastify-config](../config/)
-* [@prefabs.tech/fastify-slonik](../slonik/)
-* [graphql](https://github.com/graphql/graphql-js)
-* [mercurius](https://mercurius.dev/#/)
+- [@prefabs.tech/fastify-config](../config/)
+- [@prefabs.tech/fastify-slonik](../slonik/)
+- [graphql](https://github.com/graphql/graphql-js)
+- [mercurius](https://mercurius.dev/#/)
 
 ## Installation
 
@@ -26,6 +38,7 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 ```
 
 ## Usage
+
 To set up graphql in fastify project, follow these steps:
 
 Create a resolvers file at `src/graphql/resolvers.ts` to define all GraphQL mutations and queries.
@@ -134,19 +147,20 @@ An additional `enabled` (boolean) option allows you to disable the graphql serve
 
 The fastify-graphql plugin will generate a graphql context on every request that will include the following attributes:
 
-| Attribute  | Type | Description |
-|------------|------|-------------|
-| `config`   | `ApiConfig` | The fastify servers' config (as per [@prefabs.tech/fastify-config](../config/)) |
+| Attribute  | Type        | Description                                                                              |
+| ---------- | ----------- | ---------------------------------------------------------------------------------------- |
+| `config`   | `ApiConfig` | The fastify servers' config (as per [@prefabs.tech/fastify-config](../config/))          |
 | `database` | `Database`  | The fastify server's slonik instance (as per [@prefabs.tech/fastify-slonik](../slonik/)) |
-| `dbSchema` | `string` | The database schema (as per [@prefabs.tech/fastify-slonik](../slonik/)) |
+| `dbSchema` | `string`    | The database schema (as per [@prefabs.tech/fastify-slonik](../slonik/))                  |
 
 ## Supporting `.gql` files and external schema exports
- To work with multiple schemas defined in `.gql` files or support GraphQL schema exports from external packages, ensure the following packages are installed in your API:
 
-* [@graphql-tools/load](https://github.com/ardatan/graphql-tools/tree/master/packages/load)
-* [@graphql-tools/load-files](https://github.com/ardatan/graphql-tools/tree/master/packages/load-files)
-* [@graphql-tools/merge](https://github.com/ardatan/graphql-tools/tree/master/packages/merge)
-* [@graphql-tools/schema](https://github.com/ardatan/graphql-tools/tree/master/packages/schema)
+To work with multiple schemas defined in `.gql` files or support GraphQL schema exports from external packages, ensure the following packages are installed in your API:
+
+- [@graphql-tools/load](https://github.com/ardatan/graphql-tools/tree/master/packages/load)
+- [@graphql-tools/load-files](https://github.com/ardatan/graphql-tools/tree/master/packages/load-files)
+- [@graphql-tools/merge](https://github.com/ardatan/graphql-tools/tree/master/packages/merge)
+- [@graphql-tools/schema](https://github.com/ardatan/graphql-tools/tree/master/packages/schema)
 
 To load and merge your GraphQL schemas, update your `src/graphql/schema.ts` file as follows:
 
@@ -164,6 +178,7 @@ export default schema;
 ```
 
 If you also need to include schemas defined in other packages update above code:
+
 ```typescript
 import { graphqlSchema } from "example"; // example: importing schemas from external packages
 import { loadFilesSync } from "@graphql-tools/load-files";
@@ -177,6 +192,7 @@ const schema = makeExecutableSchema({ typeDefs });
 
 export default schema;
 ```
+
 You can define additional schemas within the `src/` directory, including any nested subdirectories, using `.gql` files. For example, create a new file at `src/graphql/schema.gql`:
 
 ```graphql

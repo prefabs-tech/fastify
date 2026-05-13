@@ -1,9 +1,9 @@
+import type { FastifyInstance } from "fastify";
+
 import fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { FastifyInstance } from "fastify";
-
-const { mockStart, mockShutdown, MockJobOrchestrator } = vi.hoisted(() => {
+const { MockJobOrchestrator, mockShutdown, mockStart } = vi.hoisted(() => {
   // eslint-disable-next-line unicorn/no-useless-undefined
   const mockStart = vi.fn().mockResolvedValue(undefined);
   // eslint-disable-next-line unicorn/no-useless-undefined
@@ -14,7 +14,7 @@ const { mockStart, mockShutdown, MockJobOrchestrator } = vi.hoisted(() => {
     start: mockStart,
   }));
 
-  return { mockStart, mockShutdown, MockJobOrchestrator };
+  return { MockJobOrchestrator, mockShutdown, mockStart };
 });
 
 vi.mock("../jobOrchestrator", () => ({
@@ -44,21 +44,27 @@ describe("Worker plugin", async () => {
     await api.close().catch(() => {});
   });
 
-  it("should log a warning and skip registration when worker config is missing", async () => {
+  it("warns when worker configuration is missing and skips registration", async () => {
+    const warnSpy = vi.spyOn(api.log, "warn");
     api.decorate("config", {} as never);
 
     await api.register(plugin);
     await api.ready();
 
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Worker configuration is missing. Skipping plugin registration",
+    );
     expect(MockJobOrchestrator).not.toHaveBeenCalled();
   });
 
   it("should create a JobOrchestrator and call start when worker config is present", async () => {
+    const infoSpy = vi.spyOn(api.log, "info");
     api.decorate("config", { worker: workerConfig } as never);
 
     await api.register(plugin);
     await api.ready();
 
+    expect(infoSpy).toHaveBeenCalledWith("Registering worker plugin");
     expect(MockJobOrchestrator).toHaveBeenCalledWith(workerConfig);
     expect(mockStart).toHaveBeenCalledOnce();
   });
@@ -73,12 +79,14 @@ describe("Worker plugin", async () => {
   });
 
   it("should call shutdown on the orchestrator when fastify closes", async () => {
+    const infoSpy = vi.spyOn(api.log, "info");
     api.decorate("config", { worker: workerConfig } as never);
 
     await api.register(plugin);
     await api.ready();
     await api.close();
 
+    expect(infoSpy).toHaveBeenCalledWith("Shutting down worker");
     expect(mockShutdown).toHaveBeenCalledOnce();
   });
 });

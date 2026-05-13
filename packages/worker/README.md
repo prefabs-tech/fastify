@@ -4,31 +4,51 @@ A [Fastify](https://github.com/fastify/fastify) plugin for managing queue proces
 
 ## Features
 
-- **Cron Jobs**: Schedule recurring tasks using standard cron expressions
-- **Queue System**: Queue management with support for BullMQ and AWS SQS
-- **BullMQ Integration**: Redis-based message queues for high-performance background processing
-- **AWS SQS Integration**: Support for Amazon Simple Queue Service
+- **Cron Jobs**: Schedule recurring tasks using standard cron expressions (powered by [`node-cron`](https://www.npmjs.com/package/node-cron))
+- **Queue System**: Pluggable adapter registry with support for BullMQ and AWS SQS
+- **BullMQ Integration**: Redis-based message queues for high-performance background processing (powered by [`bullmq`](https://www.npmjs.com/package/bullmq))
+- **AWS SQS Integration**: Support for Amazon Simple Queue Service with long-polling and exponential backoff (powered by [`@aws-sdk/client-sqs`](https://www.npmjs.com/package/@aws-sdk/client-sqs))
+- **Standalone or Fastify**: Use the orchestrator with Fastify (via the plugin) or directly in a non-Fastify process
 
 ## Requirements
-- [@prefabs.tech/fastify-config](https://www.npmjs.com/package/@prefabs.tech/fastify-config)
+
+**Peer dependencies** (install separately):
+
+- [`fastify`](https://www.npmjs.com/package/fastify) `>=5.2.2`
+- [`fastify-plugin`](https://www.npmjs.com/package/fastify-plugin) `>=5.0.1`
+- [`@prefabs.tech/fastify-config`](https://www.npmjs.com/package/@prefabs.tech/fastify-config) — provides `fastify.config` which this plugin reads `config.worker` from
+
+**Optional peer dependencies** (install only the providers you use):
+
+- [`bullmq`](https://www.npmjs.com/package/bullmq) — required if you configure any `BULLMQ` queues
+- [`@aws-sdk/client-sqs`](https://www.npmjs.com/package/@aws-sdk/client-sqs) — required if you configure any `SQS` queues
+
+## Installation
+
+```bash
+npm install @prefabs.tech/fastify-worker @prefabs.tech/fastify-config
+# plus the providers you need:
+npm install bullmq
+npm install @aws-sdk/client-sqs
+```
 
 ## Usage
 
-### Fastify Plugin
+### Fastify plugin
 
-Register the worker plugin with your Fastify instance:
+Register `@prefabs.tech/fastify-config` first (so `fastify.config.worker` is available), then register the worker plugin:
 
 ```typescript
+import configPlugin from "@prefabs.tech/fastify-config";
 import workerPlugin from "@prefabs.tech/fastify-worker";
 import Fastify from "fastify";
 
 import config from "./config";
 
 const start = async () => {
-  const fastify = Fastify({
-    logger: config.logger,
-  });
+  const fastify = Fastify({ logger: config.logger });
 
+  await fastify.register(configPlugin, { config });
   await fastify.register(workerPlugin);
 
   await fastify.listen({
@@ -40,47 +60,58 @@ const start = async () => {
 start();
 ```
 
-### Pushing to the queue
+The plugin:
 
-The `AdapterRegistry` is a singleton. Once the plugin initializes the worker, any service can access the same registry directly — no instance passing required:
+1. Reads `fastify.config.worker` (see [Configuration](#configuration)). If missing, it logs a warning and skips registration.
+2. Creates a `JobOrchestrator` instance, starts cron jobs, and starts queue adapters.
+3. Decorates the Fastify instance with `fastify.worker` (typed as `JobOrchestrator`).
+4. Drains all adapters on the `onClose` hook.
+
+### Accessing queues from your services
+
+The plugin decorates the Fastify instance with `fastify.worker`. Inside any route or service that has the Fastify instance, use the per-instance registry:
 
 ```typescript
-await fastify.register(workerPlugin);
+import type { FastifyInstance } from "fastify";
+
+export const enqueueHello = async (fastify: FastifyInstance) => {
+  const queue = fastify.worker.adapters.get("bull-queue");
+
+  if (queue) {
+    await queue.push({ message: "Hello world!" });
+  }
+};
 ```
+
+### Standalone (without Fastify)
+
+Use `JobOrchestrator` directly when you don't have a Fastify instance:
 
 ```typescript
 import { JobOrchestrator } from "@prefabs.tech/fastify-worker";
 
-const queue = JobOrchestrator.adapters.get("queue-name")
-
-if (queue) {
-  queue.push({ message: 'Hello world!' })
-}
-```
-
-The plugin creates the `JobOrchestrator` instance, which populates `JobOrchestrator.adapters` on `start()`. Services import `JobOrchestrator` and access the static registry directly. On fastify close, `jobOrchestrator.shutdown()` drains all adapters.
-
-### Standalone
-
-Use the `JobOrchestrator` class directly without Fastify:
-
-```typescript
-import { JobOrchestrator } from "@prefabs.tech/fastify-worker";
-
-const jobOrchestrator = new JobOrchestrator({
-  cronJobs: [...],
-  queues: [...],
+const orchestrator = new JobOrchestrator({
+  cronJobs: [
+    /* ... */
+  ],
+  queues: [
+    /* ... */
+  ],
 });
 
-await jobOrchestrator.start();
+await orchestrator.start();
 
-// later...
-await jobOrchestrator.shutdown();
+const queue = orchestrator.adapters.get("bull-queue");
+
+await queue?.push({ message: "Hello from a standalone worker" });
+
+// On process shutdown:
+await orchestrator.shutdown();
 ```
 
 ## Configuration
 
-Add worker configuration to your config:
+Add a `worker` block to your `ApiConfig`:
 
 ```typescript
 import { QueueProvider } from "@prefabs.tech/fastify-worker";
@@ -107,7 +138,7 @@ const config: ApiConfig = {
         provider: QueueProvider.BULLMQ,
         bullmqConfig: {
           handler: async (job) => {
-            //
+            // process the job
           },
           queueOptions: {
             connection: {
@@ -130,7 +161,7 @@ const config: ApiConfig = {
             region: "",
           },
           handler: async (message) => {
-            //
+            // process the message
           },
           queueUrl: "",
         },
@@ -138,4 +169,33 @@ const config: ApiConfig = {
     ],
   },
 };
+```
+
+### SQS long-polling
+
+The SQS adapter uses **long-polling by default** (`WaitTimeSeconds: 20`) to avoid tight CPU loops and minimise empty receives. Override it explicitly via `receiveMessageOptions`:
+
+```typescript
+sqsConfig: {
+  // ...
+  receiveMessageOptions: {
+    QueueUrl: "https://sqs.us-east-1.amazonaws.com/.../my-queue",
+    MaxNumberOfMessages: 10,
+    WaitTimeSeconds: 5,
+  },
+}
+```
+
+The poll loop also applies an exponential backoff (capped at ~8s) when `ReceiveMessageCommand` fails, so a transient AWS outage will not turn into a request storm.
+
+### Typed payloads
+
+`BullMQAdapter` and `SQSAdapter` (and the registry lookups) are generic over the payload type. Specify a payload type when retrieving the adapter to get type-safe `push` and handler signatures:
+
+```typescript
+type EmailJob = { to: string; subject: string };
+
+const queue = fastify.worker.adapters.get<EmailJob>("email-queue");
+
+await queue?.push({ to: "user@example.com", subject: "Welcome" });
 ```

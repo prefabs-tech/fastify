@@ -4,14 +4,14 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import BullMQAdapter from "../../../queue/adapters/bullmq";
 
 const {
-  mockQueueAdd,
-  mockQueueClose,
-  mockWorkerClose,
-  mockWorkerOn,
   capturedHandler,
   eventListeners,
   MockQueue,
+  mockQueueAdd,
+  mockQueueClose,
   MockWorker,
+  mockWorkerClose,
+  mockWorkerOn,
 } = vi.hoisted(() => {
   const mockQueueAdd = vi.fn().mockResolvedValue({ id: "job-123" });
   // eslint-disable-next-line unicorn/no-useless-undefined
@@ -42,17 +42,17 @@ const {
     .mockImplementation(
       (_name: string, handler: (job: unknown) => Promise<void>) => {
         capturedHandler.fn = handler;
-        return { on: mockWorkerOn, close: mockWorkerClose };
+        return { close: mockWorkerClose, on: mockWorkerOn };
       },
     );
 
   return {
-    MockQueue,
-    MockWorker,
     capturedHandler,
     eventListeners,
+    MockQueue,
     mockQueueAdd,
     mockQueueClose,
+    MockWorker,
     mockWorkerClose,
     mockWorkerOn,
   };
@@ -101,22 +101,20 @@ describe("BullMQAdapter", () => {
       );
     });
 
-    it("should merge workerOptions with connection from queueOptions", async () => {
+    it("prefers workerOptions.connection when it differs from queue connection", async () => {
+      const otherConnection = { host: "other-host", port: 6380 };
       const config = {
         ...baseConfig,
-        workerOptions: {
-          concurrency: 5,
-          connection: baseConfig.queueOptions.connection,
-        },
+        workerOptions: { concurrency: 2, connection: otherConnection },
       };
-      const adapterWithWorkerOptions = new BullMQAdapter("test-queue", config);
+      const overrideAdapter = new BullMQAdapter("override-queue", config);
 
-      await adapterWithWorkerOptions.start();
+      await overrideAdapter.start();
 
       expect(MockWorker).toHaveBeenCalledWith(
-        "test-queue",
+        "override-queue",
         expect.any(Function),
-        { connection: baseConfig.queueOptions.connection, concurrency: 5 },
+        { concurrency: 2, connection: otherConnection },
       );
     });
 
@@ -239,6 +237,19 @@ describe("BullMQAdapter", () => {
       expect(() =>
         eventListeners["failed"]({ id: "job-1" }, new Error("error")),
       ).not.toThrow();
+    });
+
+    it("should not invoke onFailed when failed event emits without a job", async () => {
+      const onFailed = vi.fn();
+      const adapterWithFailed = new BullMQAdapter("test-queue", {
+        ...baseConfig,
+        onFailed,
+      });
+      await adapterWithFailed.start();
+
+      eventListeners["failed"](undefined, new Error("no job"));
+
+      expect(onFailed).not.toHaveBeenCalled();
     });
   });
 });

@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import CronScheduler from "../../cron/scheduler";
 
-const { mockStop, mockSchedule } = vi.hoisted(() => {
+const { mockSchedule, mockStop } = vi.hoisted(() => {
   const mockStop = vi.fn();
   const mockSchedule = vi.fn().mockReturnValue({ stop: mockStop });
 
-  return { mockStop, mockSchedule };
+  return { mockSchedule, mockStop };
 });
 
 vi.mock("node-cron", () => ({
@@ -37,7 +37,7 @@ describe("CronScheduler", () => {
     it("should pass options to node-cron when provided", () => {
       const task = vi.fn();
       const options = { scheduled: true, timezone: "UTC" };
-      const job = { expression: "0 * * * *", task, options };
+      const job = { expression: "0 * * * *", options, task };
 
       scheduler.schedule(job);
 

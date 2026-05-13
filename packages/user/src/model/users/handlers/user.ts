@@ -1,7 +1,7 @@
-import getUserService from "../../../lib/getUserService";
-
 import type { FastifyReply } from "fastify";
 import type { SessionRequest } from "supertokens-node/framework/fastify";
+
+import getUserService from "../../../lib/getUserService";
 
 const user = async (request: SessionRequest, reply: FastifyReply) => {
   const service = getUserService(

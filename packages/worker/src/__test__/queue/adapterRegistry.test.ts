@@ -4,12 +4,12 @@ import AdapterRegistry from "../../queue/adapterRegistry";
 import QueueAdapter from "../../queue/adapters/base";
 
 class MockAdapter extends QueueAdapter {
-  // eslint-disable-next-line unicorn/no-useless-undefined
-  start = vi.fn().mockResolvedValue(undefined);
-  // eslint-disable-next-line unicorn/no-useless-undefined
-  shutdown = vi.fn().mockResolvedValue(undefined);
   getClient = vi.fn().mockReturnValue({});
   push = vi.fn().mockResolvedValue("job-id");
+  // eslint-disable-next-line unicorn/no-useless-undefined
+  shutdown = vi.fn().mockResolvedValue(undefined);
+  // eslint-disable-next-line unicorn/no-useless-undefined
+  start = vi.fn().mockResolvedValue(undefined);
 }
 
 describe("AdapterRegistry", () => {

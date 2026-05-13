@@ -1,3 +1,5 @@
+import type { FastifyInstance } from "fastify";
+
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 import mercuriusAuth from "mercurius-auth";
@@ -6,8 +8,6 @@ import { Error } from "supertokens-node/recipe/session";
 
 import createUserContext from "../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim";
-
-import type { FastifyInstance } from "fastify";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {
@@ -39,9 +39,9 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
                 {
                   id: "st-ev",
                   reason: {
-                    message: "wrong value",
-                    expectedValue: true,
                     actualValue: false,
+                    expectedValue: true,
+                    message: "wrong value",
                   },
                 },
               ],

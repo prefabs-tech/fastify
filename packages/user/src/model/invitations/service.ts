@@ -1,25 +1,34 @@
-import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import { formatDate, BaseService } from "@prefabs.tech/fastify-slonik";
+import type { FilterInput } from "@prefabs.tech/fastify-slonik";
 
-import InvitationSqlFactory from "./sqlFactory";
-import { ERROR_CODES } from "../../constants";
-import computeInvitationExpiresAt from "../../lib/computeInvitationExpiresAt";
-import getUserService from "../../lib/getUserService";
-import areRolesExist from "../../supertokens/utils/areRolesExist";
-import validateEmail from "../../validator/email";
+import { CustomError } from "@prefabs.tech/fastify-error-handler";
+import { BaseService, formatDate } from "@prefabs.tech/fastify-slonik";
 
 import type {
   Invitation,
   InvitationCreateInput,
   InvitationUpdateInput,
 } from "../../types";
-import type { FilterInput } from "@prefabs.tech/fastify-slonik";
+
+import { ERROR_CODES } from "../../constants";
+import computeInvitationExpiresAt from "../../lib/computeInvitationExpiresAt";
+import getUserService from "../../lib/getUserService";
+import areRolesExist from "../../supertokens/utils/areRolesExist";
+import validateEmail from "../../validator/email";
+import InvitationSqlFactory from "./sqlFactory";
 
 class InvitationService extends BaseService<
   Invitation,
   InvitationCreateInput,
   InvitationUpdateInput
 > {
+  get factory(): InvitationSqlFactory {
+    return super.factory as InvitationSqlFactory;
+  }
+
+  get sqlFactoryClass() {
+    return InvitationSqlFactory;
+  }
+
   async findByToken(token: string): Promise<Invitation | null> {
     if (!this.validateUUID(token)) {
       // eslint-disable-next-line unicorn/no-null
@@ -33,14 +42,6 @@ class InvitationService extends BaseService<
     });
 
     return result;
-  }
-
-  get factory(): InvitationSqlFactory {
-    return super.factory as InvitationSqlFactory;
-  }
-
-  get sqlFactoryClass() {
-    return InvitationSqlFactory;
   }
 
   protected async preCreate(

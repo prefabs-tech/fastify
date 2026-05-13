@@ -1,16 +1,16 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { QueueProvider } from "../enum";
 import JobOrchestrator from "../jobOrchestrator";
 
-const { mockSchedule, mockStopAll, mockAdapterStart, mockAdapterShutdown } =
+const { mockAdapterShutdown, mockAdapterStart, mockSchedule, mockStopAll } =
   vi.hoisted(() => ({
-    mockSchedule: vi.fn(),
-    mockStopAll: vi.fn(),
-    // eslint-disable-next-line unicorn/no-useless-undefined
-    mockAdapterStart: vi.fn().mockResolvedValue(undefined),
     // eslint-disable-next-line unicorn/no-useless-undefined
     mockAdapterShutdown: vi.fn().mockResolvedValue(undefined),
+    // eslint-disable-next-line unicorn/no-useless-undefined
+    mockAdapterStart: vi.fn().mockResolvedValue(undefined),
+    mockSchedule: vi.fn(),
+    mockStopAll: vi.fn(),
   }));
 
 vi.mock("../cron", () => ({
@@ -28,11 +28,11 @@ vi.mock("../queue", async (importOriginal) => {
     createQueueAdapter: vi
       .fn()
       .mockImplementation((config: { name: string }) => ({
-        queueName: config.name,
-        start: mockAdapterStart,
-        shutdown: mockAdapterShutdown,
         getClient: vi.fn(),
         push: vi.fn(),
+        queueName: config.name,
+        shutdown: mockAdapterShutdown,
+        start: mockAdapterStart,
       })),
   };
 });
@@ -48,11 +48,6 @@ describe("JobOrchestrator", () => {
     mockAdapterShutdown.mockResolvedValue(undefined);
   });
 
-  afterEach(async () => {
-    // Clear static registry between tests to prevent state leakage
-    await JobOrchestrator.adapters.shutdownAll();
-  });
-
   describe("constructor", () => {
     it("should create a CronScheduler instance", async () => {
       const { CronScheduler } = vi.mocked(await import("../cron"));
@@ -61,6 +56,13 @@ describe("JobOrchestrator", () => {
 
       expect(CronScheduler).toHaveBeenCalledOnce();
       expect(orchestrator.cron).toBeDefined();
+    });
+
+    it("should create a per-instance AdapterRegistry", () => {
+      orchestrator = new JobOrchestrator({ cronJobs: [], queues: [] });
+
+      expect(orchestrator.adapters).toBeDefined();
+      expect(orchestrator.adapters.getAll()).toEqual([]);
     });
   });
 
@@ -117,7 +119,7 @@ describe("JobOrchestrator", () => {
       expect(mockAdapterStart).toHaveBeenCalledTimes(2);
     });
 
-    it("should register adapters in the static registry", async () => {
+    it("should register adapters in the per-instance registry", async () => {
       orchestrator = new JobOrchestrator({
         queues: [
           {
@@ -133,7 +135,7 @@ describe("JobOrchestrator", () => {
 
       await orchestrator.start();
 
-      expect(JobOrchestrator.adapters.has("my-queue")).toBe(true);
+      expect(orchestrator.adapters.has("my-queue")).toBe(true);
     });
 
     it("should not schedule any cron jobs when cronJobs is undefined", async () => {
@@ -202,7 +204,50 @@ describe("JobOrchestrator", () => {
       await orchestrator.start();
       await orchestrator.shutdown();
 
-      expect(JobOrchestrator.adapters.getAll()).toHaveLength(0);
+      expect(orchestrator.adapters.getAll()).toHaveLength(0);
+    });
+
+    it("should not affect another instance's adapters when one shuts down", async () => {
+      const first = new JobOrchestrator({
+        queues: [
+          {
+            bullmqConfig: {
+              handler: vi.fn(),
+              queueOptions: { connection: {} },
+            },
+            name: "queue-first",
+            provider: QueueProvider.BULLMQ,
+          },
+        ],
+      });
+      const second = new JobOrchestrator({
+        queues: [
+          {
+            bullmqConfig: {
+              handler: vi.fn(),
+              queueOptions: { connection: {} },
+            },
+            name: "queue-second",
+            provider: QueueProvider.BULLMQ,
+          },
+        ],
+      });
+
+      await first.start();
+      await second.start();
+      await first.shutdown();
+
+      expect(first.adapters.has("queue-first")).toBe(false);
+      expect(second.adapters.has("queue-second")).toBe(true);
+    });
+  });
+
+  describe("instance isolation", () => {
+    it("should give each instance its own AdapterRegistry", () => {
+      const first = new JobOrchestrator({ cronJobs: [], queues: [] });
+      const second = new JobOrchestrator({ cronJobs: [], queues: [] });
+
+      expect(first.adapters).not.toBe(second.adapters);
     });
   });
 });

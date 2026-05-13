@@ -5,13 +5,13 @@ abstract class QueueAdapter<Payload = unknown> {
     this.queueName = name;
   }
 
-  abstract start(): Promise<void>;
-  abstract shutdown(): Promise<void>;
   abstract getClient(): unknown;
   abstract push(
     data: Payload,
     options?: Record<string, unknown>,
   ): Promise<string>;
+  abstract shutdown(): Promise<void>;
+  abstract start(): Promise<void>;
 }
 
 export default QueueAdapter;

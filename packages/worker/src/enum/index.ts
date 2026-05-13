@@ -1,4 +1,4 @@
 export enum QueueProvider {
-  SQS = "sqs",
   BULLMQ = "bullmq",
+  SQS = "sqs",
 }

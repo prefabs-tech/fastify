@@ -1,8 +1,10 @@
 import { QueueProvider } from "../enum";
 import { QueueConfig } from "../types";
-import { QueueAdapter, BullMQAdapter, SQSAdapter } from "./adapters";
+import { BullMQAdapter, QueueAdapter, SQSAdapter } from "./adapters";
 
-const createQueueAdapter = (config: QueueConfig): QueueAdapter => {
+const createQueueAdapter = <Payload = unknown>(
+  config: QueueConfig<Payload>,
+): QueueAdapter<Payload> => {
   switch (config.provider) {
     case QueueProvider.BULLMQ: {
       if (!config.bullmqConfig) {
@@ -11,7 +13,7 @@ const createQueueAdapter = (config: QueueConfig): QueueAdapter => {
         );
       }
 
-      return new BullMQAdapter(config.name, config.bullmqConfig);
+      return new BullMQAdapter<Payload>(config.name, config.bullmqConfig);
     }
 
     case QueueProvider.SQS: {
@@ -21,7 +23,7 @@ const createQueueAdapter = (config: QueueConfig): QueueAdapter => {
         );
       }
 
-      return new SQSAdapter(config.name, config.sqsConfig);
+      return new SQSAdapter<Payload>(config.name, config.sqsConfig);
     }
 
     default: {

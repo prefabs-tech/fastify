@@ -1,9 +1,9 @@
+import type { FastifyInstance } from "fastify";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+
 import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import sendEmail from "../../../../lib/sendEmail";
-
-import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
 
 const resetPasswordUsingToken = (
   originalImplementation: RecipeInterface,
@@ -22,13 +22,13 @@ const resetPasswordUsingToken = (
           subject:
             fastify.config.user.emailOverrides?.resetPasswordNotification
               ?.subject || "Reset password notification",
+          templateData: {
+            emailId: user.email,
+          },
           templateName:
             fastify.config.user.emailOverrides?.resetPasswordNotification
               ?.templateName || "reset-password-notification",
           to: user.email,
-          templateData: {
-            emailId: user.email,
-          },
         });
       }
     }

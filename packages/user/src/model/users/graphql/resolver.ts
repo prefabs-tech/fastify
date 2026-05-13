@@ -1,3 +1,6 @@
+import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
+import type { MercuriusContext } from "mercurius";
+
 import { GraphQLUpload, Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
 import EmailVerification, {
@@ -11,6 +14,8 @@ import {
 } from "supertokens-node/recipe/thirdpartyemailpassword";
 import UserRoles from "supertokens-node/recipe/userroles";
 
+import type { UserUpdateInput } from "../../../types";
+
 import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
 import CustomApiError from "../../../customApiError";
 import getUserService from "../../../lib/getUserService";
@@ -19,10 +24,6 @@ import ProfileValidationClaim from "../../../supertokens/utils/profileValidation
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
 import filterUserUpdateInput from "../filterUserUpdateInput";
-
-import type { UserUpdateInput } from "../../../types";
-import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
-import type { MercuriusContext } from "mercurius";
 
 const Mutation = {
   adminSignUp: async (
@@ -89,16 +90,16 @@ const Mutation = {
 
       // signup
       const signUpResponse = await emailPasswordSignUp(email, password, {
-        autoVerifyEmail: true,
-        roles: [
-          ROLE_ADMIN,
-          ...(superAdminUsers.status === "OK" ? [ROLE_SUPERADMIN] : []),
-        ],
         _default: {
           request: {
             request: reply.request,
           },
         },
+        autoVerifyEmail: true,
+        roles: [
+          ROLE_ADMIN,
+          ...(superAdminUsers.status === "OK" ? [ROLE_SUPERADMIN] : []),
+        ],
       });
 
       if (signUpResponse.status !== "OK") {
@@ -121,6 +122,162 @@ const Mutation = {
         "Oops, Something went wrong",
       );
 
+      mercuriusError.statusCode = 500;
+
+      return mercuriusError;
+    }
+  },
+  changeEmail: async (
+    parent: unknown,
+    arguments_: {
+      email: string;
+    },
+    context: MercuriusContext,
+  ) => {
+    const { app, config, database, dbSchema, reply, user } = context;
+
+    try {
+      if (user) {
+        if (config.user.features?.updateEmail?.enabled === false) {
+          return new mercurius.ErrorWithProps("EMAIL_FEATURE_DISABLED_ERROR");
+        }
+
+        const request = reply.request;
+
+        if (config.user.features?.profileValidation?.enabled) {
+          await request.session?.fetchAndSetClaim(
+            new ProfileValidationClaim(),
+            createUserContext(undefined, request),
+          );
+        }
+
+        if (config.user.features?.signUp?.emailVerification) {
+          await request.session?.fetchAndSetClaim(
+            EmailVerificationClaim,
+            createUserContext(undefined, request),
+          );
+        }
+
+        const emailValidationResult = validateEmail(arguments_.email, config);
+
+        if (!emailValidationResult.success) {
+          return new mercurius.ErrorWithProps("EMAIL_INVALID_ERROR");
+        }
+
+        if (user.email === arguments_.email) {
+          return new mercurius.ErrorWithProps("EMAIL_SAME_AS_CURRENT_ERROR");
+        }
+
+        if (config.user.features?.signUp?.emailVerification) {
+          const isVerified = await isEmailVerified(user.id, arguments_.email);
+
+          if (!isVerified) {
+            const users = await getUsersByEmail(arguments_.email);
+
+            const emailPasswordRecipeUsers = users.filter(
+              (user) => !user.thirdParty,
+            );
+
+            if (emailPasswordRecipeUsers.length > 0) {
+              return new mercurius.ErrorWithProps("EMAIL_ALREADY_EXISTS_ERROR");
+            }
+
+            const tokenResponse =
+              await EmailVerification.createEmailVerificationToken(
+                user.id,
+                arguments_.email,
+              );
+
+            if (tokenResponse.status === "OK") {
+              await EmailVerification.sendEmail({
+                emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
+                type: "EMAIL_VERIFICATION",
+                user: {
+                  email: arguments_.email,
+                  id: user.id,
+                },
+                userContext: {
+                  _default: {
+                    request: {
+                      request: request,
+                    },
+                  },
+                },
+              });
+
+              return {
+                message: "A verification link has been sent to your email.",
+                status: "OK",
+              };
+            }
+
+            return new mercurius.ErrorWithProps(tokenResponse.status);
+          }
+        }
+
+        const service = getUserService(config, database, dbSchema);
+
+        const response = await service.changeEmail(user.id, arguments_.email);
+
+        request.user = response;
+
+        return {
+          message: "Email updated successfully.",
+          status: "OK",
+        };
+      } else {
+        return new mercurius.ErrorWithProps("USER_NOT_FOUND");
+      }
+      /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    } catch (error: any) {
+      app.log.error(error);
+
+      if (error.message === "EMAIL_ALREADY_EXISTS_ERROR") {
+        return new mercurius.ErrorWithProps(error.message);
+      }
+
+      return new mercurius.ErrorWithProps(
+        "Oops, Something went wrong",
+        {},
+        500,
+      );
+    }
+  },
+  changePassword: async (
+    parent: unknown,
+    arguments_: {
+      newPassword: string;
+      oldPassword: string;
+    },
+    context: MercuriusContext,
+  ) => {
+    const { app, config, database, dbSchema, reply, user } = context;
+
+    const service = getUserService(config, database, dbSchema);
+
+    if (!user) {
+      return new mercurius.ErrorWithProps("unauthorized", {}, 401);
+    }
+
+    try {
+      const response = await service.changePassword(
+        user.id,
+        arguments_.oldPassword,
+        arguments_.newPassword,
+      );
+
+      if (response.status === "OK") {
+        await createNewSession(reply.request, reply, user.id);
+      }
+
+      return response;
+    } catch (error) {
+      // FIXME [OP 28 SEP 2022]
+      app.log.error(error);
+
+      const mercuriusError = new mercurius.ErrorWithProps(
+        "Oops, Something went wrong",
+      );
       mercuriusError.statusCode = 500;
 
       return mercuriusError;
@@ -223,12 +380,9 @@ const Mutation = {
 
     return { status: "OK" };
   },
-  changePassword: async (
+  removePhoto: async (
     parent: unknown,
-    arguments_: {
-      oldPassword: string;
-      newPassword: string;
-    },
+    arguments_: undefined,
     context: MercuriusContext,
   ) => {
     const { app, config, database, dbSchema, reply, user } = context;
@@ -240,19 +394,33 @@ const Mutation = {
     }
 
     try {
-      const response = await service.changePassword(
-        user.id,
-        arguments_.oldPassword,
-        arguments_.newPassword,
-      );
+      // eslint-disable-next-line unicorn/no-null
+      const updatedUser = await service.update(user.id, { photoId: null });
 
-      if (response.status === "OK") {
-        await createNewSession(reply.request, reply, user.id);
+      if (user.photoId) {
+        await service.fileService.delete(user.photoId);
       }
 
-      return response;
+      const request = reply.request;
+
+      request.user = updatedUser;
+
+      if (request.config.user.features?.profileValidation?.enabled) {
+        await request.session?.fetchAndSetClaim(
+          new ProfileValidationClaim(),
+          createUserContext(undefined, request),
+        );
+      }
+
+      if (request.config.user.features?.signUp?.emailVerification) {
+        await request.session?.fetchAndSetClaim(
+          EmailVerificationClaim,
+          createUserContext(undefined, request),
+        );
+      }
+
+      return updatedUser;
     } catch (error) {
-      // FIXME [OP 28 SEP 2022]
       app.log.error(error);
 
       const mercuriusError = new mercurius.ErrorWithProps(
@@ -391,173 +559,6 @@ const Mutation = {
       return mercuriusError;
     }
   },
-  removePhoto: async (
-    parent: unknown,
-    arguments_: undefined,
-    context: MercuriusContext,
-  ) => {
-    const { app, config, database, dbSchema, reply, user } = context;
-
-    const service = getUserService(config, database, dbSchema);
-
-    if (!user) {
-      return new mercurius.ErrorWithProps("unauthorized", {}, 401);
-    }
-
-    try {
-      // eslint-disable-next-line unicorn/no-null
-      const updatedUser = await service.update(user.id, { photoId: null });
-
-      if (user.photoId) {
-        await service.fileService.delete(user.photoId);
-      }
-
-      const request = reply.request;
-
-      request.user = updatedUser;
-
-      if (request.config.user.features?.profileValidation?.enabled) {
-        await request.session?.fetchAndSetClaim(
-          new ProfileValidationClaim(),
-          createUserContext(undefined, request),
-        );
-      }
-
-      if (request.config.user.features?.signUp?.emailVerification) {
-        await request.session?.fetchAndSetClaim(
-          EmailVerificationClaim,
-          createUserContext(undefined, request),
-        );
-      }
-
-      return updatedUser;
-    } catch (error) {
-      app.log.error(error);
-
-      const mercuriusError = new mercurius.ErrorWithProps(
-        "Oops, Something went wrong",
-      );
-      mercuriusError.statusCode = 500;
-
-      return mercuriusError;
-    }
-  },
-  changeEmail: async (
-    parent: unknown,
-    arguments_: {
-      email: string;
-    },
-    context: MercuriusContext,
-  ) => {
-    const { app, config, database, dbSchema, user, reply } = context;
-
-    try {
-      if (user) {
-        if (config.user.features?.updateEmail?.enabled === false) {
-          return new mercurius.ErrorWithProps("EMAIL_FEATURE_DISABLED_ERROR");
-        }
-
-        const request = reply.request;
-
-        if (config.user.features?.profileValidation?.enabled) {
-          await request.session?.fetchAndSetClaim(
-            new ProfileValidationClaim(),
-            createUserContext(undefined, request),
-          );
-        }
-
-        if (config.user.features?.signUp?.emailVerification) {
-          await request.session?.fetchAndSetClaim(
-            EmailVerificationClaim,
-            createUserContext(undefined, request),
-          );
-        }
-
-        const emailValidationResult = validateEmail(arguments_.email, config);
-
-        if (!emailValidationResult.success) {
-          return new mercurius.ErrorWithProps("EMAIL_INVALID_ERROR");
-        }
-
-        if (user.email === arguments_.email) {
-          return new mercurius.ErrorWithProps("EMAIL_SAME_AS_CURRENT_ERROR");
-        }
-
-        if (config.user.features?.signUp?.emailVerification) {
-          const isVerified = await isEmailVerified(user.id, arguments_.email);
-
-          if (!isVerified) {
-            const users = await getUsersByEmail(arguments_.email);
-
-            const emailPasswordRecipeUsers = users.filter(
-              (user) => !user.thirdParty,
-            );
-
-            if (emailPasswordRecipeUsers.length > 0) {
-              return new mercurius.ErrorWithProps("EMAIL_ALREADY_EXISTS_ERROR");
-            }
-
-            const tokenResponse =
-              await EmailVerification.createEmailVerificationToken(
-                user.id,
-                arguments_.email,
-              );
-
-            if (tokenResponse.status === "OK") {
-              await EmailVerification.sendEmail({
-                type: "EMAIL_VERIFICATION",
-                user: {
-                  id: user.id,
-                  email: arguments_.email,
-                },
-                emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
-                userContext: {
-                  _default: {
-                    request: {
-                      request: request,
-                    },
-                  },
-                },
-              });
-
-              return {
-                status: "OK",
-                message: "A verification link has been sent to your email.",
-              };
-            }
-
-            return new mercurius.ErrorWithProps(tokenResponse.status);
-          }
-        }
-
-        const service = getUserService(config, database, dbSchema);
-
-        const response = await service.changeEmail(user.id, arguments_.email);
-
-        request.user = response;
-
-        return {
-          status: "OK",
-          message: "Email updated successfully.",
-        };
-      } else {
-        return new mercurius.ErrorWithProps("USER_NOT_FOUND");
-      }
-      /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
-    } catch (error: any) {
-      app.log.error(error);
-
-      if (error.message === "EMAIL_ALREADY_EXISTS_ERROR") {
-        return new mercurius.ErrorWithProps(error.message);
-      }
-
-      return new mercurius.ErrorWithProps(
-        "Oops, Something went wrong",
-        {},
-        500,
-      );
-    }
-  },
 };
 
 const Query = {
@@ -649,9 +650,9 @@ const Query = {
   users: async (
     parent: unknown,
     arguments_: {
+      filters?: FilterInput;
       limit: number;
       offset: number;
-      filters?: FilterInput;
       sort?: SortInput[];
     },
     context: MercuriusContext,

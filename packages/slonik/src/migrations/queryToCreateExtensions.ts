@@ -1,7 +1,7 @@
-import { sql } from "slonik";
-
 import type { QuerySqlToken } from "slonik";
 import type { ZodTypeAny } from "zod";
+
+import { sql } from "slonik";
 
 const queryToCreateExtension = (
   extension: string,

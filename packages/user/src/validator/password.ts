@@ -1,15 +1,12 @@
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
+import type { StrongPasswordOptions } from "../types";
+
 import { passwordSchema } from "../schemas";
 import { defaultOptions } from "../schemas/password";
 
-import type { StrongPasswordOptions } from "../types";
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
-
-const getErrorMessage = (options?: StrongPasswordOptions): string => {
+const getErrorMessage = (options: StrongPasswordOptions): string => {
   let errorMessage = "Password is too weak";
-
-  if (!options) {
-    return errorMessage;
-  }
 
   const messages: string[] = [];
 

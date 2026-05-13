@@ -1,6 +1,5 @@
-import { resolve, dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-
 import { defineConfig, loadEnv } from "vite";
 
 import { dependencies, peerDependencies } from "./package.json";
@@ -25,10 +24,10 @@ export default defineConfig(({ mode }) => {
         output: {
           exports: "named",
           globals: {
-            fastify: "Fastify",
-            "fastify-plugin": "FastifyPlugin",
             "@fastify/swagger": "FastifySwagger",
             "@fastify/swagger-ui": "FastifySwaggerUI",
+            fastify: "Fastify",
+            "fastify-plugin": "FastifyPlugin",
           },
         },
       },

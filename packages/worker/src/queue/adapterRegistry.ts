@@ -7,8 +7,8 @@ class AdapterRegistry {
     this.adapters.set(adapter.queueName, adapter);
   }
 
-  get(name: string): QueueAdapter | undefined {
-    return this.adapters.get(name);
+  get<Payload = unknown>(name: string): QueueAdapter<Payload> | undefined {
+    return this.adapters.get(name) as QueueAdapter<Payload> | undefined;
   }
 
   getAll(): QueueAdapter[] {

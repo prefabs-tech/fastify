@@ -2,9 +2,9 @@ import { QueueProvider } from "../enum";
 import { BullMQAdapterConfig } from "../queue/adapters/bullmq";
 import { SQSAdapterConfig } from "../queue/adapters/sqs";
 
-export interface QueueConfig {
-  bullmqConfig?: BullMQAdapterConfig;
+export interface QueueConfig<Payload = unknown> {
+  bullmqConfig?: BullMQAdapterConfig<Payload>;
   name: string;
   provider: QueueProvider;
-  sqsConfig?: SQSAdapterConfig;
+  sqsConfig?: SQSAdapterConfig<Payload>;
 }

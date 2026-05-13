@@ -1,9 +1,10 @@
+import type { FastifyInstance } from "fastify";
+
 import fastifySwagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import FastifyPlugin from "fastify-plugin";
 
 import type { SwaggerOptions } from "./types";
-import type { FastifyInstance } from "fastify";
 
 const plugin = async (fastify: FastifyInstance, options: SwaggerOptions) => {
   const { fastifySwaggerOptions, uiOptions } = options;

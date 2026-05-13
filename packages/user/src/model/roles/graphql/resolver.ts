@@ -1,16 +1,16 @@
+import type { MercuriusContext } from "mercurius";
+
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { mercurius } from "mercurius";
 
 import RoleService from "../service";
 
-import type { MercuriusContext } from "mercurius";
-
 const Mutation = {
   createRole: async (
     parent: unknown,
     arguments_: {
-      role: string;
       permissions: string[];
+      role: string;
     },
     context: MercuriusContext,
   ) => {
@@ -87,8 +87,8 @@ const Mutation = {
   updateRolePermissions: async (
     parent: unknown,
     arguments_: {
-      role: string;
       permissions: string[];
+      role: string;
     },
     context: MercuriusContext,
   ) => {
@@ -126,30 +126,6 @@ const Mutation = {
 };
 
 const Query = {
-  roles: async (
-    parent: unknown,
-    arguments_: Record<string, never>,
-    context: MercuriusContext,
-  ) => {
-    const { app } = context;
-
-    try {
-      const service = new RoleService();
-      const roles = await service.getRoles();
-
-      return roles;
-    } catch (error) {
-      app.log.error(error);
-
-      const mercuriusError = new mercurius.ErrorWithProps(
-        "Oops, Something went wrong",
-      );
-
-      mercuriusError.statusCode = 500;
-
-      return mercuriusError;
-    }
-  },
   rolePermissions: async (
     parent: unknown,
     arguments_: {
@@ -169,6 +145,30 @@ const Query = {
       }
 
       return permissions;
+    } catch (error) {
+      app.log.error(error);
+
+      const mercuriusError = new mercurius.ErrorWithProps(
+        "Oops, Something went wrong",
+      );
+
+      mercuriusError.statusCode = 500;
+
+      return mercuriusError;
+    }
+  },
+  roles: async (
+    parent: unknown,
+    arguments_: Record<string, never>,
+    context: MercuriusContext,
+  ) => {
+    const { app } = context;
+
+    try {
+      const service = new RoleService();
+      const roles = await service.getRoles();
+
+      return roles;
     } catch (error) {
       app.log.error(error);
 

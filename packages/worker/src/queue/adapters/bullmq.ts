@@ -1,30 +1,30 @@
 import {
   Queue as BullQueue,
-  Worker,
   Job,
-  QueueOptions,
-  WorkerOptions,
   JobsOptions,
+  QueueOptions,
+  Worker,
+  WorkerOptions,
 } from "bullmq";
 
 import QueueAdapter from "./base";
 
-export interface BullMQAdapterConfig {
+export interface BullMQAdapterConfig<Payload = unknown> {
+  handler: (job: Job<Payload>) => Promise<void>;
+  onError?: (error: Error) => void;
+  onFailed?: (job: Job<Payload>, error: Error) => void;
   queueOptions: QueueOptions;
   workerOptions?: WorkerOptions;
-  handler: (job: Job) => Promise<void>;
-  onError?: (error: Error) => void;
-  onFailed?: (job: Job, error: Error) => void;
 }
 
-class BullMQAdapter<Payload> extends QueueAdapter {
+class BullMQAdapter<Payload = unknown> extends QueueAdapter<Payload> {
   public queue?: BullQueue;
   public worker?: Worker;
-  private config: BullMQAdapterConfig;
+  private config: BullMQAdapterConfig<Payload>;
   private queueOptions: QueueOptions;
   private workerOptions: WorkerOptions;
 
-  constructor(name: string, config: BullMQAdapterConfig) {
+  constructor(name: string, config: BullMQAdapterConfig<Payload>) {
     super(name);
 
     this.config = config;
@@ -33,34 +33,6 @@ class BullMQAdapter<Payload> extends QueueAdapter {
       connection: config.queueOptions.connection,
       ...config.workerOptions,
     };
-  }
-
-  async start(): Promise<void> {
-    this.queue = new BullQueue(this.queueName, this.queueOptions);
-    this.worker = new Worker(
-      this.queueName,
-      async (job: Job<Payload>) => {
-        await this.config.handler(job);
-      },
-      this.workerOptions,
-    );
-
-    this.worker.on("error", (error) => {
-      if (this.config.onError) {
-        this.config.onError(error);
-      }
-    });
-
-    this.worker.on("failed", (job, error) => {
-      if (this.config.onFailed) {
-        this.config.onFailed(job as Job<Payload>, error);
-      }
-    });
-  }
-
-  async shutdown(): Promise<void> {
-    await this.worker?.close();
-    await this.queue?.close();
   }
 
   getClient(): BullQueue {
@@ -77,6 +49,34 @@ class BullMQAdapter<Payload> extends QueueAdapter {
         `Failed to push job to BullMQ queue: ${this.queueName}. Error: ${(error as Error).message}`,
       );
     }
+  }
+
+  async shutdown(): Promise<void> {
+    await this.worker?.close();
+    await this.queue?.close();
+  }
+
+  async start(): Promise<void> {
+    this.queue = new BullQueue(this.queueName, this.queueOptions);
+    this.worker = new Worker(
+      this.queueName,
+      async (job: Job) => {
+        await this.config.handler(job as Job<Payload>);
+      },
+      this.workerOptions,
+    );
+
+    this.worker.on("error", (error) => {
+      if (this.config.onError) {
+        this.config.onError(error);
+      }
+    });
+
+    this.worker.on("failed", (job, error) => {
+      if (this.config.onFailed && job) {
+        this.config.onFailed(job as Job<Payload>, error);
+      }
+    });
   }
 }
 

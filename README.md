@@ -4,12 +4,16 @@ A set of fastify libraries
 
 ## Packages
 
-- @prefabs.tech/fastify-config (https://www.npmjs.com/package/@prefabs.tech/fastify-config)
-- @prefabs.tech/fastify-graphql (https://www.npmjs.com/package/@prefabs.tech/fastify-graphql)
-- @prefabs.tech/fastify-mailer (https://www.npmjs.com/package/@prefabs.tech/fastify-mailer)
-- @prefabs.tech/fastify-s3 (https://www.npmjs.com/package/@prefabs.tech/fastify-s3)
-- @prefabs.tech/fastify-slonik (https://www.npmjs.com/package/@prefabs.tech/fastify-slonik)
-- @prefabs.tech/fastify-user (https://www.npmjs.com/package/@prefabs.tech/fastify-user)
+- [@prefabs.tech/fastify-config](https://www.npmjs.com/package/@prefabs.tech/fastify-config)
+- [@prefabs.tech/fastify-error-handler](https://www.npmjs.com/package/@prefabs.tech/fastify-error-handler)
+- [@prefabs.tech/fastify-firebase](https://www.npmjs.com/package/@prefabs.tech/fastify-firebase)
+- [@prefabs.tech/fastify-graphql](https://www.npmjs.com/package/@prefabs.tech/fastify-graphql)
+- [@prefabs.tech/fastify-mailer](https://www.npmjs.com/package/@prefabs.tech/fastify-mailer)
+- [@prefabs.tech/fastify-s3](https://www.npmjs.com/package/@prefabs.tech/fastify-s3)
+- [@prefabs.tech/fastify-slonik](https://www.npmjs.com/package/@prefabs.tech/fastify-slonik)
+- [@prefabs.tech/fastify-swagger](https://www.npmjs.com/package/@prefabs.tech/fastify-swagger)
+- [@prefabs.tech/fastify-user](https://www.npmjs.com/package/@prefabs.tech/fastify-user)
+- [@prefabs.tech/fastify-worker](https://www.npmjs.com/package/@prefabs.tech/fastify-worker)
 
 ## Installation & Usage
 

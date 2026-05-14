@@ -482,6 +482,10 @@ importers:
         version: 3.25.76
 
   packages/stripe:
+    dependencies:
+      stripe:
+        specifier: 20.3.1
+        version: 20.3.1(@types/node@24.10.15)
     devDependencies:
       '@prefabs.tech/eslint-config':
         specifier: 0.7.0
@@ -510,9 +514,6 @@ importers:
       prettier:
         specifier: 3.8.3
         version: 3.8.3
-      stripe:
-        specifier: 20.3.1
-        version: 20.3.1(@types/node@24.10.15)
       typescript:
         specifier: 5.9.3
         version: 5.9.3

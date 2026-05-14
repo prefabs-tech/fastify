@@ -1,173 +1,97 @@
-<!-- Package analysis — update when the package surface or behavior changes. -->
-
-# `@prefabs.tech/fastify-stripe` — Package Analysis
+<!-- Package analysis — produced by /analyze-package. Do not edit manually. -->
 
 ## Base Library Passthrough Analysis
 
 ### `stripe` (Stripe Node SDK) — PARTIAL PASSTHROUGH / MODIFIED
 
-- **Options type:** Partial import — `clientConfig` is imported from `Stripe.StripeConfig` and passed through; other SDK features are accessed via the exposed `client.stripe` instance.
-- **Options passed:** `clientConfig` is forwarded unmodified to `new Stripe(apiKey, clientConfig)`. All other SDK configuration happens through the curated `StripeConfig` type defined by this package.
-- **Features restricted:**
-  - `checkout.sessions.create` is wrapped with a simplified surface (`CreateSessionInput`) that supports only single-product sessions. Multi-product sessions, tax rates, shipping options, and other advanced features require direct SDK access via `client.stripe`.
-  - `promotionCodes.list` is wrapped to hardcode `active: true` and return only the first result.
-- **Features added:**
-  - Fastify plugin with automatic webhook endpoint registration
-  - Signature verification preHandler with structured 400 responses
-  - Raw-body content-type parser scoped to webhook routes
-  - Config-aware `StripeClient` helper with defaults for currency, URLs, and promotion codes
-  - Module augmentations for `fastify.config.stripe`, `request.rawBody`, and `request.stripeEvent`
-  - Required register-time `StripeConfig` (throws if omitted or `{}`, same class of error as empty-options registration in mailer/slonik)
-  - Webhook handler warning system (logs at registration when no custom handler is provided)
-  - Default fallback webhook handler (returns 200 to prevent Stripe retries)
-  - Mode-specific metadata routing for checkout sessions
+- Options type: Custom `StripeConfig` for this plugin plus `clientConfig?: Stripe.StripeConfig` passed verbatim to `new Stripe(apiKey, clientConfig)`.
+- Options passed: `apiKey` and `clientConfig` unmodified to constructor. Webhook verification uses `Stripe.webhooks.constructEvent(rawBody, signature, secret)` (SDK static API) with no extra transformation.
+- Features restricted: Consumers do not receive a generic “pass all Checkout params” helper; `createCheckoutSession` only accepts `CreateSessionInput` and builds a fixed `SessionCreateParams`. `getActivePromotionCode` wraps `promotionCodes.list` with `active: true` and returns only the first result.
+- Features added: Fastify plugin wiring, webhook route, scoped raw-body parser, signature preHandler, optional handler warning + safe default handler, `StripeClient` helper class, TypeScript augmentations, route constant export.
 
----
+### `@prefabs.tech/fastify-config` — MODIFIED (integration only)
 
-## Code Classification: "Ours" vs "Theirs"
+- This package augments `ApiConfig` with optional `stripe?: StripeConfig`; it does not redefine the config system.
+- `StripeClient` reads `config.stripe` from a full `ApiConfig` instance.
 
-### OURS — Custom Logic
+### `fastify` / `fastify-plugin` — THEIRS (framework)
 
-**Plugin Registration (`src/plugin.ts`)**
-1. Requires resolved `StripeConfig` from register options: throws if options are omitted or `{}`
-2. Conditional webhook controller registration when resolved `enablePaymentWebhook` is truthy, passing `{ stripeConfig }` into the controller
-3. `fastify-plugin` wrapping for non-encapsulated registration
-
-**Type System (`src/types/index.ts`, `src/index.ts`)**
-4. Module augmentation of `@prefabs.tech/fastify-config` to add `stripe?: StripeConfig`
-5. Module augmentation of `fastify` to add `rawBody?: Buffer` and `stripeEvent?: Stripe.Event`
-6. Curated `StripeConfig` type (not a direct passthrough of Stripe SDK types)
-7. `CreateSessionInput` type for simplified checkout session creation
-
-**Webhook Controller (`src/webhook/controller.ts`)**
-8. Requires `{ stripeConfig }` at register time; throws if `stripeConfig` is missing
-9. Registration-time warning when `handlers.webhook` is unset on the resolved config (webhook route is still registered; default handler applies)
-10. Route path defaults to `ROUTE_STRIPE_WEBHOOK` when resolved `webhookPath` is unset
-11. Conditional dispatch: calls custom handler if provided, otherwise falls back to default handler
-12. Error response when `request.stripeEvent` is missing after verification (defensive, should be unreachable)
-
-**Signature Verification (`src/middlewares/verifyStripeSignature.ts`)**
-13. `createVerifyStripeSignature(stripeConfig)` returns a preHandler that closes over `webhookSecret` (does not read `request.server.config.stripe`)
-14. Structured 400 responses with specific error messages for each failure mode
-15. Error logging for all verification failures
-16. Guards: missing secret, missing signature header, missing raw body
-17. Attaches verified event to `request.stripeEvent` on success
-
-**Raw Body Parser (`src/utils/stripeRawBodyParser.ts`)**
-18. Custom `application/json` parser that captures `request.rawBody` while still parsing JSON
-19. JSON parse errors tagged with `statusCode: 400` for proper HTTP response
-20. Scoped to plugin encapsulation (doesn't affect parent instance routes)
-
-**Default Webhook Handler (`src/webhook/handler.ts`)**
-21. Intentionally returns without throwing to avoid 500 response and Stripe retry loop
-22. Logs error with `eventId` and `eventType` for visibility
-23. Acknowledges event with 200 to suppress Stripe retries
-
-**StripeClient Wrapper (`src/utils/stripeClient.ts`)**
-24. Constructor throws when `config.stripe` is unset
-25. `createCheckoutSession`: defaults `quantity` to `1`
-26. `createCheckoutSession`: defaults `mode` to `"payment"`
-27. `createCheckoutSession`: defaults `currency` to `config.stripe.defaultCurrency`
-28. `createCheckoutSession`: defaults `successUrl` to `config.stripe.urls.success`
-29. `createCheckoutSession`: defaults `cancelUrl` to `config.stripe.urls.cancel`
-30. `createCheckoutSession`: forwards `config.stripe.allowPromotionCodes` as `allow_promotion_codes`
-31. `createCheckoutSession`: synthesizes single `line_items` entry from flat input
-32. `createCheckoutSession`: mode-specific metadata routing (payment → `payment_intent_data.metadata`, subscription → `subscription_data.metadata`, setup → `setup_intent_data.metadata`)
-33. `createCheckoutSession`: omits all `*_data` blocks when metadata is not provided
-34. `getActivePromotionCode`: hardcodes `active: true` filter
-35. `getActivePromotionCode`: returns only first match (no pagination)
-
-**Constants & Exports (`src/constants.ts`, `src/index.ts`)**
-36. `ROUTE_STRIPE_WEBHOOK` constant exported for consumer reference
-37. Re-exports: `StripeConfig`, `StripeEvent` (aliased from `Stripe.Event`), `CreateSessionInput`
-
-### THEIRS — Direct Passthrough
-
-**Stripe SDK Usage**
-1. `new Stripe(apiKey, clientConfig)` — `clientConfig` passed unmodified
-2. `stripe.webhooks.constructEvent(rawBody, signature, secret)` — called directly with no transformation
-3. `stripe.checkout.sessions.create(params)` — called directly after parameter synthesis
-4. `stripe.promotionCodes.list({ active, code })` — called directly with hardcoded filter
-5. Raw `Stripe` SDK instance exposed as `client.stripe` for direct access to all SDK features
+- Plugin pattern: default export wrapped with `fastify-plugin` so behavior applies to the enclosing Fastify scope. Webhook controller is a **nested** plugin without `fastify-plugin`, keeping the JSON parser override local.
 
 ---
 
 ## Summary
 
-### Public Exports
+### Package metadata
 
-**Default Export:** `stripePlugin` — Fastify plugin wrapped with `fastify-plugin` for non-encapsulated registration
+- **Runtime dependency:** `stripe@20.3.1` (bundled; consumers do not declare it unless they use the SDK alongside this package).
+- **Peers:** `@prefabs.tech/fastify-config@0.94.0`, `fastify@>=5.2.2`, `fastify-plugin@>=5.0.1`.
+- **Entry:** `src/index.ts` → `export *` from `./constants`, `./utils`; default plugin from `./plugin`; types `StripeConfig`, `StripeEvent`.
 
-**Named Exports:**
-- `ROUTE_STRIPE_WEBHOOK` — constant string `"/payment/webhook"`
-- `StripeClient` — class for config-aware Stripe operations
-- `registerRawBodyParser` — function to install raw-body parser on any Fastify instance
-- `StripeConfig` — type for `config.stripe` shape
-- `StripeEvent` — re-exported `Stripe.Event` type
-- `CreateSessionInput` — type for `createCheckoutSession` input
+### Public exports (from `src/index.ts` and `src/utils/index.ts`)
 
-### Framework Constructs Added
+| Export | Description |
+| ------ | ----------- |
+| `default` | `FastifyPluginAsync`-wrapped Stripe plugin; requires non-empty `StripeConfig`. |
+| `ROUTE_STRIPE_WEBHOOK` | Constant `"/payment/webhook"`. |
+| `StripeClient` | Holds `Stripe` SDK + `createCheckoutSession` + `getActivePromotionCode`. |
+| `registerRawBodyParser` | Alias export of the default from `stripeRawBodyParser` — registers JSON parser with `rawBody`. |
+| `StripeConfig` | Type of plugin options / `config.stripe`. |
+| `StripeEvent` | Type alias for `Stripe.Event`. |
 
-1. **Module Augmentations:**
-   - `@prefabs.tech/fastify-config` gains `ApiConfig.stripe?: StripeConfig`
-   - `fastify` gains `FastifyRequest.rawBody?: Buffer` and `FastifyRequest.stripeEvent?: Stripe.Event`
+`CreateSessionInput` exists in `src/types/index.ts` but is **not** re-exported from the package entry.
 
-2. **Fastify Plugin:** Non-encapsulated plugin (via `fastify-plugin`) that registers webhook routes on the parent instance
+### Internal (not in public API)
 
-3. **Content-Type Parser:** `application/json` parser registered inside webhook controller scope (does not affect parent routes)
+| Symbol | Role |
+| ------ | ---- |
+| `createVerifyStripeSignature` | Factory returning webhook `preHandler`; validates secret, header, `rawBody`; calls `Stripe.webhooks.constructEvent`; sets `request.stripeEvent`. |
+| `webhookHandler` | Default fallback when `handlers.webhook` omitted — logs error, responds so Stripe does not retry indefinitely. |
+| Webhook `controller` plugin | Registers route, installs raw-body parser in this scope, attaches preHandler. |
+| Default export of `stripeRawBodyParser.ts` | Same implementation as `registerRawBodyParser`; registers `application/json` buffer parser setting `request.rawBody` and JSON body. |
 
-4. **PreHandler:** `createVerifyStripeSignature(resolvedConfig)` runs before webhook route handler
+### Source modules (one line each)
 
-5. **Route:** `POST` route at resolved `webhookPath` (defaults to `/payment/webhook`) when `enablePaymentWebhook` is true
+| File | Responsibility |
+| ---- | ---------------- |
+| `src/plugin.ts` | Top-level plugin: validate options, optionally register webhook controller. |
+| `src/webhook/controller.ts` | Encapsulated route + parser + signature preHandler + dispatch to user or default handler. |
+| `src/webhook/handler.ts` | Default no-op handler: log misconfiguration, avoid Stripe retry storms. |
+| `src/middlewares/verifyStripeSignature.ts` | `createVerifyStripeSignature` — signature verification preHandler. |
+| `src/utils/stripeClient.ts` | `StripeClient` — SDK constructor passthrough + checkout/promo helpers. |
+| `src/utils/stripeRawBodyParser.ts` | JSON raw-body parser; augments `FastifyRequest.rawBody`. |
+| `src/types/index.ts` | `StripeConfig`, `CreateSessionInput`, webhook types; augments `FastifyRequest.stripeEvent`. |
+| `src/constants.ts` | `ROUTE_STRIPE_WEBHOOK`. |
 
-### Conditional Branches
+### `StripeClient` methods (ours vs theirs)
 
-1. **Plugin Registration:**
-   - If register options are omitted or `{}` → throw `"Missing stripe configuration. Did you forget to pass it to the stripe plugin?"`
-   - If resolved `enablePaymentWebhook` is truthy → register webhook controller with `{ stripeConfig }`
-   - If resolved `enablePaymentWebhook` is falsy → skip webhook controller
+| Member | Classification |
+| ------ | -------------- |
+| `constructor` | **Ours** — requires `config.stripe`; passes `apiKey` + `clientConfig` to `new Stripe(...)`. |
+| `stripe` | **Theirs** — live SDK instance. |
+| `createCheckoutSession` | **Ours** — builds `SessionCreateParams` (defaults, line item, metadata by mode); **theirs** — `checkout.sessions.create`. |
+| `getActivePromotionCode` | **Ours** — restricts to `active: true`, first result; **theirs** — `promotionCodes.list`. |
 
-2. **Webhook Controller:**
-   - If `{ stripeConfig }` is not provided → throw `"Missing stripe configuration. Did you forget to pass { stripeConfig } to the Stripe webhook controller?"`
-   - If `handlers.webhook` is missing → log warning at registration time
-   - If `handlers.webhook` is set → dispatch to custom handler
-   - If `handlers.webhook` is unset → dispatch to default handler (logs error, returns 200)
+### Framework / lifecycle
 
-3. **Signature Verification:**
-   - If resolved `webhookSecret` is missing → return 400
-   - If `stripe-signature` header is missing → return 400
-   - If `request.rawBody` is missing → return 400
-   - If `Stripe.webhooks.constructEvent` throws → return 400
+- Registration log: `"Registering Stripe plugin"` (`plugin.ts`).
+- Webhook registration log: `"Registering Stripe webhook route"` (`controller.ts`).
+- Conditional: `enablePaymentWebhook` registers webhook sub-plugin only when truthy.
 
-4. **StripeClient Constructor:**
-   - If `config.stripe` is missing → throw error
+### Conditional branches & defaults
 
-5. **createCheckoutSession Metadata:**
-   - If `metadata` is provided → write to `session.metadata` and mode-specific `*_data` block
-   - If `metadata` is not provided → omit all metadata fields
+- Empty/missing plugin options → throw `"Missing stripe configuration..."`.
+- Missing `{ stripeConfig }` on webhook controller options → throw (defensive; normally only called internally).
+- No `handlers.webhook` but webhooks enabled → warn at register; route uses default ack handler.
+- Webhook path: `stripeConfig.webhookPath || ROUTE_STRIPE_WEBHOOK`.
+- Checkout helper defaults: `quantity` → 1, `mode` → `"payment"`, `currency` → `defaultCurrency`, success/cancel URLs from `urls`, `allow_promotion_codes` from `allowPromotionCodes`.
 
-6. **createCheckoutSession Mode Routing:**
-   - `mode: "payment"` → metadata to `payment_intent_data.metadata`
-   - `mode: "subscription"` → metadata to `subscription_data.metadata`
-   - `mode: "setup"` → metadata to `setup_intent_data.metadata`
+### Default values (ours)
 
-### Default Values
+- Fallback webhook handler behavior: log at error level with event id/type; response path returns 200-equivalent completion without throwing.
+- JSON parse error in raw-body parser: assign `statusCode: 400` on error for Fastify.
 
-| Field                             | Default Value                           | Applied When                    |
-| --------------------------------- | --------------------------------------- | ------------------------------- |
-| `webhookPath`                     | `/payment/webhook`                      | `config.stripe.webhookPath` unset |
-| `CreateSessionInput.quantity`     | `1`                                     | `input.quantity` unset          |
-| `CreateSessionInput.mode`         | `"payment"`                             | `input.mode` unset              |
-| `CreateSessionInput.currency`     | `config.stripe.defaultCurrency`         | `input.currency` unset          |
-| `CreateSessionInput.successUrl`   | `config.stripe.urls.success`            | `input.successUrl` unset        |
-| `CreateSessionInput.cancelUrl`    | `config.stripe.urls.cancel`             | `input.cancelUrl` unset         |
+### “Ours” vs “Theirs” highlights
 
----
-
-## Completeness Checklist
-
-- ✅ Classified every public export as "ours" or "theirs"
-- ✅ Listed every framework construct added (module augmentations, plugin, parser, preHandler, route)
-- ✅ Identified every conditional branch (plugin registration, webhook dispatch, signature verification, metadata handling, mode routing)
-- ✅ Documented default values for all options we define
-- ✅ Produced passthrough classification for wrapped dependency (`stripe`)
+- **Ours:** Validation, logging, warning, error response bodies, `SessionCreateParams` assembly, metadata routing by checkout mode, promotion code list filtering/return shape, plugin encapsulation for parser, module augmentations.
+- **Theirs:** `new Stripe(...)`, `stripe.checkout.sessions.create`, `stripe.promotionCodes.list`, `Stripe.webhooks.constructEvent` inputs/outputs as provided by the SDK.

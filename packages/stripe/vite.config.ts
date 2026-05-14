@@ -2,7 +2,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 
-import { peerDependencies } from "./package.json";
+import { dependencies, peerDependencies } from "./package.json";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -17,7 +17,10 @@ export default defineConfig(({ mode }) => {
         name: "PrefabsTechFastifyStripe",
       },
       rollupOptions: {
-        external: Object.keys(peerDependencies),
+        external: [
+          ...Object.keys(dependencies),
+          ...Object.keys(peerDependencies),
+        ],
         output: {
           exports: "named",
           globals: {

@@ -9,14 +9,16 @@ This guide assumes familiarity with Fastify and the [Stripe Node SDK](https://gi
 ### For package consumers
 
 ```bash
-npm install @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config stripe fastify fastify-plugin
+npm install @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config fastify fastify-plugin
 ```
 
 ```bash
-pnpm add @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config stripe fastify fastify-plugin
+pnpm add @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config fastify fastify-plugin
 ```
 
-Peer dependencies enforced by `package.json`: `fastify >= 5.2.2`, `fastify-plugin >= 5.0.1`, `@prefabs.tech/fastify-config 0.94.0`, `stripe >= 20.3.0`.
+The `stripe` SDK is bundled as a direct dependency of this package (see `package.json`), so you do not install it separately unless you choose to add it for your own scripts.
+
+Peer dependencies enforced by `package.json`: `fastify >= 5.2.2`, `fastify-plugin >= 5.0.1`, `@prefabs.tech/fastify-config 0.94.0`.
 
 ### For monorepo development
 
@@ -85,7 +87,7 @@ The official [Stripe Node SDK](https://github.com/stripe/stripe-node) for talkin
 This package exposes the SDK partially:
 
 - **`clientConfig` is passed through unchanged.** Anything you put on `config.stripe.clientConfig` (`apiVersion`, `httpClient`, `maxNetworkRetries`, `timeout`, `telemetry`, etc.) is forwarded directly to `new Stripe(apiKey, clientConfig)`.
-- **`webhooks.constructEvent` is passed through unchanged.** The webhook route uses `createVerifyStripeSignature(stripeConfig)`, which calls `stripe.webhooks.constructEvent(rawBody, signature, secret)` with the resolved `StripeConfig` and attaches the result to the request.
+- **`webhooks.constructEvent` is passed through unchanged.** The webhook route runs an internal `preHandler` (implemented as `createVerifyStripeSignature` in source, **not exported**) that calls `Stripe.webhooks.constructEvent(rawBody, signature, webhookSecret)` and attaches the result to `request.stripeEvent`.
 - **`checkout.sessions.create` is wrapped with a different surface.** `StripeClient.createCheckoutSession` accepts a flat `CreateSessionInput` (one product, one quantity, one amount) and synthesizes a fixed `SessionCreateParams` payload. You **cannot** pass arbitrary Checkout options through this helper — for advanced cases use `client.stripe.checkout.sessions.create(...)` directly.
 - **`promotionCodes.list` is wrapped with a different surface.** `StripeClient.getActivePromotionCode` hardcodes `active: true` and returns only the first match. For full search behavior, call `client.stripe.promotionCodes.list(...)` directly.
 
@@ -95,7 +97,7 @@ This package exposes the SDK partially:
 - A signature-verification preHandler with structured 400 responses and log lines.
 - A raw-body content-type parser that retains `request.rawBody` (required for `webhooks.constructEvent`).
 - A config-aware `StripeClient` helper with default URLs, currency, and promotion-code wiring.
-- Module augmentations so `fastify.config.stripe` and `request.rawBody` are typed without manual declaration.
+- Module augmentations so `ApiConfig.stripe`, `request.rawBody`, and `request.stripeEvent` are typed without manual declaration.
 
 ---
 
@@ -177,16 +179,16 @@ const handleWebhook = async (
 }
 ```
 
-### Signature verification (`createVerifyStripeSignature`)
+### Signature verification (webhook `preHandler`)
 
-The webhook route runs the preHandler returned by `createVerifyStripeSignature(resolvedStripeConfig)` before invoking your handler. It validates the `stripe-signature` header against `resolvedStripeConfig.webhookSecret` using `stripe.webhooks.constructEvent`. All failures return HTTP 400 with a `{ error }` body and log an error line:
+Before your webhook handler runs, the route executes a bundled `preHandler` that verifies the Stripe signature. You cannot import this preHandler factory from the package; it validates the `stripe-signature` header against `webhookSecret` using `Stripe.webhooks.constructEvent` (same semantics as in the Stripe Node SDK). All failures return HTTP 400 with a `{ error }` body and log an error line:
 
 | Condition                                              | Status | Response body                                                       |
 | ------------------------------------------------------ | ------ | ------------------------------------------------------------------- |
 | `webhookSecret` unset on resolved Stripe config           | 400    | `{ error: "Webhook secret not configured" }`                        |
 | `stripe-signature` header missing                      | 400    | `{ error: "Missing stripe-signature header" }`                      |
 | `request.rawBody` missing                              | 400    | `{ error: "Raw body is not available for signature verification" }` |
-| `stripe.webhooks.constructEvent` throws                | 400    | `{ error: "Webhook signature verification failed" }`                |
+| `Stripe.webhooks.constructEvent` throws                | 400    | `{ error: "Webhook signature verification failed" }`                |
 
 On success, the verified `Stripe.Event` is attached to `request.stripeEvent`. The field is typed via module augmentation, so it is automatically available on `FastifyRequest`:
 
@@ -198,6 +200,8 @@ function readEvent(request: FastifyRequest) {
   // ...
 }
 ```
+
+If verification succeeds but `request.stripeEvent` is missing afterward, the webhook route responds with HTTP 500 (defensive; should not occur in normal operation).
 
 ### Raw body parser (`registerRawBodyParser`)
 
@@ -338,12 +342,12 @@ if (promo) {
 
 ### Module augmentations
 
-Importing this package's default export brings two ambient TypeScript augmentations into scope:
+Importing this package brings these ambient TypeScript augmentations into scope:
 
 - `ApiConfig` (from `@prefabs.tech/fastify-config`) gains an optional `stripe?: StripeConfig` field. Optional so other consumers of `ApiConfig` aren't forced to declare a Stripe block; the plugin checks for and warns when it is missing.
 - `FastifyRequest` gains optional `rawBody?: Buffer` and `stripeEvent?: Stripe.Event` fields.
 
-You do not need to redeclare either — just import the plugin once in your entry file.
+You do not need to redeclare these fields — import the package in your entry file so the augmentations apply.
 
 ---
 

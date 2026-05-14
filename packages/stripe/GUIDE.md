@@ -30,7 +30,7 @@ pnpm --filter @prefabs.tech/fastify-stripe lint
 
 ## Setup
 
-Register `@prefabs.tech/fastify-config` first, then the Stripe plugin. The plugin reads everything from `fastify.config.stripe` — there are no register-time options.
+Register `@prefabs.tech/fastify-config` first, then pass `config.stripe` into the Stripe plugin at register time — the same integration pattern as `@prefabs.tech/fastify-graphql`, `@prefabs.tech/fastify-slonik`, and `@prefabs.tech/fastify-mailer` (`register(plugin, config.<slice>)`).
 
 ```typescript
 import configPlugin from "@prefabs.tech/fastify-config";
@@ -61,10 +61,12 @@ const config: ApiConfig = {
 const fastify = Fastify({ logger: true });
 
 await fastify.register(configPlugin, { config });
-await fastify.register(stripePlugin);
+await fastify.register(stripePlugin, config.stripe);
 
 await fastify.listen({ port: 3000, host: "0.0.0.0" });
 ```
+
+**Legacy path:** `await fastify.register(stripePlugin)` with no second argument (or `{}`) logs a recommendation to pass options explicitly, then falls back to `fastify.config.stripe` if the config plugin was registered first. Unlike graphql/slonik/mailer, Stripe **does not throw** when no Stripe config is resolved; it logs `"Stripe configuration is missing. Stripe plugin will not be registered."` and returns.
 
 All examples below assume this setup is in place. Examples will only show the relevant subset of `config.stripe` rather than repeating the whole object.
 
@@ -83,7 +85,7 @@ The official [Stripe Node SDK](https://github.com/stripe/stripe-node) for talkin
 This package exposes the SDK partially:
 
 - **`clientConfig` is passed through unchanged.** Anything you put on `config.stripe.clientConfig` (`apiVersion`, `httpClient`, `maxNetworkRetries`, `timeout`, `telemetry`, etc.) is forwarded directly to `new Stripe(apiKey, clientConfig)`.
-- **`webhooks.constructEvent` is passed through unchanged.** Our `verifyStripeSignature` preHandler is a thin wrapper that calls `stripe.webhooks.constructEvent(rawBody, signature, secret)` and attaches the result to the request.
+- **`webhooks.constructEvent` is passed through unchanged.** The webhook route uses `createVerifyStripeSignature(stripeConfig)`, which calls `stripe.webhooks.constructEvent(rawBody, signature, secret)` with the resolved `StripeConfig` and attaches the result to the request.
 - **`checkout.sessions.create` is wrapped with a different surface.** `StripeClient.createCheckoutSession` accepts a flat `CreateSessionInput` (one product, one quantity, one amount) and synthesizes a fixed `SessionCreateParams` payload. You **cannot** pass arbitrary Checkout options through this helper — for advanced cases use `client.stripe.checkout.sessions.create(...)` directly.
 - **`promotionCodes.list` is wrapped with a different surface.** `StripeClient.getActivePromotionCode` hardcodes `active: true` and returns only the first match. For full search behavior, call `client.stripe.promotionCodes.list(...)` directly.
 
@@ -101,7 +103,9 @@ This package exposes the SDK partially:
 
 ### Plugin registration and missing-config guard
 
-`stripePlugin` is `fastify-plugin`-wrapped, so its decorations attach to the top-level Fastify instance. If `config.stripe` is missing entirely, the plugin logs a warning and returns — registering the plugin against a config that doesn't have Stripe is safe and never throws.
+`stripePlugin` is `fastify-plugin`-wrapped, so its decorations attach to the top-level Fastify instance.
+
+After resolving register-time options (see **Setup**), if no Stripe configuration is available, the plugin logs a warning and returns — it **does not throw** (unlike `@prefabs.tech/fastify-graphql` / `fastify-slonik` / `fastify-mailer` on the same code path).
 
 ```typescript
 const config: ApiConfig = {
@@ -112,9 +116,10 @@ await fastify.register(configPlugin, { config });
 await fastify.register(stripePlugin);
 ```
 
-Server log:
+Server log (legacy empty options path; two warnings when `stripe` is absent from `config`):
 
 ```
+WARN: The stripe plugin now recommends passing stripe options directly to the plugin.
 WARN: Stripe configuration is missing. Stripe plugin will not be registered.
 ```
 
@@ -186,13 +191,13 @@ const handleWebhook = async (
 }
 ```
 
-### Signature verification (`verifyStripeSignature`)
+### Signature verification (`createVerifyStripeSignature`)
 
-The webhook route runs the `verifyStripeSignature` preHandler before invoking your handler. It validates the `stripe-signature` header against `config.stripe.webhookSecret` using `stripe.webhooks.constructEvent`. All failures return HTTP 400 with a `{ error }` body and log an error line:
+The webhook route runs the preHandler returned by `createVerifyStripeSignature(resolvedStripeConfig)` before invoking your handler. It validates the `stripe-signature` header against `resolvedStripeConfig.webhookSecret` using `stripe.webhooks.constructEvent`. All failures return HTTP 400 with a `{ error }` body and log an error line:
 
 | Condition                                              | Status | Response body                                                       |
 | ------------------------------------------------------ | ------ | ------------------------------------------------------------------- |
-| `config.stripe.webhookSecret` unset                    | 400    | `{ error: "Webhook secret not configured" }`                        |
+| `webhookSecret` unset on resolved Stripe config           | 400    | `{ error: "Webhook secret not configured" }`                        |
 | `stripe-signature` header missing                      | 400    | `{ error: "Missing stripe-signature header" }`                      |
 | `request.rawBody` missing                              | 400    | `{ error: "Raw body is not available for signature verification" }` |
 | `stripe.webhooks.constructEvent` throws                | 400    | `{ error: "Webhook signature verification failed" }`                |

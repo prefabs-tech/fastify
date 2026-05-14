@@ -221,7 +221,7 @@ describe("webhookController — defensive guards", async () => {
 
     expect(errorSpy).toHaveBeenCalledWith(
       expect.stringContaining(
-        "Stripe webhook controller registered without config.stripe",
+        "Stripe webhook controller registered without stripe configuration",
       ),
     );
     expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(

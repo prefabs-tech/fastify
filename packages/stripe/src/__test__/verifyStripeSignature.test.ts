@@ -284,13 +284,16 @@ const buildBareReply = () => ({
   status: vi.fn().mockReturnThis(),
 });
 
-describe("verifyStripeSignature — raw body missing", async () => {
+describe("createVerifyStripeSignature — raw body missing", async () => {
   // The raw body parser is installed by the webhook controller, so it is
   // always set on requests that hit the route via fastify.inject. To exercise
   // the `if (!rawBody)` branch we call the middleware directly with a request
   // that has no rawBody.
-  const { default: verifyStripeSignature } =
+  const { createVerifyStripeSignature } =
     await import("../middlewares/verifyStripeSignature");
+
+  const verifyStripeSignature =
+    createVerifyStripeSignature(createStripeConfig());
 
   type VerifyArguments = Parameters<typeof verifyStripeSignature>;
 

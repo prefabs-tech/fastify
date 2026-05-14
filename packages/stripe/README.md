@@ -35,8 +35,9 @@ const start = async () => {
   // Register fastify-config plugin
   await fastify.register(configPlugin, { config });
 
-  // Register stripe plugin
-  await fastify.register(stripePlugin);
+  // Register stripe plugin (pass the same object as `config.stripe` — same idea as
+  // `register(mailerPlugin, config.mailer)` / `register(graphqlPlugin, config.graphql)`)
+  await fastify.register(stripePlugin, config.stripe);
 
   await fastify.listen({
     port: config.port,
@@ -45,6 +46,20 @@ const start = async () => {
 };
 
 start();
+```
+
+### Legacy registration (empty register options)
+
+If you call `await fastify.register(stripePlugin)` with no second argument (or with an empty object), the plugin logs that you should pass Stripe options at register time, then reads from `fastify.config.stripe` when `fastify-config` has been registered first.
+
+### Optional Stripe
+
+When `fastify.config.stripe` is also missing after that fallback, the plugin logs a warning and skips registration (it does not throw). Omit `config.stripe` entirely on services that do not use Stripe.
+
+```typescript
+// After configPlugin, if `config` has no `stripe` key:
+await fastify.register(stripePlugin);
+// WARN: recommends passing options directly; then WARN: Stripe configuration is missing…
 ```
 
 ## Configuration

@@ -1,21 +1,27 @@
 import { FastifyInstance, FastifyRequest } from "fastify";
 
+import type { StripeConfig } from "../types";
+
 import { ROUTE_STRIPE_WEBHOOK } from "../constants";
-import verifyStripeSignature from "../middlewares/verifyStripeSignature";
+import { createVerifyStripeSignature } from "../middlewares/verifyStripeSignature";
 import stripeRawBodyParser from "../utils/stripeRawBodyParser";
 import webhookHandler from "./handler";
 
-const plugin = async (fastify: FastifyInstance) => {
+export type WebhookControllerOptions = {
+  stripeConfig?: StripeConfig;
+};
+
+const plugin = async (
+  fastify: FastifyInstance,
+  options?: WebhookControllerOptions,
+) => {
   fastify.log.info("Registering Stripe webhook route");
 
-  // `stripe` is guaranteed by the parent plugin (which only registers this
-  // controller when `config.stripe` is set), but we narrow it once locally
-  // so the rest of the function stays free of `!` non-null assertions.
-  const stripeConfig = fastify.config.stripe;
+  const stripeConfig = options?.stripeConfig ?? fastify.config?.stripe;
 
   if (!stripeConfig) {
     fastify.log.error(
-      "Stripe webhook controller registered without config.stripe; skipping route registration.",
+      "Stripe webhook controller registered without stripe configuration; skipping route registration.",
     );
 
     return;
@@ -31,12 +37,12 @@ const plugin = async (fastify: FastifyInstance) => {
 
   fastify.post(
     stripeConfig.webhookPath || ROUTE_STRIPE_WEBHOOK,
-    { preHandler: [verifyStripeSignature] },
+    { preHandler: [createVerifyStripeSignature(stripeConfig)] },
     async (request: FastifyRequest, reply) => {
       const event = request.stripeEvent;
 
       if (!event) {
-        // Should be unreachable: verifyStripeSignature either sets the event
+        // Should be unreachable: signature verification either sets the event
         // or replies 400. Surface a clear 500 with context if it ever fires.
         request.log.error(
           "Stripe event not found on request after signature verification; refusing to dispatch.",

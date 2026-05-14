@@ -1,45 +1,26 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyPluginAsync } from "fastify";
 
-import fastifyPlugin from "fastify-plugin";
+import FastifyPlugin from "fastify-plugin";
 
 import type { StripeConfig } from "./types";
 
 import webhookController from "./webhook/controller";
 
-const plugin = async (fastify: FastifyInstance, options?: StripeConfig) => {
-  const rawOptions = options ?? {};
-
-  let stripeConfig: StripeConfig | undefined;
-
-  if (Object.keys(rawOptions).length === 0) {
-    fastify.log.warn(
-      "The stripe plugin now recommends passing stripe options directly to the plugin.",
-    );
-
-    stripeConfig = fastify.config?.stripe;
-  } else {
-    stripeConfig = rawOptions as StripeConfig;
-  }
-
-  const { log } = fastify;
-
-  if (!stripeConfig) {
-    log.warn(
-      "Stripe configuration is missing. Stripe plugin will not be registered.",
-    );
-
-    return;
-  }
-
+const plugin: FastifyPluginAsync<StripeConfig> = async (
+  fastify: FastifyInstance,
+  options,
+) => {
   fastify.log.info("Registering Stripe plugin");
 
-  if (stripeConfig.enablePaymentWebhook) {
-    await fastify.register(webhookController, { stripeConfig });
+  if (!options || Object.keys(options).length === 0) {
+    throw new Error(
+      "Missing stripe configuration. Did you forget to pass it to the stripe plugin?",
+    );
+  }
+
+  if (options.enablePaymentWebhook) {
+    await fastify.register(webhookController, { stripeConfig: options });
   }
 };
 
-const stripePlugin: ReturnType<typeof fastifyPlugin> = fastifyPlugin(
-  plugin as unknown as Parameters<typeof fastifyPlugin>[0],
-);
-
-export default stripePlugin;
+export default FastifyPlugin(plugin);

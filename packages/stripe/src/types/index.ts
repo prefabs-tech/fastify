@@ -1,3 +1,5 @@
+import type { FastifyPluginOptions } from "fastify";
+
 import Stripe from "stripe";
 
 import webhookHandler from "../webhook/handler";
@@ -18,7 +20,7 @@ export type CreateSessionInput = {
   unitAmount: number;
 };
 
-export type StripeConfig = {
+export type StripeConfig = FastifyPluginOptions & {
   allowPromotionCodes?: boolean;
   apiKey: string;
   clientConfig?: Stripe.StripeConfig;
@@ -33,4 +35,8 @@ export type StripeConfig = {
   };
   webhookPath?: string;
   webhookSecret?: string;
+};
+
+export type WebhookControllerOptions = FastifyPluginOptions & {
+  stripeConfig: StripeConfig;
 };

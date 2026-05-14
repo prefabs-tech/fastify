@@ -97,11 +97,10 @@ describe("stripeRawBodyParser — scoping when installed by the webhook controll
     // content-type parser is encapsulated to the controller's plugin scope
     // and does NOT bleed into the parent instance.
     fastify = Fastify({ logger: false });
-    fastify.decorate("config", {
-      stripe: createStripeConfig({ enablePaymentWebhook: true }),
-    });
-
-    await fastify.register(plugin);
+    await fastify.register(
+      plugin,
+      createStripeConfig({ enablePaymentWebhook: true }),
+    );
 
     let unrelatedRawBody: unknown;
     fastify.post("/some/other/route", async (request) => {

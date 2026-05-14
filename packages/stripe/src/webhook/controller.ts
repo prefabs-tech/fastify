@@ -1,31 +1,29 @@
-import { FastifyInstance, FastifyRequest } from "fastify";
+import {
+  FastifyInstance,
+  type FastifyPluginAsync,
+  FastifyRequest,
+} from "fastify";
 
-import type { StripeConfig } from "../types";
+import type { WebhookControllerOptions } from "../types";
 
 import { ROUTE_STRIPE_WEBHOOK } from "../constants";
 import { createVerifyStripeSignature } from "../middlewares/verifyStripeSignature";
 import stripeRawBodyParser from "../utils/stripeRawBodyParser";
 import webhookHandler from "./handler";
 
-export type WebhookControllerOptions = {
-  stripeConfig?: StripeConfig;
-};
-
-const plugin = async (
+const plugin: FastifyPluginAsync<WebhookControllerOptions> = async (
   fastify: FastifyInstance,
-  options?: WebhookControllerOptions,
+  options,
 ) => {
   fastify.log.info("Registering Stripe webhook route");
 
-  const stripeConfig = options?.stripeConfig ?? fastify.config?.stripe;
-
-  if (!stripeConfig) {
-    fastify.log.error(
-      "Stripe webhook controller registered without stripe configuration; skipping route registration.",
+  if (!options?.stripeConfig) {
+    throw new Error(
+      "Missing stripe configuration. Did you forget to pass { stripeConfig } to the Stripe webhook controller?",
     );
-
-    return;
   }
+
+  const { stripeConfig } = options;
 
   if (!stripeConfig.handlers?.webhook) {
     fastify.log.warn(

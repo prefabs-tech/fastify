@@ -16,7 +16,7 @@ npm install @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config stripe fas
 pnpm add @prefabs.tech/fastify-stripe @prefabs.tech/fastify-config stripe fastify fastify-plugin
 ```
 
-Peer dependencies enforced by `package.json`: `fastify >= 5.2.2`, `fastify-plugin >= 5.0.1`, `@prefabs.tech/fastify-config 0.94.0`.
+Peer dependencies enforced by `package.json`: `fastify >= 5.2.2`, `fastify-plugin >= 5.0.1`, `@prefabs.tech/fastify-config 0.94.0`, `stripe >= 20.3.0`.
 
 ### For monorepo development
 
@@ -66,7 +66,7 @@ await fastify.register(stripePlugin, config.stripe);
 await fastify.listen({ port: 3000, host: "0.0.0.0" });
 ```
 
-**Legacy path:** `await fastify.register(stripePlugin)` with no second argument (or `{}`) logs a recommendation to pass options explicitly, then falls back to `fastify.config.stripe` if the config plugin was registered first. Unlike graphql/slonik/mailer, Stripe **does not throw** when no Stripe config is resolved; it logs `"Stripe configuration is missing. Stripe plugin will not be registered."` and returns.
+You must pass `config.stripe` as the second argument to `register`, like `@prefabs.tech/fastify-mailer` / `@prefabs.tech/fastify-slonik`. Omitting options or passing `{}` throws with `"Missing stripe configuration. Did you forget to pass it to the stripe plugin?"` — the same idea as an empty-options registration to those plugins.
 
 All examples below assume this setup is in place. Examples will only show the relevant subset of `config.stripe` rather than repeating the whole object.
 
@@ -101,27 +101,13 @@ This package exposes the SDK partially:
 
 ## Features
 
-### Plugin registration and missing-config guard
+### Plugin registration and required options
 
 `stripePlugin` is `fastify-plugin`-wrapped, so its decorations attach to the top-level Fastify instance.
 
-After resolving register-time options (see **Setup**), if no Stripe configuration is available, the plugin logs a warning and returns — it **does not throw** (unlike `@prefabs.tech/fastify-graphql` / `fastify-slonik` / `fastify-mailer` on the same code path).
+This plugin expects `register(stripePlugin, config.stripe)`. Do not call `register(stripePlugin)` with no second argument or with `{}` — registration will reject with the same style of `"Missing stripe…"` error as other prefabs plugins on an invalid empty-options registration.
 
-```typescript
-const config: ApiConfig = {
-  // ...no `stripe` block
-};
-
-await fastify.register(configPlugin, { config });
-await fastify.register(stripePlugin);
-```
-
-Server log (legacy empty options path; two warnings when `stripe` is absent from `config`):
-
-```
-WARN: The stripe plugin now recommends passing stripe options directly to the plugin.
-WARN: Stripe configuration is missing. Stripe plugin will not be registered.
-```
+Services that do not use Stripe should **not** register this plugin (you may omit `stripe` from `ApiConfig` entirely on those services).
 
 ### Webhook endpoint toggle (`enablePaymentWebhook`)
 

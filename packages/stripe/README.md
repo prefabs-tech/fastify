@@ -1,6 +1,6 @@
 # @prefabs.tech/fastify-stripe
 
-A [Fastify](https://github.com/fastify/fastify) plugin for that provides easy integration of Stripe for payment processing.
+A [Fastify](https://github.com/fastify/fastify) plugin that integrates Stripe for payment processing.
 
 ## Features
 
@@ -11,7 +11,7 @@ A [Fastify](https://github.com/fastify/fastify) plugin for that provides easy in
 
 ## Requirements
 
-- [@prefabs.tech/fastify-config](https://www.npmjs.com/package/@prefabs.tech/fastify-config)
+Peer dependencies (install explicitly in your app): `fastify`, `fastify-plugin`, `@prefabs.tech/fastify-config`, and `stripe`. See `package.json` for supported version ranges.
 
 ## Usage
 
@@ -48,19 +48,9 @@ const start = async () => {
 start();
 ```
 
-### Legacy registration (empty register options)
+You must pass the Stripe options object as the second argument to `register` (typically `config.stripe`), matching `@prefabs.tech/fastify-mailer`, `@prefabs.tech/fastify-slonik`, and other prefabs plugins. Omitting options or passing `{}` throws at registration time.
 
-If you call `await fastify.register(stripePlugin)` with no second argument (or with an empty object), the plugin logs that you should pass Stripe options at register time, then reads from `fastify.config.stripe` when `fastify-config` has been registered first.
-
-### Optional Stripe
-
-When `fastify.config.stripe` is also missing after that fallback, the plugin logs a warning and skips registration (it does not throw). Omit `config.stripe` entirely on services that do not use Stripe.
-
-```typescript
-// After configPlugin, if `config` has no `stripe` key:
-await fastify.register(stripePlugin);
-// WARN: recommends passing options directly; then WARN: Stripe configuration is missing…
-```
+If a service does not use Stripe, do not register this plugin (you may still omit `stripe` from `ApiConfig` for `StripeClient` usage elsewhere).
 
 ## Configuration
 
@@ -186,7 +176,7 @@ const config: ApiConfig = {
     apiKey: process.env.STRIPE_API_KEY!,
     // ...
     clientConfig: {
-      apiVersion: "2026-01-28.clover",
+      apiVersion: "2024-11-20.acacia",
     },
   },
 };

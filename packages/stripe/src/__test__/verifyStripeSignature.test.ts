@@ -1,6 +1,8 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { StripeConfig } from "../types";
+
 import "../index";
 import createStripeConfig from "./helpers/createStripeConfig";
 
@@ -20,12 +22,16 @@ const SAMPLE_EVENT = {
   type: "checkout.session.completed",
 };
 
-const buildFastify = (stripeOverrides: Record<string, unknown> = {}) => {
-  const fastify = Fastify({ logger: { level: "silent" } });
-  fastify.decorate("config", {
-    stripe: createStripeConfig(stripeOverrides),
-  });
-  return fastify;
+const registerWithStripe = async (
+  fastify: FastifyInstance,
+  plugin: typeof import("../plugin").default,
+  overrides: Partial<StripeConfig> = {},
+) => {
+  await fastify.register(
+    plugin,
+    createStripeConfig({ enablePaymentWebhook: true, ...overrides }),
+  );
+  await fastify.ready();
 };
 
 describe("verifyStripeSignature — webhookSecret missing", async () => {
@@ -43,13 +49,11 @@ describe("verifyStripeSignature — webhookSecret missing", async () => {
   });
 
   it("responds with 400 and 'Webhook secret not configured' when webhookSecret is unset", async () => {
-    fastify = buildFastify({
-      enablePaymentWebhook: true,
+    fastify = Fastify({ logger: { level: "silent" } });
+
+    await registerWithStripe(fastify, plugin, {
       webhookSecret: undefined,
     });
-
-    await fastify.register(plugin);
-    await fastify.ready();
 
     const res = await fastify.inject({
       headers: {
@@ -66,14 +70,12 @@ describe("verifyStripeSignature — webhookSecret missing", async () => {
   });
 
   it("logs an error when webhookSecret is unset", async () => {
-    fastify = buildFastify({
-      enablePaymentWebhook: true,
-      webhookSecret: undefined,
-    });
+    fastify = Fastify({ logger: { level: "silent" } });
     const errorSpy = vi.spyOn(fastify.log, "error");
 
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin, {
+      webhookSecret: undefined,
+    });
 
     await fastify.inject({
       headers: {
@@ -99,7 +101,7 @@ describe("verifyStripeSignature — signature header missing", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     constructEventMock.mockReturnValue(SAMPLE_EVENT);
-    fastify = buildFastify({ enablePaymentWebhook: true });
+    fastify = Fastify({ logger: { level: "silent" } });
   });
 
   afterEach(async () => {
@@ -107,8 +109,7 @@ describe("verifyStripeSignature — signature header missing", async () => {
   });
 
   it("responds with 400 and 'Missing stripe-signature header' when the header is absent", async () => {
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin);
 
     const res = await fastify.inject({
       headers: { "content-type": "application/json" },
@@ -122,8 +123,7 @@ describe("verifyStripeSignature — signature header missing", async () => {
   });
 
   it("does not invoke stripe.webhooks.constructEvent when the signature header is missing", async () => {
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin);
 
     await fastify.inject({
       headers: { "content-type": "application/json" },
@@ -143,7 +143,7 @@ describe("verifyStripeSignature — signature verification failure", async () =>
 
   beforeEach(() => {
     vi.clearAllMocks();
-    fastify = buildFastify({ enablePaymentWebhook: true });
+    fastify = Fastify({ logger: { level: "silent" } });
   });
 
   afterEach(async () => {
@@ -155,8 +155,7 @@ describe("verifyStripeSignature — signature verification failure", async () =>
       throw new Error("invalid signature");
     });
 
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin);
 
     const res = await fastify.inject({
       headers: {
@@ -181,8 +180,7 @@ describe("verifyStripeSignature — signature verification failure", async () =>
     });
     const errorSpy = vi.spyOn(fastify.log, "error");
 
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin);
 
     await fastify.inject({
       headers: {
@@ -216,12 +214,6 @@ describe("verifyStripeSignature — success", async () => {
     constructEventMock.mockReturnValue(SAMPLE_EVENT);
 
     fastify = Fastify({ logger: false });
-    fastify.decorate("config", {
-      stripe: createStripeConfig({
-        enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
-      }),
-    });
   });
 
   afterEach(async () => {
@@ -229,8 +221,9 @@ describe("verifyStripeSignature — success", async () => {
   });
 
   it("attaches the verified Stripe.Event to the request before the route handler runs", async () => {
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin, {
+      handlers: { webhook: webhookHandlerMock },
+    });
 
     const res = await fastify.inject({
       headers: {
@@ -247,8 +240,9 @@ describe("verifyStripeSignature — success", async () => {
   });
 
   it("calls stripe.webhooks.constructEvent with the raw body, signature, and configured secret", async () => {
-    await fastify.register(plugin);
-    await fastify.ready();
+    await registerWithStripe(fastify, plugin, {
+      handlers: { webhook: webhookHandlerMock },
+    });
 
     const payload = JSON.stringify({ id: "evt_test" });
     await fastify.inject({

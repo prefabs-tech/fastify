@@ -3,7 +3,7 @@
 ## Plugin registration
 
 1. The default export is wrapped with `fastify-plugin` so the plugin applies to the parent Fastify scope.
-2. If plugin options are missing or an empty object, a warn recommends passing options explicitly; registration then uses `fastify.config.stripe` when present. If `fastify.config.stripe` is also absent, registration throws with a clear message (`Missing stripe configuration. Did you forget to pass it to the stripe plugin?`).
+2. If plugin options are missing or an empty object, registration throws with a clear message (`Missing stripe configuration. Did you forget to pass it to the stripe plugin?`).
 3. An info-level log is emitted when the Stripe plugin registers (`Registering Stripe plugin`).
 4. When `enablePaymentWebhook` is truthy, the webhook controller sub-plugin is registered; when falsy, no webhook route or webhook-scoped parser is installed.
 

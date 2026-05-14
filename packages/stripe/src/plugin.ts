@@ -13,17 +13,9 @@ const plugin: FastifyPluginAsync<StripeConfig> = async (
   fastify.log.info("Registering Stripe plugin");
 
   if (!options || Object.keys(options).length === 0) {
-    fastify.log.warn(
-      "The stripe plugin now recommends passing stripe options directly to the plugin.",
+    throw new Error(
+      "Missing stripe configuration. Did you forget to pass it to the stripe plugin?",
     );
-
-    if (!fastify.config?.stripe) {
-      throw new Error(
-        "Missing stripe configuration. Did you forget to pass it to the stripe plugin?",
-      );
-    }
-
-    options = fastify.config.stripe;
   }
 
   if (options.enablePaymentWebhook) {

@@ -43,51 +43,17 @@ describe("stripePlugin — missing configuration", async () => {
       "Missing stripe configuration. Did you forget to pass it to the stripe plugin?",
     );
   });
-});
 
-describe("stripePlugin — fastify.config.stripe fallback", async () => {
-  const { default: plugin } = await import("../plugin");
-
-  let fastify: FastifyInstance;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    fastify = Fastify({ logger: { level: "silent" } });
-    fastify.decorate("config", {
+  it("throws when register is called without options even if fastify.config.stripe is set", async () => {
+    const app = Fastify({ logger: { level: "silent" } });
+    app.decorate("config", {
       stripe: createStripeConfig({ enablePaymentWebhook: true }),
     } as unknown as FastifyInstance["config"]);
-  });
 
-  afterEach(async () => {
-    await fastify.close();
-  });
-
-  it("warns and uses fastify.config.stripe when register is called without options", async () => {
-    const warnSpy = vi.spyOn(fastify.log, "warn");
-
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      "The stripe plugin now recommends passing stripe options directly to the plugin.",
+    await expect(app.register(plugin)).rejects.toThrow(
+      "Missing stripe configuration. Did you forget to pass it to the stripe plugin?",
     );
-    expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
-      true,
-    );
-  });
-
-  it("warns and uses fastify.config.stripe when register is called with {}", async () => {
-    const warnSpy = vi.spyOn(fastify.log, "warn");
-
-    await fastify.register(plugin, {} as StripeConfig);
-    await fastify.ready();
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      "The stripe plugin now recommends passing stripe options directly to the plugin.",
-    );
-    expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
-      true,
-    );
+    await app.close();
   });
 });
 

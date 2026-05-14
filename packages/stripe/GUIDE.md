@@ -68,7 +68,7 @@ await fastify.register(stripePlugin, config.stripe);
 await fastify.listen({ port: 3000, host: "0.0.0.0" });
 ```
 
-You must pass `config.stripe` as the second argument to `register`, like `@prefabs.tech/fastify-mailer` / `@prefabs.tech/fastify-slonik`. Omitting options or passing `{}` throws with `"Missing stripe configuration. Did you forget to pass it to the stripe plugin?"` — the same idea as an empty-options registration to those plugins.
+Recommended: pass `config.stripe` as the second argument to `register`, like `@prefabs.tech/fastify-mailer` / `@prefabs.tech/fastify-graphql`. If you omit options or pass `{}`, the plugin logs a warning and reads `fastify.config.stripe` (after `@prefabs.tech/fastify-config` has run). If `config.stripe` is missing in that case, registration throws with `"Missing stripe configuration. Did you forget to pass it to the stripe plugin?"`.
 
 All examples below assume this setup is in place. Examples will only show the relevant subset of `config.stripe` rather than repeating the whole object.
 
@@ -103,11 +103,11 @@ This package exposes the SDK partially:
 
 ## Features
 
-### Plugin registration and required options
+### Plugin registration and options
 
 `stripePlugin` is `fastify-plugin`-wrapped, so its decorations attach to the top-level Fastify instance.
 
-This plugin expects `register(stripePlugin, config.stripe)`. Do not call `register(stripePlugin)` with no second argument or with `{}` — registration will reject with the same style of `"Missing stripe…"` error as other prefabs plugins on an invalid empty-options registration.
+Prefer `register(stripePlugin, config.stripe)`. You may call `register(stripePlugin)` or `register(stripePlugin, {})` after the config plugin has decorated `fastify.config`; the Stripe plugin will then use `fastify.config.stripe` (with a warning). Empty-options registration without `config.stripe` fails with the same `"Missing stripe…"` message as `@prefabs.tech/fastify-mailer` when mailer config is missing.
 
 Services that do not use Stripe should **not** register this plugin (you may omit `stripe` from `ApiConfig` entirely on those services).
 

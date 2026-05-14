@@ -80,7 +80,7 @@
 
 ### Conditional branches & defaults
 
-- Empty/missing plugin options → throw `"Missing stripe configuration..."`.
+- Empty/missing plugin options → warn; resolve from `fastify.config.stripe` when set, otherwise throw `"Missing stripe configuration..."`.
 - Missing `{ stripeConfig }` on webhook controller options → throw (defensive; normally only called internally).
 - No `handlers.webhook` but webhooks enabled → warn at register; route uses default ack handler.
 - Webhook path: `stripeConfig.webhookPath || ROUTE_STRIPE_WEBHOOK`.

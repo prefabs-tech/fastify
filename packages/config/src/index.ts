@@ -11,8 +11,6 @@ declare module "fastify" {
   }
 }
 
-export { default as parse } from "./parse";
-
 export { default } from "./plugin";
 
 export type { ApiConfig, AppConfig } from "./types";

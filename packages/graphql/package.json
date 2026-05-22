@@ -33,10 +33,10 @@
     "graphql-tag": "2.12.6"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.7.0",
+    "@prefabs.tech/eslint-config": "0.8.0",
     "@prefabs.tech/fastify-config": "0.94.1",
     "@prefabs.tech/fastify-slonik": "0.94.1",
-    "@prefabs.tech/tsconfig": "0.7.0",
+    "@prefabs.tech/tsconfig": "0.8.0",
     "@types/node": "24.10.15",
     "@vitest/coverage-istanbul": "3.2.4",
     "eslint": "9.39.4",

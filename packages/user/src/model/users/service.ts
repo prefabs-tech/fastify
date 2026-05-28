@@ -1,11 +1,10 @@
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { File, FileService, Multipart } from "@prefabs.tech/fastify-s3";
 import { BaseService } from "@prefabs.tech/fastify-slonik";
-import Session from "supertokens-node/recipe/session";
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import type { User, UserCreateInput, UserUpdateInput } from "../../types";
 
+import { auth } from "../../auth/adapter";
 import {
   DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB,
   ERROR_CODES,
@@ -49,13 +48,16 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
   protected photoPath = "photo";
 
   async changeEmail(id: string, email: string) {
-    const response = await ThirdPartyEmailPassword.updateEmailOrPassword({
+    const result = await auth.emailPassword.updateEmailOrPassword({
       email: email,
       userId: id,
     });
 
-    if (response.status !== "OK") {
-      throw new CustomError(response.status, response.status);
+    if (!result.success) {
+      throw new CustomError(
+        result.error || ERROR_CODES.CHANGE_EMAIL,
+        result.error || ERROR_CODES.CHANGE_EMAIL,
+      );
     }
 
     const query = this.factory.getUpdateSql(id, { email });
@@ -81,25 +83,24 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
       };
     }
 
-    const userInfo = await ThirdPartyEmailPassword.getUserById(userId);
+    const userInfo = await auth.emailPassword.getUserById(userId);
 
     if (oldPassword && newPassword) {
       if (userInfo) {
-        const isPasswordValid =
-          await ThirdPartyEmailPassword.emailPasswordSignIn(
-            userInfo.email,
-            oldPassword,
-            { dbSchema: this.schema },
-          );
+        const isPasswordValid = await auth.emailPassword.emailPasswordSignIn(
+          userInfo.email,
+          oldPassword,
+          { dbSchema: this.schema },
+        );
 
-        if (isPasswordValid.status === "OK") {
-          const result = await ThirdPartyEmailPassword.updateEmailOrPassword({
+        if (isPasswordValid.success) {
+          const result = await auth.emailPassword.updateEmailOrPassword({
             password: newPassword,
             userId,
           });
 
-          if (result) {
-            await Session.revokeAllSessionsForUser(userId);
+          if (result.success) {
+            await auth.session.revokeAllSessionsForUser(userId);
 
             return {
               status: "OK",
@@ -144,7 +145,7 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
   }
 
   async deleteMe(userId: string, password: string) {
-    const user = await ThirdPartyEmailPassword.getUserById(userId);
+    const user = await auth.emailPassword.getUserById(userId);
 
     if (!user) {
       throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
@@ -154,13 +155,13 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
       throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
     }
 
-    const signInResponse = await ThirdPartyEmailPassword.emailPasswordSignIn(
+    const signInResponse = await auth.emailPassword.emailPasswordSignIn(
       user.email,
       password,
       { dbSchema: this.schema },
     );
 
-    if (signInResponse.status === "OK") {
+    if (signInResponse.success) {
       return await this.delete(userId);
     } else {
       throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
@@ -199,7 +200,7 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
   }
 
   protected async postDelete(result: User): Promise<User> {
-    await Session.revokeAllSessionsForUser(result.id);
+    await auth.session.revokeAllSessionsForUser(result.id);
 
     return result;
   }

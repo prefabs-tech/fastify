@@ -14,6 +14,16 @@ vi.mock("../../lib/hasUserPermission", () => ({
   default: mockHasUserPermission,
 }));
 
+vi.mock("../../auth/adapter", () => ({
+  auth: {
+    roles: {
+      PermissionClaim: {
+        key: "st-role.permissions",
+      },
+    },
+  },
+}));
+
 const buildRequest = (
   fastify: FastifyInstance,
   user?: { id: string },

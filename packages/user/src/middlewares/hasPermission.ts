@@ -1,8 +1,8 @@
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 import { Error as STError } from "supertokens-node/recipe/session";
-import UserRoles from "supertokens-node/recipe/userroles";
 
+import { auth } from "../auth/adapter";
 import hasUserPermission from "../lib/hasUserPermission";
 
 const hasPermission =
@@ -23,7 +23,7 @@ const hasPermission =
         message: "Not have enough permission",
         payload: [
           {
-            id: UserRoles.PermissionClaim.key,
+            id: auth.roles.PermissionClaim?.key || "st-role.permissions",
             reason: {
               expectedToInclude: permission,
               message: "Not have enough permission",

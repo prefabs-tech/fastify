@@ -15,7 +15,9 @@ interface EmailOptions {
   subject?: string;
   templateName?: string;
 }
+
 interface UserConfig {
+  authProvider?: "supertokens" | string;
   email?: IsEmailOptions;
   emailOverrides?: {
     duplicateEmail?: EmailOptions;

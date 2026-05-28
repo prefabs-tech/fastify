@@ -25,6 +25,8 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
+export * from "./auth";
+
 export * from "./constants";
 
 export { default as userSchema } from "./graphql/schema";

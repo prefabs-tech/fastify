@@ -1,14 +1,14 @@
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import UserRoles from "supertokens-node/recipe/userroles";
 
+import { auth } from "../../auth/adapter";
 import { ERROR_CODES } from "../../constants";
 
 class RoleService {
   async createRole(
     role: string,
     permissions?: string[],
-  ): Promise<{ status: "OK" }> {
-    const { roles } = await UserRoles.getAllRoles(role);
+  ): Promise<{ status: string }> {
+    const roles = await auth.roles.getAllRoles();
 
     if (roles.includes(role)) {
       throw new CustomError(
@@ -17,63 +17,54 @@ class RoleService {
       );
     }
 
-    const createRoleResponse = await UserRoles.createNewRoleOrAddPermissions(
+    const createdNewRole = await auth.roles.createNewRoleOrAddPermissions(
       role,
       permissions || [],
     );
 
-    return { status: createRoleResponse.status };
+    return { status: createdNewRole ? "OK" : "ROLE_ALREADY_EXISTS" };
   }
 
-  async deleteRole(role: string): Promise<{ status: "OK" }> {
-    const response = await UserRoles.getUsersThatHaveRole(role);
+  async deleteRole(role: string): Promise<{ status: string }> {
+    const users = await auth.roles.getUsersThatHaveRole(role);
 
-    if (response.status === "UNKNOWN_ROLE_ERROR") {
-      throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
+    if (users.length === 0) {
+      const allRoles = await auth.roles.getAllRoles();
+      if (!allRoles.includes(role)) {
+        throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
+      }
     }
 
-    if (response.users.length > 0) {
+    if (users.length > 0) {
       throw new CustomError(
         "The role is currently assigned to one or more users and cannot be deleted",
         ERROR_CODES.ROLE_IN_USE,
       );
     }
 
-    const deleteRoleResponse = await UserRoles.deleteRole(role);
+    const didRoleExist = await auth.roles.deleteRole(role);
 
-    return { status: deleteRoleResponse.status };
+    return { status: didRoleExist ? "OK" : "UNKNOWN_ROLE_ERROR" };
   }
 
   async getPermissionsForRole(role: string): Promise<string[]> {
-    let permissions: string[] = [];
-
-    const response = await UserRoles.getPermissionsForRole(role);
-
-    if (response.status === "OK") {
-      permissions = response.permissions;
-    }
-
-    return permissions;
+    return auth.roles.getPermissionsForRole(role);
   }
 
   async getRoles(): Promise<{ permissions: string[]; role: string }[]> {
-    let roles: { permissions: string[]; role: string }[] = [];
+    const roleNames = await auth.roles.getAllRoles();
 
-    const response = await UserRoles.getAllRoles();
+    // [DU 2024-MAR-20] This is N+1 problem
+    const roles = await Promise.all(
+      roleNames.map(async (role: string) => {
+        const permissions = await auth.roles.getPermissionsForRole(role);
 
-    if (response.status === "OK") {
-      // [DU 2024-MAR-20] This is N+1 problem
-      roles = await Promise.all(
-        response.roles.map(async (role) => {
-          const response = await UserRoles.getPermissionsForRole(role);
-
-          return {
-            permissions: response.status === "OK" ? response.permissions : [],
-            role,
-          };
-        }),
-      );
-    }
+        return {
+          permissions,
+          role,
+        };
+      }),
+    );
 
     return roles;
   }
@@ -82,24 +73,25 @@ class RoleService {
     role: string,
     permissions: string[],
   ): Promise<{ permissions: string[]; status: "OK" }> {
-    const response = await UserRoles.getPermissionsForRole(role);
+    const rolePermissions = await auth.roles.getPermissionsForRole(role);
 
-    if (response.status === "UNKNOWN_ROLE_ERROR") {
-      throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
+    if (rolePermissions.length === 0) {
+      const allRoles = await auth.roles.getAllRoles();
+      if (!allRoles.includes(role)) {
+        throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
+      }
     }
 
-    const rolePermissions = response.permissions;
-
     const newPermissions = permissions.filter(
-      (permission) => !rolePermissions.includes(permission),
+      (permission: string) => !rolePermissions.includes(permission),
     );
 
     const removedPermissions = rolePermissions.filter(
-      (permission) => !permissions.includes(permission),
+      (permission: string) => !permissions.includes(permission),
     );
 
-    await UserRoles.removePermissionsFromRole(role, removedPermissions);
-    await UserRoles.createNewRoleOrAddPermissions(role, newPermissions);
+    await auth.roles.removePermissionsFromRole(role, removedPermissions);
+    await auth.roles.createNewRoleOrAddPermissions(role, newPermissions);
 
     const permissionsResponse = await this.getPermissionsForRole(role);
 

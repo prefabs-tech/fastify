@@ -1,18 +1,14 @@
 import type { FastifyInstance } from "fastify";
 
-import UserRoles from "supertokens-node/recipe/userroles";
-
+import { auth } from "../auth/adapter";
 import { ROLE_SUPERADMIN } from "../constants";
 
 const getPermissions = async (roles: string[]) => {
   let permissions: string[] = [];
 
   for (const role of roles) {
-    const response = await UserRoles.getPermissionsForRole(role);
-
-    if (response.status === "OK") {
-      permissions = [...new Set([...permissions, ...response.permissions])];
-    }
+    const rolePermissions = await auth.roles.getPermissionsForRole(role);
+    permissions = [...new Set([...permissions, ...rolePermissions])];
   }
 
   return permissions;
@@ -30,7 +26,7 @@ const hasUserPermission = async (
     return true;
   }
 
-  const { roles } = await UserRoles.getRolesForUser(userId);
+  const roles = await auth.roles.getRolesForUser(userId);
 
   // Allow if user has super admin role
   if (roles && roles.includes(ROLE_SUPERADMIN)) {

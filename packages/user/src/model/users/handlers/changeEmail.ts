@@ -1,21 +1,16 @@
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { FastifyReply } from "fastify";
-import EmailVerification, {
-  EmailVerificationClaim,
-  isEmailVerified,
-} from "supertokens-node/recipe/emailverification";
-import { getUsersByEmail } from "supertokens-node/recipe/thirdpartyemailpassword";
-
+import type { AuthSession } from "../../../auth/adapter";
 import type { ChangeEmailInput } from "../../../types";
 
+import { auth } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 import validateEmail from "../../../validator/email";
 
-const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
-  const { body, config, server, session, slonik, user } = request;
+const changeEmail = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { body, config, server, slonik, user } = request;
+  const session = (request as FastifyRequest & { session: AuthSession })
+    .session;
 
   if (!user) {
     throw server.httpErrors.unauthorized("Unauthorised");
@@ -28,17 +23,23 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
   }
 
   try {
+    const userContext = auth.createUserContext(request);
+
     if (config.user.features?.profileValidation?.enabled) {
-      await session?.fetchAndSetClaim(
-        new ProfileValidationClaim(),
-        createUserContext(undefined, request),
+      await auth.claims.refreshSessionClaims(
+        session,
+        request,
+        ["profileValidation"],
+        userContext,
       );
     }
 
     if (config.user.features?.signUp?.emailVerification) {
-      await session?.fetchAndSetClaim(
-        EmailVerificationClaim,
-        createUserContext(undefined, request),
+      await auth.claims.refreshSessionClaims(
+        session,
+        request,
+        ["emailVerification"],
+        userContext,
       );
     }
 
@@ -59,14 +60,20 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
       });
     }
 
-    if (config.user.features?.signUp?.emailVerification) {
-      const isVerified = await isEmailVerified(user.id, email);
+    if (
+      config.user.features?.signUp?.emailVerification &&
+      auth.emailVerification
+    ) {
+      const isVerified = await auth.emailVerification.isEmailVerified(
+        user.id,
+        email,
+      );
 
       if (!isVerified) {
-        const users = await getUsersByEmail(email);
+        const users = (await auth.emailPassword.getUsersByEmail?.(email)) || [];
 
         const emailPasswordRecipeUsers = users.filter(
-          (user) => !user.thirdParty,
+          (user) => !(user as Record<string, unknown>).thirdParty,
         );
 
         if (emailPasswordRecipeUsers.length > 0) {
@@ -75,24 +82,19 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
           });
         }
 
-        const tokenResponse =
-          await EmailVerification.createEmailVerificationToken(user.id, email);
+        const token = await auth.emailVerification.createEmailVerificationToken(
+          user.id,
+          email,
+          userContext,
+        );
 
-        if (tokenResponse.status === "OK") {
-          await EmailVerification.sendEmail({
-            emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
-            type: "EMAIL_VERIFICATION",
-            user: {
-              email: email,
-              id: user.id,
-            },
-            userContext: {
-              _default: {
-                request: {
-                  request: request,
-                },
-              },
-            },
+        if (token) {
+          await auth.emailVerification.sendVerificationEmail?.({
+            appOrigin: config.appOrigin[0] as string,
+            email,
+            token,
+            userContext,
+            userId: user.id,
           });
 
           return reply.send({
@@ -101,7 +103,7 @@ const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
           });
         }
 
-        return reply.send(tokenResponse.status);
+        return reply.send({ status: "EMAIL_VERIFICATION_TOKEN_FAILED" });
       }
     }
 

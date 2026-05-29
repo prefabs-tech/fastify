@@ -207,6 +207,12 @@ export interface UpdateEmailOrPasswordResult {
 
 export type { ClaimValidationError, RefreshableClaim } from "./types";
 
+declare module "fastify" {
+  interface FastifyRequest {
+    session?: AuthSession;
+  }
+}
+
 let authInstance: AuthAdapter | undefined;
 
 export function getAuth(): AuthAdapter {

@@ -17,6 +17,10 @@ interface EmailOptions {
 }
 
 interface UserConfig {
+  authConfig?: {
+    [provider: string]: unknown;
+    supertokens?: SupertokensConfig;
+  };
   authProvider?: "supertokens" | string;
   email?: IsEmailOptions;
   emailOverrides?: {

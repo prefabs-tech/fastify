@@ -1,17 +1,22 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import EmailVerification from "supertokens-node/recipe/emailverification";
-import Session from "supertokens-node/recipe/session";
+import { wrapResponse } from "supertokens-node/framework/fastify";
+import EmailVerification, {
+  EmailVerificationClaim,
+} from "supertokens-node/recipe/emailverification";
+import Session, { Error as STError } from "supertokens-node/recipe/session";
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 import UserRoles from "supertokens-node/recipe/userroles";
 
 import type {
+  AuthErrorsProvider,
   AuthProvider,
   AuthResult,
   AuthSession,
   AuthUser,
   AuthUserContext,
+  ClaimsProvider,
   EmailPasswordProvider,
   EmailVerificationProvider,
   ResetPasswordResult,
@@ -19,11 +24,98 @@ import type {
   SessionProvider,
   UpdateEmailOrPasswordResult,
 } from "./adapter";
+import type { ClaimValidationError, RefreshableClaim } from "./types";
 
 import { ERROR_CODES } from "../constants";
 import supertokensPlugin from "../supertokens";
+import createUserContextImpl from "../supertokens/utils/createUserContext";
+import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim";
 
-// SuperTokens adapter that wraps SuperTokens API to match provider-agnostic interface
+const claimKeyByType: Record<RefreshableClaim, string> = {
+  emailVerification: EmailVerificationClaim.key,
+  profileValidation: ProfileValidationClaim.key,
+};
+
+const supertokensClaimsAdapter: ClaimsProvider = {
+  async assertProfileValid(session, request, userContext) {
+    const profileValidationClaim = new ProfileValidationClaim();
+    const context = createUserContextImpl(userContext, request);
+
+    try {
+      await session.assertClaims?.(
+        [profileValidationClaim.validators.isVerified()],
+        context,
+      );
+
+      return;
+    } catch (error) {
+      if (error instanceof STError && error.type === "INVALID_CLAIMS") {
+        return (error.payload ?? []) as unknown as ClaimValidationError[];
+      }
+
+      throw error;
+    }
+  },
+
+  excludeValidatorIds(validators, skip) {
+    const skipKeys = new Set(skip.map((claim) => claimKeyByType[claim]));
+
+    return validators.filter((validator) => !skipKeys.has(validator.id));
+  },
+
+  keys: {
+    emailVerification: EmailVerificationClaim.key,
+    profileValidation: ProfileValidationClaim.key,
+  },
+
+  async refreshSessionClaims(session, request, claims, userContext) {
+    const context = createUserContextImpl(userContext, request);
+
+    for (const claim of claims) {
+      if (claim === "emailVerification") {
+        await session.fetchAndSetClaim?.(EmailVerificationClaim, context);
+      } else if (claim === "profileValidation") {
+        await session.fetchAndSetClaim?.(new ProfileValidationClaim(), context);
+      }
+    }
+  },
+
+  verifySessionOptions(skip: RefreshableClaim[]) {
+    return {
+      overrideGlobalClaimValidators: async <T extends { id: string }>(
+        globalValidators: T[],
+      ) => supertokensClaimsAdapter.excludeValidatorIds(globalValidators, skip),
+    };
+  },
+};
+
+const supertokensErrorsAdapter: AuthErrorsProvider = {
+  createInvalidClaimsError(errors) {
+    return new STError({
+      message: "invalid claim",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      payload: errors as any,
+      type: "INVALID_CLAIMS",
+    });
+  },
+
+  createUnauthorizedError(message = "unauthorised") {
+    return new STError({
+      message,
+      type: "UNAUTHORISED",
+    });
+  },
+
+  isAuthError(error: unknown) {
+    return STError.isErrorFromSuperTokens(error);
+  },
+};
+
+const createUserContext = (
+  request: FastifyRequest,
+  existing?: AuthUserContext,
+): AuthUserContext => createUserContextImpl(existing, request);
+
 const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
   async createResetPasswordToken(userId: string): Promise<string> {
     const response =
@@ -174,6 +266,20 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
     return EmailVerification.isEmailVerified(userId, email);
   },
 
+  async sendVerificationEmail(input) {
+    await EmailVerification.sendEmail({
+      emailVerifyLink: `${input.appOrigin}/auth/verify-email?token=${input.token}&rid=emailverification`,
+      type: "EMAIL_VERIFICATION",
+      user: {
+        email: input.email,
+        id: input.userId,
+      },
+      userContext: input.userContext,
+    });
+
+    return { status: "OK", success: true };
+  },
+
   async unverifyEmail(userId: string, email?: string): Promise<void> {
     await EmailVerification.unverifyEmail(userId, email);
   },
@@ -259,6 +365,12 @@ const supertokensRolesAdapter: RolesProvider = {
   ): Promise<void> {
     await UserRoles.removePermissionsFromRole(role, permissions);
   },
+
+  async rolesExist(roles: string[]): Promise<boolean> {
+    const allRoles = await supertokensRolesAdapter.getAllRoles();
+
+    return roles.every((role) => allRoles.includes(role));
+  },
 };
 
 const supertokensSessionAdapter: SessionProvider = {
@@ -268,6 +380,7 @@ const supertokensSessionAdapter: SessionProvider = {
     userId,
     accessTokenPayload,
     sessionData,
+    userContext,
   ): Promise<AuthSession> {
     return Session.createNewSession(
       request,
@@ -275,13 +388,24 @@ const supertokensSessionAdapter: SessionProvider = {
       userId,
       accessTokenPayload,
       sessionData,
+      userContext,
     ) as unknown as AuthSession;
   },
 
   async getSession(request, reply, options): Promise<AuthSession | undefined> {
-    return Session.getSession(request, reply, options) as unknown as
-      | AuthSession
-      | undefined;
+    const skipClaims = options?.skipClaims;
+
+    return Session.getSession(request, wrapResponse(reply), {
+      checkDatabase: options?.checkDatabase,
+      overrideGlobalClaimValidators: skipClaims?.length
+        ? async (globalValidators) =>
+            supertokensClaimsAdapter.excludeValidatorIds(
+              globalValidators,
+              skipClaims,
+            )
+        : undefined,
+      sessionRequired: options?.sessionRequired,
+    }) as unknown as AuthSession | undefined;
   },
 
   async revokeAllSessionsForUser(userId: string): Promise<void> {
@@ -291,8 +415,11 @@ const supertokensSessionAdapter: SessionProvider = {
 
 export const supertokensProvider: AuthProvider = {
   adapter: {
+    claims: supertokensClaimsAdapter,
+    createUserContext,
     emailPassword: supertokensEmailPasswordAdapter,
     emailVerification: supertokensEmailVerificationAdapter,
+    errors: supertokensErrorsAdapter,
     roles: supertokensRolesAdapter,
     session: supertokensSessionAdapter,
   },

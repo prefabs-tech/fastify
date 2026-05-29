@@ -4,7 +4,7 @@ import type { FastifyPluginAsync } from "fastify";
 import FastifyPlugin from "fastify-plugin";
 
 import { initAuth } from "./auth/adapter";
-import { supertokensProvider } from "./auth/supertokens";
+import { getAuthProvider } from "./auth/providers";
 import seedRoles from "./lib/seedRoles";
 import mercuriusAuthPlugin from "./mercurius-auth/plugin";
 import hasPermission from "./middlewares/hasPermission";
@@ -18,20 +18,9 @@ import userContext from "./userContext";
 const userPlugin: FastifyPluginAsync = async (fastify) => {
   const { graphql, user } = fastify.config;
 
-  let provider;
   const providerName = user.authProvider || "supertokens";
 
-  switch (providerName) {
-    case "supertokens": {
-      provider = supertokensProvider;
-      break;
-    }
-    default: {
-      throw new Error(`Unknown auth provider: ${providerName}`);
-    }
-  }
-
-  await initAuth(fastify, provider);
+  await initAuth(fastify, getAuthProvider(providerName));
 
   fastify.addHook("onReady", async () => {
     await seedRoles(user);

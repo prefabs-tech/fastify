@@ -25,6 +25,8 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
+export * from "./auth";
+
 export * from "./constants";
 
 export { default as userSchema } from "./graphql/schema";
@@ -56,6 +58,11 @@ export {
 } from "./model/users/sql";
 export { default as UserSqlFactory } from "./model/users/sqlFactory";
 export { default } from "./plugin";
+/*
+ * @deprecated Import supertokens internals directly from "@prefabs.tech/fastify-user/supertokens"
+ * if you need them. These exports will be removed in a future release.
+ * The auth adapter is available via `import { auth } from "@prefabs.tech/fastify-user/auth"`.
+ */
 export { errorHandler as supertokensErrorHandler } from "./supertokens/errorHandler";
 export { default as areRolesExist } from "./supertokens/utils/areRolesExist";
 export { default as createUserContext } from "./supertokens/utils/createUserContext";

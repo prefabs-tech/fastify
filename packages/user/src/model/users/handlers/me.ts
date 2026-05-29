@@ -1,38 +1,42 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
+import type { AuthSession } from "../../../auth/adapter";
 
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
+import { auth } from "../../../auth/adapter";
 
-const me = async (request: SessionRequest, reply: FastifyReply) => {
-  const { config, server, session, user } = request;
+const me = async (request: FastifyRequest, reply: FastifyReply) => {
+  const { config, server, session, user } = request as FastifyRequest & {
+    session: AuthSession;
+  };
 
   if (!user) {
     throw server.httpErrors.unauthorized("Unauthorised");
   }
 
-  const authUser = await getUserById(user.id);
+  const authUser = await auth.emailPassword.getUserById(user.id);
+  const userContext = auth.createUserContext(request);
 
   if (config.user.features?.profileValidation?.enabled) {
-    await session?.fetchAndSetClaim(
-      new ProfileValidationClaim(),
-      createUserContext(undefined, request),
+    await auth.claims.refreshSessionClaims(
+      session,
+      request,
+      ["profileValidation"],
+      userContext,
     );
   }
 
   if (config.user.features?.signUp?.emailVerification) {
-    await session?.fetchAndSetClaim(
-      EmailVerificationClaim,
-      createUserContext(undefined, request),
+    await auth.claims.refreshSessionClaims(
+      session,
+      request,
+      ["emailVerification"],
+      userContext,
     );
   }
 
   const response = {
     ...user,
-    thirdParty: authUser?.thirdParty,
+    thirdParty: (authUser as Record<string, unknown>)?.thirdParty,
   };
 
   reply.send(response);

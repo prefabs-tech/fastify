@@ -1,5 +1,4 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type { Invitation } from "../../../types/invitation";
 
@@ -8,7 +7,7 @@ import isInvitationValid from "../../../lib/isInvitationValid";
 import sendInvitation from "../../../lib/sendInvitation";
 
 const resendInvitation = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   const { config, dbSchema, headers, hostname, log, params, server, slonik } =

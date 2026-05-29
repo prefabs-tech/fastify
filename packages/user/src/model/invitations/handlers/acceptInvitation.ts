@@ -1,11 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
-import { createNewSession } from "supertokens-node/recipe/session";
-import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import type { User } from "../../../types";
 
+import { auth } from "../../../auth/adapter";
 import getInvitationService from "../../../lib/getInvitationService";
 import isInvitationValid from "../../../lib/isInvitationValid";
 import validateEmail from "../../../validator/email";
@@ -66,14 +65,18 @@ const acceptInvitation = async (
   }
 
   // signup
-  const signUpResponse = await emailPasswordSignUp(email, password, {
-    autoVerifyEmail: true,
-    roles: [invitation.role],
-  });
+  const signUpResponse = await auth.emailPassword.emailPasswordSignUp(
+    email,
+    password,
+    {
+      autoVerifyEmail: true,
+      roles: [invitation.role],
+    },
+  );
 
-  if (signUpResponse.status !== "OK") {
+  if (!signUpResponse.success) {
     throw request.server.httpErrors.unprocessableEntity(
-      "EMAIL_ALREADY_EXISTS_ERROR",
+      signUpResponse.error || "EMAIL_ALREADY_EXISTS_ERROR",
     );
   }
 
@@ -94,10 +97,10 @@ const acceptInvitation = async (
   }
 
   // create new session so the user be logged in on signup
-  await createNewSession(request, reply, signUpResponse.user.id);
+  await auth.session.createNewSession(request, reply, signUpResponse.user.id);
 
   reply.send({
-    ...signUpResponse,
+    status: "OK",
     user: {
       ...signUpResponse.user,
       roles: [invitation.role],

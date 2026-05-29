@@ -1,14 +1,11 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
+import type { AuthSession } from "../../../auth/adapter";
 
+import { auth } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 
-const removePhoto = async (request: SessionRequest, reply: FastifyReply) => {
+const removePhoto = async (request: FastifyRequest, reply: FastifyReply) => {
   const { config, dbSchema, server, slonik, user } = request;
 
   if (!user) {
@@ -26,25 +23,33 @@ const removePhoto = async (request: SessionRequest, reply: FastifyReply) => {
 
   request.user = updatedUser;
 
-  const authUser = await getUserById(user.id);
+  const authUser = await auth.emailPassword.getUserById(user.id);
+  const userContext = auth.createUserContext(request);
+
+  const session = (request as FastifyRequest & { session: AuthSession })
+    .session;
 
   if (request.config.user.features?.profileValidation?.enabled) {
-    await request.session?.fetchAndSetClaim(
-      new ProfileValidationClaim(),
-      createUserContext(undefined, request),
+    await auth.claims.refreshSessionClaims(
+      session,
+      request,
+      ["profileValidation"],
+      userContext,
     );
   }
 
   if (request.config.user.features?.signUp?.emailVerification) {
-    await request.session?.fetchAndSetClaim(
-      EmailVerificationClaim,
-      createUserContext(undefined, request),
+    await auth.claims.refreshSessionClaims(
+      session,
+      request,
+      ["emailVerification"],
+      userContext,
     );
   }
 
   const response = {
     ...updatedUser,
-    thirdParty: authUser?.thirdParty,
+    thirdParty: (authUser as Record<string, unknown>)?.thirdParty,
   };
 
   reply.send(response);

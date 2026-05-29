@@ -3,15 +3,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_USER } from "../../constants";
 import seedRoles from "../seedRoles";
 
-vi.mock("supertokens-node/recipe/userroles", () => ({
-  default: {
-    createNewRoleOrAddPermissions: vi.fn().mockResolvedValue({ status: "OK" }),
+const { mockCreateNewRoleOrAddPermissions } = vi.hoisted(() => ({
+  mockCreateNewRoleOrAddPermissions: vi.fn().mockResolvedValue(true),
+}));
+
+vi.mock("../../auth/adapter", () => ({
+  auth: {
+    roles: {
+      createNewRoleOrAddPermissions: mockCreateNewRoleOrAddPermissions,
+    },
   },
 }));
 
-import UserRoles from "supertokens-node/recipe/userroles";
-
-const mockCreate = vi.mocked(UserRoles.createNewRoleOrAddPermissions);
+const mockCreate = mockCreateNewRoleOrAddPermissions;
 
 describe("seedRoles", () => {
   beforeEach(() => {

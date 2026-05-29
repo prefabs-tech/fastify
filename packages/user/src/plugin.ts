@@ -3,6 +3,8 @@ import type { FastifyPluginAsync } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 
+import { initAuth } from "./auth/adapter";
+import { getAuthProvider } from "./auth/providers";
 import seedRoles from "./lib/seedRoles";
 import mercuriusAuthPlugin from "./mercurius-auth/plugin";
 import hasPermission from "./middlewares/hasPermission";
@@ -11,13 +13,14 @@ import invitationsRoutes from "./model/invitations/controller";
 import permissionsRoutes from "./model/permissions/controller";
 import rolesRoutes from "./model/roles/controller";
 import usersRoutes from "./model/users/controller";
-import supertokensPlugin from "./supertokens";
 import userContext from "./userContext";
 
 const userPlugin: FastifyPluginAsync = async (fastify) => {
   const { graphql, user } = fastify.config;
 
-  await fastify.register(supertokensPlugin);
+  const providerName = user.authProvider || "supertokens";
+
+  await initAuth(fastify, getAuthProvider(providerName));
 
   fastify.addHook("onReady", async () => {
     await seedRoles(user);

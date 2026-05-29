@@ -1,12 +1,24 @@
-import type { SessionRequest } from "supertokens-node/framework/fastify";
-
-import Fastify, { type FastifyInstance } from "fastify";
-import { Error as STError } from "supertokens-node/recipe/session";
+import Fastify, { type FastifyInstance, type FastifyRequest } from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import hasPermission from "../hasPermission";
 
-const { mockHasUserPermission } = vi.hoisted(() => ({
+const {
+  mockCreateInvalidClaimsError,
+  mockCreateUnauthorizedError,
+  mockHasUserPermission,
+} = vi.hoisted(() => ({
+  mockCreateInvalidClaimsError: vi.fn((errors: unknown[]) => {
+    const err = new Error("Not have enough permission");
+    (err as Record<string, unknown>).type = "INVALID_CLAIMS";
+    (err as Record<string, unknown>).payload = errors;
+    return err;
+  }),
+  mockCreateUnauthorizedError: vi.fn((message?: string) => {
+    const err = new Error(message);
+    (err as Record<string, unknown>).type = "UNAUTHORISED";
+    return err;
+  }),
   mockHasUserPermission: vi.fn(),
 }));
 
@@ -14,14 +26,28 @@ vi.mock("../../lib/hasUserPermission", () => ({
   default: mockHasUserPermission,
 }));
 
+vi.mock("../../auth/adapter", () => ({
+  auth: {
+    errors: {
+      createInvalidClaimsError: mockCreateInvalidClaimsError,
+      createUnauthorizedError: mockCreateUnauthorizedError,
+    },
+    roles: {
+      PermissionClaim: {
+        key: "st-role.permissions",
+      },
+    },
+  },
+}));
+
 const buildRequest = (
   fastify: FastifyInstance,
   user?: { id: string },
-): SessionRequest => {
+): FastifyRequest => {
   return {
     server: fastify,
     user,
-  } as unknown as SessionRequest;
+  } as FastifyRequest;
 };
 
 describe("hasPermission middleware", () => {
@@ -81,12 +107,15 @@ describe("hasPermission middleware", () => {
     expect(mockHasUserPermission.mock.calls[0]?.[2]).toBe("users:read");
   });
 
-  it("throws SuperTokens errors for unauthorized outcomes", async () => {
+  it("throws auth errors for unauthorized outcomes", async () => {
     mockHasUserPermission.mockResolvedValue(false);
     const preHandler = hasPermission("roles:update");
 
     await expect(
       preHandler(buildRequest(fastify, { id: "user-7" })),
-    ).rejects.toBeInstanceOf(STError);
+    ).rejects.toMatchObject({
+      message: "Not have enough permission",
+      type: "INVALID_CLAIMS",
+    });
   });
 });

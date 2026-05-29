@@ -8,7 +8,7 @@ import getEmailVerificationRecipeConfig from "./config/emailVerificationRecipeCo
 
 const init = (fastify: FastifyInstance) => {
   const emailVerification: SupertokensRecipes["emailVerification"] =
-    fastify.config.user.supertokens.recipes?.emailVerification;
+    fastify.config.user.supertokens!.recipes?.emailVerification;
 
   if (typeof emailVerification === "function") {
     return EmailVerification.init(emailVerification(fastify));

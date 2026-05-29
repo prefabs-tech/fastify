@@ -1,4 +1,6 @@
-import EmailVerification from "supertokens-node/recipe/emailverification";
+import type { AuthUserContext } from "../auth/adapter";
+
+import { auth } from "../auth/adapter";
 
 /**
  * Auto verify user email.
@@ -6,21 +8,21 @@ import EmailVerification from "supertokens-node/recipe/emailverification";
 const verifyEmail = async (
   userId: string,
   email?: string,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  userContext?: any,
+  userContext?: AuthUserContext,
 ) => {
-  const tokenResponse = await EmailVerification.createEmailVerificationToken(
+  if (!auth.emailVerification) {
+    throw new Error(
+      "Email verification is not supported by the current auth provider",
+    );
+  }
+
+  const token = await auth.emailVerification.createEmailVerificationToken(
     userId,
     email,
     userContext,
   );
 
-  if (tokenResponse.status === "OK") {
-    await EmailVerification.verifyEmailUsingToken(
-      tokenResponse.token,
-      userContext,
-    );
-  }
+  await auth.emailVerification.verifyEmailUsingToken(token, userContext);
 };
 
 export default verifyEmail;

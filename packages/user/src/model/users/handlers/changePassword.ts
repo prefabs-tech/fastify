@@ -1,14 +1,11 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
-
-import { createNewSession } from "supertokens-node/recipe/session";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type { ChangePasswordInput } from "../../../types";
 
+import { auth } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
 
-const changePassword = async (request: SessionRequest, reply: FastifyReply) => {
+const changePassword = async (request: FastifyRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, server, slonik, user } = request;
 
   if (!user) {
@@ -27,13 +24,13 @@ const changePassword = async (request: SessionRequest, reply: FastifyReply) => {
   );
 
   if (response.status === "OK") {
-    await createNewSession(
+    await auth.session.createNewSession(
       request,
       reply,
       user.id,
       undefined,
       undefined,
-      createUserContext(undefined, request),
+      auth.createUserContext(request),
     );
   }
 

@@ -1,7 +1,10 @@
-import type { FastifyInstance } from "fastify";
+import type {
+  FastifyInstance,
+  RouteHandler,
+  RouteShorthandOptions,
+} from "fastify";
 
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-
+import { auth } from "../../auth/adapter";
 import {
   PERMISSIONS_USERS_DISABLE,
   PERMISSIONS_USERS_ENABLE,
@@ -17,7 +20,6 @@ import {
   ROUTE_USERS_ENABLE,
   ROUTE_USERS_FIND_BY_ID,
 } from "../../constants";
-import ProfileValidationClaim from "../../supertokens/utils/profileValidationClaim";
 import handlers from "./handlers";
 import {
   adminSignUpSchema,
@@ -46,8 +48,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_LIST),
       ],
       schema: getUsersSchema,
-    },
-    handlersConfig?.users || handlers.users,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.users || handlers.users) as unknown as RouteHandler,
   );
 
   fastify.get(
@@ -58,8 +60,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_READ),
       ],
       schema: getUserSchema,
-    },
-    handlersConfig?.user || handlers.user,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.user || handlers.user) as unknown as RouteHandler,
   );
 
   fastify.post(
@@ -67,113 +69,90 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: fastify.verifySession(),
       schema: changePasswordSchema,
-    },
-    handlersConfig?.changePassword || handlers.changePassword,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.changePassword ||
+      handlers.changePassword) as unknown as RouteHandler,
   );
 
   fastify.post(
     ROUTE_CHANGE_EMAIL,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
-      }),
+      preHandler: fastify.verifySession(
+        auth.claims.verifySessionOptions([
+          "emailVerification",
+          "profileValidation",
+        ]),
+      ),
       schema: changeEmailSchema,
-    },
-    handlers.changeEmail,
+    } as unknown as RouteShorthandOptions,
+    handlers.changeEmail as unknown as RouteHandler,
   );
 
   fastify.get(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
-      }),
+      preHandler: fastify.verifySession(
+        auth.claims.verifySessionOptions([
+          "emailVerification",
+          "profileValidation",
+        ]),
+      ),
       schema: getMeSchema,
-    },
-    handlersConfig?.me || handlers.me,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.me || handlers.me) as unknown as RouteHandler,
   );
 
   fastify.put(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
-      }),
+      preHandler: fastify.verifySession(
+        auth.claims.verifySessionOptions([
+          "emailVerification",
+          "profileValidation",
+        ]),
+      ),
       schema: updateMeSchema,
-    },
-    handlersConfig?.updateMe || handlers.updateMe,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.updateMe || handlers.updateMe) as unknown as RouteHandler,
   );
 
   fastify.delete(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              sessionClaimValidator.id !== ProfileValidationClaim.key,
-          ),
-      }),
+      preHandler: fastify.verifySession(
+        auth.claims.verifySessionOptions(["profileValidation"]),
+      ),
       schema: deleteMeSchema,
-    },
-    handlersConfig?.deleteMe || handlers.deleteMe,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.deleteMe || handlers.deleteMe) as unknown as RouteHandler,
   );
 
   fastify.put(
     ROUTE_ME_PHOTO,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
-      }),
+      preHandler: fastify.verifySession(
+        auth.claims.verifySessionOptions([
+          "emailVerification",
+          "profileValidation",
+        ]),
+      ),
       schema: uploadPhotoSchema,
-    },
-    handlers.uploadPhoto,
+    } as unknown as RouteShorthandOptions,
+    handlers.uploadPhoto as unknown as RouteHandler,
   );
 
   fastify.delete(
     ROUTE_ME_PHOTO,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
-      }),
+      preHandler: fastify.verifySession(
+        auth.claims.verifySessionOptions([
+          "emailVerification",
+          "profileValidation",
+        ]),
+      ),
       schema: removePhotoSchema,
-    },
-    handlers.removePhoto,
+    } as unknown as RouteShorthandOptions,
+    handlers.removePhoto as unknown as RouteHandler,
   );
 
   fastify.put(
@@ -184,8 +163,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_DISABLE),
       ],
       schema: disableUserSchema,
-    },
-    handlersConfig?.disable || handlers.disable,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.disable || handlers.disable) as unknown as RouteHandler,
   );
 
   fastify.put(
@@ -196,8 +175,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_ENABLE),
       ],
       schema: enableUserSchema,
-    },
-    handlersConfig?.enable || handlers.enable,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.enable || handlers.enable) as unknown as RouteHandler,
   );
 
   fastify.post(

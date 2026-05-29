@@ -1,4 +1,8 @@
-import type { FastifyInstance } from "fastify";
+import type {
+  FastifyInstance,
+  RouteHandler,
+  RouteShorthandOptions,
+} from "fastify";
 
 import {
   PERMISSIONS_INVITATIONS_CREATE,
@@ -36,8 +40,9 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_INVITATIONS_LIST),
       ],
       schema: getInvitationsListSchema,
-    },
-    handlersConfig?.list || handlers.listInvitation,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.list ||
+      handlers.listInvitation) as unknown as RouteHandler,
   );
 
   fastify.post(
@@ -48,8 +53,9 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_INVITATIONS_CREATE),
       ],
       schema: createInvitationSchema,
-    },
-    handlersConfig?.create || handlers.createInvitation,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.create ||
+      handlers.createInvitation) as unknown as RouteHandler,
   );
 
   fastify.get(
@@ -76,8 +82,9 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_INVITATIONS_REVOKE),
       ],
       schema: revokeInvitationSchema,
-    },
-    handlersConfig?.revoke || handlers.revokeInvitation,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.revoke ||
+      handlers.revokeInvitation) as unknown as RouteHandler,
   );
 
   fastify.post(
@@ -88,8 +95,9 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_INVITATIONS_RESEND),
       ],
       schema: resendInvitationSchema,
-    },
-    handlersConfig?.resend || handlers.resendInvitation,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.resend ||
+      handlers.resendInvitation) as unknown as RouteHandler,
   );
 
   fastify.delete(
@@ -100,8 +108,9 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_INVITATIONS_DELETE),
       ],
       schema: deleteInvitationSchema,
-    },
-    handlersConfig?.delete || handlers.deleteInvitation,
+    } as unknown as RouteShorthandOptions,
+    (handlersConfig?.delete ||
+      handlers.deleteInvitation) as unknown as RouteHandler,
   );
 };
 

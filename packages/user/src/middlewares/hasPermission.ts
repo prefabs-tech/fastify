@@ -1,37 +1,27 @@
-import type { SessionRequest } from "supertokens-node/framework/fastify";
-
-import { Error as STError } from "supertokens-node/recipe/session";
+import type { FastifyRequest } from "fastify";
 
 import { auth } from "../auth/adapter";
 import hasUserPermission from "../lib/hasUserPermission";
 
 const hasPermission =
   (permission: string) =>
-  async (request: SessionRequest): Promise<void> => {
+  async (request: FastifyRequest): Promise<void> => {
     const user = request.user;
 
     if (!user) {
-      throw new STError({
-        message: "unauthorised",
-        type: "UNAUTHORISED",
-      });
+      throw auth.errors.createUnauthorizedError("unauthorised");
     }
 
     if (!(await hasUserPermission(request.server, user.id, permission))) {
-      // this error tells SuperTokens to return a 403 http response.
-      throw new STError({
-        message: "Not have enough permission",
-        payload: [
-          {
-            id: auth.roles.PermissionClaim?.key || "st-role.permissions",
-            reason: {
-              expectedToInclude: permission,
-              message: "Not have enough permission",
-            },
+      throw auth.errors.createInvalidClaimsError([
+        {
+          id: auth.roles.PermissionClaim?.key || "st-role.permissions",
+          reason: {
+            expectedToInclude: permission,
+            message: "Not have enough permission",
           },
-        ],
-        type: "INVALID_CLAIMS",
-      });
+        },
+      ]);
     }
   };
 

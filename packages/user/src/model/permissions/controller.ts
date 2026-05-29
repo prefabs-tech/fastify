@@ -1,4 +1,8 @@
-import type { FastifyInstance } from "fastify";
+import type {
+  FastifyInstance,
+  RouteHandler,
+  RouteShorthandOptions,
+} from "fastify";
 
 import { ROUTE_PERMISSIONS } from "../../constants";
 import handlers from "./handlers";
@@ -10,8 +14,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: [fastify.verifySession()],
       schema: getPermissionsSchema,
-    },
-    handlers.getPermissions,
+    } as unknown as RouteShorthandOptions,
+    handlers.getPermissions as unknown as RouteHandler,
   );
 };
 

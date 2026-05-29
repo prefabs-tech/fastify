@@ -1,13 +1,12 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 import mercuriusAuth from "mercurius-auth";
-import emailVerificationRecipe from "supertokens-node/recipe/emailverification";
-import { Error } from "supertokens-node/recipe/session";
 
-import createUserContext from "../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim";
+import type { AuthSession } from "../auth/adapter";
+
+import { auth } from "../auth/adapter";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {
@@ -20,7 +19,10 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
         return new mercurius.ErrorWithProps("user is disabled", {}, 401);
       }
 
-      if (fastify.config.user.features?.signUp?.emailVerification) {
+      if (
+        fastify.config.user.features?.signUp?.emailVerification &&
+        auth.emailVerification
+      ) {
         const emailVerification = authDirectiveAST.arguments.find(
           (argument: { name: { value: string } }) =>
             argument?.name?.value === "emailVerification",
@@ -28,16 +30,14 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
 
         if (
           emailVerification?.value?.value !== false &&
-          !(await emailVerificationRecipe.isEmailVerified(context.user.id))
+          !(await auth.emailVerification.isEmailVerified(context.user.id))
         ) {
-          // Added the claim validation errors to match with rest endpoint
-          // response for email verification
           return new mercurius.ErrorWithProps(
             "invalid claim",
             {
               claimValidationErrors: [
                 {
-                  id: "st-ev",
+                  id: auth.claims.keys.emailVerification,
                   reason: {
                     actualValue: false,
                     expectedValue: true,
@@ -59,30 +59,41 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
 
         if (profileValidation?.value?.value != false) {
           const request = context.reply.request;
+          const session = (request as FastifyRequest & { session: AuthSession })
+            .session;
 
-          const profileValidationClaim = new ProfileValidationClaim();
+          const userContext = auth.createUserContext(request);
 
-          const userContext = createUserContext(
-            undefined,
-            context.reply.request,
-          );
-
-          await request.session?.fetchAndSetClaim(
-            profileValidationClaim,
+          await auth.claims.refreshSessionClaims(
+            session,
+            request,
+            ["profileValidation"],
             userContext,
           );
 
           try {
-            await request.session?.assertClaims(
-              [profileValidationClaim.validators.isVerified()],
+            const errors = await auth.claims.assertProfileValid(
+              session,
+              request,
               userContext,
             );
-          } catch (error) {
-            if (error instanceof Error) {
+
+            if (errors && errors.length > 0) {
               return new mercurius.ErrorWithProps(
                 "invalid claim",
                 {
-                  claimValidationErrors: error.payload,
+                  claimValidationErrors: errors,
+                },
+                403,
+              );
+            }
+          } catch (error) {
+            if (auth.errors.isAuthError(error)) {
+              return new mercurius.ErrorWithProps(
+                "invalid claim",
+                {
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  claimValidationErrors: (error as any).payload,
                 },
                 403,
               );

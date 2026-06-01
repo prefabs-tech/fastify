@@ -142,7 +142,7 @@ const Mutation = {
           .session;
         const userContext = auth.createUserContext(request);
 
-        if (config.user.features?.profileValidation?.enabled) {
+        if (config.user.features?.profileValidation?.enabled && auth.claims) {
           await auth.claims.refreshSessionClaims(
             session,
             request,
@@ -151,7 +151,7 @@ const Mutation = {
           );
         }
 
-        if (config.user.features?.signUp?.emailVerification) {
+        if (config.user.features?.signUp?.emailVerification && auth.claims) {
           await auth.claims.refreshSessionClaims(
             session,
             request,
@@ -414,7 +414,10 @@ const Mutation = {
       const session = (request as FastifyRequest & { session: AuthSession })
         .session;
 
-      if (request.config.user.features?.profileValidation?.enabled) {
+      if (
+        request.config.user.features?.profileValidation?.enabled &&
+        auth.claims
+      ) {
         await auth.claims.refreshSessionClaims(
           session,
           request,
@@ -423,7 +426,10 @@ const Mutation = {
         );
       }
 
-      if (request.config.user.features?.signUp?.emailVerification) {
+      if (
+        request.config.user.features?.signUp?.emailVerification &&
+        auth.claims
+      ) {
         await auth.claims.refreshSessionClaims(
           session,
           request,
@@ -471,7 +477,7 @@ const Mutation = {
 
       request.user = updatedUser;
 
-      if (config.user.features?.profileValidation?.enabled) {
+      if (config.user.features?.profileValidation?.enabled && auth.claims) {
         await auth.claims.refreshSessionClaims(
           session,
           request,
@@ -546,7 +552,10 @@ const Mutation = {
       const session = (request as FastifyRequest & { session: AuthSession })
         .session;
 
-      if (request.config.user.features?.profileValidation?.enabled) {
+      if (
+        request.config.user.features?.profileValidation?.enabled &&
+        auth.claims
+      ) {
         await auth.claims.refreshSessionClaims(
           session,
           request,
@@ -555,7 +564,10 @@ const Mutation = {
         );
       }
 
-      if (request.config.user.features?.signUp?.emailVerification) {
+      if (
+        request.config.user.features?.signUp?.emailVerification &&
+        auth.claims
+      ) {
         await auth.claims.refreshSessionClaims(
           session,
           request,
@@ -666,7 +678,10 @@ const Query = {
 
     const user = await service.findById(arguments_.id);
 
-    if (context.config.user.features?.profileValidation?.enabled) {
+    if (
+      context.config.user.features?.profileValidation?.enabled &&
+      auth.claims
+    ) {
       const request = context.reply.request;
 
       const session = (request as FastifyRequest & { session: AuthSession })

@@ -37,7 +37,8 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
             {
               claimValidationErrors: [
                 {
-                  id: auth.claims.keys.emailVerification,
+                  id:
+                    auth.claims?.keys.emailVerification ?? "emailVerification",
                   reason: {
                     actualValue: false,
                     expectedValue: true,
@@ -51,7 +52,10 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
         }
       }
 
-      if (fastify.config.user.features?.profileValidation?.enabled) {
+      if (
+        fastify.config.user.features?.profileValidation?.enabled &&
+        auth.claims
+      ) {
         const profileValidation = authDirectiveAST.arguments.find(
           (argument: { name: { value: string } }) =>
             argument?.name?.value === "profileValidation",

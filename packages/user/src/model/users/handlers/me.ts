@@ -16,7 +16,7 @@ const me = async (request: FastifyRequest, reply: FastifyReply) => {
   const authUser = await auth.emailPassword.getUserById(user.id);
   const userContext = auth.createUserContext(request);
 
-  if (config.user.features?.profileValidation?.enabled) {
+  if (config.user.features?.profileValidation?.enabled && auth.claims) {
     await auth.claims.refreshSessionClaims(
       session,
       request,
@@ -25,7 +25,7 @@ const me = async (request: FastifyRequest, reply: FastifyReply) => {
     );
   }
 
-  if (config.user.features?.signUp?.emailVerification) {
+  if (config.user.features?.signUp?.emailVerification && auth.claims) {
     await auth.claims.refreshSessionClaims(
       session,
       request,

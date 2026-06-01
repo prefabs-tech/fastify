@@ -3,7 +3,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { ClaimValidationError, RefreshableClaim } from "./types";
 
 export interface AuthAdapter {
-  claims: ClaimsProvider;
+  claims?: ClaimsProvider;
   createUserContext(
     request: FastifyRequest,
     existing?: AuthUserContext,

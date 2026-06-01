@@ -25,7 +25,7 @@ const changeEmail = async (request: FastifyRequest, reply: FastifyReply) => {
   try {
     const userContext = auth.createUserContext(request);
 
-    if (config.user.features?.profileValidation?.enabled) {
+    if (config.user.features?.profileValidation?.enabled && auth.claims) {
       await auth.claims.refreshSessionClaims(
         session,
         request,
@@ -34,7 +34,7 @@ const changeEmail = async (request: FastifyRequest, reply: FastifyReply) => {
       );
     }
 
-    if (config.user.features?.signUp?.emailVerification) {
+    if (config.user.features?.signUp?.emailVerification && auth.claims) {
       await auth.claims.refreshSessionClaims(
         session,
         request,

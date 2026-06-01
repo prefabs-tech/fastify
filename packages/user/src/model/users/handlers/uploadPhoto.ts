@@ -54,7 +54,10 @@ const uploadPhoto = async (request: FastifyRequest, reply: FastifyReply) => {
     const session = (request as FastifyRequest & { session: AuthSession })
       .session;
 
-    if (request.config.user.features?.profileValidation?.enabled) {
+    if (
+      request.config.user.features?.profileValidation?.enabled &&
+      auth.claims
+    ) {
       await auth.claims.refreshSessionClaims(
         session,
         request,
@@ -63,7 +66,10 @@ const uploadPhoto = async (request: FastifyRequest, reply: FastifyReply) => {
       );
     }
 
-    if (request.config.user.features?.signUp?.emailVerification) {
+    if (
+      request.config.user.features?.signUp?.emailVerification &&
+      auth.claims
+    ) {
       await auth.claims.refreshSessionClaims(
         session,
         request,

@@ -36,13 +36,25 @@ const claimKeyByType: Record<RefreshableClaim, string> = {
   profileValidation: ProfileValidationClaim.key,
 };
 
+function excludeValidatorIds<T extends { id: string }>(
+  validators: T[],
+  skip: RefreshableClaim[],
+): T[] {
+  const skipKeys = new Set(skip.map((claim) => claimKeyByType[claim]));
+  return validators.filter((validator) => !skipKeys.has(validator.id));
+}
+
 const supertokensClaimsAdapter: ClaimsProvider = {
   async assertProfileValid(session, request, userContext) {
     const profileValidationClaim = new ProfileValidationClaim();
     const context = createUserContextImpl(userContext, request);
 
     try {
-      await session.assertClaims?.(
+      await (
+        session as unknown as {
+          assertClaims?: (...arguments_: unknown[]) => Promise<void>;
+        }
+      ).assertClaims?.(
         [profileValidationClaim.validators.isVerified()],
         context,
       );
@@ -57,12 +69,6 @@ const supertokensClaimsAdapter: ClaimsProvider = {
     }
   },
 
-  excludeValidatorIds(validators, skip) {
-    const skipKeys = new Set(skip.map((claim) => claimKeyByType[claim]));
-
-    return validators.filter((validator) => !skipKeys.has(validator.id));
-  },
-
   keys: {
     emailVerification: EmailVerificationClaim.key,
     profileValidation: ProfileValidationClaim.key,
@@ -72,10 +78,17 @@ const supertokensClaimsAdapter: ClaimsProvider = {
     const context = createUserContextImpl(userContext, request);
 
     for (const claim of claims) {
+      const stSession = session as unknown as {
+        fetchAndSetClaim?: (...arguments_: unknown[]) => Promise<void>;
+      };
+
       if (claim === "emailVerification") {
-        await session.fetchAndSetClaim?.(EmailVerificationClaim, context);
+        await stSession.fetchAndSetClaim?.(EmailVerificationClaim, context);
       } else if (claim === "profileValidation") {
-        await session.fetchAndSetClaim?.(new ProfileValidationClaim(), context);
+        await stSession.fetchAndSetClaim?.(
+          new ProfileValidationClaim(),
+          context,
+        );
       }
     }
   },
@@ -396,10 +409,7 @@ const supertokensSessionAdapter: SessionProvider = {
         checkDatabase: options?.checkDatabase,
         overrideGlobalClaimValidators: skipClaims?.length
           ? async (globalValidators) =>
-              supertokensClaimsAdapter.excludeValidatorIds(
-                globalValidators,
-                skipClaims,
-              )
+              excludeValidatorIds(globalValidators, skipClaims)
           : undefined,
         sessionRequired: options?.sessionRequired,
       }) as unknown as Promise<AuthSession | undefined>;

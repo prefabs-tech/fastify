@@ -33,14 +33,6 @@ export type AuthResult<T = AuthUser> =
   | { success: true; user: T };
 
 export interface AuthSession {
-  assertClaims?(
-    validators: unknown[],
-    userContext?: AuthUserContext,
-  ): Promise<void>;
-  fetchAndSetClaim?(
-    claim: unknown,
-    userContext?: AuthUserContext,
-  ): Promise<void>;
   getAccessTokenPayload(userContext?: AuthUserContext): unknown;
   getUserId(userContext?: AuthUserContext): string;
   revokeSession(userContext?: AuthUserContext): Promise<void>;
@@ -63,11 +55,6 @@ export interface ClaimsProvider {
     request: FastifyRequest,
     userContext?: AuthUserContext,
   ): Promise<ClaimValidationError[] | undefined>;
-
-  excludeValidatorIds<T extends { id: string }>(
-    validators: T[],
-    skip: RefreshableClaim[],
-  ): T[];
 
   readonly keys: {
     emailVerification: string;

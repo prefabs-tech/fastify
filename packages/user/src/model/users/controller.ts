@@ -77,12 +77,9 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_CHANGE_EMAIL,
     {
-      preHandler: fastify.verifySession(
-        auth.claims.verifySessionOptions([
-          "emailVerification",
-          "profileValidation",
-        ]),
-      ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
+      }),
       schema: changeEmailSchema,
     } as unknown as RouteShorthandOptions,
     handlers.changeEmail as unknown as RouteHandler,
@@ -91,12 +88,9 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession(
-        auth.claims.verifySessionOptions([
-          "emailVerification",
-          "profileValidation",
-        ]),
-      ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
+      }),
       schema: getMeSchema,
     } as unknown as RouteShorthandOptions,
     (handlersConfig?.me || handlers.me) as unknown as RouteHandler,
@@ -105,12 +99,9 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession(
-        auth.claims.verifySessionOptions([
-          "emailVerification",
-          "profileValidation",
-        ]),
-      ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
+      }),
       schema: updateMeSchema,
     } as unknown as RouteShorthandOptions,
     (handlersConfig?.updateMe || handlers.updateMe) as unknown as RouteHandler,
@@ -119,9 +110,9 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession(
-        auth.claims.verifySessionOptions(["profileValidation"]),
-      ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["profileValidation"],
+      }),
       schema: deleteMeSchema,
     } as unknown as RouteShorthandOptions,
     (handlersConfig?.deleteMe || handlers.deleteMe) as unknown as RouteHandler,
@@ -130,12 +121,9 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ME_PHOTO,
     {
-      preHandler: fastify.verifySession(
-        auth.claims.verifySessionOptions([
-          "emailVerification",
-          "profileValidation",
-        ]),
-      ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
+      }),
       schema: uploadPhotoSchema,
     } as unknown as RouteShorthandOptions,
     handlers.uploadPhoto as unknown as RouteHandler,
@@ -144,12 +132,9 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ME_PHOTO,
     {
-      preHandler: fastify.verifySession(
-        auth.claims.verifySessionOptions([
-          "emailVerification",
-          "profileValidation",
-        ]),
-      ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
+      }),
       schema: removePhotoSchema,
     } as unknown as RouteShorthandOptions,
     handlers.removePhoto as unknown as RouteHandler,

@@ -79,14 +79,6 @@ const supertokensClaimsAdapter: ClaimsProvider = {
       }
     }
   },
-
-  verifySessionOptions(skip: RefreshableClaim[]) {
-    return {
-      overrideGlobalClaimValidators: async <T extends { id: string }>(
-        globalValidators: T[],
-      ) => supertokensClaimsAdapter.excludeValidatorIds(globalValidators, skip),
-    };
-  },
 };
 
 const supertokensErrorsAdapter: AuthErrorsProvider = {
@@ -393,19 +385,24 @@ const supertokensSessionAdapter: SessionProvider = {
   },
 
   async getSession(request, reply, options): Promise<AuthSession | undefined> {
+    return supertokensSessionAdapter.getVerifySession(options)(request, reply);
+  },
+
+  getVerifySession(options) {
     const skipClaims = options?.skipClaims;
 
-    return Session.getSession(request, wrapResponse(reply), {
-      checkDatabase: options?.checkDatabase,
-      overrideGlobalClaimValidators: skipClaims?.length
-        ? async (globalValidators) =>
-            supertokensClaimsAdapter.excludeValidatorIds(
-              globalValidators,
-              skipClaims,
-            )
-        : undefined,
-      sessionRequired: options?.sessionRequired,
-    }) as unknown as AuthSession | undefined;
+    return (request, reply) =>
+      Session.getSession(request, wrapResponse(reply), {
+        checkDatabase: options?.checkDatabase,
+        overrideGlobalClaimValidators: skipClaims?.length
+          ? async (globalValidators) =>
+              supertokensClaimsAdapter.excludeValidatorIds(
+                globalValidators,
+                skipClaims,
+              )
+          : undefined,
+        sessionRequired: options?.sessionRequired,
+      }) as unknown as Promise<AuthSession | undefined>;
   },
 
   async revokeAllSessionsForUser(userId: string): Promise<void> {

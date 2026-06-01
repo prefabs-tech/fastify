@@ -80,9 +80,6 @@ export interface ClaimsProvider {
     claims: RefreshableClaim[],
     userContext?: AuthUserContext,
   ): Promise<void>;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  verifySessionOptions(skip: RefreshableClaim[]): any;
 }
 
 export interface EmailPasswordProvider {
@@ -193,6 +190,18 @@ export interface SessionProvider {
     reply: FastifyReply,
     options?: GetSessionOptions,
   ): Promise<AuthSession | undefined>;
+
+  /**
+   * Returns a Fastify preHandler middleware that validates the session
+   * and attaches it to the request. Abstracts provider-specific session
+   * verification (e.g. SuperTokens claims validation).
+   */
+  getVerifySession(
+    options?: GetSessionOptions,
+  ): (
+    request: FastifyRequest,
+    reply: FastifyReply,
+  ) => Promise<AuthSession | undefined>;
 
   revokeAllSessionsForUser(
     userId: string,

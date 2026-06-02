@@ -1,3 +1,4 @@
+import type { AuthSession } from "./auth/adapter";
 import type { User, UserConfig } from "./types";
 
 import hasPermission from "./middlewares/hasPermission";
@@ -8,6 +9,7 @@ declare module "fastify" {
   }
 
   interface FastifyRequest {
+    session?: AuthSession;
     user?: User;
   }
 }

@@ -150,11 +150,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     if (response.status === "OK" && response.user) {
       return {
         success: true,
-        user: {
-          email: response.user.email,
-          id: response.user.id,
-          timeJoined: response.user.timeJoined,
-        },
+        user: response.user as AuthUser,
       };
     }
 
@@ -178,11 +174,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     if (response.status === "OK" && response.user) {
       return {
         success: true,
-        user: {
-          email: response.user.email,
-          id: response.user.id,
-          timeJoined: response.user.timeJoined,
-        },
+        user: response.user as AuthUser,
       };
     }
 
@@ -197,21 +189,13 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
 
     if (!user) return undefined;
 
-    return {
-      email: user.email,
-      id: user.id,
-      timeJoined: user.timeJoined,
-    };
+    return user as AuthUser;
   },
 
   async getUsersByEmail(email: string): Promise<AuthUser[]> {
     const users = await ThirdPartyEmailPassword.getUsersByEmail(email);
 
-    return users.map((user) => ({
-      email: user.email,
-      id: user.id,
-      timeJoined: user.timeJoined,
-    }));
+    return users.map((user) => user as AuthUser);
   },
 
   async resetPasswordUsingToken(
@@ -404,15 +388,21 @@ const supertokensSessionAdapter: SessionProvider = {
   getVerifySession(options) {
     const skipClaims = options?.skipClaims;
 
-    return (request, reply) =>
-      Session.getSession(request, wrapResponse(reply), {
+    return async (request, reply) => {
+      const session = await Session.getSession(request, wrapResponse(reply), {
         checkDatabase: options?.checkDatabase,
         overrideGlobalClaimValidators: skipClaims?.length
           ? async (globalValidators) =>
               excludeValidatorIds(globalValidators, skipClaims)
           : undefined,
         sessionRequired: options?.sessionRequired,
-      }) as unknown as Promise<AuthSession | undefined>;
+      });
+
+      // Attach the session to the request so handlers can access it
+      request.session = session;
+
+      return session as unknown as AuthSession | undefined;
+    };
   },
 
   async revokeAllSessionsForUser(userId: string): Promise<void> {

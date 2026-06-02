@@ -108,7 +108,7 @@ const Mutation = {
         signUpResponse.user.id,
       );
 
-      return signUpResponse;
+      return { status: "OK", user: signUpResponse.user };
     } catch (error) {
       // FIXME [OP 28 SEP 2022]
       app.log.error(error);

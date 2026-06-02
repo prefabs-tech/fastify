@@ -9,10 +9,11 @@ const userContext = async (
   reply: FastifyReply,
 ) => {
   try {
-    request.session = (await auth.session.getSession(request, reply, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (request as any).session = await auth.session.getSession(request, reply, {
       sessionRequired: false,
       skipClaims: ["emailVerification", "profileValidation"],
-    })) as (typeof request)["session"];
+    });
   } catch (error) {
     if (!auth.errors.isAuthError(error)) {
       throw error;

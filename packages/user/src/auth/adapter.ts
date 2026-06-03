@@ -209,6 +209,7 @@ export function getAuth(): AuthAdapter {
   if (!authInstance) {
     throw new Error("Auth adapter not initialized. Call initAuth() first.");
   }
+
   return authInstance;
 }
 
@@ -223,6 +224,7 @@ export async function initAuth(
       await provider.init(fastify);
     }
   }
+
   return authInstance;
 }
 

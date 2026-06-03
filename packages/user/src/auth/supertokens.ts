@@ -334,6 +334,7 @@ const supertokensRolesAdapter: RolesProvider = {
 
   async getRolesForUser(userId: string): Promise<string[]> {
     const response = await UserRoles.getRolesForUser(userId);
+
     return response.roles;
   },
 
@@ -343,6 +344,7 @@ const supertokensRolesAdapter: RolesProvider = {
     if (response.status === "OK") {
       return response.users;
     }
+
     return [];
   },
 

@@ -1,8 +1,4 @@
-import type {
-  FastifyInstance,
-  RouteHandler,
-  RouteShorthandOptions,
-} from "fastify";
+import type { FastifyInstance } from "fastify";
 
 import { ROUTE_ROLES, ROUTE_ROLES_PERMISSIONS } from "../../constants";
 import handlers from "./handlers";
@@ -20,8 +16,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: [fastify.verifySession()],
       schema: deleteRoleSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.deleteRole as unknown as RouteHandler,
+    },
+    handlers.deleteRole,
   );
 
   fastify.get(
@@ -29,8 +25,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: [fastify.verifySession()],
       schema: getRolesSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.getRoles as unknown as RouteHandler,
+    },
+    handlers.getRoles,
   );
 
   fastify.get(
@@ -38,8 +34,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: [fastify.verifySession()],
       schema: getRolePermissionsSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.getPermissions as unknown as RouteHandler,
+    },
+    handlers.getPermissions,
   );
 
   fastify.post(
@@ -47,8 +43,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: [fastify.verifySession()],
       schema: createRoleSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.createRole as unknown as RouteHandler,
+    },
+    handlers.createRole,
   );
 
   fastify.put(
@@ -56,8 +52,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: [fastify.verifySession()],
       schema: updateRoleSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.updatePermissions as unknown as RouteHandler,
+    },
+    handlers.updatePermissions,
   );
 };
 

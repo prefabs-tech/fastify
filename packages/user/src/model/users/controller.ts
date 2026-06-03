@@ -1,8 +1,4 @@
-import type {
-  FastifyInstance,
-  RouteHandler,
-  RouteShorthandOptions,
-} from "fastify";
+import type { FastifyInstance } from "fastify";
 
 import { auth } from "../../auth/adapter";
 import {
@@ -48,8 +44,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_LIST),
       ],
       schema: getUsersSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.users || handlers.users) as unknown as RouteHandler,
+    },
+    handlersConfig?.users || handlers.users,
   );
 
   fastify.get(
@@ -60,8 +56,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_READ),
       ],
       schema: getUserSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.user || handlers.user) as unknown as RouteHandler,
+    },
+    handlersConfig?.user || handlers.user,
   );
 
   fastify.post(
@@ -69,9 +65,8 @@ const plugin = async (fastify: FastifyInstance) => {
     {
       preHandler: fastify.verifySession(),
       schema: changePasswordSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.changePassword ||
-      handlers.changePassword) as unknown as RouteHandler,
+    },
+    handlersConfig?.changePassword || handlers.changePassword,
   );
 
   fastify.post(
@@ -81,8 +76,8 @@ const plugin = async (fastify: FastifyInstance) => {
         skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: changeEmailSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.changeEmail as unknown as RouteHandler,
+    },
+    handlers.changeEmail,
   );
 
   fastify.get(
@@ -92,8 +87,8 @@ const plugin = async (fastify: FastifyInstance) => {
         skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: getMeSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.me || handlers.me) as unknown as RouteHandler,
+    },
+    handlersConfig?.me || handlers.me,
   );
 
   fastify.put(
@@ -103,8 +98,8 @@ const plugin = async (fastify: FastifyInstance) => {
         skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: updateMeSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.updateMe || handlers.updateMe) as unknown as RouteHandler,
+    },
+    handlersConfig?.updateMe || handlers.updateMe,
   );
 
   fastify.delete(
@@ -114,8 +109,8 @@ const plugin = async (fastify: FastifyInstance) => {
         skipClaims: ["profileValidation"],
       }),
       schema: deleteMeSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.deleteMe || handlers.deleteMe) as unknown as RouteHandler,
+    },
+    handlersConfig?.deleteMe || handlers.deleteMe,
   );
 
   fastify.put(
@@ -125,8 +120,8 @@ const plugin = async (fastify: FastifyInstance) => {
         skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: uploadPhotoSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.uploadPhoto as unknown as RouteHandler,
+    },
+    handlers.uploadPhoto,
   );
 
   fastify.delete(
@@ -136,8 +131,8 @@ const plugin = async (fastify: FastifyInstance) => {
         skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: removePhotoSchema,
-    } as unknown as RouteShorthandOptions,
-    handlers.removePhoto as unknown as RouteHandler,
+    },
+    handlers.removePhoto,
   );
 
   fastify.put(
@@ -148,8 +143,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_DISABLE),
       ],
       schema: disableUserSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.disable || handlers.disable) as unknown as RouteHandler,
+    },
+    handlersConfig?.disable || handlers.disable,
   );
 
   fastify.put(
@@ -160,8 +155,8 @@ const plugin = async (fastify: FastifyInstance) => {
         fastify.hasPermission(PERMISSIONS_USERS_ENABLE),
       ],
       schema: enableUserSchema,
-    } as unknown as RouteShorthandOptions,
-    (handlersConfig?.enable || handlers.enable) as unknown as RouteHandler,
+    },
+    handlersConfig?.enable || handlers.enable,
   );
 
   fastify.post(

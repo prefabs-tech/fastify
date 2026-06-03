@@ -15,7 +15,9 @@ interface EmailOptions {
   subject?: string;
   templateName?: string;
 }
+
 interface UserConfig {
+  authProvider?: string;
   email?: IsEmailOptions;
   emailOverrides?: {
     duplicateEmail?: EmailOptions;
@@ -114,7 +116,7 @@ interface UserConfig {
     invitation?: typeof InvitationService;
     user?: typeof UserService;
   };
-  supertokens: SupertokensConfig;
+  supertokens?: SupertokensConfig;
   tables?: {
     invitations?: {
       name?: string;

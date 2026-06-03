@@ -1,9 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { createNewSession } from "supertokens-node/recipe/session";
-import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
-import UserRoles from "supertokens-node/recipe/userroles";
-
+import { auth } from "../../../auth/adapter";
 import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
@@ -21,18 +18,16 @@ const adminSignUp = async (request: FastifyRequest, reply: FastifyReply) => {
   const { email, password } = body;
 
   // check if already admin user exists
-  const adminUsers = await UserRoles.getUsersThatHaveRole(ROLE_ADMIN);
-  const superAdminUsers = await UserRoles.getUsersThatHaveRole(ROLE_SUPERADMIN);
+  const adminUsers = await auth.roles.getUsersThatHaveRole(ROLE_ADMIN);
+  const superAdminUsers =
+    await auth.roles.getUsersThatHaveRole(ROLE_SUPERADMIN);
 
-  if (
-    adminUsers.status === "UNKNOWN_ROLE_ERROR" &&
-    superAdminUsers.status === "UNKNOWN_ROLE_ERROR"
-  ) {
-    throw server.httpErrors.unprocessableEntity(adminUsers.status);
-  } else if (
-    (adminUsers.status === "OK" && adminUsers.users.length > 0) ||
-    (superAdminUsers.status === "OK" && superAdminUsers.users.length > 0)
-  ) {
+  if (adminUsers.length === 0 && superAdminUsers.length === 0) {
+    const allRoles = await auth.roles.getAllRoles();
+    if (!allRoles.includes(ROLE_ADMIN) && !allRoles.includes(ROLE_SUPERADMIN)) {
+      throw server.httpErrors.unprocessableEntity("Required roles not found");
+    }
+  } else if (adminUsers.length > 0 || superAdminUsers.length > 0) {
     throw server.httpErrors.conflict("First admin user already exists");
   }
 
@@ -55,27 +50,31 @@ const adminSignUp = async (request: FastifyRequest, reply: FastifyReply) => {
   }
 
   // signup
-  const signUpResponse = await emailPasswordSignUp(email, password, {
-    _default: {
-      request: {
-        request,
+  const signUpResponse = await auth.emailPassword.emailPasswordSignUp(
+    email,
+    password,
+    {
+      _default: {
+        request: {
+          request,
+        },
       },
+      autoVerifyEmail: true,
+      roles: [
+        ROLE_ADMIN,
+        ...(superAdminUsers.length === 0 ? [ROLE_SUPERADMIN] : []),
+      ],
     },
-    autoVerifyEmail: true,
-    roles: [
-      ROLE_ADMIN,
-      ...(superAdminUsers.status === "OK" ? [ROLE_SUPERADMIN] : []),
-    ],
-  });
+  );
 
-  if (signUpResponse.status !== "OK") {
-    return reply.send(signUpResponse);
+  if (!signUpResponse.success) {
+    return reply.send({ status: signUpResponse.error });
   }
 
   // create new session so the user be logged in on signup
-  await createNewSession(request, reply, signUpResponse.user.id);
+  await auth.session.createNewSession(request, reply, signUpResponse.user.id);
 
-  reply.send(signUpResponse);
+  reply.send({ status: "OK", user: signUpResponse.user });
 };
 
 export default adminSignUp;

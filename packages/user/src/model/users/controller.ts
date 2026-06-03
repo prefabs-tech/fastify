@@ -1,7 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-
+import { auth } from "../../auth/adapter";
 import {
   PERMISSIONS_USERS_DISABLE,
   PERMISSIONS_USERS_ENABLE,
@@ -17,7 +16,6 @@ import {
   ROUTE_USERS_ENABLE,
   ROUTE_USERS_FIND_BY_ID,
 } from "../../constants";
-import ProfileValidationClaim from "../../supertokens/utils/profileValidationClaim";
 import handlers from "./handlers";
 import {
   adminSignUpSchema,
@@ -74,15 +72,8 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_CHANGE_EMAIL,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: changeEmailSchema,
     },
@@ -92,15 +83,8 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: getMeSchema,
     },
@@ -110,15 +94,8 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: updateMeSchema,
     },
@@ -128,12 +105,8 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ME,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              sessionClaimValidator.id !== ProfileValidationClaim.key,
-          ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["profileValidation"],
       }),
       schema: deleteMeSchema,
     },
@@ -143,15 +116,8 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ME_PHOTO,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: uploadPhotoSchema,
     },
@@ -161,15 +127,8 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ME_PHOTO,
     {
-      preHandler: fastify.verifySession({
-        overrideGlobalClaimValidators: async (globalValidators) =>
-          globalValidators.filter(
-            (sessionClaimValidator) =>
-              ![
-                EmailVerificationClaim.key,
-                ProfileValidationClaim.key,
-              ].includes(sessionClaimValidator.id),
-          ),
+      preHandler: auth.session.getVerifySession({
+        skipClaims: ["emailVerification", "profileValidation"],
       }),
       schema: removePhotoSchema,
     },

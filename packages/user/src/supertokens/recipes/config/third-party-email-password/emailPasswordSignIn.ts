@@ -3,8 +3,6 @@ import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpas
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 
-import type { AuthUser } from "../../../../types";
-
 import getUserService from "../../../../lib/getUserService";
 
 const emailPasswordSignIn = (
@@ -45,7 +43,7 @@ const emailPasswordSignIn = (
         log.error(error);
       });
 
-    const authUser: AuthUser = {
+    const authUser = {
       ...originalResponse.user,
       ...user,
     };

@@ -39,9 +39,10 @@ export type {
   Resolver,
 };
 
-export type { EmailVerificationRecipe } from "../supertokens/types/emailVerificationRecipe";
-export type { SessionRecipe } from "../supertokens/types/sessionRecipe";
-export type { ThirdPartyEmailPasswordRecipe } from "../supertokens/types/thirdPartyEmailPasswordRecipe";
+/*
+ * @deprecated Import auth types from "@prefabs.tech/fastify-user/auth" instead.
+ * These supertokens-specific types will be removed in a future release.
+ */
 export * from "./config";
 export * from "./invitation";
 

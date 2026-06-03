@@ -1,12 +1,11 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type { Invitation } from "../../../types/invitation";
 
 import Service from "../service";
 
 const deleteInvitation = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   const { config, dbSchema, params, slonik } = request;

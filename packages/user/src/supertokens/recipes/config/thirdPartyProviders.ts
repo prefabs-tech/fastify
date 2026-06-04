@@ -1,10 +1,14 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
 
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
+import {
+  Apple,
+  Facebook,
+  Github,
+  Google,
+} from "supertokens-node/lib/build/recipe/thirdparty/providers";
 
 const getThirdPartyProviders = (config: ApiConfig) => {
-  const { Apple, Facebook, Github, Google } = ThirdPartyEmailPassword;
   const providersConfig = config.user.supertokens!.providers;
   const providers: TypeProvider[] = [];
 

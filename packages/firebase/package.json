@@ -49,7 +49,6 @@
     "pg-mem": "3.0.14",
     "prettier": "3.8.3",
     "slonik": "46.8.0",
-    "supertokens-node": "14.1.4",
     "typescript": "5.9.3",
     "vite": "6.4.2",
     "vitest": "3.2.4"
@@ -62,8 +61,7 @@
     "fastify": ">=5.2.2",
     "fastify-plugin": ">=5.0.1",
     "mercurius": ">=16.1.0",
-    "slonik": ">=46.1.0",
-    "supertokens-node": ">=14.1.4"
+    "slonik": ">=46.1.0"
   },
   "engines": {
     "node": ">=20"

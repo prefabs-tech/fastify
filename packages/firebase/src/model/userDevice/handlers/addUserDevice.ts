@@ -1,11 +1,10 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type { UserDeviceCreateInput } from "../../../types";
 
 import Service from "../service";
 
-const addUserDevice = async (request: SessionRequest, reply: FastifyReply) => {
+const addUserDevice = async (request: FastifyRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, slonik, user } = request;
 
   if (!user) {

@@ -19,7 +19,9 @@
   "main": "./dist/prefabs-tech-fastify-slonik.cjs",
   "module": "./dist/prefabs-tech-fastify-slonik.js",
   "types": "./dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",

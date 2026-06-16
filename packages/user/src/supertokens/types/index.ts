@@ -10,7 +10,7 @@ import {
   Facebook,
   Github,
   Google,
-} from "supertokens-node/recipe/thirdpartyemailpassword";
+} from "supertokens-node/lib/build/recipe/thirdparty/providers";
 
 import type { EmailVerificationRecipe } from "./emailVerificationRecipe";
 import type { SessionRecipe } from "./sessionRecipe";

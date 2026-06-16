@@ -9,6 +9,7 @@ import UserRoles from "supertokens-node/recipe/userroles";
 
 import type { User } from "../../../../types";
 
+import { SUPERTOKENS_DEFAULT_TENANT_ID } from "../../../../constants";
 import getUserService from "../../../../lib/getUserService";
 import areRolesExist from "../../../utils/areRolesExist";
 
@@ -22,6 +23,7 @@ const thirdPartySignInUp = (
     const roles = (input.userContext.roles || []) as string[];
 
     const thirdPartyUser = await getUserByThirdPartyInfo(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       input.thirdPartyId,
       input.thirdPartyUserId,
       input.userContext,
@@ -52,6 +54,7 @@ const thirdPartySignInUp = (
 
       for (const role of roles) {
         const rolesResponse = await UserRoles.addRoleToUser(
+          SUPERTOKENS_DEFAULT_TENANT_ID,
           originalResponse.user.id,
           role,
         );

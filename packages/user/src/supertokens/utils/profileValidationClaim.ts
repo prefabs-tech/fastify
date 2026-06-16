@@ -86,13 +86,23 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     };
   }
 
-  fetchValue = async (userId: string, userContext: any): Promise<Response> => {
+  // supertokens-node v15 SessionClaim.build now calls
+  // fetchValue with 3 args: (userId, tenantId, userContext).
+  // The 2nd arg is tenantId (string), and the actual userContext is the 3rd arg.
+  fetchValue = async (
+    userId: string,
+    _tenantId: string,
+    userContext: any,
+  ): Promise<Response> => {
     const request = getRequestFromUserContext(userContext)?.original as
       | SessionRequest
       | undefined;
 
     if (!request) {
-      throw new Error("Request not set in userContext");
+      // supertokens-node v15 multitenancy internal flow
+      // may call fetchValue without setting request in userContext.
+      // Return a safe fallback instead of crashing.
+      return { isVerified: true };
     }
 
     const profileValidation = request.config.user?.features

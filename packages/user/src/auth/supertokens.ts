@@ -26,7 +26,7 @@ import type {
 } from "./adapter";
 import type { ClaimValidationError, RefreshableClaim } from "./types";
 
-import { ERROR_CODES } from "../constants";
+import { ERROR_CODES, SUPERTOKENS_DEFAULT_TENANT_ID } from "../constants";
 import supertokensPlugin from "../supertokens";
 import createUserContextImpl from "../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim";
@@ -123,8 +123,10 @@ const createUserContext = (
 
 const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
   async createResetPasswordToken(userId: string): Promise<string> {
-    const response =
-      await ThirdPartyEmailPassword.createResetPasswordToken(userId);
+    const response = await ThirdPartyEmailPassword.createResetPasswordToken(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
+      userId,
+    );
 
     if (response.status === "OK") {
       return response.token;
@@ -142,6 +144,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     userContext?: AuthUserContext,
   ): Promise<AuthResult> {
     const response = await ThirdPartyEmailPassword.emailPasswordSignIn(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       email,
       password,
       userContext,
@@ -166,6 +169,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     userContext?: AuthUserContext,
   ): Promise<AuthResult> {
     const response = await ThirdPartyEmailPassword.emailPasswordSignUp(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       email,
       password,
       userContext,
@@ -193,7 +197,10 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
   },
 
   async getUsersByEmail(email: string): Promise<AuthUser[]> {
-    const users = await ThirdPartyEmailPassword.getUsersByEmail(email);
+    const users = await ThirdPartyEmailPassword.getUsersByEmail(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
+      email,
+    );
 
     return users.map((user) => user as AuthUser);
   },
@@ -203,6 +210,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     newPassword: string,
   ): Promise<ResetPasswordResult> {
     const response = await ThirdPartyEmailPassword.resetPasswordUsingToken(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       token,
       newPassword,
     );
@@ -236,6 +244,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
     userContext?: AuthUserContext,
   ): Promise<string> {
     const response = await EmailVerification.createEmailVerificationToken(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       userId,
       email,
       userContext,
@@ -258,6 +267,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
   async sendVerificationEmail(input) {
     await EmailVerification.sendEmail({
       emailVerifyLink: `${input.appOrigin}/auth/verify-email?token=${input.token}&rid=emailverification`,
+      tenantId: SUPERTOKENS_DEFAULT_TENANT_ID,
       type: "EMAIL_VERIFICATION",
       user: {
         email: input.email,
@@ -278,6 +288,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
     userContext?: AuthUserContext,
   ): Promise<boolean> {
     const response = await EmailVerification.verifyEmailUsingToken(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       token,
       userContext,
     );
@@ -288,7 +299,11 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
 
 const supertokensRolesAdapter: RolesProvider = {
   async addRoleToUser(userId: string, role: string): Promise<void> {
-    const response = await UserRoles.addRoleToUser(userId, role);
+    const response = await UserRoles.addRoleToUser(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
+      userId,
+      role,
+    );
 
     if (response.status !== "OK") {
       throw new CustomError(
@@ -333,13 +348,19 @@ const supertokensRolesAdapter: RolesProvider = {
   },
 
   async getRolesForUser(userId: string): Promise<string[]> {
-    const response = await UserRoles.getRolesForUser(userId);
+    const response = await UserRoles.getRolesForUser(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
+      userId,
+    );
 
     return response.roles;
   },
 
   async getUsersThatHaveRole(role: string): Promise<string[]> {
-    const response = await UserRoles.getUsersThatHaveRole(role);
+    const response = await UserRoles.getUsersThatHaveRole(
+      SUPERTOKENS_DEFAULT_TENANT_ID,
+      role,
+    );
 
     if (response.status === "OK") {
       return response.users;
@@ -376,6 +397,7 @@ const supertokensSessionAdapter: SessionProvider = {
     return Session.createNewSession(
       request,
       reply,
+      SUPERTOKENS_DEFAULT_TENANT_ID,
       userId,
       accessTokenPayload,
       sessionData,

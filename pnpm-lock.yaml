@@ -594,8 +594,8 @@ importers:
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
       supertokens-node:
-        specifier: 14.1.4
-        version: 14.1.4
+        specifier: 15.0.0
+        version: 15.0.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -2795,6 +2795,9 @@ packages:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
 
+  crypto-js@4.2.0:
+    resolution: {integrity: sha512-KALDyEYgpY+Rlob/iriUtjV6d5Eq+Y191A5g4UqLAi8CyGP9N1+FdVbkc1SxKc2r4YAYqG8JzO2KGL+AizD70Q==}
+
   css-select@5.2.2:
     resolution: {integrity: sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw==}
 
@@ -4805,6 +4808,9 @@ packages:
     resolution: {integrity: sha512-ip4qdzjkAyDDZklUaZkcRFb2iA118H9SgRh8yzTkSQK8HilsOJF7rSY8HoW5+I0M46AZgX/pxbprf2vvzQCE0Q==}
     hasBin: true
 
+  pkce-challenge@3.1.0:
+    resolution: {integrity: sha512-bQ/0XPZZ7eX+cdAkd61uYWpfMhakH3NeteUF1R8GNa+LMqX8QFAkbCLqq+AYAns1/ueACBu/BMWhrlKGrdvGZg==}
+
   pluralize@8.0.0:
     resolution: {integrity: sha512-Nc3IT5yHzflTfbjgqWcCPpo7DaKy4FnpB0l/zCAW0Tc7jxAiuqSxHasntB3D7887LSrA93kDJ9IXovxJYxyLCA==}
     engines: {node: '>=4'}
@@ -5366,6 +5372,9 @@ packages:
 
   supertokens-node@14.1.4:
     resolution: {integrity: sha512-Hf/z4r1W9Pk6rlRp7Pa9ibgsqnIy0tc4kzZk72gZ/fHArNKb+G0BZI3JJ5Vm8TrOZx5+DabLN40xahx2qLwalQ==}
+
+  supertokens-node@15.0.0:
+    resolution: {integrity: sha512-47VW4jmqXugnK+0laEzdSL2RGcHM1wI3hE/znAyHJkg2oZkv8aqCmWaoGLl6RrVB11WOdBTJq+5OJ5JtMe4cBg==}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -8545,6 +8554,8 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
+  crypto-js@4.2.0: {}
+
   css-select@5.2.2:
     dependencies:
       boolbase: 1.0.0
@@ -11066,6 +11077,10 @@ snapshots:
       sonic-boom: 3.8.1
       thread-stream: 2.7.0
 
+  pkce-challenge@3.1.0:
+    dependencies:
+      crypto-js: 4.2.0
+
   pluralize@8.0.0: {}
 
   possible-typed-array-names@1.1.0: {}
@@ -11698,6 +11713,25 @@ snapshots:
       jose: 4.15.9
       libphonenumber-js: 1.12.25
       nodemailer: 6.10.1
+      psl: 1.8.0
+      raw-body: 2.5.2
+      supertokens-js-override: 0.0.4
+      twilio: 4.23.0(debug@4.4.3)
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
+  supertokens-node@15.0.0:
+    dependencies:
+      content-type: 1.0.5
+      cookie: 0.4.0
+      cross-fetch: 3.2.0
+      debug: 4.4.3
+      inflation: 2.1.0
+      jose: 4.15.9
+      libphonenumber-js: 1.12.25
+      nodemailer: 6.10.1
+      pkce-challenge: 3.1.0
       psl: 1.8.0
       raw-body: 2.5.2
       supertokens-js-override: 0.0.4

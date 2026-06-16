@@ -8,6 +8,7 @@ import UserRoles from "supertokens-node/recipe/userroles";
 
 import type { User } from "../../../../types";
 
+import { SUPERTOKENS_DEFAULT_TENANT_ID } from "../../../../constants";
 import getUserService from "../../../../lib/getUserService";
 import sendEmail from "../../../../lib/sendEmail";
 import verifyEmail from "../../../../lib/verifyEmail";
@@ -61,6 +62,7 @@ const emailPasswordSignUp = (
 
       for (const role of roles) {
         const rolesResponse = await UserRoles.addRoleToUser(
+          SUPERTOKENS_DEFAULT_TENANT_ID,
           originalResponse.user.id,
           role,
         );
@@ -79,6 +81,7 @@ const emailPasswordSignUp = (
             // send email verification
             const tokenResponse =
               await EmailVerification.createEmailVerificationToken(
+                SUPERTOKENS_DEFAULT_TENANT_ID,
                 originalResponse.user.id,
               );
 
@@ -87,6 +90,7 @@ const emailPasswordSignUp = (
               // emailVerifyLink is same as what would supertokens create.
               await EmailVerification.sendEmail({
                 emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
+                tenantId: SUPERTOKENS_DEFAULT_TENANT_ID,
                 type: "EMAIL_VERIFICATION",
                 user: originalResponse.user,
                 userContext: input.userContext,

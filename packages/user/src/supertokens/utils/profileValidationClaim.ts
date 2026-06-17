@@ -7,7 +7,7 @@
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 import type { SessionClaimValidator } from "supertokens-node/recipe/session";
 
-import { getRequestFromUserContext } from "supertokens-node";
+import { getRequestFromUserContext, RecipeUserId } from "supertokens-node";
 import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims";
 
 import type { ProfileValidationConfig } from "../../auth/claims/profileValidation";
@@ -86,11 +86,11 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     };
   }
 
-  // supertokens-node v15 SessionClaim.build now calls
-  // fetchValue with 3 args: (userId, tenantId, userContext).
-  // The 2nd arg is tenantId (string), and the actual userContext is the 3rd arg.
+  // supertokens-node v16 SessionClaim.fetchValue signature:
+  // (userId, recipeUserId, tenantId, userContext)
   fetchValue = async (
     userId: string,
+    _recipeUserId: RecipeUserId,
     _tenantId: string,
     userContext: any,
   ): Promise<Response> => {

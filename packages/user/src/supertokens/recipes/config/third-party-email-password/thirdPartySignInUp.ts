@@ -3,8 +3,7 @@ import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpas
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { formatDate } from "@prefabs.tech/fastify-slonik";
-import { deleteUser } from "supertokens-node";
-import { getUserByThirdPartyInfo } from "supertokens-node/recipe/thirdpartyemailpassword";
+import { deleteUser, listUsersByAccountInfo } from "supertokens-node";
 import UserRoles from "supertokens-node/recipe/userroles";
 
 import type { User } from "../../../../types";
@@ -22,19 +21,29 @@ const thirdPartySignInUp = (
   return async (input) => {
     const roles = (input.userContext.roles || []) as string[];
 
-    const thirdPartyUser = await getUserByThirdPartyInfo(
+    const thirdPartyUsers = await listUsersByAccountInfo(
       SUPERTOKENS_DEFAULT_TENANT_ID,
-      input.thirdPartyId,
-      input.thirdPartyUserId,
-      input.userContext,
+      {
+        thirdParty: {
+          id: input.thirdPartyId,
+          userId: input.thirdPartyUserId,
+        },
+      },
     );
 
-    if (!thirdPartyUser && config.user.features?.signUp?.enabled === false) {
+    if (
+      thirdPartyUsers.length === 0 &&
+      config.user.features?.signUp?.enabled === false
+    ) {
       throw fastify.httpErrors.notFound("SignUp feature is currently disabled");
     }
 
     const originalResponse =
       await originalImplementation.thirdPartySignInUp(input);
+
+    if (originalResponse.status !== "OK") {
+      return originalResponse;
+    }
 
     const userService = getUserService(
       config,
@@ -42,7 +51,7 @@ const thirdPartySignInUp = (
       input.userContext._default.request.request.dbSchema,
     );
 
-    if (originalResponse.createdNewUser) {
+    if (originalResponse.createdNewRecipeUser) {
       if (!(await areRolesExist(roles))) {
         await deleteUser(originalResponse.user.id);
 
@@ -68,7 +77,7 @@ const thirdPartySignInUp = (
 
       try {
         user = await userService.create({
-          email: originalResponse.user.email,
+          email: originalResponse.user.emails[0] ?? "",
           id: originalResponse.user.id,
         });
 

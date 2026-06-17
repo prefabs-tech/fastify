@@ -49,6 +49,7 @@ const emailPasswordSignIn = (
     };
 
     return {
+      recipeUserId: originalResponse.recipeUserId,
       status: "OK",
       user: authUser,
     };

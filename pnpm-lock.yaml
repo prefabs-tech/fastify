@@ -594,8 +594,8 @@ importers:
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
       supertokens-node:
-        specifier: 15.0.0
-        version: 15.0.0
+        specifier: 16.0.0
+        version: 16.0.0
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -5373,8 +5373,8 @@ packages:
   supertokens-node@14.1.4:
     resolution: {integrity: sha512-Hf/z4r1W9Pk6rlRp7Pa9ibgsqnIy0tc4kzZk72gZ/fHArNKb+G0BZI3JJ5Vm8TrOZx5+DabLN40xahx2qLwalQ==}
 
-  supertokens-node@15.0.0:
-    resolution: {integrity: sha512-47VW4jmqXugnK+0laEzdSL2RGcHM1wI3hE/znAyHJkg2oZkv8aqCmWaoGLl6RrVB11WOdBTJq+5OJ5JtMe4cBg==}
+  supertokens-node@16.0.0:
+    resolution: {integrity: sha512-RuuI2IC79newLUc2wo8byGlSWxjjtSTy4o7BTz3Y1z0gdb24b754nZMISZ3+pjhbGjL8mNxo35HZwVo7pgqJqg==}
 
   supports-color@7.2.0:
     resolution: {integrity: sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==}
@@ -11721,7 +11721,7 @@ snapshots:
       - encoding
       - supports-color
 
-  supertokens-node@15.0.0:
+  supertokens-node@16.0.0:
     dependencies:
       content-type: 1.0.5
       cookie: 0.4.0
@@ -11733,7 +11733,6 @@ snapshots:
       nodemailer: 6.10.1
       pkce-challenge: 3.1.0
       psl: 1.8.0
-      raw-body: 2.5.2
       supertokens-js-override: 0.0.4
       twilio: 4.23.0(debug@4.4.3)
     transitivePeerDependencies:

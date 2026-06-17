@@ -1,6 +1,11 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
+import {
+  getUser,
+  listUsersByAccountInfo,
+  RecipeUserId,
+} from "supertokens-node";
 import { wrapResponse } from "supertokens-node/framework/fastify";
 import EmailVerification, {
   EmailVerificationClaim,
@@ -122,10 +127,14 @@ const createUserContext = (
 ): AuthUserContext => createUserContextImpl(existing, request);
 
 const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
-  async createResetPasswordToken(userId: string): Promise<string> {
+  async createResetPasswordToken(
+    userId: string,
+    email: string,
+  ): Promise<string> {
     const response = await ThirdPartyEmailPassword.createResetPasswordToken(
       SUPERTOKENS_DEFAULT_TENANT_ID,
       userId,
+      email,
     );
 
     if (response.status === "OK") {
@@ -153,7 +162,10 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     if (response.status === "OK" && response.user) {
       return {
         success: true,
-        user: response.user as AuthUser,
+        user: {
+          ...response.user,
+          email: response.user.emails[0] ?? "",
+        } as AuthUser,
       };
     }
 
@@ -175,10 +187,14 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
       userContext,
     );
 
-    if (response.status === "OK" && response.user) {
+    if (response.status === "OK") {
       return {
         success: true,
-        user: response.user as AuthUser,
+        user: {
+          email: response.user.emails[0] ?? "",
+          id: response.user.id,
+          timeJoined: response.user.timeJoined,
+        } as AuthUser,
       };
     }
 
@@ -189,20 +205,30 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
   },
 
   async getUserById(userId: string): Promise<AuthUser | undefined> {
-    const user = await ThirdPartyEmailPassword.getUserById(userId);
+    const user = await getUser(userId);
 
     if (!user) return undefined;
 
-    return user as AuthUser;
+    return {
+      email: user.emails[0] ?? "",
+      id: user.id,
+      timeJoined: user.timeJoined,
+    } as AuthUser;
   },
 
   async getUsersByEmail(email: string): Promise<AuthUser[]> {
-    const users = await ThirdPartyEmailPassword.getUsersByEmail(
-      SUPERTOKENS_DEFAULT_TENANT_ID,
+    const users = await listUsersByAccountInfo(SUPERTOKENS_DEFAULT_TENANT_ID, {
       email,
-    );
+    });
 
-    return users.map((user) => user as AuthUser);
+    return users.map(
+      (user) =>
+        ({
+          email: user.emails[0] ?? "",
+          id: user.id,
+          timeJoined: user.timeJoined,
+        }) as AuthUser,
+    );
   },
 
   async resetPasswordUsingToken(
@@ -227,7 +253,11 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     password?: string;
     userId: string;
   }): Promise<UpdateEmailOrPasswordResult> {
-    const response = await ThirdPartyEmailPassword.updateEmailOrPassword(input);
+    const response = await ThirdPartyEmailPassword.updateEmailOrPassword({
+      email: input.email,
+      password: input.password,
+      recipeUserId: new RecipeUserId(input.userId),
+    });
 
     if (response.status === "OK") {
       return { success: true };
@@ -245,7 +275,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
   ): Promise<string> {
     const response = await EmailVerification.createEmailVerificationToken(
       SUPERTOKENS_DEFAULT_TENANT_ID,
-      userId,
+      new RecipeUserId(userId),
       email,
       userContext,
     );
@@ -261,7 +291,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
   },
 
   async isEmailVerified(userId: string, email?: string): Promise<boolean> {
-    return EmailVerification.isEmailVerified(userId, email);
+    return EmailVerification.isEmailVerified(new RecipeUserId(userId), email);
   },
 
   async sendVerificationEmail(input) {
@@ -272,6 +302,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
       user: {
         email: input.email,
         id: input.userId,
+        recipeUserId: new RecipeUserId(input.userId),
       },
       userContext: input.userContext,
     });
@@ -280,7 +311,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
   },
 
   async unverifyEmail(userId: string, email?: string): Promise<void> {
-    await EmailVerification.unverifyEmail(userId, email);
+    await EmailVerification.unverifyEmail(new RecipeUserId(userId), email);
   },
 
   async verifyEmailUsingToken(
@@ -290,6 +321,7 @@ const supertokensEmailVerificationAdapter: EmailVerificationProvider = {
     const response = await EmailVerification.verifyEmailUsingToken(
       SUPERTOKENS_DEFAULT_TENANT_ID,
       token,
+      undefined,
       userContext,
     );
 
@@ -398,7 +430,7 @@ const supertokensSessionAdapter: SessionProvider = {
       request,
       reply,
       SUPERTOKENS_DEFAULT_TENANT_ID,
-      userId,
+      new RecipeUserId(userId),
       accessTokenPayload,
       sessionData,
       userContext,

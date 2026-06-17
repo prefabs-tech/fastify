@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import { deleteUser } from "supertokens-node";
+import { deleteUser, RecipeUserId } from "supertokens-node";
 import EmailVerification from "supertokens-node/recipe/emailverification";
 import UserRoles from "supertokens-node/recipe/userroles";
 
@@ -40,7 +40,7 @@ const emailPasswordSignUp = (
 
       try {
         user = await userService.create({
-          email: originalResponse.user.email,
+          email: originalResponse.user.emails[0] ?? "",
           id: originalResponse.user.id,
         });
 
@@ -52,13 +52,6 @@ const emailPasswordSignUp = (
 
         throw error;
       }
-
-      user.roles = roles;
-
-      originalResponse.user = {
-        ...originalResponse.user,
-        ...user,
-      };
 
       for (const role of roles) {
         const rolesResponse = await UserRoles.addRoleToUser(
@@ -82,7 +75,7 @@ const emailPasswordSignUp = (
             const tokenResponse =
               await EmailVerification.createEmailVerificationToken(
                 SUPERTOKENS_DEFAULT_TENANT_ID,
-                originalResponse.user.id,
+                new RecipeUserId(originalResponse.user.id),
               );
 
             if (tokenResponse.status === "OK") {
@@ -92,7 +85,11 @@ const emailPasswordSignUp = (
                 emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
                 tenantId: SUPERTOKENS_DEFAULT_TENANT_ID,
                 type: "EMAIL_VERIFICATION",
-                user: originalResponse.user,
+                user: {
+                  email: originalResponse.user.emails[0] ?? "",
+                  id: originalResponse.user.id,
+                  recipeUserId: new RecipeUserId(originalResponse.user.id),
+                },
                 userContext: input.userContext,
               });
             }

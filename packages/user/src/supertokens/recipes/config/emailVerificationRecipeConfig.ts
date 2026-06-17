@@ -92,7 +92,7 @@ const getEmailVerificationRecipeConfig = (
                 const userService = getUserService(config, slonik);
 
                 await userService.changeEmail(
-                  response.user.id,
+                  response.user.recipeUserId.getAsString(),
                   response.user.email,
                 );
               }

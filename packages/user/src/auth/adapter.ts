@@ -70,7 +70,7 @@ export interface ClaimsProvider {
 }
 
 export interface EmailPasswordProvider {
-  createResetPasswordToken?(userId: string): Promise<string>;
+  createResetPasswordToken?(userId: string, email: string): Promise<string>;
 
   emailPasswordSignIn(
     email: string,

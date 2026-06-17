@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
+    "prepare": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "sort-package": "npx sort-package-json",

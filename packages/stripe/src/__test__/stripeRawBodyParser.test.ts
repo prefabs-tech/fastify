@@ -102,10 +102,8 @@ describe("stripeRawBodyParser — scoping when installed by the webhook controll
     // and does NOT bleed into the parent instance.
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    fastify.config.stripe = createStripeConfig({ enablePaymentWebhook: true });
+    await fastify.register(plugin);
 
     let unrelatedRawBody: unknown;
     fastify.post("/some/other/route", async (request) => {

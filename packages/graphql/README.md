@@ -84,7 +84,6 @@ export { default as schema } from "./schema";
 Add a `graphql` block to your config in `config/index.ts`:
 
 ```typescript
-import { parse } from "@prefabs.tech/fastify-config";
 import dotenv from "dotenv";
 
 import { resolvers, schema } from "../src/graphql";

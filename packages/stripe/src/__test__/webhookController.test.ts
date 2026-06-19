@@ -1,6 +1,8 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { StripeConfig } from "../types";
+
 import "../index";
 import createStripeConfig from "./helpers/createStripeConfig";
 
@@ -40,6 +42,16 @@ function decorateConfig(fastify: FastifyInstance) {
   fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
 }
 
+function setStripeConfig(
+  fastify: FastifyInstance,
+  overrides: Partial<StripeConfig> = {},
+) {
+  fastify.config.stripe = createStripeConfig({
+    enablePaymentWebhook: true,
+    ...overrides,
+  });
+}
+
 describe("webhookController — route registration", async () => {
   const { default: plugin } = await import("../plugin");
 
@@ -58,10 +70,8 @@ describe("webhookController — route registration", async () => {
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    setStripeConfig(fastify);
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
@@ -73,13 +83,8 @@ describe("webhookController — route registration", async () => {
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({
-        enablePaymentWebhook: true,
-        webhookPath: "/custom/webhook",
-      }),
-    );
+    setStripeConfig(fastify, { webhookPath: "/custom/webhook" });
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(fastify.hasRoute({ method: "POST", url: "/custom/webhook" })).toBe(
@@ -92,10 +97,8 @@ describe("webhookController — route registration", async () => {
     decorateConfig(fastify);
     const infoSpy = vi.spyOn(fastify.log, "info");
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    setStripeConfig(fastify);
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(infoSpy).toHaveBeenCalledWith("Registering Stripe webhook route");
@@ -121,13 +124,8 @@ describe("webhookController — dispatch", async () => {
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({
-        enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
-      }),
-    );
+    setStripeConfig(fastify, { handlers: { webhook: webhookHandlerMock } });
+    await fastify.register(plugin);
     await fastify.ready();
 
     const res = await injectWebhook(fastify, "/payment/webhook");
@@ -141,10 +139,8 @@ describe("webhookController — dispatch", async () => {
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    setStripeConfig(fastify);
+    await fastify.register(plugin);
     await fastify.ready();
 
     const res = await injectWebhook(fastify, "/payment/webhook");
@@ -157,10 +153,8 @@ describe("webhookController — dispatch", async () => {
     decorateConfig(fastify);
     const warnSpy = vi.spyOn(fastify.log, "warn");
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    setStripeConfig(fastify);
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(warnSpy).toHaveBeenCalledWith(
@@ -174,13 +168,8 @@ describe("webhookController — dispatch", async () => {
     decorateConfig(fastify);
     const warnSpy = vi.spyOn(fastify.log, "warn");
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({
-        enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
-      }),
-    );
+    setStripeConfig(fastify, { handlers: { webhook: webhookHandlerMock } });
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(warnSpy).not.toHaveBeenCalledWith(
@@ -193,13 +182,8 @@ describe("webhookController — dispatch", async () => {
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({
-        enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
-      }),
-    );
+    setStripeConfig(fastify, { handlers: { webhook: webhookHandlerMock } });
+    await fastify.register(plugin);
     await fastify.ready();
 
     const res = await injectWebhook(fastify, "/payment/webhook");
@@ -242,10 +226,8 @@ describe("webhookController — defensive guards", async () => {
     fastify = Fastify({ logger: false });
     decorateConfig(fastify);
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    setStripeConfig(fastify);
+    await fastify.register(plugin);
     await fastify.ready();
 
     const res = await injectWebhook(fastify, "/payment/webhook");

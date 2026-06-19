@@ -31,10 +31,11 @@ const registerWithStripe = async (
   plugin: typeof import("../plugin").default,
   overrides: Partial<StripeConfig> = {},
 ) => {
-  await fastify.register(
-    plugin,
-    createStripeConfig({ enablePaymentWebhook: true, ...overrides }),
-  );
+  fastify.config.stripe = createStripeConfig({
+    enablePaymentWebhook: true,
+    ...overrides,
+  });
+  await fastify.register(plugin);
   await fastify.ready();
 };
 

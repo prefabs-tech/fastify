@@ -5,6 +5,10 @@ import "../index";
 import registerRawBodyParser from "../utils/stripeRawBodyParser";
 import createStripeConfig from "./helpers/createStripeConfig";
 
+function decorateConfig(fastify: FastifyInstance) {
+  fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
+}
+
 const { stripeMock } = vi.hoisted(() => {
   const stripeMock = vi.fn().mockImplementation(() => ({
     webhooks: { constructEvent: vi.fn() },
@@ -97,6 +101,7 @@ describe("stripeRawBodyParser — scoping when installed by the webhook controll
     // content-type parser is encapsulated to the controller's plugin scope
     // and does NOT bleed into the parent instance.
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
     await fastify.register(
       plugin,
       createStripeConfig({ enablePaymentWebhook: true }),

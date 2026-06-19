@@ -36,6 +36,10 @@ const injectWebhook = (
     url,
   });
 
+function decorateConfig(fastify: FastifyInstance) {
+  fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
+}
+
 describe("webhookController — route registration", async () => {
   const { default: plugin } = await import("../plugin");
 
@@ -52,6 +56,7 @@ describe("webhookController — route registration", async () => {
 
   it("registers POST at /payment/webhook by default when webhookPath is unset", async () => {
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
 
     await fastify.register(
       plugin,
@@ -66,6 +71,7 @@ describe("webhookController — route registration", async () => {
 
   it("registers POST at the configured webhookPath when set", async () => {
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
 
     await fastify.register(
       plugin,
@@ -83,6 +89,7 @@ describe("webhookController — route registration", async () => {
 
   it("logs 'Registering Stripe webhook route' at info level", async () => {
     fastify = Fastify({ logger: { level: "silent" } });
+    decorateConfig(fastify);
     const infoSpy = vi.spyOn(fastify.log, "info");
 
     await fastify.register(
@@ -112,6 +119,7 @@ describe("webhookController — dispatch", async () => {
   it("invokes config.stripe.handlers.webhook with request and verified event", async () => {
     const webhookHandlerMock = vi.fn().mockResolvedValue();
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
 
     await fastify.register(
       plugin,
@@ -131,6 +139,7 @@ describe("webhookController — dispatch", async () => {
 
   it("responds 200 with the default fallback handler when no custom handler is configured (to suppress Stripe retries)", async () => {
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
 
     await fastify.register(
       plugin,
@@ -145,6 +154,7 @@ describe("webhookController — dispatch", async () => {
 
   it("warns at registration time when enablePaymentWebhook is true but handlers.webhook is unset", async () => {
     fastify = Fastify({ logger: { level: "silent" } });
+    decorateConfig(fastify);
     const warnSpy = vi.spyOn(fastify.log, "warn");
 
     await fastify.register(
@@ -161,6 +171,7 @@ describe("webhookController — dispatch", async () => {
   it("does NOT warn at registration time when handlers.webhook is configured", async () => {
     const webhookHandlerMock = vi.fn().mockResolvedValue();
     fastify = Fastify({ logger: { level: "silent" } });
+    decorateConfig(fastify);
     const warnSpy = vi.spyOn(fastify.log, "warn");
 
     await fastify.register(
@@ -180,6 +191,7 @@ describe("webhookController — dispatch", async () => {
   it("does not call the default handler when handlers.webhook is configured", async () => {
     const webhookHandlerMock = vi.fn().mockResolvedValue();
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
 
     await fastify.register(
       plugin,
@@ -228,6 +240,7 @@ describe("webhookController — defensive guards", async () => {
     );
 
     fastify = Fastify({ logger: false });
+    decorateConfig(fastify);
 
     await fastify.register(
       plugin,

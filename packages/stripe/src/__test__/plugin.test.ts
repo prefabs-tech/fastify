@@ -99,6 +99,7 @@ describe("stripePlugin — configuration present", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: { level: "silent" } });
+    fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
   });
 
   afterEach(async () => {
@@ -150,6 +151,7 @@ describe("stripePlugin — fastify-plugin wrapping", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: false });
+    fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
   });
 
   afterEach(async () => {

@@ -1,4 +1,3 @@
-import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
 import type {
   APIInterface,
   TypeInput as PasswordlessRecipeConfig,
@@ -7,21 +6,37 @@ import type {
 
 import { FastifyInstance } from "fastify";
 import { PasswordlessRecipe } from "src/supertokens/types/passwordlessRecipe";
-import { TwilioService } from "supertokens-node/recipe/passwordless/smsdelivery";
+import { TwilioConfig } from "src/types";
+import twilio from "twilio";
 
 import consumeCode from "./passwordless/consumeCode";
-import consumeCodePOST from "./passwordless/consumeCodePost";
+import consumeCodePOST, {
+  TWILIO_VERIFY_PLACEHOLDER_CODE,
+} from "./passwordless/consumeCodePost";
+
+// Since Supertokens directly does not support Twilio verify api, we need to override the consumeCodePOST api to integrate with Twilio Verify. The consumeCode function is also overridden to create a user in our database when a new user is created in Supertokens after successful verification.
+
+// How it works:
+// 1. When a user tries to sign in/sign up, they hit the createCodePOST API which requests an OTP from Twilio Verify for the provided phone number.
+// 2. To satisfy Supertokens' requirement of having a user input code, we store a TWILIO_VERIFY_PLACEHOLDER_CODE in Supertokens instead of the actual OTP.
+// 3. When the user submits the OTP they received, we hit the consumeCodePOST API. Here, we first verify the OTP with Twilio Verify. If Twilio approves, we then call the original consumeCodePOST with the TWILIO_VERIFY_PLACEHOLDER_CODE, which allows Supertokens to complete its flow successfully.
+// 4. In the consumeCode function, if a new user was created by Supertokens, we create a corresponding user in our database with the phone number and a synthetic email (in the format phoneNumber@fallbackEmailDomain) since Supertokens requires an email field.
 
 const getPasswordlessRecipeConfig = (
   fastify: FastifyInstance,
 ): PasswordlessRecipeConfig => {
   const { config } = fastify;
+
+  if (!config.user.passwordLessConfig) {
+    throw new Error("Passwordless recipe config is missing");
+  }
+
   const isDevelopment = config.user.passwordLessConfig.enableDevMode;
   const developmentModeOtp = config.user.passwordLessConfig.devModeOtp;
 
   const isDevelopmentNumber = (phoneNumber: string) => {
     const developmentModeNumbers =
-      config.user.passwordLessConfig.bypassSmsFor || [];
+      config.user.passwordLessConfig?.bypassSmsFor || [];
 
     return developmentModeNumbers.includes(phoneNumber);
   };
@@ -32,24 +47,13 @@ const getPasswordlessRecipeConfig = (
     passwordless = config.user.supertokens.recipes.passwordless;
   }
 
-  const twilioSettings: TwilioServiceConfig | undefined = isDevelopment
+  const twilioSettings: TwilioConfig | undefined = isDevelopment
     ? undefined
     : config.user.passwordLessConfig.twilio;
 
   if (!isDevelopment && !twilioSettings) {
     throw new Error(
       "Twilio config is missing for passwordless recipe. Please add twilio config to your app config.",
-    );
-  }
-
-  if (
-    !isDevelopment &&
-    twilioSettings &&
-    !("from" in twilioSettings) &&
-    !("messagingServiceSid" in twilioSettings)
-  ) {
-    throw new Error(
-      "Twilio config requires either 'from' or 'messagingServiceSid'.",
     );
   }
 
@@ -63,8 +67,7 @@ const getPasswordlessRecipeConfig = (
         return developmentModeOtp;
       }
 
-      // TODO [AJ 20260512] Check how supertokens generates OTP by default and use that logic here
-      return Math.floor(100_000 + Math.random() * 900_000).toString();
+      return TWILIO_VERIFY_PLACEHOLDER_CODE;
     },
     override: {
       apis: (originalImplementation) => {
@@ -139,35 +142,55 @@ const getPasswordlessRecipeConfig = (
         }
       : {
           smsDelivery: {
-            service: new TwilioService({
-              override: (originalImplementation) => {
-                return {
-                  ...originalImplementation,
-                  getContent: async (input) => {
-                    const message =
-                      config.user.passwordLessConfig.smsMessage ||
-                      "Your verification code is:";
+            override: (originalImplementation) => {
+              return {
+                ...originalImplementation,
+                sendSms: async (input: { phoneNumber: string }) => {
+                  if (isDevelopmentNumber(input.phoneNumber)) {
+                    fastify.log.info(
+                      `Skipping SMS for test number ${input.phoneNumber}.`,
+                    );
 
-                    return {
-                      body: `${message} ${input.userInputCode}.`,
-                      toPhoneNumber: input.phoneNumber,
-                    };
-                  },
-                  sendRawSms: async (input) => {
-                    if (isDevelopmentNumber(input.toPhoneNumber)) {
-                      fastify.log.info(
-                        `Skipping SMS for test number ${input.toPhoneNumber}. SMS body: [${input.body}]`,
-                      );
+                    return;
+                  }
 
-                      return;
-                    }
+                  const verifyServiceSid =
+                    config.user.passwordLessConfig?.twilio?.verifyServiceSid;
 
-                    await originalImplementation.sendRawSms(input);
-                  },
-                };
-              },
-              twilioSettings: twilioSettings as TwilioServiceConfig,
-            }),
+                  if (!verifyServiceSid) {
+                    throw new Error(
+                      "TWILIO_VERIFY_SERVICE_SID is not configured",
+                    );
+                  }
+
+                  const { accountSid, authToken } =
+                    twilioSettings as TwilioConfig;
+
+                  if (!accountSid || !authToken) {
+                    throw new Error(
+                      "TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN are required for passwordless SMS delivery",
+                    );
+                  }
+
+                  const twilioClient = twilio(accountSid, authToken);
+
+                  try {
+                    await twilioClient.verify.v2
+                      .services(verifyServiceSid)
+                      .verifications.create({
+                        channel: "sms",
+                        to: input.phoneNumber,
+                      });
+                  } catch (error) {
+                    fastify.log.error(
+                      error,
+                      "Twilio Verify failed to send OTP",
+                    );
+                    throw error;
+                  }
+                },
+              };
+            },
           },
         }),
   };

@@ -46,7 +46,7 @@ const consumeCode = (
     const phoneNumber = originalResponse.user.phoneNumber;
 
     const emailDomain =
-      fastify.config.user.passwordLessConfig.fallbackEmailDomain ||
+      fastify.config.user.passwordLessConfig?.fallbackEmailDomain ||
       fastify.config.appName.toLowerCase().replaceAll(/\s+/g, "") + ".com";
 
     const email = phoneNumber
@@ -56,7 +56,7 @@ const consumeCode = (
     if (!email || !phoneNumber) {
       await deleteUser(originalResponse.user.id);
 
-      throw new Error("Passwordless user missing phoneNumber or email");
+      throw new Error("Passwordless user missing phone number or email");
     }
 
     let user: null | undefined | User;

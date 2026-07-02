@@ -105,7 +105,6 @@ interface UserConfig {
     devModeOtp: string;
     enableDevMode: boolean;
     fallbackEmailDomain?: string;
-    smsMessage?: string;
     twilio?: TwilioConfig;
   };
   permissions?: string[];

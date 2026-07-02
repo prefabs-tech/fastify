@@ -3,13 +3,44 @@ import {
   type FastifyPluginAsync,
   FastifyRequest,
 } from "fastify";
+import Stripe from "stripe";
 
-import type { WebhookControllerOptions } from "../types";
+import type { StripeEventHandlers, WebhookControllerOptions } from "../types";
 
 import { ROUTE_STRIPE_WEBHOOK } from "../constants";
 import { createVerifyStripeSignature } from "../middlewares/verifyStripeSignature";
 import stripeRawBodyParser from "../utils/stripeRawBodyParser";
 import webhookHandler from "./handler";
+
+/**
+ * Dispatch a Stripe event to the matching handler in the typed handler map.
+ * Falls through to the default handler (which logs and acknowledges) when no
+ * matching handler exists.
+ */
+const dispatchToHandler = async (
+  handlers: StripeEventHandlers | undefined,
+  request: FastifyRequest,
+  event: NonNullable<FastifyRequest["stripeEvent"]>,
+): Promise<boolean> => {
+  if (!handlers) {
+    return false;
+  }
+
+  const handler = handlers[event.type as keyof typeof handlers];
+
+  if (handler) {
+    await (
+      handler as (
+        req: FastifyRequest,
+        event_: Stripe.Event,
+      ) => Promise<void> | void
+    )(request, event);
+
+    return true;
+  }
+
+  return false;
+};
 
 const plugin: FastifyPluginAsync<WebhookControllerOptions> = async (
   fastify: FastifyInstance,
@@ -51,13 +82,17 @@ const plugin: FastifyPluginAsync<WebhookControllerOptions> = async (
         });
       }
 
-      if (stripeConfig.handlers?.webhook) {
-        await stripeConfig.handlers.webhook(request, event);
+      // Try the typed handler map first; fall back to the default handler
+      // when no matching entry exists (or no map was configured).
+      const dispatched = await dispatchToHandler(
+        stripeConfig.handlers?.webhook,
+        request,
+        event,
+      );
 
-        return;
+      if (!dispatched) {
+        await webhookHandler(request, event);
       }
-
-      await webhookHandler(request, event);
     },
   );
 };

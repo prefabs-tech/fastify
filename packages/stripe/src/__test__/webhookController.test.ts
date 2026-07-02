@@ -109,7 +109,7 @@ describe("webhookController — dispatch", async () => {
     await fastify.close();
   });
 
-  it("invokes config.stripe.handlers.webhook with request and verified event", async () => {
+  it("invokes the matching typed handler from config.stripe.handlers.webhook", async () => {
     const webhookHandlerMock = vi.fn().mockResolvedValue();
     fastify = Fastify({ logger: false });
 
@@ -117,7 +117,11 @@ describe("webhookController — dispatch", async () => {
       plugin,
       createStripeConfig({
         enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
+        handlers: {
+          webhook: {
+            "checkout.session.completed": webhookHandlerMock,
+          },
+        },
       }),
     );
     await fastify.ready();
@@ -159,7 +163,6 @@ describe("webhookController — dispatch", async () => {
   });
 
   it("does NOT warn at registration time when handlers.webhook is configured", async () => {
-    const webhookHandlerMock = vi.fn().mockResolvedValue();
     fastify = Fastify({ logger: { level: "silent" } });
     const warnSpy = vi.spyOn(fastify.log, "warn");
 
@@ -167,7 +170,11 @@ describe("webhookController — dispatch", async () => {
       plugin,
       createStripeConfig({
         enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
+        handlers: {
+          webhook: {
+            "checkout.session.completed": vi.fn().mockResolvedValue(),
+          },
+        },
       }),
     );
     await fastify.ready();
@@ -177,15 +184,22 @@ describe("webhookController — dispatch", async () => {
     );
   });
 
-  it("does not call the default handler when handlers.webhook is configured", async () => {
-    const webhookHandlerMock = vi.fn().mockResolvedValue();
+  it("falls back to the default handler when the event type has no matching handler in the map", async () => {
+    // Register the webhook with a handler map that does NOT cover the
+    // incoming event type; the default fallback handler should log an
+    // error and still respond 200 to stop Stripe retries.
+    const nonMatchingHandler = vi.fn().mockResolvedValue();
     fastify = Fastify({ logger: false });
 
     await fastify.register(
       plugin,
       createStripeConfig({
         enablePaymentWebhook: true,
-        handlers: { webhook: webhookHandlerMock },
+        handlers: {
+          webhook: {
+            "payment_intent.succeeded": nonMatchingHandler,
+          },
+        },
       }),
     );
     await fastify.ready();
@@ -193,7 +207,22 @@ describe("webhookController — dispatch", async () => {
     const res = await injectWebhook(fastify, "/payment/webhook");
 
     expect(res.statusCode).toBe(200);
-    expect(webhookHandlerMock).toHaveBeenCalled();
+    expect(nonMatchingHandler).not.toHaveBeenCalled();
+  });
+
+  it("responds 200 for an unmapped event type (no crash)", async () => {
+    // No handlers.webhook configured at all — default fallback
+    fastify = Fastify({ logger: false });
+
+    await fastify.register(
+      plugin,
+      createStripeConfig({ enablePaymentWebhook: true }),
+    );
+    await fastify.ready();
+
+    const res = await injectWebhook(fastify, "/payment/webhook");
+
+    expect(res.statusCode).toBe(200);
   });
 });
 

@@ -17,6 +17,13 @@ interface EmailOptions {
   templateName?: string;
 }
 
+type TwilioConfig = Omit<
+  TwilioServiceConfig,
+  "from" | "messagingServiceSid"
+> & {
+  verifyServiceSid: string;
+};
+
 interface UserConfig {
   email?: IsEmailOptions;
   emailOverrides?: {
@@ -27,6 +34,9 @@ interface UserConfig {
     resetPasswordNotification?: EmailOptions;
   };
   features?: {
+    passwordlessLogin?: {
+      enabled?: boolean;
+    };
     profileValidation?: {
       /**
        * @default false
@@ -90,13 +100,13 @@ interface UserConfig {
     ) => Promise<void>;
   };
   password?: StrongPasswordOptions;
-  passwordLessConfig: {
+  passwordLessConfig?: {
     bypassSmsFor?: string[];
     devModeOtp: string;
     enableDevMode: boolean;
     fallbackEmailDomain?: string;
     smsMessage?: string;
-    twilio?: TwilioServiceConfig;
+    twilio?: TwilioConfig;
   };
   permissions?: string[];
   photoMaxSizeInMB?: number;
@@ -135,4 +145,4 @@ interface UserConfig {
   };
 }
 
-export type { EmailOptions, UserConfig };
+export type { EmailOptions, TwilioConfig, UserConfig };

@@ -1,4 +1,4 @@
-import type Stripe from "stripe";
+import Stripe from "stripe";
 
 export const stripeErrorHttpStatusMap: Record<string, number> = {
   StripeAPIError: 500,
@@ -21,31 +21,7 @@ export const stripeErrorToHttpStatus = (type: string): number =>
 export const isStripeError = (
   error: unknown,
 ): error is Stripe.errors.StripeError => {
-  if (error === null || error === undefined) {
-    return false;
-  }
-
-  if (typeof error !== "object") {
-    return false;
-  }
-
-  const candidate = error as Record<string, unknown>;
-
-  const type = candidate.type;
-
-  if (typeof type !== "string") {
-    return false;
-  }
-
-  const isValidType =
-    type.startsWith("Stripe") || type === "TemporarySessionExpiredError";
-
-  return (
-    candidate instanceof Error &&
-    isValidType &&
-    typeof candidate.headers === "object" &&
-    typeof candidate.requestId === "string"
-  );
+  return error instanceof Stripe.errors.StripeError;
 };
 
 export const getStripeErrorHttpStatus = (

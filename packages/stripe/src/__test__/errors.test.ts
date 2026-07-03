@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -7,23 +8,36 @@ import {
   stripeErrorToHttpStatus,
 } from "../utils/errors";
 
-const makeError = (overrides: Record<string, unknown> = {}) => {
-  const error = new Error("test error") as Record<string, unknown>;
-  error.type = "StripeCardError";
-  error.headers = { "request-id": "req_abc" };
-  error.requestId = "req_abc";
-  error.statusCode = 402;
-  error.code = "card_declined";
-  error.rawType = "card_error";
-
-  Object.assign(error, overrides);
-
-  return error;
+const rawError = {
+  code: "card_declined",
+  headers: { "request-id": "req_abc" },
+  message: "test error",
+  requestId: "req_abc",
+  statusCode: 402,
+  type: "card_error" as const,
 };
 
 describe("isStripeError", () => {
-  it("returns true for a valid StripeError-like object", () => {
-    expect(isStripeError(makeError())).toBe(true);
+  it("returns true for a StripeError instance", () => {
+    expect(isStripeError(new Stripe.errors.StripeError(rawError))).toBe(true);
+  });
+
+  it("returns true for a StripeCardError instance", () => {
+    expect(isStripeError(new Stripe.errors.StripeCardError(rawError))).toBe(
+      true,
+    );
+  });
+
+  it("returns true for a StripeConnectionError instance", () => {
+    expect(
+      isStripeError(new Stripe.errors.StripeConnectionError(rawError)),
+    ).toBe(true);
+  });
+
+  it("returns true for a TemporarySessionExpiredError instance", () => {
+    expect(
+      isStripeError(new Stripe.errors.TemporarySessionExpiredError(rawError)),
+    ).toBe(true);
   });
 
   it("returns false for a plain Error", () => {
@@ -31,7 +45,7 @@ describe("isStripeError", () => {
   });
 
   it("returns false for null", () => {
-    // eslint-disable-next-line unicorn/no-null
+    // eslint-disable-next-line unicorn/no-null -- explicit null is part of the type-guard behavior being tested
     expect(isStripeError(null)).toBe(false);
   });
 
@@ -47,75 +61,8 @@ describe("isStripeError", () => {
     expect(isStripeError(42)).toBe(false);
   });
 
-  it("returns false for an object without type starting with Stripe", () => {
-    expect(isStripeError(makeError({ type: "SomeError" }))).toBe(false);
-  });
-
-  it("returns false for an object missing headers", () => {
-    expect(isStripeError(makeError({ headers: undefined }))).toBe(false);
-  });
-
-  it("returns false for an object missing requestId", () => {
-    expect(isStripeError(makeError({ requestId: undefined }))).toBe(false);
-  });
-
-  it("returns true for StripeInvalidRequestError", () => {
-    expect(
-      isStripeError(
-        makeError({
-          code: "missing",
-          rawType: "invalid_request_error",
-          type: "StripeInvalidRequestError",
-        }),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns true for StripeRateLimitError", () => {
-    expect(
-      isStripeError(
-        makeError({
-          code: "rate_limit",
-          rawType: "rate_limit_error",
-          type: "StripeRateLimitError",
-        }),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns true for StripeAuthenticationError", () => {
-    expect(
-      isStripeError(
-        makeError({
-          code: "authentication_required",
-          rawType: "authentication_error",
-          type: "StripeAuthenticationError",
-        }),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns true for StripeConnectionError", () => {
-    expect(
-      isStripeError(
-        makeError({
-          code: "connection_error",
-          type: "StripeConnectionError",
-        }),
-      ),
-    ).toBe(true);
-  });
-
-  it("returns true for TemporarySessionExpiredError (type does not start with 'Stripe')", () => {
-    expect(
-      isStripeError(
-        makeError({
-          code: "temporary_session_expired",
-          rawType: "temporary_session_expired",
-          type: "TemporarySessionExpiredError",
-        }),
-      ),
-    ).toBe(true);
+  it("returns false for a plain object", () => {
+    expect(isStripeError({})).toBe(false);
   });
 });
 
@@ -189,23 +136,31 @@ describe("stripeErrorToHttpStatus", () => {
 
 describe("getStripeErrorHttpStatus", () => {
   it("returns the error's own statusCode when present", () => {
-    const error = makeError({ statusCode: 400 });
-    expect(getStripeErrorHttpStatus(error as never)).toBe(400);
+    const error = new Stripe.errors.StripeError({
+      ...rawError,
+      statusCode: 400,
+    });
+    expect(getStripeErrorHttpStatus(error)).toBe(400);
   });
 
   it("falls back to type-based mapping when statusCode is undefined", () => {
-    const error = makeError({
+    const error = new Stripe.errors.StripeRateLimitError({
+      code: "rate_limit",
+      headers: { "request-id": "req_abc" },
+      message: "rate limited",
+      requestId: "req_abc",
       statusCode: undefined,
-      type: "StripeRateLimitError",
+      type: "rate_limit_error",
     });
-    expect(getStripeErrorHttpStatus(error as never)).toBe(429);
+    expect(getStripeErrorHttpStatus(error)).toBe(429);
   });
 
-  it("falls back to 500 when both statusCode and type mapping are missing", () => {
-    const error = makeError({
+  it("falls back to 500 when type mapping is also missing", () => {
+    const error = new Stripe.errors.StripeError({
+      ...rawError,
       statusCode: undefined,
-      type: "BogusError",
     });
-    expect(getStripeErrorHttpStatus(error as never)).toBe(500);
+    Object.defineProperty(error, "type", { value: "BogusError" });
+    expect(getStripeErrorHttpStatus(error)).toBe(500);
   });
 });

@@ -45,52 +45,6 @@ describe("stripePlugin — missing configuration", async () => {
   });
 });
 
-describe("stripePlugin — fastify.config.stripe fallback", async () => {
-  const { default: plugin } = await import("../plugin");
-
-  let fastify: FastifyInstance;
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-    fastify = Fastify({ logger: { level: "silent" } });
-    fastify.decorate("config", {
-      stripe: createStripeConfig({ enablePaymentWebhook: true }),
-    } as unknown as FastifyInstance["config"]);
-  });
-
-  afterEach(async () => {
-    await fastify.close();
-  });
-
-  it("warns and uses fastify.config.stripe when register is called without options", async () => {
-    const warnSpy = vi.spyOn(fastify.log, "warn");
-
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      "The stripe plugin now recommends passing stripe options directly to the plugin.",
-    );
-    expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
-      true,
-    );
-  });
-
-  it("warns and uses fastify.config.stripe when register is called with {}", async () => {
-    const warnSpy = vi.spyOn(fastify.log, "warn");
-
-    await fastify.register(plugin, {} as StripeConfig);
-    await fastify.ready();
-
-    expect(warnSpy).toHaveBeenCalledWith(
-      "The stripe plugin now recommends passing stripe options directly to the plugin.",
-    );
-    expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
-      true,
-    );
-  });
-});
-
 describe("stripePlugin — configuration present", async () => {
   const { default: plugin } = await import("../plugin");
 
@@ -99,6 +53,7 @@ describe("stripePlugin — configuration present", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: { level: "silent" } });
+    fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
   });
 
   afterEach(async () => {
@@ -108,20 +63,16 @@ describe("stripePlugin — configuration present", async () => {
   it("logs 'Registering Stripe plugin' at info level when config is passed", async () => {
     const infoSpy = vi.spyOn(fastify.log, "info");
 
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: false }),
-    );
+    fastify.config.stripe = createStripeConfig({ enablePaymentWebhook: false });
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(infoSpy).toHaveBeenCalledWith("Registering Stripe plugin");
   });
 
   it("does not register the webhook route when enablePaymentWebhook is false", async () => {
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: false }),
-    );
+    fastify.config.stripe = createStripeConfig({ enablePaymentWebhook: false });
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
@@ -130,10 +81,8 @@ describe("stripePlugin — configuration present", async () => {
   });
 
   it("registers the webhook route when enablePaymentWebhook is true", async () => {
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    fastify.config.stripe = createStripeConfig({ enablePaymentWebhook: true });
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(
@@ -150,6 +99,7 @@ describe("stripePlugin — fastify-plugin wrapping", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: false });
+    fastify.decorate("config", {} as unknown as FastifyInstance["config"]);
   });
 
   afterEach(async () => {
@@ -157,10 +107,8 @@ describe("stripePlugin — fastify-plugin wrapping", async () => {
   });
 
   it("registers without encapsulation so the route is reachable on the top-level instance", async () => {
-    await fastify.register(
-      plugin,
-      createStripeConfig({ enablePaymentWebhook: true }),
-    );
+    fastify.config.stripe = createStripeConfig({ enablePaymentWebhook: true });
+    await fastify.register(plugin);
     await fastify.ready();
 
     expect(fastify.hasRoute({ method: "POST", url: "/payment/webhook" })).toBe(

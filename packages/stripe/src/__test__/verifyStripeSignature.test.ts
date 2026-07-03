@@ -234,7 +234,11 @@ describe("verifyStripeSignature — success", async () => {
   it("attaches the verified Stripe.Event to the request before the route handler runs", async () => {
     decorateConfig(fastify);
     await registerWithStripe(fastify, plugin, {
-      handlers: { webhook: webhookHandlerMock },
+      handlers: {
+        webhook: {
+          "checkout.session.completed": webhookHandlerMock,
+        },
+      },
     });
 
     const res = await fastify.inject({
@@ -254,7 +258,11 @@ describe("verifyStripeSignature — success", async () => {
   it("calls stripe.webhooks.constructEvent with the raw body, signature, and configured secret", async () => {
     decorateConfig(fastify);
     await registerWithStripe(fastify, plugin, {
-      handlers: { webhook: webhookHandlerMock },
+      handlers: {
+        webhook: {
+          "checkout.session.completed": webhookHandlerMock,
+        },
+      },
     });
 
     const payload = JSON.stringify({ id: "evt_test" });

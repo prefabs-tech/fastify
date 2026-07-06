@@ -18,6 +18,6 @@ declare module "@prefabs.tech/fastify-config" {
 
 export * from "./constants";
 export { default } from "./plugin";
-export type { StripeConfig } from "./types";
+export type { StripeConfig, StripeEventHandlers } from "./types";
 export type StripeEvent = Stripe.Event;
 export * from "./utils";

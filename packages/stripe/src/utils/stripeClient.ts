@@ -70,6 +70,27 @@ class StripeClient {
     return this.stripe.checkout.sessions.create(parameters);
   }
 
+  public async createCustomer(
+    parameters: Stripe.CustomerCreateParams,
+  ): Promise<Stripe.Response<Stripe.Customer>> {
+    return this.stripe.customers.create(parameters);
+  }
+
+  /**
+   * Find the first customer matching the given email address.
+   * Returns `undefined` when no match is found.
+   */
+  public async findCustomerByEmail(
+    email: string,
+  ): Promise<Stripe.Customer | undefined> {
+    const customers = await this.stripe.customers.list({
+      email,
+      limit: 1,
+    });
+
+    return customers.data[0];
+  }
+
   public async getActivePromotionCode(
     code: string,
   ): Promise<Stripe.PromotionCode | undefined> {
@@ -79,6 +100,25 @@ class StripeClient {
     });
 
     return codes.data[0];
+  }
+
+  /**
+   * Retrieve a Stripe customer by ID.
+   */
+  public async getCustomer(
+    customerId: string,
+  ): Promise<Stripe.Response<Stripe.Customer | Stripe.DeletedCustomer>> {
+    return this.stripe.customers.retrieve(customerId);
+  }
+
+  /**
+   * Update a Stripe customer.
+   */
+  public async updateCustomer(
+    customerId: string,
+    parameters: Stripe.CustomerUpdateParams,
+  ): Promise<Stripe.Response<Stripe.Customer>> {
+    return this.stripe.customers.update(customerId, parameters);
   }
 }
 

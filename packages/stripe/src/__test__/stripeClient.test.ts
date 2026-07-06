@@ -12,18 +12,44 @@ const buildApiConfig = (
 ): ApiConfig =>
   ({ stripe: createStripeConfig(stripeOverrides) }) as unknown as ApiConfig;
 
-const { promotionCodesListMock, sessionsCreateMock, stripeMock } = vi.hoisted(
-  () => {
-    const sessionsCreateMock = vi.fn();
-    const promotionCodesListMock = vi.fn();
-    const stripeMock = vi.fn().mockImplementation(() => ({
-      checkout: { sessions: { create: sessionsCreateMock } },
-      promotionCodes: { list: promotionCodesListMock },
-      webhooks: { constructEvent: vi.fn() },
-    }));
-    return { promotionCodesListMock, sessionsCreateMock, stripeMock };
-  },
-);
+const {
+  customersCreateMock,
+  customersListMock,
+  customersRetrieveMock,
+  customersUpdateMock,
+  promotionCodesListMock,
+  sessionsCreateMock,
+  stripeMock,
+} = vi.hoisted(() => {
+  const customersCreateMock = vi.fn();
+  const customersListMock = vi.fn();
+  const customersRetrieveMock = vi.fn();
+  const customersUpdateMock = vi.fn();
+  const sessionsCreateMock = vi.fn();
+  const promotionCodesListMock = vi.fn();
+
+  const stripeMock = vi.fn().mockImplementation(() => ({
+    checkout: { sessions: { create: sessionsCreateMock } },
+    customers: {
+      create: customersCreateMock,
+      list: customersListMock,
+      retrieve: customersRetrieveMock,
+      update: customersUpdateMock,
+    },
+    promotionCodes: { list: promotionCodesListMock },
+    webhooks: { constructEvent: vi.fn() },
+  }));
+
+  return {
+    customersCreateMock,
+    customersListMock,
+    customersRetrieveMock,
+    customersUpdateMock,
+    promotionCodesListMock,
+    sessionsCreateMock,
+    stripeMock,
+  };
+});
 
 vi.mock("stripe", () => ({ default: stripeMock }));
 
@@ -340,5 +366,95 @@ describe("StripeClient — getActivePromotionCode", async () => {
     const result = await client.getActivePromotionCode("UNKNOWN");
 
     expect(result).toBeUndefined();
+  });
+});
+
+describe("StripeClient — Customer helpers", async () => {
+  const { default: StripeClient } = await import("../utils/stripeClient");
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  const buildClient = () => new StripeClient(buildApiConfig());
+
+  describe("createCustomer", () => {
+    it("delegates to stripe.customers.create with params", async () => {
+      const customer = {
+        email: "test@example.com",
+        id: "cus_123",
+        name: "Test",
+      };
+      customersCreateMock.mockResolvedValue(customer);
+      const client = buildClient();
+
+      const result = await client.createCustomer({
+        email: "test@example.com",
+        metadata: { userId: "u_1" },
+        name: "Test",
+      });
+
+      expect(customersCreateMock).toHaveBeenCalledWith({
+        email: "test@example.com",
+        metadata: { userId: "u_1" },
+        name: "Test",
+      });
+      expect(result).toBe(customer);
+    });
+  });
+
+  describe("getCustomer", () => {
+    it("delegates to stripe.customers.retrieve with the given id", async () => {
+      const customer = { email: "test@example.com", id: "cus_123" };
+      customersRetrieveMock.mockResolvedValue(customer);
+      const client = buildClient();
+
+      const result = await client.getCustomer("cus_123");
+
+      expect(customersRetrieveMock).toHaveBeenCalledWith("cus_123");
+      expect(result).toBe(customer);
+    });
+  });
+
+  describe("updateCustomer", () => {
+    it("delegates to stripe.customers.update with id and params", async () => {
+      const updated = { email: "updated@example.com", id: "cus_123" };
+      customersUpdateMock.mockResolvedValue(updated);
+      const client = buildClient();
+
+      const result = await client.updateCustomer("cus_123", {
+        email: "updated@example.com",
+      });
+
+      expect(customersUpdateMock).toHaveBeenCalledWith("cus_123", {
+        email: "updated@example.com",
+      });
+      expect(result).toBe(updated);
+    });
+  });
+
+  describe("findCustomerByEmail", () => {
+    it("finds the first customer matching the email", async () => {
+      const customer = { email: "test@example.com", id: "cus_123" };
+      customersListMock.mockResolvedValue({ data: [customer] });
+      const client = buildClient();
+
+      const result = await client.findCustomerByEmail("test@example.com");
+
+      expect(customersListMock).toHaveBeenCalledWith({
+        email: "test@example.com",
+        limit: 1,
+      });
+      expect(result).toBe(customer);
+    });
+
+    it("returns undefined when no customer matches", async () => {
+      customersListMock.mockResolvedValue({ data: [] });
+      const client = buildClient();
+
+      const result = await client.findCustomerByEmail("unknown@example.com");
+
+      expect(result).toBeUndefined();
+    });
   });
 });

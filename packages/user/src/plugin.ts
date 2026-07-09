@@ -9,6 +9,7 @@ import hasPermission from "./middlewares/hasPermission";
 import runMigrations from "./migrations/runMigrations";
 import invitationsRoutes from "./model/invitations/controller";
 import permissionsRoutes from "./model/permissions/controller";
+import profileFieldsRoutes from "./model/profileFields/controller";
 import rolesRoutes from "./model/roles/controller";
 import usersRoutes from "./model/users/controller";
 import supertokensPlugin from "./supertokens";
@@ -39,6 +40,10 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
 
   if (!routes?.permissions?.disabled) {
     await fastify.register(permissionsRoutes, { prefix: routePrefix });
+  }
+
+  if (!routes?.profileFields?.disabled) {
+    await fastify.register(profileFieldsRoutes, { prefix: routePrefix });
   }
 
   if (!routes?.roles?.disabled) {

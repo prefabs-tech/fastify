@@ -26,6 +26,13 @@ const ROUTE_USERS_DISABLE = "/users/:id/disable";
 const ROUTE_USERS_ENABLE = "/users/:id/enable";
 const TABLE_USERS = "users";
 
+// User profile fields
+const ROUTE_USER_PROFILE_FIELDS = "/profile/fields";
+const TABLE_USER_PROFILE_FIELD_OPTIONS = "user_profile_field_options";
+const TABLE_USER_PROFILE_FIELD_OPTIONS_I18N = "user_profile_field_options_i18n";
+const TABLE_USER_PROFILE_FIELDS = "user_profile_fields";
+const TABLE_USER_PROFILE_FIELDS_I18N = "user_profile_fields_i18n";
+
 // Roles
 const ROUTE_ROLES = "/roles";
 const ROUTE_ROLES_PERMISSIONS = "/roles/permissions";
@@ -115,11 +122,16 @@ export {
   ROUTE_ROLES,
   ROUTE_ROLES_PERMISSIONS,
   ROUTE_SIGNUP_ADMIN,
+  ROUTE_USER_PROFILE_FIELDS,
   ROUTE_USERS,
   ROUTE_USERS_DISABLE,
   ROUTE_USERS_ENABLE,
   ROUTE_USERS_FIND_BY_ID,
   SUPERTOKENS_CORS_HEADERS,
   TABLE_INVITATIONS,
+  TABLE_USER_PROFILE_FIELD_OPTIONS,
+  TABLE_USER_PROFILE_FIELD_OPTIONS_I18N,
+  TABLE_USER_PROFILE_FIELDS,
+  TABLE_USER_PROFILE_FIELDS_I18N,
   TABLE_USERS,
 };

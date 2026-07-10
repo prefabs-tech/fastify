@@ -22,8 +22,10 @@ const runMigrations = async (config: ApiConfig, database: Database) => {
           await transactionConnection.query(query);
         }
 
-        for (const query of seedProfileFieldsDummyDataQueries(config)) {
-          await transactionConnection.query(query);
+        if (config.user.features?.profileFields?.seedDummyData) {
+          for (const query of seedProfileFieldsDummyDataQueries(config)) {
+            await transactionConnection.query(query);
+          }
         }
       }
     });

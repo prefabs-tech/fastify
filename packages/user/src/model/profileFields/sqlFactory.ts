@@ -103,6 +103,10 @@ class ProfileFieldSqlFactory extends DefaultSqlFactory {
       ${this.getSortFragment(sort)}
     `;
   }
+
+  protected getAdditionalFilterFragments(): FragmentSqlToken[] {
+    return [sql.fragment`${this.tableIdentifier}.disabled IS NOT TRUE`];
+  }
 }
 
 export default ProfileFieldSqlFactory;

@@ -29,6 +29,7 @@ interface UserConfig {
   features?: {
     profileFields?: {
       enabled?: boolean;
+      seedDummyData?: boolean;
     };
     profileValidation?: {
       /**

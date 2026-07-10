@@ -17,7 +17,7 @@ const plugin = async (fastify: FastifyInstance) => {
     await fastify.register(fastifyMultiPart, {
       attachFieldsToBody: "keyValues",
       limits: {
-        fileSize: config.s3.fileSizeLimitInBytes || Number.POSITIVE_INFINITY,
+        fileSize: config.s3.fileSizeLimitInBytes || Infinity,
       },
       async onFile(part) {
         // @ts-expect-error: data value and data is missing in MultipartFile type
@@ -34,7 +34,7 @@ const plugin = async (fastify: FastifyInstance) => {
 
   if (config.graphql?.enabled) {
     await fastify.register(graphqlGQLUpload, {
-      maxFileSize: config.s3.fileSizeLimitInBytes || Number.POSITIVE_INFINITY,
+      maxFileSize: config.s3.fileSizeLimitInBytes || Infinity,
     });
   }
 };

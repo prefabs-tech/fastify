@@ -34,12 +34,12 @@
     "stacktracey": "2.2.0"
   },
   "devDependencies": {
-    "@prefabs.tech/eslint-config": "0.8.0",
+    "@prefabs.tech/eslint-config": "git+https://github.com/prefabs-tech/tools.git#chore/disable-unicorn-rules&path:packages/eslint-config",
     "@prefabs.tech/tsconfig": "0.8.0",
     "@types/node": "24.10.15",
     "@types/stack-trace": "0.0.33",
     "@vitest/coverage-istanbul": "3.2.4",
-    "eslint": "9.39.4",
+    "eslint": "10.6.0",
     "fastify": "5.8.5",
     "fastify-plugin": "5.1.0",
     "prettier": "3.8.3",

@@ -235,7 +235,7 @@ describe("s3 plugin — GraphQL upload registration", async () => {
 
     expect(graphqlUploadMock).toHaveBeenCalledWith(
       expect.anything(),
-      expect.objectContaining({ maxFileSize: Number.POSITIVE_INFINITY }),
+      expect.objectContaining({ maxFileSize: Infinity }),
       expect.any(Function),
     );
   });

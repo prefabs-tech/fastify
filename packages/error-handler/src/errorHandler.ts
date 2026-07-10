@@ -10,7 +10,7 @@ import { CustomError } from "./utils/error";
 const getHttpStatusText = (statusCode: number): string =>
   STATUS_CODES[statusCode] ?? "Internal Server Error";
 
-function trySendDomainMappedError(
+function canSendDomainMappedError(
   error: Error,
   domainErrorStatusMap: ReadonlyMap<string, number> | undefined,
   reply: FastifyReply,
@@ -95,7 +95,7 @@ export const errorHandler = (
   }
 
   if (
-    trySendDomainMappedError(
+    canSendDomainMappedError(
       error,
       options.domainErrorStatusMap,
       reply,

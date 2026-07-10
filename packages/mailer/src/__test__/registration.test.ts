@@ -106,12 +106,12 @@ describe("mailerPlugin — registration", async () => {
 
   it("exposes fastify.mailer inside nested plugin registrations without re-registering", async () => {
     await fastify.register(plugin, createMailerConfig());
-    let nestedHasMailer = false;
+    let isNestedHasMailer = false;
     await fastify.register(async (instance) => {
-      nestedHasMailer = typeof instance.mailer?.sendMail === "function";
+      isNestedHasMailer = typeof instance.mailer?.sendMail === "function";
     });
     await fastify.ready();
-    expect(nestedHasMailer).toBe(true);
+    expect(isNestedHasMailer).toBe(true);
   });
 });
 

@@ -29,7 +29,8 @@ const adminSignUp = async (request: FastifyRequest, reply: FastifyReply) => {
     superAdminUsers.status === "UNKNOWN_ROLE_ERROR"
   ) {
     throw server.httpErrors.unprocessableEntity(adminUsers.status);
-  } else if (
+  }
+  if (
     (adminUsers.status === "OK" && adminUsers.users.length > 0) ||
     (superAdminUsers.status === "OK" && superAdminUsers.users.length > 0)
   ) {

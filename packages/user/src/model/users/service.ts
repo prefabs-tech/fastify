@@ -104,27 +104,23 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
             return {
               status: "OK",
             };
-          } else {
-            throw new CustomError(
-              "Failed to change password",
-              ERROR_CODES.CHANGE_PASSWORD,
-            );
           }
-        } else {
-          return {
-            message: "Invalid password",
-            status: "INVALID_PASSWORD",
-          };
+          throw new CustomError(
+            "Failed to change password",
+            ERROR_CODES.CHANGE_PASSWORD,
+          );
         }
-      } else {
-        throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
+        return {
+          message: "Invalid password",
+          status: "INVALID_PASSWORD",
+        };
       }
-    } else {
-      return {
-        message: "Password cannot be empty",
-        status: "FIELD_ERROR",
-      };
+      throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
     }
+    return {
+      message: "Password cannot be empty",
+      status: "FIELD_ERROR",
+    };
   }
 
   async deleteFile(fileId: number): Promise<File | null | undefined> {
@@ -162,9 +158,8 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
 
     if (signInResponse.status === "OK") {
       return await this.delete(userId);
-    } else {
-      throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
     }
+    throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
   }
 
   async uploadPhoto(

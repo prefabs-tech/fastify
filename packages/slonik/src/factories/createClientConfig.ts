@@ -7,11 +7,11 @@ import fieldNameCaseConverter from "../interceptors/fieldNameCaseConverter";
 import resultParser from "../interceptors/resultParser";
 import { createBigintTypeParser } from "../typeParsers/createBigintTypeParser";
 
-const createClientConfiguration = (
+const createClientConfig = (
   config?: ClientConfigurationInput,
   queryLoggingEnabled?: boolean,
 ): ClientConfigurationInput => {
-  const configuration = {
+  const config_ = {
     captureStackTrace: false,
     connectionRetryLimit: 3,
     connectionTimeout: 5000,
@@ -28,7 +28,7 @@ const createClientConfiguration = (
   };
 
   return {
-    ...configuration,
+    ...config_,
     interceptors: [
       fieldNameCaseConverter,
       resultParser,
@@ -38,4 +38,4 @@ const createClientConfiguration = (
   };
 };
 
-export default createClientConfiguration;
+export default createClientConfig;

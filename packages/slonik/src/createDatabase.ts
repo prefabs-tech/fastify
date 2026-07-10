@@ -4,15 +4,15 @@ import { createPool } from "slonik";
 
 import type { Database } from "./types";
 
-import createClientConfiguration from "./factories/createClientConfiguration";
+import createClientConfig from "./factories/createClientConfig";
 
 const createDatabase = async (
   connectionString: string,
-  clientConfiguration?: Partial<ClientConfiguration>,
+  clientConfig?: Partial<ClientConfiguration>,
 ): Promise<Database> => {
   const pool: DatabasePool = await createPool(
     connectionString,
-    createClientConfiguration(clientConfiguration),
+    createClientConfig(clientConfig),
   );
 
   const database: Database = {

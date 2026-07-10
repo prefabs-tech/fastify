@@ -1,6 +1,7 @@
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { File, FileService, Multipart } from "@prefabs.tech/fastify-s3";
 import { BaseService } from "@prefabs.tech/fastify-slonik";
+import humps from "humps";
 import Session from "supertokens-node/recipe/session";
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
@@ -165,6 +166,34 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     } else {
       throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
     }
+  }
+
+  async updateProfile(userId: string, data: User["profile"]) {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    const filteredData: Partial<User["profile"]> = {};
+
+    for (const key of Object.keys(data ?? {})) {
+      filteredData[key as keyof User["profile"]] =
+        data![key as keyof User["profile"]];
+    }
+
+    const updatedProfile = {
+      ...(humps.decamelizeKeys(user.profile) as Record<string, unknown>),
+      ...(humps.decamelizeKeys(filteredData) as Record<string, unknown>),
+    };
+
+    const updatedUser = await this.update(userId, {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      profile: JSON.stringify(updatedProfile),
+    });
+
+    return updatedUser;
   }
 
   async uploadPhoto(

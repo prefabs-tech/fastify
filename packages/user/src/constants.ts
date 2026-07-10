@@ -27,6 +27,7 @@ const ROUTE_USERS_ENABLE = "/users/:id/enable";
 const TABLE_USERS = "users";
 
 // User profile fields
+const ROUTE_USER_PROFILE = "/users/profile";
 const ROUTE_USER_PROFILE_FIELDS = "/profile/fields";
 const TABLE_USER_PROFILE_FIELD_OPTIONS = "user_profile_field_options";
 const TABLE_USER_PROFILE_FIELD_OPTIONS_I18N = "user_profile_field_options_i18n";
@@ -136,6 +137,7 @@ export {
   ROUTE_ROLES,
   ROUTE_ROLES_PERMISSIONS,
   ROUTE_SIGNUP_ADMIN,
+  ROUTE_USER_PROFILE,
   ROUTE_USER_PROFILE_FIELDS,
   ROUTE_USERS,
   ROUTE_USERS_DISABLE,

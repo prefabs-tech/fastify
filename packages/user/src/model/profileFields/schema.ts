@@ -1,3 +1,5 @@
+import { userSchema } from "../users/schema";
+
 const profileFieldI18nSchema = {
   properties: {
     createdAt: { type: "integer" },
@@ -75,6 +77,30 @@ export const getProfileFieldsListSchema = {
     403: {
       $ref: "ErrorResponse#",
       description: "Forbidden",
+    },
+    500: {
+      $ref: "ErrorResponse#",
+    },
+  },
+  tags: ["profileFields"],
+};
+
+export const updateUserProfileSchema = {
+  body: {
+    additionalProperties: true,
+    type: "object",
+  },
+  description: "Update current user's profile fields",
+  operationId: "updateUserProfile",
+  response: {
+    200: userSchema,
+    400: {
+      $ref: "ErrorResponse#",
+      description: "Bad Request",
+    },
+    401: {
+      $ref: "ErrorResponse#",
+      description: "Unauthorized",
     },
     500: {
       $ref: "ErrorResponse#",

@@ -1,8 +1,8 @@
 import { FastifyInstance } from "fastify";
 
-import { ROUTE_USER_PROFILE_FIELDS } from "../../constants";
+import { ROUTE_USER_PROFILE, ROUTE_USER_PROFILE_FIELDS } from "../../constants";
 import handlers from "./handlers";
-import { getProfileFieldsListSchema } from "./schema";
+import { getProfileFieldsListSchema, updateUserProfileSchema } from "./schema";
 
 const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
@@ -12,6 +12,15 @@ const plugin = async (fastify: FastifyInstance) => {
       schema: getProfileFieldsListSchema,
     },
     handlers.getProfileFields,
+  );
+
+  fastify.patch(
+    ROUTE_USER_PROFILE,
+    {
+      preHandler: [fastify.verifySession()],
+      schema: updateUserProfileSchema,
+    },
+    handlers.updateUserProfile,
   );
 };
 

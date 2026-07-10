@@ -16,6 +16,7 @@ interface User {
   lastLoginAt: number;
   photo?: Photo;
   photoId?: null | number;
+  profile?: { [key: string]: boolean | null | number | string };
   roles?: string[];
   signedUpAt: number;
 }

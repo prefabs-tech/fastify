@@ -1,5 +1,7 @@
 import type { FastifyRequest } from "fastify";
 
+import ProfileFieldService from "src/model/profileFields/service";
+
 import type { SupertokensConfig } from "../supertokens";
 import type { Invitation } from "./invitation";
 import type { IsEmailOptions } from "./isEmailOptions";
@@ -25,6 +27,10 @@ interface UserConfig {
     resetPasswordNotification?: EmailOptions;
   };
   features?: {
+    profileFields?: {
+      enabled?: boolean;
+      seedDummyData?: boolean;
+    };
     profileValidation?: {
       /**
        * @default false
@@ -100,6 +106,9 @@ interface UserConfig {
     permissions?: {
       disabled: boolean;
     };
+    profileFields?: {
+      disabled: boolean;
+    };
     roles?: {
       disabled: boolean;
     };
@@ -113,10 +122,23 @@ interface UserConfig {
   services?: {
     invitation?: typeof InvitationService;
     user?: typeof UserService;
+    userProfileField?: typeof ProfileFieldService;
   };
   supertokens: SupertokensConfig;
   tables?: {
     invitations?: {
+      name?: string;
+    };
+    userProfileFieldOptions?: {
+      name?: string;
+    };
+    userProfileFieldOptionsI18n?: {
+      name?: string;
+    };
+    userProfileFields?: {
+      name?: string;
+    };
+    userProfileFieldsI18n?: {
       name?: string;
     };
     users?: {

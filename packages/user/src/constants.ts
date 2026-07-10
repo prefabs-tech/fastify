@@ -32,6 +32,20 @@ const TABLE_USER_PROFILE_FIELD_OPTIONS = "user_profile_field_options";
 const TABLE_USER_PROFILE_FIELD_OPTIONS_I18N = "user_profile_field_options_i18n";
 const TABLE_USER_PROFILE_FIELDS = "user_profile_fields";
 const TABLE_USER_PROFILE_FIELDS_I18N = "user_profile_fields_i18n";
+const USER_PROFILE_FIELD_TYPES = {
+  DATE: 1,
+  EMAIL: 2,
+  LOCATION: 3,
+  MIN_MAX_INPUT: 12,
+  MULTI_IMAGE_UPLOAD: 9,
+  MULTI_SELECT: 4,
+  MULTI_SELECT_BADGE: 5,
+  NAME: 6,
+  SINGLE_SELECT: 7,
+  TEXT: 8,
+  TEXT_AREA: 10,
+  URL: 11,
+};
 
 // Roles
 const ROUTE_ROLES = "/roles";
@@ -134,4 +148,5 @@ export {
   TABLE_USER_PROFILE_FIELDS,
   TABLE_USER_PROFILE_FIELDS_I18N,
   TABLE_USERS,
+  USER_PROFILE_FIELD_TYPES,
 };

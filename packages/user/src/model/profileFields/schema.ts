@@ -31,6 +31,7 @@ const profileFieldSchema = {
       type: "array",
     },
     required: { type: "boolean" },
+    sortOrder: { type: "integer" },
     type: { type: "integer" },
     updatedAt: { type: "integer" },
   },

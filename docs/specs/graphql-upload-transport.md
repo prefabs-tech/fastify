@@ -1,7 +1,7 @@
 # Spec: Move GraphQL upload transport from `fastify-s3` to `fastify-graphql`
 
-Status: draft, pending decisions in §8. Companion to the plugin-options migration
-(step 1 already implemented in `packages/s3`, uncommitted).
+Status: implemented on branch `refact/config` (2026-07-11); decisions resolved
+in §8. Companion to the plugin-options migration (step 1, same branch).
 
 ## 1. Problem statement
 

@@ -5,11 +5,13 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Mocks (hoisted so vi.mock factories can reference them) ──────────────────
 
-const { runMigrationsMock } = vi.hoisted(() => ({
+const { graphqlUploadMock, runMigrationsMock } = vi.hoisted(() => ({
+  graphqlUploadMock: vi.fn(async () => {}),
   runMigrationsMock: vi.fn().mockResolvedValue(),
 }));
 
 vi.mock("../migrations/runMigrations", () => ({ default: runMigrationsMock }));
+vi.mock("../plugins/graphqlUpload", () => ({ default: graphqlUploadMock }));
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -143,6 +145,23 @@ describe("s3 plugin — options passed directly (new pattern)", async () => {
     expect(fastify.hasContentTypeParser("multipart/form-data")).toBe(false);
   });
 
+  it("registers the graphql upload plugin from options.graphql with maxFileSize from options", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+      fileSizeLimitInBytes: 1_000_000,
+      graphql: { enabled: true },
+    });
+    await fastify.ready();
+
+    expect(graphqlUploadMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ maxFileSize: 1_000_000 }),
+      expect.any(Function),
+    );
+  });
+
   it("passes the options object to runMigrations", async () => {
     fastify = buildBareFastify();
     await fastify.register(plugin, {
@@ -256,5 +275,76 @@ describe("s3 plugin — REST multipart registration", async () => {
         mimetype: "application/octet-stream",
       },
     });
+  });
+});
+
+describe("s3 plugin — GraphQL upload registration", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+
+  beforeEach(() => vi.clearAllMocks());
+  afterEach(async () => fastify.close());
+
+  it("registers the graphql upload plugin when config.graphql.enabled is true", async () => {
+    fastify = buildFastify({
+      graphql: { enabled: true },
+      rest: { enabled: false },
+    });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(graphqlUploadMock).toHaveBeenCalledOnce();
+  });
+
+  it("does not register the graphql upload plugin when config.graphql is undefined", async () => {
+    fastify = buildFastify({ graphql: undefined, rest: { enabled: false } });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(graphqlUploadMock).not.toHaveBeenCalled();
+  });
+
+  it("does not register the graphql upload plugin when config.graphql.enabled is false", async () => {
+    fastify = buildFastify({
+      graphql: { enabled: false },
+      rest: { enabled: false },
+    });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(graphqlUploadMock).not.toHaveBeenCalled();
+  });
+
+  it("passes fileSizeLimitInBytes as maxFileSize to the graphql upload plugin", async () => {
+    fastify = buildFastify({
+      graphql: { enabled: true },
+      rest: { enabled: false },
+      s3: { fileSizeLimitInBytes: 5_000_000 },
+    });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(graphqlUploadMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ maxFileSize: 5_000_000 }),
+      expect.any(Function),
+    );
+  });
+
+  it("passes Infinity as maxFileSize when fileSizeLimitInBytes is not set", async () => {
+    fastify = buildFastify({
+      graphql: { enabled: true },
+      rest: { enabled: false },
+      s3: { bucket: "test-bucket", clientConfig: {} },
+    });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(graphqlUploadMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ maxFileSize: Number.POSITIVE_INFINITY }),
+      expect.any(Function),
+    );
   });
 });

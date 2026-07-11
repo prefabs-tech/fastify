@@ -1,8 +1,11 @@
 import type { ListObjectsOutput } from "@aws-sdk/client-s3";
+import type { FastifyRequest } from "fastify";
 
+import Busboy, { FileInfo } from "busboy";
+import { IncomingMessage } from "node:http";
 import { Readable } from "node:stream";
 
-import type { BucketChoice } from "../types";
+import type { BucketChoice, Multipart } from "../types";
 
 import { BUCKET_FROM_FILE_FIELDS, BUCKET_FROM_OPTIONS } from "../constants";
 
@@ -87,10 +90,69 @@ const getFilenameWithSuffix = (
   return `${baseFilename}-${nextNumber}.${fileExtension}`;
 };
 
+const processMultipartFormData = (
+  req: FastifyRequest,
+  _payload: IncomingMessage,
+  done: (err: Error | null, body?: unknown) => void,
+) => {
+  const busboyParser = Busboy({
+    headers: req.headers,
+  });
+
+  const fields: Record<string, string> = {};
+  const files: Record<string, Multipart[]> = {};
+
+  busboyParser.on("field", (fieldName, value) => {
+    fields[fieldName] = value;
+  });
+
+  busboyParser.on(
+    "file",
+    (fieldName: string, file: Readable, fileInfo: FileInfo) => {
+      const chunks: Buffer[] = [];
+
+      file.on("data", (chunk: Buffer) => {
+        chunks.push(chunk);
+      });
+
+      file.on("end", () => {
+        const fileBuffer = Buffer.concat(chunks);
+
+        if (!files[fieldName]) {
+          files[fieldName] = [];
+        }
+
+        files[fieldName].push({
+          ...fileInfo,
+          data: fileBuffer,
+          mimetype: fileInfo.mimeType,
+        });
+      });
+    },
+  );
+
+  busboyParser.on("finish", () => {
+    req.body = {
+      ...fields,
+      ...files,
+    };
+
+    // eslint-disable-next-line unicorn/no-null
+    done(null, req.body);
+  });
+
+  busboyParser.on("error", (err) => {
+    console.log(err);
+  });
+
+  _payload.pipe(busboyParser);
+};
+
 export {
   convertStreamToBuffer,
   getBaseName,
   getFileExtension,
   getFilenameWithSuffix,
   getPreferredBucket,
+  processMultipartFormData,
 };

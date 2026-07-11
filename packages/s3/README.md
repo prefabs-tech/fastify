@@ -8,7 +8,7 @@ Handling file uploads in a full-stack context requires substantially more effort
 
 - **Automate the Full Upload Lifecycle**: From intercepting `multipart/form-data` chunks (via internal parsers), writing to S3, and saving strict structured metadata natively into our `@prefabs.tech/fastify-slonik` powered databases—this plugin handles the entire flow.
 - **Standardize Duplication Strategies**: It provides out-of-the-box mechanisms (`error`, `add-suffix`, `override`) to elegantly handle duplicate filenames with zero effort.
-- **Bridge REST & GraphQL**: File uploads work over REST (via `@fastify/multipart` and the `ajvFilePlugin` Swagger helper) and over GraphQL (via the upload transport that [@prefabs.tech/fastify-graphql](../graphql/) registers when enabled) — with a single `FileService` consuming either.
+- **Bridge REST & GraphQL**: The plugin provides specialized parsers (`ajvFilePlugin` and `multipartParserPlugin`) ensuring that file uploads are supported natively and documented correctly via Swagger (for REST APIs) and GraphQL simultaneously.
 
 ### Design Decisions: Why not @aws-sdk/client-s3 and @fastify/multipart directly?
 
@@ -113,7 +113,7 @@ const start = async () => {
   // Register database plugin (required by fastify-s3)
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register fastify-s3 plugin (see below for GraphQL uploads)
+  // Register fastify-s3 plugin (see below for multipartParserPlugin when using GraphQL uploads)
   await fastify.register(s3Plugin, {
     bucket: "my-app-uploads",
     clientConfig: {
@@ -136,8 +136,6 @@ Registering the plugin without options is deprecated — see [Deprecated: config
 ## Configuration
 
 The plugin is configured with an `S3Options` object passed directly to `register()`.
-
-The `rest.enabled` flag only controls *incoming HTTP upload parsing* (it registers `@fastify/multipart`); GraphQL uploads are configured on the graphql plugin (`uploads` option). The flag may be off entirely: the plugin still runs migrations and provides a fully functional `FileService`/`S3Client` — e.g. for presigned-URL flows (clients upload directly to S3), server-generated files, or download-only services.
 
 To initialize Client:
 
@@ -230,11 +228,11 @@ To handle duplicate filenames:
 
 This package supports integration with [@prefabs.tech/fastify-graphql](../graphql/).
 
-GraphQL file uploads are handled entirely by the graphql plugin: when it is enabled it registers the upload transport (content-type parser + `graphql-upload-minimal` processing) before mercurius. Nothing upload-specific needs to be registered from this package:
+Register additional `multipartParserPlugin` plugin with the fastify instance as shown below:
 
 ```typescript
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";
-import s3Plugin from "@prefabs.tech/fastify-s3";
+import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
@@ -249,22 +247,21 @@ const start = async () => {
   // Register database plugin
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register graphql plugin (registers the upload transport by default;
-  // configure it with the `uploads` option)
-  await fastify.register(graphqlPlugin, {
-    ...config.graphql,
-    uploads: { maxFileSize: 10485760 },
+  // Register multipart content-type parser plugin (required for graphql file upload or if using both graphql and rest file upload)
+  await fastify.register(multipartParserPlugin, {
+    graphql: { enabled: true, path: "/graphql" },
   });
 
-  // Register fastify-s3 plugin AFTER the graphql plugin (required in mixed
-  // REST + GraphQL mode: the @fastify/multipart parser registered by
-  // rest.enabled must not leak into the graphql route's context)
+  // Register graphql plugin
+  await fastify.register(graphqlPlugin, config.graphql);
+
+  // Register fastify-s3 plugin
   await fastify.register(s3Plugin, {
     bucket: "my-app-uploads",
     clientConfig: {
       region: "ap-southeast-1",
     },
-    rest: { enabled: true },
+    graphql: { enabled: true },
   });
 
   await fastify.listen({
@@ -276,7 +273,7 @@ const start = async () => {
 start();
 ```
 
-**Note**: In mixed REST + GraphQL mode, always register the s3 plugin after the graphql plugin.
+**Note**: Register the `multipartParserPlugin` if you're using GraphQL or both GraphQL and REST, as it's required. Make sure to place the registration of the `multipartParserPlugin` above the `graphqlPlugin`.
 
 ## JSON Schema with Swagger
 
@@ -284,7 +281,10 @@ If you want to use @prefabs.tech/fastify-s3 with @fastify/swagger and @fastify/s
 
 ```typescript
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";
-import s3Plugin, { ajvFilePlugin } from "@prefabs.tech/fastify-s3";
+import s3Plugin, {
+  ajvFilePlugin,
+  multipartParserPlugin,
+} from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
@@ -303,15 +303,21 @@ const start = async () => {
   // Register database plugin
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register graphql plugin (upload transport included by default)
+  // Register multipart content-type parser plugin (required for graphql file upload or if using both graphql and rest file upload)
+  await fastify.register(multipartParserPlugin, {
+    graphql: { enabled: true, path: "/graphql" },
+  });
+
+  // Register graphql plugin
   await fastify.register(graphqlPlugin, config.graphql);
 
-  // Register fastify-s3 plugin (after the graphql plugin)
+  // Register fastify-s3 plugin
   await fastify.register(s3Plugin, {
     bucket: "my-app-uploads",
     clientConfig: {
       region: "ap-southeast-1",
     },
+    graphql: { enabled: true },
     rest: { enabled: true },
   });
 
@@ -343,27 +349,27 @@ start();
 
 ## Deprecated: configuration via `fastify.config`
 
-Earlier versions of this plugin did not take options: they read their configuration from the fastify instance (`fastify.config`, decorated by [@prefabs.tech/fastify-config](../config/)) — the S3 settings from `config.s3`, and the REST feature flag from the application-wide `config.rest` namespace. GraphQL upload support also used to live in this package (`multipartParserPlugin` + an internal upload hook); it has moved to [@prefabs.tech/fastify-graphql](../graphql/).
+Earlier versions of this plugin did not take options: they read their configuration from the fastify instance (`fastify.config`, decorated by [@prefabs.tech/fastify-config](../config/)) — the S3 settings from `config.s3`, and the REST/GraphQL feature flags from the application-wide `config.rest` and `config.graphql` namespaces.
 
 This approach is **deprecated**. The plugin no longer depends on `fastify.config` for its configuration; everything is passed through its own `S3Options` argument as documented above.
 
 For backward compatibility, the old behavior is temporarily still supported:
 
-- **Main plugin** — registering without options composes them from `fastify.config.s3` and `fastify.config.rest`, and logs a deprecation warning. If `fastify.config.s3` is missing too, registration throws.
-- **`multipartParserPlugin`** — still exported, but as a thin wrapper around the upload transport from `@prefabs.tech/fastify-graphql`. It logs a deprecation warning and no-ops when the transport is already registered (which the graphql plugin does by default). Prefer the graphql plugin's `uploads` option.
-- **`GraphQLUpload` / `GraphQLFileUpload` types** — still re-exported, deprecated; import them from `@prefabs.tech/fastify-graphql` instead.
+- **Main plugin** — registering without options composes them from `fastify.config.s3`, `fastify.config.rest` and `fastify.config.graphql`, and logs a deprecation warning. If `fastify.config.s3` is missing too, registration throws.
+- **`multipartParserPlugin`** — registering without options reads `req.config.graphql` per request, and logs a deprecation warning.
 - **`createFilesTableQuery`** — still accepts a full `ApiConfig` (reading `config.s3.table.name`) in addition to the new `S3Options` shape.
 
-These fallbacks will be removed in a future major release. To migrate, pass the configuration you previously kept under `config.s3` (plus the `rest` flag) directly to `register()`:
+This fallback will be removed in a future major release. To migrate, pass the configuration you previously kept under `config.s3` (plus the `rest`/`graphql` flags) directly to `register()`:
 
 ```typescript
 // Before (deprecated)
-await fastify.register(configPlugin, { config }); // config.s3, config.rest
+await fastify.register(configPlugin, { config }); // config.s3, config.rest, config.graphql
 await fastify.register(s3Plugin);
 
 // After
 await fastify.register(s3Plugin, {
   ...config.s3,
+  graphql: config.graphql,
   rest: config.rest,
 });
 ```

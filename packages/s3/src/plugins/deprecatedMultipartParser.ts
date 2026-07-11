@@ -13,7 +13,7 @@ type MultipartParserOptions = GraphqlUploadsConfig & {
 
 // Deprecated compat wrapper: the upload transport now lives in
 // @prefabs.tech/fastify-graphql and is registered by the graphql plugin
-// (uploads option). Removed in the next major.
+// (uploads option). Removed in a future release.
 const plugin = async (
   fastify: FastifyInstance,
   options: MultipartParserOptions,

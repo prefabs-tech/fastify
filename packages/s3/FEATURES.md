@@ -27,7 +27,7 @@
 
 7. **`ajvFilePlugin`** — AJV keyword plugin that registers the `isFile` custom keyword. Schemas using `isFile: true` validate that the value is a multipart file object (`{ data, filename, mimetype }`). For array schemas it validates every element. During compile the keyword also rewrites the parent schema (`type: "string"`, `format: "binary"`) so OpenAPI tooling renders a proper file-upload schema.
 
-8. **`multipartParserPlugin` (deprecated compat wrapper)** — Thin wrapper around the upload transport from `@prefabs.tech/fastify-graphql`: logs a deprecation warning, defaults the graphql path from `fastify.config.graphql.path` when present, and no-ops if the transport is already registered (`hasPlugin` check). Removed in the next major; use the graphql plugin's `uploads` option instead.
+8. **`multipartParserPlugin` (deprecated compat wrapper)** — Thin wrapper around the upload transport from `@prefabs.tech/fastify-graphql`: logs a deprecation warning, defaults the graphql path from `fastify.config.graphql.path` when present, and no-ops if the transport is already registered (`hasPlugin` check). Removed in a future release; use the graphql plugin's `uploads` option instead.
 
 ## `S3Client` Utility Class
 
@@ -110,6 +110,6 @@
 
 39. **`FileCreateInput`** / **`FileUpdateInput`** — Input types for creating and updating file records.
 
-40. **`GraphQLFileUpload`** / **`GraphQLUpload`** — Deprecated re-exports from `@prefabs.tech/fastify-graphql`; import them from there instead. Removed in the next major.
+40. **`GraphQLFileUpload`** / **`GraphQLUpload`** — Deprecated re-exports from `@prefabs.tech/fastify-graphql`; import them from there instead. Removed in a future release.
 
 41. **`S3ClientConfig`** — Re-exported from `@aws-sdk/client-s3` for consumers constructing raw S3 client configurations.

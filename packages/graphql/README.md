@@ -231,7 +231,7 @@ type Query {
 
 Earlier versions of this plugin could be registered without options: it then read its configuration from the fastify instance (`fastify.config.graphql`, decorated by [@prefabs.tech/fastify-config](../config/)).
 
-This approach is **deprecated**. For backward compatibility it is temporarily still supported: registering without options falls back to `fastify.config.graphql` and logs a deprecation warning; if `fastify.config.graphql` is missing too, registration throws. The fallback will be removed in a future major release.
+This approach is **deprecated**. For backward compatibility it is temporarily still supported: registering without options falls back to `fastify.config.graphql` and logs a deprecation warning; if `fastify.config.graphql` is missing too, registration throws. The fallback will be removed in a future release.
 
 To migrate, pass the configuration you previously kept under `config.graphql` directly to `register()`:
 

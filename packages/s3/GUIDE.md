@@ -100,7 +100,7 @@ await fastify.listen({ port: 3000 });
 
 > **Deprecated**: registering the plugin without options makes it read its
 > configuration from `fastify.config` (`config.s3`, `config.rest`) and logs a
-> deprecation warning. This fallback will be removed in a future major
+> deprecation warning. This fallback will be removed in a future
 > release.
 
 ---
@@ -170,7 +170,7 @@ await fastify.register(s3Plugin, {
 // Runs DB migration, registers multipart (if rest.enabled).
 ```
 
-Registering without options falls back to reading `fastify.config.s3` and `fastify.config.rest` (deprecated — logs a warning; the fallback will be removed in a future major release). If neither options nor `fastify.config.s3` are present, registration throws. Registration also throws if `fastify.slonik` is not decorated — the slonik plugin must be registered before the s3 plugin.
+Registering without options falls back to reading `fastify.config.s3` and `fastify.config.rest` (deprecated — logs a warning; the fallback will be removed in a future release). If neither options nor `fastify.config.s3` are present, registration throws. Registration also throws if `fastify.slonik` is not decorated — the slonik plugin must be registered before the s3 plugin.
 
 `rest.enabled` only controls incoming REST upload parsing. It may be off entirely: the plugin still runs migrations and provides a fully functional `FileService`/`S3Client` (presigned-URL flows, server-generated files, download-only services). GraphQL uploads are configured on the graphql plugin (`uploads` option) — see Feature 4.
 
@@ -295,7 +295,7 @@ At runtime, `isFile: true` validates that the value has `data`, `filename`, and 
 
 ### 8 — `multipartParserPlugin` — deprecated compat wrapper
 
-Still exported for backward compatibility, but deprecated: it is now a thin wrapper that registers the upload transport from `@prefabs.tech/fastify-graphql` (defaulting the graphql path from `fastify.config.graphql.path` when present), logs a deprecation warning, and no-ops when the transport is already registered — which the graphql plugin does by default. Prefer the graphql plugin's `uploads` option. Removed in the next major.
+Still exported for backward compatibility, but deprecated: it is now a thin wrapper that registers the upload transport from `@prefabs.tech/fastify-graphql` (defaulting the graphql path from `fastify.config.graphql.path` when present), logs a deprecation warning, and no-ops when the transport is already registered — which the graphql plugin does by default. Prefer the graphql plugin's `uploads` option. Removed in a future release.
 
 ### 9 — `S3Client` class
 
@@ -554,7 +554,7 @@ const query = createFilesTableQuery({ table: { name: "files" } });
 await database.connect(async (conn) => conn.query(query));
 ```
 
-Accepts an `S3Options` object; passing a full `ApiConfig` (reading the table name from `config.s3.table.name`) is still supported but deprecated and will be removed in a future major release.
+Accepts an `S3Options` object; passing a full `ApiConfig` (reading the table name from `config.s3.table.name`) is still supported but deprecated and will be removed in a future release.
 
 ### 30 — `ERROR_CODES.FILE_NOT_FOUND`
 

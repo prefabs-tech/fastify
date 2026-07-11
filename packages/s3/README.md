@@ -368,7 +368,7 @@ For backward compatibility, the old behavior is temporarily still supported:
 - **`GraphQLUpload` / `GraphQLFileUpload` types** — still re-exported, deprecated; import them from `@prefabs.tech/fastify-graphql` instead.
 - **`createFilesTableQuery`** — still accepts a full `ApiConfig` (reading `config.s3.table.name`) in addition to the new `S3Options` shape.
 
-These fallbacks will be removed in a future major release. To migrate, pass the configuration you previously kept under `config.s3` (plus the `rest` flag) directly to `register()`:
+These fallbacks will be removed in a future release. To migrate, pass the configuration you previously kept under `config.s3` (plus the `rest` flag) directly to `register()`:
 
 ```typescript
 // Before (deprecated)

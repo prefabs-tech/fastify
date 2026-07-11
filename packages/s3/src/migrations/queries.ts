@@ -8,7 +8,7 @@ import type { S3Options } from "../types";
 import { TABLE_FILES } from "../constants";
 
 // Accepts S3Options (new pattern) or a full ApiConfig (deprecated) during the
-// migration window; the ApiConfig overload will be removed in a future major.
+// migration window; the ApiConfig overload will be removed in a future release.
 const createFilesTableQuery = (
   config: ApiConfig | Partial<S3Options>,
 ): QuerySqlToken<ZodTypeAny> => {

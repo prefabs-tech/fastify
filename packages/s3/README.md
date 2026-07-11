@@ -90,9 +90,10 @@ When using AWS S3, you are required to enable the following permissions:
 
 ### Register plugin
 
-Register the fastify-s3 package with your Fastify instance, passing its options directly. The plugin requires the slonik plugin to be registered first (it stores file metadata in the database); everything else is configured through the plugin's own `S3Options` argument:
+Register the fastify-s3 package with your Fastify instance, passing its options directly. The recommended pattern is still a central app config (`ApiConfig`) with an `s3` block — you derive the plugin options from it and pass them explicitly; the plugin no longer reads them from the fastify instance. The slonik plugin must be registered first (file metadata is stored in the database):
 
 ```typescript
+import configPlugin from "@prefabs.tech/fastify-config";
 import errorHandlerPlugin from "@prefabs.tech/fastify-error-handler";
 import s3Plugin from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
@@ -106,6 +107,10 @@ const start = async () => {
     logger: config.logger,
   });
 
+  // Register config plugin (decorates the app with the global config,
+  // used by FileService consumers via request.config)
+  await fastify.register(configPlugin, { config });
+
   await fastify.register(errorHandlerPlugin, {
     stackTrace: process.env.NODE_ENV === "development",
   });
@@ -113,13 +118,11 @@ const start = async () => {
   // Register database plugin (required by fastify-s3)
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register fastify-s3 plugin (see below for GraphQL uploads)
+  // Register fastify-s3 plugin, passing its config slice explicitly
+  // (see below for GraphQL uploads)
   await fastify.register(s3Plugin, {
-    bucket: "my-app-uploads",
-    clientConfig: {
-      region: "ap-southeast-1",
-    },
-    rest: { enabled: true },
+    ...config.s3,
+    rest: config.rest,
   });
 
   await fastify.listen({
@@ -135,7 +138,7 @@ Registering the plugin without options is deprecated — see [Deprecated: config
 
 ## Configuration
 
-The plugin is configured with an `S3Options` object passed directly to `register()`.
+The plugin is configured with an `S3Options` object passed directly to `register()` — typically derived from your central `ApiConfig`: the `s3` block plus the app-wide `rest` flag (`{ ...config.s3, rest: config.rest }`). The plugin itself makes no assumption that a global config exists; deriving its options from one is an app-level choice.
 
 The `rest.enabled` flag only controls *incoming HTTP upload parsing* (it registers `@fastify/multipart`); GraphQL uploads are configured on the graphql plugin (`uploads` option). The flag may be off entirely: the plugin still runs migrations and provides a fully functional `FileService`/`S3Client` — e.g. for presigned-URL flows (clients upload directly to S3), server-generated files, or download-only services.
 
@@ -144,21 +147,26 @@ To initialize Client:
 AWS S3 Config
 
 ```typescript
-import type { S3Options } from "@prefabs.tech/fastify-s3";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-const s3Options: S3Options = {
-  bucket: "" | { key: "value" }, // Specify your S3 bucket
-  //... AWS S3 client config
-  clientConfig: {
-    credentials: {
-      accessKeyId: "accessKey", // Replace with your AWS access key
-      secretAccessKey: "secretKey", // Replace with your AWS secret key
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    bucket: "" | { key: "value" }, // Specify your S3 bucket
+    //... AWS S3 client config
+    clientConfig: {
+      credentials: {
+        accessKeyId: "accessKey", // Replace with your AWS access key
+        secretAccessKey: "secretKey", // Replace with your AWS secret key
+      },
+      region: "ap-southeast-1", // Replace with your AWS region
     },
-    region: "ap-southeast-1", // Replace with your AWS region
   },
 };
 
-await fastify.register(s3Plugin, s3Options);
+// at registration, pass the slice explicitly
+await fastify.register(s3Plugin, { ...config.s3, rest: config.rest });
 ```
 
 > **Credentials on EC2 (IAM Role)**
@@ -175,16 +183,20 @@ await fastify.register(s3Plugin, s3Options);
 Minio Service Config
 
 ```typescript
-const s3Options: S3Options = {
-  bucket: "yourMinioBucketName",
-  clientConfig: {
-    credentials: {
-      accessKeyId: "yourMinioAccessKey",
-      secretAccessKey: "yourMinioSecretKey",
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    bucket: "yourMinioBucketName",
+    clientConfig: {
+      credentials: {
+        accessKeyId: "yourMinioAccessKey",
+        secretAccessKey: "yourMinioSecretKey",
+      },
+      endpoint: "http://your-minio-server-url:port", // Replace with your Minio server URL
+      forcePathStyle: true, // Set to true if your Minio server uses path-style URLs
+      region: "", // For Minio, you can leave the region empty or specify it based on your setup
     },
-    endpoint: "http://your-minio-server-url:port", // Replace with your Minio server URL
-    forcePathStyle: true, // Set to true if your Minio server uses path-style URLs
-    region: "", // For Minio, you can leave the region empty or specify it based on your setup
   },
 };
 ```
@@ -192,10 +204,14 @@ const s3Options: S3Options = {
 To add a custom table name:
 
 ```typescript
-const s3Options: S3Options = {
-  //... AWS S3 client config
-  table: {
-    name: "new-table-name", // You can set a custom table name here (default: "files")
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    //... AWS S3 client config
+    table: {
+      name: "new-table-name", // You can set a custom table name here (default: "files")
+    },
   },
 };
 ```
@@ -203,9 +219,13 @@ const s3Options: S3Options = {
 To limit the file size while uploading:
 
 ```typescript
-const s3Options: S3Options = {
-  //... AWS S3 client config
-  fileSizeLimitInBytes: 10485760,
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    //... AWS S3 client config
+    fileSizeLimitInBytes: 10485760,
+  },
 };
 ```
 
@@ -260,11 +280,8 @@ const start = async () => {
   // REST + GraphQL mode: the @fastify/multipart parser registered by
   // rest.enabled must not leak into the graphql route's context)
   await fastify.register(s3Plugin, {
-    bucket: "my-app-uploads",
-    clientConfig: {
-      region: "ap-southeast-1",
-    },
-    rest: { enabled: true },
+    ...config.s3,
+    rest: config.rest,
   });
 
   await fastify.listen({
@@ -308,11 +325,8 @@ const start = async () => {
 
   // Register fastify-s3 plugin (after the graphql plugin)
   await fastify.register(s3Plugin, {
-    bucket: "my-app-uploads",
-    clientConfig: {
-      region: "ap-southeast-1",
-    },
-    rest: { enabled: true },
+    ...config.s3,
+    rest: config.rest,
   });
 
   fastify.post('/upload/file', {

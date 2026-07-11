@@ -81,40 +81,52 @@ export { default as resolvers } from "./resolvers";
 export { default as schema } from "./schema";
 ```
 
-Define the plugin options in `src/graphql/options.ts`:
+Add a `graphql` block (type `GraphqlOptions`) to your central config in `config/index.ts`. A single app-wide config from which every plugin's options are derived remains the recommended pattern — what changed is that the plugin no longer reads it from the fastify instance; you pass its slice explicitly at registration:
 
 ```typescript
-import { resolvers, schema } from ".";
+import dotenv from "dotenv";
 
-import type { GraphqlOptions } from "@prefabs.tech/fastify-graphql";
+import { resolvers, schema } from "../src/graphql";
 
-const graphqlOptions: GraphqlOptions = {
-  enabled: true,
-  graphiql: false,
-  path: "/graphql",
-  resolvers,
-  schema,
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
+
+dotenv.config();
+
+const config: ApiConfig = {
+  // ...other configurations...
+  graphql: {
+    enabled: true,
+    graphiql: false,
+    path: "/graphql",
+    resolvers,
+    schema,
+  },
+  // ...other configurations...
 };
 
-export default graphqlOptions;
+export default config;
 ```
 
-Register the plugin with your fastify instance in `src/index.ts`, passing the options directly as the second argument:
+Register the plugin with your fastify instance in `src/index.ts`, passing its config slice as the second argument:
 
 ```typescript
+import configPlugin from "@prefabs.tech/fastify-config";
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";
 import Fastify from "fastify";
 
 import config from "../config";
-import graphqlOptions from "./graphql/options";
 
 const start = async () => {
   const fastify = Fastify({
     logger: config.logger,
   });
 
-  // Register fastify-graphql plugin with its options
-  await fastify.register(graphqlPlugin, graphqlOptions);
+  // Register fastify-config plugin (decorates the app with the global
+  // config; also feeds the default graphql resolver context)
+  await fastify.register(configPlugin, { config });
+
+  // Register fastify-graphql plugin, passing its config slice explicitly
+  await fastify.register(graphqlPlugin, config.graphql);
 
   await fastify.listen({
     port: config.port,
@@ -129,7 +141,7 @@ Registering the plugin without options is deprecated — see [Deprecated: config
 
 ## Configuration
 
-The plugin is configured with a `GraphqlOptions` object passed directly to `register()`. It supports all of the [original mercurius plugin's options](https://mercurius.dev/#/docs/api/options?id=plugin-options), plus:
+The plugin is configured with a `GraphqlOptions` object passed directly to `register()` — typically the `graphql` slice of your central `ApiConfig` (`config.graphql`). The plugin itself makes no assumption that a global config exists; deriving its options from one is an app-level choice. It supports all of the [original mercurius plugin's options](https://mercurius.dev/#/docs/api/options?id=plugin-options), plus:
 
 - `enabled` (boolean) — feature switch for the GraphQL server. The plugin registration stays in your code unconditionally; this flag — typically driven by per-environment configuration — decides whether anything is actually mounted. When `true`, mercurius and the upload transport are registered; when `false` or omitted, the plugin logs `"GraphQL API not enabled"` and mounts nothing (no `/graphql` route, no catch-all content-type parser). This lets you turn GraphQL on or off per environment by flipping a config value instead of adding or removing the `register()` call.
 - `uploads` — configure or disable GraphQL file uploads (see below).
@@ -139,10 +151,14 @@ The plugin is configured with a `GraphqlOptions` object passed directly to `regi
 GraphQL file uploads ([graphql multipart request spec](https://github.com/jaydenseric/graphql-multipart-request-spec)) are supported out of the box: when the plugin is enabled it registers an upload transport (content-type parser + `graphql-upload-minimal` processing) before mercurius. Configure or disable it with the `uploads` option:
 
 ```typescript
-await fastify.register(graphqlPlugin, {
-  ...graphqlOptions,
+// config/index.ts — inside the graphql block
+graphql: {
+  // ...
   uploads: { maxFileSize: 10485760 }, // or { enabled: false } to disable
-});
+},
+
+// registration is unchanged
+await fastify.register(graphqlPlugin, config.graphql);
 ```
 
 Declare `scalar Upload` in your schema; resolvers receive `Upload` promises. See GUIDE.md (Feature 16) for gotchas, including plugin ordering when combining with REST uploads via `@prefabs.tech/fastify-s3`.

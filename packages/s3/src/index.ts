@@ -1,3 +1,4 @@
+// Imported for its ApiConfig module augmentation only
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { GraphqlEnabledPlugin } from "@prefabs.tech/fastify-graphql";
 
@@ -16,7 +17,14 @@ export { default as FileService } from "./model/files/service";
 export { default } from "./plugin";
 export { default as ajvFilePlugin } from "./plugins/ajvFile";
 export { default as multipartParserPlugin } from "./plugins/multipartParser";
-export type { FilePayload, Multipart, S3Config } from "./types";
+export type {
+  FilePayload,
+  Multipart,
+  MultipartParserOptions,
+  S3Config,
+  S3GraphqlConfig,
+  S3Options,
+} from "./types";
 export type { File, FileCreateInput, FileUpdateInput } from "./types/file";
 
 export { default as S3Client } from "./utils/s3Client";

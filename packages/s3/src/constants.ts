@@ -1,20 +1,20 @@
-const TABLE_FILES = "files";
-const BUCKET_FROM_OPTIONS = "optionsBucket";
-const BUCKET_FROM_FILE_FIELDS = "fileFieldsBucket";
-
-const OVERWRITE = "overwrite";
 const ADD_SUFFIX = "add-suffix";
+const BUCKET_FROM_FILE_FIELDS = "fileFieldsBucket";
+const BUCKET_FROM_OPTIONS = "optionsBucket";
+const DEFAULT_GRAPHQL_PATH = "/graphql";
 const ERROR = "error";
-
 const ERROR_CODES = {
   FILE_ALREADY_EXISTS_IN_S3: "FILE_ALREADY_EXISTS_IN_S3_ERROR",
   FILE_NOT_FOUND: "FILE_NOT_FOUND_ERROR",
 };
+const OVERWRITE = "overwrite";
+const TABLE_FILES = "files";
 
 export {
   ADD_SUFFIX,
   BUCKET_FROM_FILE_FIELDS,
   BUCKET_FROM_OPTIONS,
+  DEFAULT_GRAPHQL_PATH,
   ERROR,
   ERROR_CODES,
   OVERWRITE,

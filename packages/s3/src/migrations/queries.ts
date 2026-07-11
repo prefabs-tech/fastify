@@ -3,12 +3,18 @@ import type { ZodTypeAny } from "zod";
 
 import { QuerySqlToken, sql } from "slonik";
 
+import type { S3Options } from "../types";
+
 import { TABLE_FILES } from "../constants";
 
+// Accepts S3Options (new pattern) or a full ApiConfig (deprecated) during the
+// migration window; the ApiConfig overload will be removed in a future major.
 const createFilesTableQuery = (
-  config: ApiConfig,
+  config: ApiConfig | Partial<S3Options>,
 ): QuerySqlToken<ZodTypeAny> => {
-  const tableName = config.s3?.table?.name || TABLE_FILES;
+  const tableName =
+    ("s3" in config ? config.s3?.table?.name : config.table?.name) ||
+    TABLE_FILES;
 
   return sql.unsafe`
     CREATE TABLE IF NOT EXISTS ${sql.identifier([tableName])} (

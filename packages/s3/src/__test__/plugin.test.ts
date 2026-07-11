@@ -26,6 +26,13 @@ const buildFastify = (configOverrides: Record<string, unknown> = {}) => {
   return fastify;
 };
 
+/** Fastify instance without a config decoration, for new-pattern tests. */
+const buildBareFastify = () => {
+  const instance = Fastify({ logger: false });
+  instance.decorate("slonik", {});
+  return instance;
+};
+
 /** Minimal multipart/form-data body for inject tests (single file field). */
 const buildMultipartFileBody = (
   boundary: string,
@@ -61,14 +68,115 @@ describe("s3 plugin — initialization", async () => {
     expect(runMigrationsMock).toHaveBeenCalledOnce();
   });
 
-  it("passes slonik and config to runMigrations", async () => {
+  it("passes slonik and the composed options to runMigrations when falling back to fastify.config", async () => {
     fastify = buildFastify();
     await fastify.register(plugin);
     await fastify.ready();
 
     expect(runMigrationsMock).toHaveBeenCalledWith(
       expect.any(Object),
-      expect.objectContaining({ s3: expect.any(Object) }),
+      expect.objectContaining({
+        bucket: "test-bucket",
+        rest: { enabled: true },
+      }),
+    );
+  });
+
+  it("logs a deprecation warning when falling back to fastify.config", async () => {
+    fastify = buildFastify();
+    const warnSpy = vi.spyOn(fastify.log, "warn");
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("passing s3 options directly"),
+    );
+  });
+
+  it("throws when registered without options and without fastify.config", async () => {
+    fastify = Fastify({ logger: false });
+    fastify.decorate("slonik", {});
+
+    await expect(fastify.register(plugin).ready()).rejects.toThrow(
+      "Missing s3 configuration",
+    );
+  });
+
+  it("throws when the slonik decorator is missing", async () => {
+    fastify = Fastify({ logger: false });
+
+    await expect(
+      fastify
+        .register(plugin, { bucket: "options-bucket", clientConfig: {} })
+        .ready(),
+    ).rejects.toThrow("Missing slonik decorator");
+  });
+});
+
+describe("s3 plugin — options passed directly (new pattern)", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+
+  beforeEach(() => vi.clearAllMocks());
+  afterEach(async () => fastify.close());
+
+  it("registers @fastify/multipart from options.rest without reading fastify.config", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+      rest: { enabled: true },
+    });
+    await fastify.ready();
+
+    expect(fastify.hasContentTypeParser("multipart/form-data")).toBe(true);
+  });
+
+  it("does not register @fastify/multipart when options.rest is omitted", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+    });
+    await fastify.ready();
+
+    expect(fastify.hasContentTypeParser("multipart/form-data")).toBe(false);
+  });
+
+  it("registers the graphql upload plugin from options.graphql with maxFileSize from options", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+      fileSizeLimitInBytes: 1_000_000,
+      graphql: { enabled: true },
+    });
+    await fastify.ready();
+
+    expect(graphqlUploadMock).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ maxFileSize: 1_000_000 }),
+      expect.any(Function),
+    );
+  });
+
+  it("passes the options object to runMigrations", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+      table: { name: "custom_files" },
+    });
+    await fastify.ready();
+
+    expect(runMigrationsMock).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        bucket: "options-bucket",
+        table: { name: "custom_files" },
+      }),
     );
   });
 });

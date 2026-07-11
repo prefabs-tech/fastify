@@ -9,7 +9,7 @@ The plugin is a thin wrapper around the [mercurius](https://mercurius.dev/#/) pl
 While registering `mercurius` directly perfectly enables GraphQL in a Fastify backend, enterprise APIs require deep context injection—such as database connections and application configurations—to function effectively within resolvers. We created this plugin to:
 
 - **Automate Context Injection**: Instead of manually building context objects on every request, this plugin automatically populates the `MercuriusContext` with the `fastify.config`, `slonik` database connection, and `dbSchema`, making them instantly and safely available to all your GraphQL resolvers out-of-the-box.
-- **Unify Configuration**: By integrating seamlessly with `@prefabs.tech/fastify-config`, it ensures that your GraphQL schema paths, options, and boolean flags are strictly typed and managed in one centralized location.
+- **Unify Configuration**: The plugin takes a strictly typed `GraphqlOptions` object (all mercurius options plus our `enabled` and `uploads` flags), so schema paths, options, and feature flags are managed in one place.
 
 ### Design Decisions: Why not Apollo Server or bare Mercurius?
 
@@ -81,51 +81,40 @@ export { default as resolvers } from "./resolvers";
 export { default as schema } from "./schema";
 ```
 
-Add a `graphql` block to your config in `config/index.ts`:
+Define the plugin options in `src/graphql/options.ts`:
 
 ```typescript
-import dotenv from "dotenv";
+import { resolvers, schema } from ".";
 
-import { resolvers, schema } from "../src/graphql";
+import type { GraphqlOptions } from "@prefabs.tech/fastify-graphql";
 
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
-
-dotenv.config();
-
-const config: ApiConfig = {
-  // ...other configurations...
-  graphql: {
-    enabled: true,
-    graphiql: false,
-    path: "/graphql",
-    resolvers,
-    schema,
-  },
-  // ...other configurations...
+const graphqlOptions: GraphqlOptions = {
+  enabled: true,
+  graphiql: false,
+  path: "/graphql",
+  resolvers,
+  schema,
 };
 
-export default config;
+export default graphqlOptions;
 ```
 
-Register the plugin with your fastify instance in `src/index.ts`:
+Register the plugin with your fastify instance in `src/index.ts`, passing the options directly as the second argument:
 
 ```typescript
-import configPlugin from "@prefabs.tech/fastify-config";
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";
 import Fastify from "fastify";
 
 import config from "../config";
+import graphqlOptions from "./graphql/options";
 
 const start = async () => {
   const fastify = Fastify({
     logger: config.logger,
   });
 
-  // Register fastify-config plugin
-  await fastify.register(configPlugin, { config });
-
-  // Register fastify-graphql plugin
-  await fastify.register(graphqlPlugin, config.graphql);
+  // Register fastify-graphql plugin with its options
+  await fastify.register(graphqlPlugin, graphqlOptions);
 
   await fastify.listen({
     port: config.port,
@@ -136,11 +125,14 @@ const start = async () => {
 start();
 ```
 
+Registering the plugin without options is deprecated — see [Deprecated: configuration via `fastify.config`](#deprecated-configuration-via-fastifyconfig).
+
 ## Configuration
 
-The `graphql` block in the `ApiConfig` supports all of the [original mercurius plugin's options](https://mercurius.dev/#/docs/api/options?id=plugin-options).
+The plugin is configured with a `GraphqlOptions` object passed directly to `register()`. It supports all of the [original mercurius plugin's options](https://mercurius.dev/#/docs/api/options?id=plugin-options), plus:
 
-An additional `enabled` (boolean) option allows you to disable the graphql server.
+- `enabled` (boolean) — disable the graphql server entirely.
+- `uploads` — configure or disable GraphQL file uploads (see below).
 
 ### File uploads
 
@@ -148,7 +140,7 @@ GraphQL file uploads ([graphql multipart request spec](https://github.com/jayden
 
 ```typescript
 await fastify.register(graphqlPlugin, {
-  ...config.graphql,
+  ...graphqlOptions,
   uploads: { maxFileSize: 10485760 }, // or { enabled: false } to disable
 });
 ```
@@ -164,6 +156,8 @@ The fastify-graphql plugin will generate a graphql context on every request that
 | `config`   | `ApiConfig` | The fastify servers' config (as per [@prefabs.tech/fastify-config](../config/))          |
 | `database` | `Database`  | The fastify server's slonik instance (as per [@prefabs.tech/fastify-slonik](../slonik/)) |
 | `dbSchema` | `string`    | The database schema (as per [@prefabs.tech/fastify-slonik](../slonik/))                  |
+
+The `config` and `database` attributes are populated from the request decorations provided by the config and slonik plugins when those are registered; they are `undefined` otherwise.
 
 ## Supporting `.gql` files and external schema exports
 
@@ -215,4 +209,21 @@ type Mutation {
 type Query {
   add(x: Int, y: Int): Int
 }
+```
+
+## Deprecated: configuration via `fastify.config`
+
+Earlier versions of this plugin could be registered without options: it then read its configuration from the fastify instance (`fastify.config.graphql`, decorated by [@prefabs.tech/fastify-config](../config/)).
+
+This approach is **deprecated**. For backward compatibility it is temporarily still supported: registering without options falls back to `fastify.config.graphql` and logs a deprecation warning; if `fastify.config.graphql` is missing too, registration throws. The fallback will be removed in a future major release.
+
+To migrate, pass the configuration you previously kept under `config.graphql` directly to `register()`:
+
+```typescript
+// Before (deprecated)
+await fastify.register(configPlugin, { config }); // config.graphql
+await fastify.register(graphqlPlugin);
+
+// After
+await fastify.register(graphqlPlugin, config.graphql);
 ```

@@ -93,16 +93,15 @@ await fastify.register(s3Plugin, {
   filenameResolutionStrategy: "add-suffix",
   table: { name: "files" }, // optional, "files" is the default
   rest: { enabled: true },
-  graphql: { enabled: false },
 });
 
 await fastify.listen({ port: 3000 });
 ```
 
 > **Deprecated**: registering the plugin without options makes it read its
-> configuration from `fastify.config` (`config.s3`, `config.rest`,
-> `config.graphql`) and logs a deprecation warning. This fallback will be
-> removed in a future major release.
+> configuration from `fastify.config` (`config.s3`, `config.rest`) and logs a
+> deprecation warning. This fallback will be removed in a future major
+> release.
 
 ---
 
@@ -133,26 +132,18 @@ Official docs: https://www.npmjs.com/package/@aws-sdk/s3-request-presigner
 
 Official docs: https://www.npmjs.com/package/@fastify/multipart
 
-Registered automatically (when `config.rest.enabled` is `true`) with a fixed configuration:
+Registered automatically (when `options.rest.enabled` is `true`) with a fixed configuration:
 
 - `attachFieldsToBody: "keyValues"` — non-file fields are attached directly to `req.body`.
 - `sharedSchemaId: "fileSchema"` — registers the file JSON schema under this id.
-- `limits.fileSize` set from `config.s3.fileSizeLimitInBytes`.
+- `limits.fileSize` set from `options.fileSizeLimitInBytes`.
 - An `onFile` hook converts each multipart file part into a `Multipart` object (`{ data: Buffer, encoding, filename, mimetype }`) before route handlers run.
 
 Consumers cannot change these options through this plugin; register `@fastify/multipart` manually if custom options are needed.
 
-### `graphql-upload-minimal` — Partial Passthrough
+### `graphql-upload-minimal` / `busboy` — Moved
 
-Official docs: https://www.npmjs.com/package/graphql-upload-minimal
-
-`processRequest` and `UploadOptions` are used in the internal `graphqlUpload` plugin. The `FileUpload` and `Upload` types are re-exported as `GraphQLFileUpload` and `GraphQLUpload`. We add a `preValidation` hook that calls `processRequest` only when `req.graphqlFileUploadMultipart` is `true` (set by `multipartParserPlugin`).
-
-### `busboy` — Full Passthrough
-
-Official docs: https://www.npmjs.com/package/busboy
-
-Used internally in `processMultipartFormData` (called by `multipartParserPlugin`) to parse multipart bodies outside the GraphQL path. Not exposed to consumers.
+The GraphQL upload transport (catch-all multipart parser + `processRequest` hook) moved to [@prefabs.tech/fastify-graphql](../graphql/), together with these two libraries. The `GraphQLUpload` / `GraphQLFileUpload` type re-exports remain here as deprecated aliases.
 
 ### `uuid` — Full Passthrough
 
@@ -175,13 +166,13 @@ await fastify.register(s3Plugin, {
   bucket: "my-app-uploads",
   clientConfig: { region: "us-east-1" },
   rest: { enabled: true },
-  graphql: { enabled: false },
 });
-// Runs DB migration, registers multipart (if rest.enabled),
-// registers GraphQL upload hook (if graphql.enabled).
+// Runs DB migration, registers multipart (if rest.enabled).
 ```
 
-Registering without options falls back to reading `fastify.config.s3`, `fastify.config.rest` and `fastify.config.graphql` (deprecated — logs a warning; the fallback will be removed in a future major release). If neither options nor `fastify.config.s3` are present, registration throws. Registration also throws if `fastify.slonik` is not decorated — the slonik plugin must be registered before the s3 plugin.
+Registering without options falls back to reading `fastify.config.s3` and `fastify.config.rest` (deprecated — logs a warning; the fallback will be removed in a future major release). If neither options nor `fastify.config.s3` are present, registration throws. Registration also throws if `fastify.slonik` is not decorated — the slonik plugin must be registered before the s3 plugin.
+
+`rest.enabled` only controls incoming REST upload parsing. It may be off entirely: the plugin still runs migrations and provides a fully functional `FileService`/`S3Client` (presigned-URL flows, server-generated files, download-only services). GraphQL uploads are configured on the graphql plugin (`uploads` option) — see Feature 4.
 
 ### 2 — Automatic database migration
 
@@ -223,20 +214,20 @@ fastify.post(
 );
 ```
 
-### 4 — Conditional GraphQL upload registration
+### 4 — GraphQL uploads (moved to @prefabs.tech/fastify-graphql)
 
-When `options.graphql?.enabled` is `true`, the plugin registers a `preValidation` hook that calls `processRequest` from `graphql-upload-minimal` for multipart GraphQL requests. You must also register `multipartParserPlugin` to set the `graphqlFileUploadMultipart` flag.
+GraphQL upload support no longer lives in this package. The graphql plugin registers the upload transport by default (configure it with its `uploads` option); this package's `FileService` simply consumes the resulting `Upload` streams.
 
 ```typescript
-// Also register multipartParserPlugin (see Feature 8)
-await fastify.register(multipartParserPlugin, {
-  graphql: { enabled: true, path: "/graphql" },
+await fastify.register(graphqlPlugin, {
+  ...config.graphql,
+  uploads: { maxFileSize: 10_000_000 },
 });
-await fastify.register(s3Plugin, {
-  ...s3Config,
-  graphql: { enabled: true },
-});
+// Register s3Plugin AFTER graphqlPlugin in mixed REST + GraphQL mode
+await fastify.register(s3Plugin, { ...s3Options, rest: { enabled: true } });
 ```
+
+See the fastify-graphql GUIDE (Feature 16) for details and gotchas.
 
 ### 5 — `S3Config` configuration shape
 
@@ -302,21 +293,9 @@ fastify.post("/upload", {
 
 At runtime, `isFile: true` validates that the value has `data`, `filename`, and `mimetype` properties. It also rewrites the schema to `{ type: "string", format: "binary" }` so Swagger UI renders a file picker.
 
-### 8 — `multipartParserPlugin` — catch-all content-type parser
+### 8 — `multipartParserPlugin` — deprecated compat wrapper
 
-Register this plugin when your application handles both GraphQL file uploads and REST file uploads, or whenever you need busboy-based multipart parsing outside of `@fastify/multipart`.
-
-```typescript
-import { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
-
-await fastify.register(multipartParserPlugin, {
-  graphql: { enabled: true, path: "/graphql" }, // path defaults to "/graphql"
-});
-```
-
-For multipart requests to the GraphQL path, it sets `req.graphqlFileUploadMultipart = true` (the `graphqlUpload` preValidation hook checks this flag). For all other multipart requests it parses the body via Busboy and attaches fields and files to `req.body`.
-
-Registering without options falls back to reading `req.config.graphql` per request (deprecated — logs a warning; the fallback will be removed in a future major release).
+Still exported for backward compatibility, but deprecated: it is now a thin wrapper that registers the upload transport from `@prefabs.tech/fastify-graphql` (defaulting the graphql path from `fastify.config.graphql.path` when present), logs a deprecation warning, and no-ops when the transport is already registered — which the graphql plugin does by default. Prefer the graphql plugin's `uploads` option. Removed in the next major.
 
 ### 9 — `S3Client` class
 
@@ -624,8 +603,8 @@ import type {
   File,
   FileCreateInput,
   FileUpdateInput,
-  GraphQLFileUpload,
-  GraphQLUpload,
+  GraphQLFileUpload, // deprecated — import from @prefabs.tech/fastify-graphql
+  GraphQLUpload, // deprecated — import from @prefabs.tech/fastify-graphql
   S3ClientConfig,
 } from "@prefabs.tech/fastify-s3";
 ```
@@ -795,16 +774,16 @@ fastify.delete<{ Params: { id: string } }>(
 Enable GraphQL multipart support and handle file uploads in a GraphQL mutation.
 
 ```typescript
-// Registration (order matters)
-await fastify.register(configPlugin, {
-  s3: { clientConfig: { ... }, bucket: "uploads", fileSizeLimitInBytes: 10_000_000 },
-  rest: { enabled: false },
-  graphql: { enabled: true, path: "/graphql" },
+// Registration (order matters: s3Plugin after graphqlPlugin)
+await fastify.register(slonikPlugin, config.slonik);
+await fastify.register(graphqlPlugin, {
+  ...config.graphql, // enabled: true — the upload transport is registered by default
+  uploads: { maxFileSize: 10_000_000 },
 });
-await fastify.register(slonikPlugin);
-await fastify.register(multipartParserPlugin); // must come before s3Plugin
-await fastify.register(s3Plugin);
-await fastify.register(graphqlPlugin);         // your Mercurius/graphql plugin
+await fastify.register(s3Plugin, {
+  clientConfig: { ... },
+  bucket: "uploads",
+});
 
 // GraphQL resolver
 const resolvers = {

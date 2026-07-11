@@ -6,7 +6,6 @@ import FastifyPlugin from "fastify-plugin";
 import type { S3Options } from "./types";
 
 import runMigrations from "./migrations/runMigrations";
-import graphqlGQLUpload from "./plugins/graphqlUpload";
 
 // Partial so the deprecated no-options registration still compiles; the
 // parameter becomes a required S3Options once the fastify.config fallback is
@@ -36,7 +35,6 @@ const plugin = async (
 
     options = {
       ...fastify.config.s3,
-      graphql: fastify.config.graphql,
       rest: fastify.config.rest,
     };
   }
@@ -59,12 +57,6 @@ const plugin = async (
         };
       },
       sharedSchemaId: "fileSchema",
-    });
-  }
-
-  if (options.graphql?.enabled) {
-    await fastify.register(graphqlGQLUpload, {
-      maxFileSize: options.fileSizeLimitInBytes || Number.POSITIVE_INFINITY,
     });
   }
 };

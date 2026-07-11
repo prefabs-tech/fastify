@@ -79,11 +79,30 @@ await fastify.register(configPlugin, {
 // Register slonik plugin (peer dep) before s3 plugin
 await fastify.register(slonikPlugin);
 
-// Register the S3 plugin
-await fastify.register(s3Plugin);
+// Register the S3 plugin, passing its options directly
+await fastify.register(s3Plugin, {
+  clientConfig: {
+    region: "us-east-1",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+    },
+  },
+  bucket: "my-app-uploads",
+  fileSizeLimitInBytes: 10 * 1024 * 1024, // 10 MB
+  filenameResolutionStrategy: "add-suffix",
+  table: { name: "files" }, // optional, "files" is the default
+  rest: { enabled: true },
+  graphql: { enabled: false },
+});
 
 await fastify.listen({ port: 3000 });
 ```
+
+> **Deprecated**: registering the plugin without options makes it read its
+> configuration from `fastify.config` (`config.s3`, `config.rest`,
+> `config.graphql`) and logs a deprecation warning. This fallback will be
+> removed in a future major release.
 
 ---
 
@@ -147,26 +166,33 @@ Official docs: https://www.npmjs.com/package/uuid
 
 ### 1 — Main plugin registration
 
-Import the default export and register it with Fastify. The plugin uses `fastify-plugin` so decorators are not scoped.
+Import the default export and register it with Fastify, passing an `S3Options` object. The plugin uses `fastify-plugin` so decorators are not scoped.
 
 ```typescript
 import s3Plugin from "@prefabs.tech/fastify-s3";
 
-await fastify.register(s3Plugin);
-// Runs DB migration, registers multipart (if REST enabled),
-// registers GraphQL upload hook (if GraphQL enabled).
+await fastify.register(s3Plugin, {
+  bucket: "my-app-uploads",
+  clientConfig: { region: "us-east-1" },
+  rest: { enabled: true },
+  graphql: { enabled: false },
+});
+// Runs DB migration, registers multipart (if rest.enabled),
+// registers GraphQL upload hook (if graphql.enabled).
 ```
+
+Registering without options falls back to reading `fastify.config.s3`, `fastify.config.rest` and `fastify.config.graphql` (deprecated — logs a warning; the fallback will be removed in a future major release). If neither options nor `fastify.config.s3` are present, registration throws. Registration also throws if `fastify.slonik` is not decorated — the slonik plugin must be registered before the s3 plugin.
 
 ### 2 — Automatic database migration
 
-On every registration the plugin issues `CREATE TABLE IF NOT EXISTS` for the files table. No manual migration command is needed. The table name comes from `config.s3.table.name` (default `"files"`).
+On every registration the plugin issues `CREATE TABLE IF NOT EXISTS` for the files table. No manual migration command is needed. The table name comes from `options.table.name` (default `"files"`).
 
 ### 3 — Conditional REST multipart
 
-When `config.rest.enabled` is `true`, `@fastify/multipart` is registered automatically. File parts are available on `req.body` as `Multipart` objects.
+When `options.rest.enabled` is `true`, `@fastify/multipart` is registered automatically. File parts are available on `req.body` as `Multipart` objects.
 
 ```typescript
-// config
+// plugin options
 rest: {
   enabled: true;
 }
@@ -199,15 +225,17 @@ fastify.post(
 
 ### 4 — Conditional GraphQL upload registration
 
-When `config.graphql?.enabled` is `true`, the plugin registers a `preValidation` hook that calls `processRequest` from `graphql-upload-minimal` for multipart GraphQL requests. You must also register `multipartParserPlugin` to set the `graphqlFileUploadMultipart` flag.
+When `options.graphql?.enabled` is `true`, the plugin registers a `preValidation` hook that calls `processRequest` from `graphql-upload-minimal` for multipart GraphQL requests. You must also register `multipartParserPlugin` to set the `graphqlFileUploadMultipart` flag.
 
 ```typescript
-// config
-graphql: { enabled: true, path: "/graphql" }
-
 // Also register multipartParserPlugin (see Feature 8)
-await fastify.register(multipartParserPlugin);
-await fastify.register(s3Plugin);
+await fastify.register(multipartParserPlugin, {
+  graphql: { enabled: true, path: "/graphql" },
+});
+await fastify.register(s3Plugin, {
+  ...s3Config,
+  graphql: { enabled: true },
+});
 ```
 
 ### 5 — `S3Config` configuration shape
@@ -281,10 +309,14 @@ Register this plugin when your application handles both GraphQL file uploads and
 ```typescript
 import { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
 
-await fastify.register(multipartParserPlugin);
+await fastify.register(multipartParserPlugin, {
+  graphql: { enabled: true, path: "/graphql" }, // path defaults to "/graphql"
+});
 ```
 
 For multipart requests to the GraphQL path, it sets `req.graphqlFileUploadMultipart = true` (the `graphqlUpload` preValidation hook checks this flag). For all other multipart requests it parses the body via Busboy and attaches fields and files to `req.body`.
+
+Registering without options falls back to reading `req.config.graphql` per request (deprecated — logs a warning; the fallback will be removed in a future major release).
 
 ### 9 — `S3Client` class
 
@@ -539,9 +571,11 @@ Exported for consumers who manage their own migration tooling:
 ```typescript
 import { createFilesTableQuery } from "@prefabs.tech/fastify-s3";
 
-const query = createFilesTableQuery(config);
+const query = createFilesTableQuery({ table: { name: "files" } });
 await database.connect(async (conn) => conn.query(query));
 ```
+
+Accepts an `S3Options` object; passing a full `ApiConfig` (reading the table name from `config.s3.table.name`) is still supported but deprecated and will be removed in a future major release.
 
 ### 30 — `ERROR_CODES.FILE_NOT_FOUND`
 

@@ -44,6 +44,10 @@ interface Multipart {
   mimetype: string;
 }
 
+interface MultipartParserOptions {
+  graphql?: S3GraphqlConfig;
+}
+
 interface PresignedUrlOptions extends BaseOption {
   signedUrlExpiresInSecond?: number;
 }
@@ -57,14 +61,29 @@ interface S3Config {
   };
 }
 
+interface S3GraphqlConfig {
+  enabled?: boolean;
+  path?: string;
+}
+
+type S3Options = S3Config & {
+  graphql?: S3GraphqlConfig;
+  rest?: {
+    enabled?: boolean;
+  };
+};
+
 export type {
   BucketChoice,
   FilenameResolutionStrategy,
   FilePayload,
   FilePayloadOptions,
   Multipart,
+  MultipartParserOptions,
   PresignedUrlOptions,
   S3Config,
+  S3GraphqlConfig,
+  S3Options,
 };
 
 export type * from "./file";

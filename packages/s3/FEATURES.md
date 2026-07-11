@@ -4,13 +4,13 @@
 
 ## Plugin Registration
 
-1. **Main plugin (`default` export)** — Fastify plugin wrapped with `fastify-plugin`. On registration it runs database migrations, conditionally registers `@fastify/multipart` (when `config.rest.enabled` is `true`), and conditionally registers GraphQL upload support (when `config.graphql?.enabled` is `true`).
+1. **Main plugin (`default` export)** — Fastify plugin wrapped with `fastify-plugin`, registered with an `S3Options` object. On registration it runs database migrations, conditionally registers `@fastify/multipart` (when `options.rest?.enabled` is `true`), and conditionally registers GraphQL upload support (when `options.graphql?.enabled` is `true`). Registering without options falls back to composing the options from `fastify.config` (`s3`, `rest`, `graphql` namespaces) with a deprecation warning, and throws if `fastify.config.s3` is also missing. Throws if the `fastify.slonik` decorator is missing (the slonik plugin must be registered first).
 
-2. **Automatic database migration** — On registration the plugin creates (if not exists) the files table using the configured table name (`config.s3.table.name`) or the default name `"files"`.
+2. **Automatic database migration** — On registration the plugin creates (if not exists) the files table using the configured table name (`options.table.name`) or the default name `"files"`.
 
-3. **Conditional REST multipart registration** — When `config.rest.enabled` is `true`, `@fastify/multipart` is registered with `attachFieldsToBody: "keyValues"`, a shared schema id of `"fileSchema"`, a file-size limit from `config.s3.fileSizeLimitInBytes` (defaults to `Infinity`), and an `onFile` hook that converts every part to a `{ data, encoding, filename, mimetype }` object and attaches it as the field value.
+3. **Conditional REST multipart registration** — When `options.rest?.enabled` is `true`, `@fastify/multipart` is registered with `attachFieldsToBody: "keyValues"`, a shared schema id of `"fileSchema"`, a file-size limit from `options.fileSizeLimitInBytes` (defaults to `Infinity`), and an `onFile` hook that converts every part to a `{ data, encoding, filename, mimetype }` object and attaches it as the field value.
 
-4. **Conditional GraphQL upload registration** — When `config.graphql?.enabled` is `true`, the internal `graphqlUpload` plugin is registered, passing `maxFileSize` from `config.s3.fileSizeLimitInBytes` (defaults to `Infinity`).
+4. **Conditional GraphQL upload registration** — When `options.graphql?.enabled` is `true`, the internal `graphqlUpload` plugin is registered, passing `maxFileSize` from `options.fileSizeLimitInBytes` (defaults to `Infinity`).
 
 ## Configuration
 
@@ -27,7 +27,7 @@
 
 7. **`ajvFilePlugin`** — AJV keyword plugin that registers the `isFile` custom keyword. Schemas using `isFile: true` validate that the value is a multipart file object (`{ data, filename, mimetype }`). For array schemas it validates every element. During compile the keyword also rewrites the parent schema (`type: "string"`, `format: "binary"`) so OpenAPI tooling renders a proper file-upload schema.
 
-8. **`multipartParserPlugin`** — Fastify plugin that registers a catch-all `"*"` content-type parser. For multipart requests it routes GraphQL-multipart requests (matching the configured GraphQL path) by setting `req.graphqlFileUploadMultipart = true`, while all other multipart requests are parsed immediately with Busboy into `{ fields..., files... }` and stored on `req.body`. Non-multipart content types fall through unchanged. Augments `FastifyRequest` with the optional `graphqlFileUploadMultipart?: boolean` property.
+8. **`multipartParserPlugin`** — Fastify plugin that registers a catch-all `"*"` content-type parser, registered with a `MultipartParserOptions` object (`{ graphql?: { enabled?, path? } }`). For multipart requests it routes GraphQL-multipart requests (matching `options.graphql.path`, default `"/graphql"`) by setting `req.graphqlFileUploadMultipart = true`, while all other multipart requests are parsed immediately with Busboy into `{ fields..., files... }` and stored on `req.body`. Non-multipart content types fall through unchanged. Registering without options falls back to reading `req.config.graphql` per request with a deprecation warning. Augments `FastifyRequest` with the optional `graphqlFileUploadMultipart?: boolean` property.
 
 ## `S3Client` Utility Class
 
@@ -84,7 +84,7 @@
 
 ## Database Schema (Auto-migrated)
 
-29. **`createFilesTableQuery(config)`** — Returns a `CREATE TABLE IF NOT EXISTS` SQL query for the files table with columns: `id`, `original_file_name`, `bucket`, `description`, `key`, `uploaded_by_id`, `uploaded_at`, `download_count` (default `0`), `last_downloaded_at`, `created_at`, `updated_at`. Table name comes from `config.s3.table.name` or defaults to `"files"`.
+29. **`createFilesTableQuery(config)`** — Returns a `CREATE TABLE IF NOT EXISTS` SQL query for the files table with columns: `id`, `original_file_name`, `bucket`, `description`, `key`, `uploaded_by_id`, `uploaded_at`, `download_count` (default `0`), `last_downloaded_at`, `created_at`, `updated_at`. Accepts an `S3Options` object (table name from `options.table.name`) or, deprecated, a full `ApiConfig` (table name from `config.s3.table.name`); defaults to `"files"`.
 
 ## Error Codes
 
@@ -94,7 +94,7 @@
 
 ## Type Exports
 
-32. **`S3Config`** — Plugin configuration shape (see Feature 5).
+32. **`S3Config`** — Plugin configuration shape (see Feature 5). **`S3Options`** — plugin registration options: `S3Config` plus `graphql?: S3GraphqlConfig` and `rest?: { enabled? }`. **`S3GraphqlConfig`** — `{ enabled?: boolean, path?: string }`. **`MultipartParserOptions`** — options for `multipartParserPlugin` (see Feature 8).
 
 33. **`FilePayload`** — Input type for `FileService.upload`, containing `{ file: { fileContent: Multipart, fileFields: FileCreateInput }, options?: FilePayloadOptions }`.
 

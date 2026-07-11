@@ -101,6 +101,54 @@ describe("multipartParserPlugin", () => {
     expect(processMultipartFormData).toHaveBeenCalled();
   });
 
+  it("flags graphql multipart requests from options passed to the plugin, without req.config", async () => {
+    fastify = Fastify({ logger: false });
+    const { default: plugin } = await import("../plugins/multipartParser");
+    await fastify.register(plugin, {
+      graphql: { enabled: true, path: "/graphql" },
+    });
+
+    let capturedFlag: boolean | undefined;
+    fastify.post("/graphql", async (req) => {
+      capturedFlag = req.graphqlFileUploadMultipart;
+      return {};
+    });
+
+    await fastify.ready();
+
+    await fastify.inject({
+      headers: { "content-type": "multipart/form-data; boundary=----abc" },
+      method: "POST",
+      payload: "------abc--\r\n",
+      url: "/graphql",
+    });
+
+    expect(capturedFlag).toBe(true);
+  });
+
+  it("defaults the graphql path to /graphql when options.graphql.path is not provided", async () => {
+    fastify = Fastify({ logger: false });
+    const { default: plugin } = await import("../plugins/multipartParser");
+    await fastify.register(plugin, { graphql: { enabled: true } });
+
+    let capturedFlag: boolean | undefined;
+    fastify.post("/graphql", async (req) => {
+      capturedFlag = req.graphqlFileUploadMultipart;
+      return {};
+    });
+
+    await fastify.ready();
+
+    await fastify.inject({
+      headers: { "content-type": "multipart/form-data; boundary=----abc" },
+      method: "POST",
+      payload: "------abc--\r\n",
+      url: "/graphql",
+    });
+
+    expect(capturedFlag).toBe(true);
+  });
+
   it("does not set graphqlFileUploadMultipart when graphql is disabled", async () => {
     fastify = buildFastify({ enabled: false, path: "/graphql" });
     const { default: plugin } = await import("../plugins/multipartParser");

@@ -131,7 +131,7 @@ Registering the plugin without options is deprecated — see [Deprecated: config
 
 The plugin is configured with a `GraphqlOptions` object passed directly to `register()`. It supports all of the [original mercurius plugin's options](https://mercurius.dev/#/docs/api/options?id=plugin-options), plus:
 
-- `enabled` (boolean) — disable the graphql server entirely.
+- `enabled` (boolean) — feature switch for the GraphQL server. The plugin registration stays in your code unconditionally; this flag — typically driven by per-environment configuration — decides whether anything is actually mounted. When `true`, mercurius and the upload transport are registered; when `false` or omitted, the plugin logs `"GraphQL API not enabled"` and mounts nothing (no `/graphql` route, no catch-all content-type parser). This lets you turn GraphQL on or off per environment by flipping a config value instead of adding or removing the `register()` call.
 - `uploads` — configure or disable GraphQL file uploads (see below).
 
 ### File uploads

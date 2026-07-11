@@ -297,7 +297,11 @@ start();
 
 ## JSON Schema with Swagger
 
-If you want to use @prefabs.tech/fastify-s3 with @fastify/swagger and @fastify/swagger-ui or @prefabs.tech/swagger you must add a new type called `isFile` and use a custom instance of a validator compiler
+Fastify validates request bodies with AJV against each route's JSON schema, and @fastify/swagger generates the OpenAPI documentation from those same schemas. File-upload routes break this dual use: at runtime the uploaded field on `req.body` is a parsed multipart object (`{ data, encoding, filename, mimetype }`), which standard JSON Schema cannot describe — while the OpenAPI output needs the field declared as `type: "string", format: "binary"` for Swagger UI to render a file picker. One schema has to mean two different things.
+
+The exported `ajvFilePlugin` resolves this with a custom `isFile` AJV keyword that does both jobs: at runtime it validates that the value is a parsed multipart file object (or an array of them), and at schema-compile time it rewrites the schema node to `type: "string", format: "binary"` so the generated OpenAPI documents a proper file-upload field. Declare `file: { isFile: true }` once and both validation and documentation come out right (`consumes: ["multipart/form-data"]` is the OpenAPI content-type hint for the route).
+
+Note that `ajvFilePlugin` is an AJV plugin, not a Fastify plugin: Fastify's validator can only be customized at server creation, so it must be passed in the `Fastify()` constructor (`ajv: { plugins: [ajvFilePlugin] }`) — no plugin registered later, including this package's, can do that for you.
 
 ```typescript
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";

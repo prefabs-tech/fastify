@@ -490,6 +490,49 @@ importers:
         specifier: 3.25.76
         version: 3.25.76
 
+  packages/stripe:
+    dependencies:
+      stripe:
+        specifier: 20.3.1
+        version: 20.3.1(@types/node@24.10.15)
+    devDependencies:
+      '@prefabs.tech/eslint-config':
+        specifier: 0.7.0
+        version: 0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)
+      '@prefabs.tech/fastify-config':
+        specifier: 0.94.0
+        version: 0.94.0(fastify-plugin@5.1.0)(fastify@5.8.5)
+      '@prefabs.tech/tsconfig':
+        specifier: 0.7.0
+        version: 0.7.0
+      '@types/node':
+        specifier: 24.10.15
+        version: 24.10.15
+      '@vitest/coverage-istanbul':
+        specifier: 3.2.4
+        version: 3.2.4(vitest@3.2.4(@types/node@24.10.15)(jiti@2.6.1)(yaml@2.8.1))
+      eslint:
+        specifier: 9.39.4
+        version: 9.39.4(jiti@2.6.1)
+      fastify:
+        specifier: 5.8.5
+        version: 5.8.5
+      fastify-plugin:
+        specifier: 5.1.0
+        version: 5.1.0
+      prettier:
+        specifier: 3.8.3
+        version: 3.8.3
+      typescript:
+        specifier: 5.9.3
+        version: 5.9.3
+      vite:
+        specifier: 6.4.2
+        version: 6.4.2(@types/node@24.10.15)(jiti@2.6.1)(yaml@2.8.1)
+      vitest:
+        specifier: 3.2.4
+        version: 3.2.4(@types/node@24.10.15)(jiti@2.6.1)(yaml@2.8.1)
+
   packages/swagger:
     dependencies:
       '@fastify/swagger':
@@ -1452,14 +1495,6 @@ packages:
       '@types/node':
         optional: true
 
-  '@isaacs/balanced-match@4.0.1':
-    resolution: {integrity: sha512-yzMTt9lEb8Gv7zRioUilSglI0c0smZ9k5D65677DLWLtWJaXIS3CqcGyUFByYKlnUj6TkjLVs54fBl6+TiGQDQ==}
-    engines: {node: 20 || >=22}
-
-  '@isaacs/brace-expansion@5.0.0':
-    resolution: {integrity: sha512-ZT55BDLV0yv0RBm2czMiZ+SqCGO7AvmOM3G/w2xhVPH+te0aKgFjmBvGlL1dH+ql2tgGO3MVrbb3jCKyvpgnxA==}
-    engines: {node: 20 || >=22}
-
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -1589,6 +1624,13 @@ packages:
     resolution: {integrity: sha512-QNqXyfVS2wm9hweSYD2O7F0G06uurj9kZ96TRQE5Y9hU7+tgdZwIkbAKc5Ocy1HxEY2kuDQa6cQ1WRs/O5LFKA==}
     engines: {node: ^12.20.0 || ^14.18.0 || >=16.0.0}
 
+  '@prefabs.tech/eslint-config@0.7.0':
+    resolution: {integrity: sha512-kMLs+ksinlNKa5FfhTb2qNisnU/On+IGrRHbZ3aHq1INF8NsjVRB7Wm0Q9vdnBipco9YOady0qSx1goVnhhC3w==}
+    peerDependencies:
+      eslint: '>=9.0.0'
+      prettier: '>=3.3.3'
+      typescript: '>=4.9.5'
+
   '@prefabs.tech/eslint-config@0.8.0':
     resolution: {integrity: sha512-E1vrgnsjuw9hXanhq18jQFUWrbrmNzr74cND1QA26gqiYKCtnXBol71BYLxJae3SDBPy9eiAyEuqiaep1CHzUg==}
     peerDependencies:
@@ -1596,10 +1638,20 @@ packages:
       prettier: '>=3.3.3'
       typescript: '>=4.9.5'
 
+  '@prefabs.tech/fastify-config@0.94.0':
+    resolution: {integrity: sha512-x8d9MSQ/LDbzwN1e8paoH9UNp2Ev0192najA4SyOHACFxAnL0wXF+8Jn4iA3Ebt1Z2xF/RLZVdnWb2ixw+QlBQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      fastify: '>=5.2.2'
+      fastify-plugin: '>=5.0.1'
+
   '@prefabs.tech/postgres-migrations@5.4.3':
     resolution: {integrity: sha512-9cpcwgI0nZaUWmmybYuqhvroCEZHXy9IQmjdM83UF/yUXNu25ASZ09xfw96Q5Ixq0nYwtqkivorvpayBm+/XXg==}
     engines: {node: '>10.17.0'}
     hasBin: true
+
+  '@prefabs.tech/tsconfig@0.7.0':
+    resolution: {integrity: sha512-MiEvKeoNVPSy79tYQOkFeaBoVViW27JYfSiEbCBT+Fvuk1XEkXyBpSxlpdKQDV5bsAg0C5VNSjRh4qH3eDjA+w==}
 
   '@prefabs.tech/tsconfig@0.8.0':
     resolution: {integrity: sha512-tllO+FL56JLAHE/j6jKbRlUifxIgB2U47vzdL670FpsPsH4vIFNpniW81/pD80ogMeLXqD7E40AHGMTUBaioww==}
@@ -2500,9 +2552,6 @@ packages:
   axe-core@4.11.1:
     resolution: {integrity: sha512-BASOg+YwO2C+346x3LZOeoovTIoTrRqEsqMa6fmfAV0P+U9mFr9NsyOEpiYvFjbc64NMrSswhV50WdXzdb/Z5A==}
     engines: {node: '>=4'}
-
-  axios@1.12.2:
-    resolution: {integrity: sha512-vMJzPewAlRyOgxV2dU0Cuz2O8zzzx9VYtbJOaBgXFeLc4IV/Eg50n4LowmehOOR61S8ZMpc2K5Sa7g6A4jfkUw==}
 
   axios@1.13.5:
     resolution: {integrity: sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==}
@@ -4095,10 +4144,6 @@ packages:
   jsonify@0.0.1:
     resolution: {integrity: sha512-2/Ki0GcmuqSrgFyelQq9M05y7PS0mEwuIzrf3f1fPqkVDVRvZrPZtVSMHxdgo8Aq0sxAOb/cr2aqqA3LeWHVPg==}
 
-  jsonwebtoken@9.0.2:
-    resolution: {integrity: sha512-PRp66vJ865SSqOlgqS8hujT5U4AOgMfhrwYIuIhfKaoSCZcirrmASQr8CX7cUg+RMih+hgznrjp99o+W4pJLHQ==}
-    engines: {node: '>=12', npm: '>=6'}
-
   jsonwebtoken@9.0.3:
     resolution: {integrity: sha512-MT/xP0CrubFRNLNKvxJ2BYfy53Zkm++5bX9dtuPbqAeQpTVe0MQTFhao8+Cp//EmJp244xt6Drw/GVEGCUj40g==}
     engines: {node: '>=12', npm: '>=6'}
@@ -4112,18 +4157,12 @@ packages:
     engines: {node: '>=10.0.0'}
     hasBin: true
 
-  jwa@1.4.2:
-    resolution: {integrity: sha512-eeH5JO+21J78qMvTIDdBXidBd6nG2kZjg5Ohz/1fpa28Z4CcsWUzJ1ZZyFq/3z3N17aZy+ZuBoHljASbL1WfOw==}
-
   jwa@2.0.1:
     resolution: {integrity: sha512-hRF04fqJIP8Abbkq5NKGN0Bbr3JxlQ+qhZufXVr0DvujKy93ZCbXZMHDL4EOtodSbCWxOqR8MS1tXA5hwqCXDg==}
 
   jwks-rsa@3.2.2:
     resolution: {integrity: sha512-BqTyEDV+lS8F2trk3A+qJnxV5Q9EqKCBJOPti3W97r7qTympCZjb7h2X6f2kc+0K3rsSTY1/6YG2eaXKoj497w==}
     engines: {node: '>=14'}
-
-  jws@3.2.2:
-    resolution: {integrity: sha512-YHlZCB6lMTllWDtSPHz/ZXTsi8S00usEV6v1tjq8tOUZzw7DpSDWVXjXDre6ed1w/pd495ODpHZYSdkRTsa0HA==}
 
   jws@4.0.1:
     resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
@@ -4297,10 +4336,6 @@ packages:
     resolution: {integrity: sha512-jSCU7/VB1loIWBZe14aEYHU/+1UMEHoaO7qxCOVJOw9GgH72VAWppxNcjU+x9a2k3GSIBXNKxXQFqRvvZ7vr3A==}
     engines: {node: '>=10.0.0'}
     hasBin: true
-
-  minimatch@10.1.1:
-    resolution: {integrity: sha512-enIvLvRAFZYXJzkCYG5RKmPfrFArdLv+R+lbQ53BmIMLIry74bjKzX6iHAm8WYamJkhSSEabrWN5D97XnKObjQ==}
-    engines: {node: 20 || >=22}
 
   minimatch@10.2.5:
     resolution: {integrity: sha512-MULkVLfKGYDFYejP07QOurDLLQpcjk7Fw+7jXS2R2czRQzR56yHRveU5NDJEOviH+hETZKSkIk5c+T23GjFUMg==}
@@ -5109,6 +5144,7 @@ packages:
 
   scmp@2.1.0:
     resolution: {integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==}
+    deprecated: Just use Node.js's crypto.timingSafeEqual()
 
   secure-json-parse@4.1.0:
     resolution: {integrity: sha512-l4KnYfEyqYJxDwlNVyRfO2E4NTHfMKAWdUuA8J0yve2Dz/E/PdBepY03RvyJpssIpRFwJoCD55wA+mEDs6ByWA==}
@@ -5125,11 +5161,6 @@ packages:
 
   semver@7.7.1:
     resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
-    engines: {node: '>=10'}
-    hasBin: true
-
-  semver@7.7.3:
-    resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -5363,6 +5394,15 @@ packages:
 
   strip-literal@3.1.0:
     resolution: {integrity: sha512-8r3mkIM/2+PpjHoOtiAW8Rg3jJLHaV7xPwG+YRGrv6FP0wwk/toTpATxWYOW0BKdWwl82VT2tFYi5DlROa0Mxg==}
+
+  stripe@20.3.1:
+    resolution: {integrity: sha512-k990yOT5G5rhX3XluRPw5Y8RLdJDW4dzQ29wWT66piHrbnM2KyamJ1dKgPsw4HzGHRWjDiSSdcI2WdxQUPV3aQ==}
+    engines: {node: '>=16'}
+    peerDependencies:
+      '@types/node': '>=16'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
 
   strnum@2.2.3:
     resolution: {integrity: sha512-oKx6RUCuHfT3oyVjtnrmn19H1SiCqgJSg+54XqURKp5aCMbrXrhLjRN9TjuwMjiYstZ0MzDrHqkGZ5dFTKd+zg==}
@@ -6535,7 +6575,7 @@ snapshots:
   '@conventional-changelog/git-client@1.0.1(conventional-commits-filter@5.0.0)(conventional-commits-parser@6.2.1)':
     dependencies:
       '@types/semver': 7.7.1
-      semver: 7.7.3
+      semver: 7.7.4
     optionalDependencies:
       conventional-commits-filter: 5.0.0
       conventional-commits-parser: 6.2.1
@@ -6695,7 +6735,7 @@ snapshots:
     dependencies:
       ajv: 8.20.0
       ajv-formats: 3.0.1
-      fast-uri: 3.1.0
+      fast-uri: 3.1.1
 
   '@fastify/busboy@3.2.0': {}
 
@@ -7053,12 +7093,6 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.10.15
 
-  '@isaacs/balanced-match@4.0.1': {}
-
-  '@isaacs/brace-expansion@5.0.0':
-    dependencies:
-      '@isaacs/balanced-match': 4.0.1
-
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -7197,6 +7231,36 @@ snapshots:
 
   '@pkgr/core@0.2.9': {}
 
+  '@prefabs.tech/eslint-config@0.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)':
+    dependencies:
+      '@eslint/js': 9.39.4
+      eslint: 9.39.4(jiti@2.6.1)
+      eslint-config-prettier: 10.1.8(eslint@9.39.4(jiti@2.6.1))
+      eslint-import-resolver-alias: 1.1.2(eslint-plugin-import@2.32.0)
+      eslint-import-resolver-typescript: 4.4.4(eslint-plugin-import@2.32.0)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@4.4.4)(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-jsx-a11y: 6.10.2(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-n: 17.20.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      eslint-plugin-perfectionist: 5.9.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      eslint-plugin-prettier: 5.5.5(eslint-config-prettier@10.1.8(eslint@9.39.4(jiti@2.6.1)))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)
+      eslint-plugin-promise: 7.2.1(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-react: 7.37.5(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-react-hooks: 7.0.1(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-unicorn: 62.0.0(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-vue: 10.7.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(vue-eslint-parser@10.2.0(eslint@9.39.4(jiti@2.6.1)))
+      globals: 17.3.0
+      prettier: 3.8.3
+      typescript: 5.9.3
+      typescript-eslint: 8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3)
+      vue-eslint-parser: 10.2.0(eslint@9.39.4(jiti@2.6.1))
+    transitivePeerDependencies:
+      - '@stylistic/eslint-plugin'
+      - '@types/eslint'
+      - '@typescript-eslint/parser'
+      - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
+      - supports-color
+
   '@prefabs.tech/eslint-config@0.8.0(@typescript-eslint/parser@8.58.0(eslint@9.39.4(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.4(jiti@2.6.1))(prettier@3.8.3)(typescript@5.9.3)':
     dependencies:
       '@eslint/js': 9.39.4
@@ -7227,12 +7291,19 @@ snapshots:
       - eslint-plugin-import-x
       - supports-color
 
+  '@prefabs.tech/fastify-config@0.94.0(fastify-plugin@5.1.0)(fastify@5.8.5)':
+    dependencies:
+      fastify: 5.8.5
+      fastify-plugin: 5.1.0
+
   '@prefabs.tech/postgres-migrations@5.4.3':
     dependencies:
       pg: 8.20.0
       sql-template-strings: 2.2.2
     transitivePeerDependencies:
       - pg-native
+
+  '@prefabs.tech/tsconfig@0.7.0': {}
 
   '@prefabs.tech/tsconfig@0.8.0': {}
 
@@ -7360,7 +7431,7 @@ snapshots:
     dependencies:
       '@slack/types': 2.20.0
       '@types/node': 24.10.15
-      axios: 1.13.5
+      axios: 1.13.5(debug@4.4.3)
     transitivePeerDependencies:
       - debug
 
@@ -8235,15 +8306,7 @@ snapshots:
 
   axe-core@4.11.1: {}
 
-  axios@1.12.2(debug@4.4.3):
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.5
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.13.5:
+  axios@1.13.5(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
@@ -8497,7 +8560,7 @@ snapshots:
       conventional-commits-filter: 5.0.0
       handlebars: 4.7.9
       meow: 13.2.0
-      semver: 7.7.3
+      semver: 7.7.4
 
   conventional-commits-filter@5.0.0: {}
 
@@ -8709,7 +8772,7 @@ snapshots:
       '@one-ini/wasm': 0.1.1
       commander: 10.0.1
       minimatch: 9.0.1
-      semver: 7.7.3
+      semver: 7.7.4
 
   ejs@3.1.10:
     dependencies:
@@ -8835,7 +8898,7 @@ snapshots:
       es-errors: 1.3.0
       get-intrinsic: 1.3.0
       has-tostringtag: 1.0.2
-      hasown: 2.0.2
+      hasown: 2.0.3
 
   es-shim-unscopables@1.1.0:
     dependencies:
@@ -9237,7 +9300,7 @@ snapshots:
       '@fastify/merge-json-schemas': 0.2.1
       ajv: 8.20.0
       ajv-formats: 3.0.1
-      fast-uri: 3.1.0
+      fast-uri: 3.1.1
       json-schema-ref-resolver: 3.0.0
       rfdc: 1.4.1
 
@@ -9401,7 +9464,7 @@ snapshots:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       es-set-tostringtag: 2.1.0
-      hasown: 2.0.2
+      hasown: 2.0.3
       mime-types: 2.1.35
 
   formdata-polyfill@4.0.10:
@@ -9561,7 +9624,7 @@ snapshots:
 
   glob@13.0.0:
     dependencies:
-      minimatch: 10.1.1
+      minimatch: 10.2.5
       minipass: 7.1.2
       path-scurry: 2.0.0
 
@@ -10036,7 +10099,7 @@ snapshots:
       '@babel/parser': 7.28.5
       '@istanbuljs/schema': 0.1.3
       istanbul-lib-coverage: 3.2.2
-      semver: 7.7.3
+      semver: 7.7.4
     transitivePeerDependencies:
       - supports-color
 
@@ -10150,19 +10213,6 @@ snapshots:
 
   jsonify@0.0.1: {}
 
-  jsonwebtoken@9.0.2:
-    dependencies:
-      jws: 3.2.2
-      lodash.includes: 4.3.0
-      lodash.isboolean: 3.0.3
-      lodash.isinteger: 4.0.4
-      lodash.isnumber: 3.0.3
-      lodash.isplainobject: 4.0.6
-      lodash.isstring: 4.0.1
-      lodash.once: 4.1.1
-      ms: 2.1.3
-      semver: 7.7.3
-
   jsonwebtoken@9.0.3:
     dependencies:
       jws: 4.0.1
@@ -10193,12 +10243,6 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  jwa@1.4.2:
-    dependencies:
-      buffer-equal-constant-time: 1.0.1
-      ecdsa-sig-formatter: 1.0.11
-      safe-buffer: 5.2.1
-
   jwa@2.0.1:
     dependencies:
       buffer-equal-constant-time: 1.0.1
@@ -10214,11 +10258,6 @@ snapshots:
       lru-memoizer: 2.3.0
     transitivePeerDependencies:
       - supports-color
-
-  jws@3.2.2:
-    dependencies:
-      jwa: 1.4.2
-      safe-buffer: 5.2.1
 
   jws@4.0.1:
     dependencies:
@@ -10325,7 +10364,7 @@ snapshots:
 
   make-dir@4.0.0:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.4
 
   math-intrinsics@1.1.0: {}
 
@@ -10384,10 +10423,6 @@ snapshots:
   mime@2.6.0: {}
 
   mime@3.0.0: {}
-
-  minimatch@10.1.1:
-    dependencies:
-      '@isaacs/brace-expansion': 5.0.0
 
   minimatch@10.2.5:
     dependencies:
@@ -10787,7 +10822,7 @@ snapshots:
   normalize-package-data@7.0.1:
     dependencies:
       hosted-git-info: 8.1.0
-      semver: 7.7.3
+      semver: 7.7.4
       validate-npm-package-license: 3.0.4
 
   normalize-path@3.0.0: {}
@@ -11391,8 +11426,6 @@ snapshots:
 
   semver@7.7.1: {}
 
-  semver@7.7.3: {}
-
   semver@7.7.4: {}
 
   serialize-error@8.1.0:
@@ -11690,6 +11723,10 @@ snapshots:
     dependencies:
       js-tokens: 9.0.1
 
+  stripe@20.3.1(@types/node@24.10.15):
+    optionalDependencies:
+      '@types/node': 24.10.15
+
   strnum@2.2.3: {}
 
   stubs@3.0.0:
@@ -11823,10 +11860,10 @@ snapshots:
 
   twilio@4.23.0(debug@4.4.3):
     dependencies:
-      axios: 1.12.2(debug@4.4.3)
+      axios: 1.13.5(debug@4.4.3)
       dayjs: 1.11.18
       https-proxy-agent: 5.0.1
-      jsonwebtoken: 9.0.2
+      jsonwebtoken: 9.0.3
       qs: 6.14.0
       scmp: 2.1.0
       url-parse: 1.5.10

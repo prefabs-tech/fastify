@@ -346,21 +346,12 @@ importers:
       '@fastify/multipart':
         specifier: 9.4.0
         version: 9.4.0
-      '@types/busboy':
-        specifier: 1.5.4
-        version: 1.5.4
       '@types/uuid':
         specifier: 9.0.8
         version: 9.0.8
       ajv:
         specifier: 8.20.0
         version: 8.20.0
-      busboy:
-        specifier: 1.6.0
-        version: 1.6.0
-      graphql-upload-minimal:
-        specifier: 1.6.4
-        version: 1.6.4(graphql@16.13.2)
       uuid:
         specifier: 9.0.1
         version: 9.0.1

@@ -142,6 +142,19 @@ The `graphql` block in the `ApiConfig` supports all of the [original mercurius p
 
 An additional `enabled` (boolean) option allows you to disable the graphql server.
 
+### File uploads
+
+GraphQL file uploads ([graphql multipart request spec](https://github.com/jaydenseric/graphql-multipart-request-spec)) are supported out of the box: when the plugin is enabled it registers an upload transport (content-type parser + `graphql-upload-minimal` processing) before mercurius. Configure or disable it with the `uploads` option:
+
+```typescript
+await fastify.register(graphqlPlugin, {
+  ...config.graphql,
+  uploads: { maxFileSize: 10485760 }, // or { enabled: false } to disable
+});
+```
+
+Declare `scalar Upload` in your schema; resolvers receive `Upload` promises. See GUIDE.md (Feature 16) for gotchas, including plugin ordering when combining with REST uploads via `@prefabs.tech/fastify-s3`.
+
 ## Context
 
 The fastify-graphql plugin will generate a graphql context on every request that will include the following attributes:

@@ -8,7 +8,7 @@ Handling file uploads in a full-stack context requires substantially more effort
 
 - **Automate the Full Upload Lifecycle**: From intercepting `multipart/form-data` chunks (via internal parsers), writing to S3, and saving strict structured metadata natively into our `@prefabs.tech/fastify-slonik` powered databases—this plugin handles the entire flow.
 - **Standardize Duplication Strategies**: It provides out-of-the-box mechanisms (`error`, `add-suffix`, `override`) to elegantly handle duplicate filenames with zero effort.
-- **Bridge REST & GraphQL**: The plugin provides specialized parsers (`ajvFilePlugin` and `multipartParserPlugin`) ensuring that file uploads are supported natively and documented correctly via Swagger (for REST APIs) and GraphQL simultaneously.
+- **Bridge REST & GraphQL**: File uploads work over REST (via `@fastify/multipart` and the `ajvFilePlugin` Swagger helper) and over GraphQL (via the upload transport that [@prefabs.tech/fastify-graphql](../graphql/) registers when enabled) — with a single `FileService` consuming either.
 
 ### Design Decisions: Why not @aws-sdk/client-s3 and @fastify/multipart directly?
 
@@ -48,7 +48,7 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 
 When using AWS S3, you are required to enable the following permissions:
 
-**_Required Permission:_**
+**_Required Permissions:_**
 
 - GetObject Permission
 - GetObjectAttributes Permission
@@ -88,11 +88,12 @@ When using AWS S3, you are required to enable the following permissions:
 }
 ```
 
-### Register plugin
+### Registering the plugin
 
-Register the fastify-s3 package with your Fastify instance, passing its options directly. The plugin requires the slonik plugin to be registered first (it stores file metadata in the database); everything else is configured through the plugin's own `S3Options` argument:
+Register the fastify-s3 package with your Fastify instance, passing its options directly. The recommended pattern is still a central app config (`ApiConfig`) with an `s3` block — you derive the plugin options from it and pass them explicitly; the plugin no longer reads them from the fastify instance. The slonik plugin must be registered first (file metadata is stored in the database):
 
 ```typescript
+import configPlugin from "@prefabs.tech/fastify-config";
 import errorHandlerPlugin from "@prefabs.tech/fastify-error-handler";
 import s3Plugin from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
@@ -106,6 +107,10 @@ const start = async () => {
     logger: config.logger,
   });
 
+  // Register config plugin (decorates the app with the global config,
+  // used by FileService consumers via request.config)
+  await fastify.register(configPlugin, { config });
+
   await fastify.register(errorHandlerPlugin, {
     stackTrace: process.env.NODE_ENV === "development",
   });
@@ -113,13 +118,11 @@ const start = async () => {
   // Register database plugin (required by fastify-s3)
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register fastify-s3 plugin (see below for multipartParserPlugin when using GraphQL uploads)
+  // Register fastify-s3 plugin, passing its config slice explicitly
+  // (see below for GraphQL uploads)
   await fastify.register(s3Plugin, {
-    bucket: "my-app-uploads",
-    clientConfig: {
-      region: "ap-southeast-1",
-    },
-    rest: { enabled: true },
+    ...config.s3,
+    rest: config.rest,
   });
 
   await fastify.listen({
@@ -135,28 +138,35 @@ Registering the plugin without options is deprecated — see [Deprecated: config
 
 ## Configuration
 
-The plugin is configured with an `S3Options` object passed directly to `register()`.
+The plugin is configured with an `S3Options` object passed directly to `register()` — typically derived from your central `ApiConfig`: the `s3` block plus the app-wide `rest` flag (`{ ...config.s3, rest: config.rest }`). The plugin itself makes no assumption that a global config exists; deriving its options from one is an app-level choice.
+
+The `rest.enabled` flag only controls *incoming HTTP upload parsing* (it registers `@fastify/multipart`); GraphQL uploads are configured on the graphql plugin (`uploads` option). The flag may be off entirely: the plugin still runs migrations and provides a fully functional `FileService`/`S3Client` — e.g. for presigned-URL flows (clients upload directly to S3), server-generated files, or download-only services.
 
 To initialize Client:
 
 AWS S3 Config
 
 ```typescript
-import type { S3Options } from "@prefabs.tech/fastify-s3";
+import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-const s3Options: S3Options = {
-  bucket: "" | { key: "value" }, // Specify your S3 bucket
-  //... AWS S3 client config
-  clientConfig: {
-    credentials: {
-      accessKeyId: "accessKey", // Replace with your AWS access key
-      secretAccessKey: "secretKey", // Replace with your AWS secret key
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    bucket: "" | { key: "value" }, // Specify your S3 bucket
+    //... AWS S3 client config
+    clientConfig: {
+      credentials: {
+        accessKeyId: "accessKey", // Replace with your AWS access key
+        secretAccessKey: "secretKey", // Replace with your AWS secret key
+      },
+      region: "ap-southeast-1", // Replace with your AWS region
     },
-    region: "ap-southeast-1", // Replace with your AWS region
   },
 };
 
-await fastify.register(s3Plugin, s3Options);
+// at registration, pass the slice explicitly
+await fastify.register(s3Plugin, { ...config.s3, rest: config.rest });
 ```
 
 > **Credentials on EC2 (IAM Role)**
@@ -173,16 +183,20 @@ await fastify.register(s3Plugin, s3Options);
 Minio Service Config
 
 ```typescript
-const s3Options: S3Options = {
-  bucket: "yourMinioBucketName",
-  clientConfig: {
-    credentials: {
-      accessKeyId: "yourMinioAccessKey",
-      secretAccessKey: "yourMinioSecretKey",
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    bucket: "yourMinioBucketName",
+    clientConfig: {
+      credentials: {
+        accessKeyId: "yourMinioAccessKey",
+        secretAccessKey: "yourMinioSecretKey",
+      },
+      endpoint: "http://your-minio-server-url:port", // Replace with your Minio server URL
+      forcePathStyle: true, // Set to true if your Minio server uses path-style URLs
+      region: "", // For Minio, you can leave the region empty or specify it based on your setup
     },
-    endpoint: "http://your-minio-server-url:port", // Replace with your Minio server URL
-    forcePathStyle: true, // Set to true if your Minio server uses path-style URLs
-    region: "", // For Minio, you can leave the region empty or specify it based on your setup
   },
 };
 ```
@@ -190,10 +204,14 @@ const s3Options: S3Options = {
 To add a custom table name:
 
 ```typescript
-const s3Options: S3Options = {
-  //... AWS S3 client config
-  table: {
-    name: "new-table-name", // You can set a custom table name here (default: "files")
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    //... AWS S3 client config
+    table: {
+      name: "new-table-name", // You can set a custom table name here (default: "files")
+    },
   },
 };
 ```
@@ -201,9 +219,13 @@ const s3Options: S3Options = {
 To limit the file size while uploading:
 
 ```typescript
-const s3Options: S3Options = {
-  //... AWS S3 client config
-  fileSizeLimitInBytes: 10485760,
+const config: ApiConfig = {
+  // ... other configurations
+
+  s3: {
+    //... AWS S3 client config
+    fileSizeLimitInBytes: 10485760,
+  },
 };
 ```
 
@@ -228,11 +250,11 @@ To handle duplicate filenames:
 
 This package supports integration with [@prefabs.tech/fastify-graphql](../graphql/).
 
-Register additional `multipartParserPlugin` plugin with the fastify instance as shown below:
+GraphQL file uploads are handled entirely by the graphql plugin: when it is enabled it registers the upload transport (content-type parser + `graphql-upload-minimal` processing) before mercurius. Nothing upload-specific needs to be registered from this package:
 
 ```typescript
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";
-import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import s3Plugin from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
@@ -247,21 +269,19 @@ const start = async () => {
   // Register database plugin
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register multipart content-type parser plugin (required for graphql file upload or if using both graphql and rest file upload)
-  await fastify.register(multipartParserPlugin, {
-    graphql: { enabled: true, path: "/graphql" },
+  // Register graphql plugin (registers the upload transport by default;
+  // configure it with the `uploads` option)
+  await fastify.register(graphqlPlugin, {
+    ...config.graphql,
+    uploads: { maxFileSize: 10485760 },
   });
 
-  // Register graphql plugin
-  await fastify.register(graphqlPlugin, config.graphql);
-
-  // Register fastify-s3 plugin
+  // Register fastify-s3 plugin AFTER the graphql plugin (required in mixed
+  // REST + GraphQL mode: the @fastify/multipart parser registered by
+  // rest.enabled must not leak into the graphql route's context)
   await fastify.register(s3Plugin, {
-    bucket: "my-app-uploads",
-    clientConfig: {
-      region: "ap-southeast-1",
-    },
-    graphql: { enabled: true },
+    ...config.s3,
+    rest: config.rest,
   });
 
   await fastify.listen({
@@ -273,18 +293,19 @@ const start = async () => {
 start();
 ```
 
-**Note**: Register the `multipartParserPlugin` if you're using GraphQL or both GraphQL and REST, as it's required. Make sure to place the registration of the `multipartParserPlugin` above the `graphqlPlugin`.
+**Note**: In mixed REST + GraphQL mode, always register the s3 plugin after the graphql plugin.
 
 ## JSON Schema with Swagger
 
-If you want to use @prefabs.tech/fastify-s3 with @fastify/swagger and @fastify/swagger-ui or @prefabs.tech/swagger you must add a new type called `isFile` and use a custom instance of a validator compiler
+Fastify validates request bodies with AJV against each route's JSON schema, and @fastify/swagger generates the OpenAPI documentation from those same schemas. File-upload routes break this dual use: at runtime the uploaded field on `req.body` is a parsed multipart object (`{ data, encoding, filename, mimetype }`), which standard JSON Schema cannot describe — while the OpenAPI output needs the field declared as `type: "string", format: "binary"` for Swagger UI to render a file picker. One schema has to mean two different things.
+
+The exported `ajvFilePlugin` resolves this with a custom `isFile` AJV keyword that does both jobs: at runtime it validates that the value is a parsed multipart file object (or an array of them), and at schema-compile time it rewrites the schema node to `type: "string", format: "binary"` so the generated OpenAPI documents a proper file-upload field. Declare `file: { isFile: true }` once and both validation and documentation come out right (`consumes: ["multipart/form-data"]` is the OpenAPI content-type hint for the route).
+
+Note that `ajvFilePlugin` is an AJV plugin, not a Fastify plugin: Fastify's validator can only be customized at server creation, so it must be passed in the `Fastify()` constructor (`ajv: { plugins: [ajvFilePlugin] }`) — no plugin registered later, including this package's, can do that for you.
 
 ```typescript
 import graphqlPlugin from "@prefabs.tech/fastify-graphql";
-import s3Plugin, {
-  ajvFilePlugin,
-  multipartParserPlugin,
-} from "@prefabs.tech/fastify-s3";
+import s3Plugin, { ajvFilePlugin } from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import Fastify from "fastify";
 
@@ -303,22 +324,13 @@ const start = async () => {
   // Register database plugin
   await fastify.register(slonikPlugin, config.slonik);
 
-  // Register multipart content-type parser plugin (required for graphql file upload or if using both graphql and rest file upload)
-  await fastify.register(multipartParserPlugin, {
-    graphql: { enabled: true, path: "/graphql" },
-  });
-
-  // Register graphql plugin
+  // Register graphql plugin (upload transport included by default)
   await fastify.register(graphqlPlugin, config.graphql);
 
-  // Register fastify-s3 plugin
+  // Register fastify-s3 plugin (after the graphql plugin)
   await fastify.register(s3Plugin, {
-    bucket: "my-app-uploads",
-    clientConfig: {
-      region: "ap-southeast-1",
-    },
-    graphql: { enabled: true },
-    rest: { enabled: true },
+    ...config.s3,
+    rest: config.rest,
   });
 
   fastify.post('/upload/file', {
@@ -349,27 +361,27 @@ start();
 
 ## Deprecated: configuration via `fastify.config`
 
-Earlier versions of this plugin did not take options: they read their configuration from the fastify instance (`fastify.config`, decorated by [@prefabs.tech/fastify-config](../config/)) — the S3 settings from `config.s3`, and the REST/GraphQL feature flags from the application-wide `config.rest` and `config.graphql` namespaces.
+Earlier versions of this plugin did not take options: they read their configuration from the fastify instance (`fastify.config`, decorated by [@prefabs.tech/fastify-config](../config/)) — the S3 settings from `config.s3`, and the REST feature flag from the application-wide `config.rest` namespace. GraphQL upload support also used to live in this package (`multipartParserPlugin` + an internal upload hook); it has moved to [@prefabs.tech/fastify-graphql](../graphql/).
 
 This approach is **deprecated**. The plugin no longer depends on `fastify.config` for its configuration; everything is passed through its own `S3Options` argument as documented above.
 
 For backward compatibility, the old behavior is temporarily still supported:
 
-- **Main plugin** — registering without options composes them from `fastify.config.s3`, `fastify.config.rest` and `fastify.config.graphql`, and logs a deprecation warning. If `fastify.config.s3` is missing too, registration throws.
-- **`multipartParserPlugin`** — registering without options reads `req.config.graphql` per request, and logs a deprecation warning.
+- **Main plugin** — registering without options composes them from `fastify.config.s3` and `fastify.config.rest`, and logs a deprecation warning. If `fastify.config.s3` is missing too, registration throws.
+- **`multipartParserPlugin`** — still exported, but as a thin wrapper around the upload transport from `@prefabs.tech/fastify-graphql`. It logs a deprecation warning and no-ops when the transport is already registered (which the graphql plugin does by default). Prefer the graphql plugin's `uploads` option.
+- **`GraphQLUpload` / `GraphQLFileUpload` types** — still re-exported, deprecated; import them from `@prefabs.tech/fastify-graphql` instead.
 - **`createFilesTableQuery`** — still accepts a full `ApiConfig` (reading `config.s3.table.name`) in addition to the new `S3Options` shape.
 
-This fallback will be removed in a future major release. To migrate, pass the configuration you previously kept under `config.s3` (plus the `rest`/`graphql` flags) directly to `register()`:
+These fallbacks will be removed in a future release. To migrate, pass the configuration you previously kept under `config.s3` (plus the `rest` flag) directly to `register()`:
 
 ```typescript
 // Before (deprecated)
-await fastify.register(configPlugin, { config }); // config.s3, config.rest, config.graphql
+await fastify.register(configPlugin, { config }); // config.s3, config.rest
 await fastify.register(s3Plugin);
 
 // After
 await fastify.register(s3Plugin, {
   ...config.s3,
-  graphql: config.graphql,
   rest: config.rest,
 });
 ```

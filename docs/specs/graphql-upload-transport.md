@@ -1,7 +1,7 @@
 # Spec: Move GraphQL upload transport from `fastify-s3` to `fastify-graphql`
 
-Status: draft, pending decisions in §8. Companion to the plugin-options migration
-(step 1 already implemented in `packages/s3`, uncommitted).
+Status: implemented on branch `refact/config` (2026-07-11); decisions resolved
+in §8. Companion to the plugin-options migration (step 1, same branch).
 
 ## 1. Problem statement
 
@@ -136,7 +136,7 @@ the legacy s3 `multipartParserPlugin` (same underlying named plugin, see 3.2)
 | `index.ts` | export the transport (name per §8.2), `GraphqlUploadsConfig`; re-export `FileUpload as GraphQLFileUpload`, `Upload as GraphQLUpload` types; add the request augmentation |
 | `package.json` | **new runtime deps**: `busboy` + `graphql-upload-minimal` (+ `@types/busboy` dev). Requires explicit approval per repo rules (§8.1). |
 
-### 3.2 `packages/s3` (all backward-compatible until the major)
+### 3.2 `packages/s3` (all backward-compatible until removal)
 
 | Change | Detail |
 |---|---|
@@ -144,7 +144,7 @@ the legacy s3 `multipartParserPlugin` (same underlying named plugin, see 3.2)
 | `plugin.ts` | drop the `options.graphql?.enabled` branch entirely; drop `graphql` from the config-fallback composition |
 | `types/index.ts` | `S3Options` loses `graphql`; `S3GraphqlConfig` and `MultipartParserOptions` deleted; `fileSizeLimitInBytes` now REST-only (the GraphQL upload limit lives in `uploads.maxFileSize`) |
 | `constants.ts` | remove `DEFAULT_GRAPHQL_PATH` |
-| `index.ts` | deprecated compat re-exports, removed at the major: `multipartParserPlugin` (a thin named wrapper that registers graphql's transport only if `hasPlugin` doesn't already see it — making BOTH registration orders safe, since with uploads defaulting on the graphql plugin usually registers the transport first; the wrapper logs a deprecation warning), `GraphQLUpload`/`GraphQLFileUpload` types (re-exported from the graphql pkg) |
+| `index.ts` | deprecated compat re-exports, removed at a future release: `multipartParserPlugin` (a thin named wrapper that registers graphql's transport only if `hasPlugin` doesn't already see it — making BOTH registration orders safe, since with uploads defaulting on the graphql plugin usually registers the transport first; the wrapper logs a deprecation warning), `GraphQLUpload`/`GraphQLFileUpload` types (re-exported from the graphql pkg) |
 | `package.json` | drop `busboy`, `@types/busboy`, `graphql-upload-minimal` from `dependencies` (no longer referenced; type re-exports come via the existing `@prefabs.tech/fastify-graphql` peer) |
 
 Because the aliased legacy `multipartParserPlugin` is the *full* transport
@@ -175,7 +175,7 @@ Same two-step scheme as the plugin-options migration:
   working, including upload processing. Deprecation is signaled in s3's docs
   and by the s3 plugin's config-fallback warning when it finds
   `fastify.config.graphql?.enabled`.
-- **Step 2 (next major):** remove s3's compat re-exports and any `S3Options`
+- **Step 2 (a future release; pre-1.0 this can be a minor):** remove s3's compat re-exports and any `S3Options`
   leftovers; `uploads` becomes the only path.
 
 ## 5. Docs changes

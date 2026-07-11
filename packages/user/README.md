@@ -49,7 +49,7 @@ import corsPlugin from "@fastify/cors";
 import formBodyPlugin from "@fastify/formbody";
 import configPlugin from "@prefabs.tech/fastify-config";
 import mailerPlugin from "@prefabs.tech/fastify-mailer";
-import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import s3Plugin from "@prefabs.tech/fastify-s3";
 import slonikPlugin, { migrationPlugin } from "@prefabs.tech/fastify-slonik";
 import userPlugin, {
   SUPERTOKENS_CORS_HEADERS,
@@ -86,9 +86,6 @@ const start = async () => {
 
   // Register mailer plugin
   await fastify.register(mailerPlugin, config.mailer);
-
-  // Register multipart content-type parser plugin
-  await fastify.register(multipartParserPlugin);
 
   // Register s3 plugin
   await fastify.register(s3Plugin);

@@ -93,6 +93,8 @@ Cross-cutting rules:
 2. Asserting a `vi.fn()` plugin was called: Fastify calls `plugin(fastify, options, done)` — include `expect.any(Function)` as the third argument.
 3. `Readable.from(["string"])` emits strings; `Buffer.concat` throws. Use `Readable.from([Buffer.from("string")])`.
 4. Verify `@fastify/multipart` via `fastify.hasContentTypeParser("multipart/form-data")` — `sharedSchemaId` does not expose a schema through `fastify.getSchema`.
+5. Content-type parsers are snapshotted into an encapsulation context at its creation, but hooks are bound at `ready()`. A `*` parser added at root AFTER registering mercurius never reaches `/graphql` (silent 415), while a root hook added after still runs. Register parsers before the plugin that owns the route; a dedicated parser (`multipart/form-data`) beats a catch-all in whichever context sees both.
+6. A custom content-type parser that delegates to an async body parser (busboy) must NOT also call `done(null)` synchronously — the double-done races the route handler, which then sees `req.body === undefined` intermittently.
 
 ## Documentation system
 

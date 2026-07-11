@@ -4,20 +4,20 @@
 
 ## Plugin Registration
 
-1. **Main plugin (`default` export)** — Fastify plugin wrapped with `fastify-plugin`, registered with an `S3Options` object. On registration it runs database migrations, conditionally registers `@fastify/multipart` (when `options.rest?.enabled` is `true`), and conditionally registers GraphQL upload support (when `options.graphql?.enabled` is `true`). Registering without options falls back to composing the options from `fastify.config` (`s3`, `rest`, `graphql` namespaces) with a deprecation warning, and throws if `fastify.config.s3` is also missing. Throws if the `fastify.slonik` decorator is missing (the slonik plugin must be registered first).
+1. **Main plugin (`default` export)** — Fastify plugin wrapped with `fastify-plugin`, registered with an `S3Options` object. On registration it runs database migrations and conditionally registers `@fastify/multipart` (when `options.rest?.enabled` is `true`). Registering without options falls back to composing the options from `fastify.config` (`s3`, `rest` namespaces) with a deprecation warning, and throws if `fastify.config.s3` is also missing. Throws if the `fastify.slonik` decorator is missing (the slonik plugin must be registered first). `rest.enabled` may be off entirely — the plugin still runs migrations and provides `FileService`/`S3Client` (presigned-URL, server-generated, download-only flows).
 
 2. **Automatic database migration** — On registration the plugin creates (if not exists) the files table using the configured table name (`options.table.name`) or the default name `"files"`.
 
 3. **Conditional REST multipart registration** — When `options.rest?.enabled` is `true`, `@fastify/multipart` is registered with `attachFieldsToBody: "keyValues"`, a shared schema id of `"fileSchema"`, a file-size limit from `options.fileSizeLimitInBytes` (defaults to `Infinity`), and an `onFile` hook that converts every part to a `{ data, encoding, filename, mimetype }` object and attaches it as the field value.
 
-4. **Conditional GraphQL upload registration** — When `options.graphql?.enabled` is `true`, the internal `graphqlUpload` plugin is registered, passing `maxFileSize` from `options.fileSizeLimitInBytes` (defaults to `Infinity`).
+4. **GraphQL uploads (moved)** — GraphQL upload transport now lives in `@prefabs.tech/fastify-graphql` (registered by the graphql plugin, `uploads` option). This package only consumes the resulting `Upload` streams via `FileService`. In mixed REST + GraphQL mode the s3 plugin must be registered after the graphql plugin.
 
 ## Configuration
 
 5. **`S3Config` interface** — Defines the `s3` key required inside `ApiConfig`:
    - `clientConfig: S3ClientConfig` — passed straight to the AWS SDK `S3Client` constructor.
    - `bucket: string | Record<string, string>` — default bucket or named-bucket map.
-   - `fileSizeLimitInBytes?: number` — optional global file-size cap applied to both REST and GraphQL upload paths.
+   - `fileSizeLimitInBytes?: number` — optional file-size cap for the REST upload path (GraphQL upload limits are set via the graphql plugin's `uploads.maxFileSize`).
    - `filenameResolutionStrategy?: "overwrite" | "add-suffix" | "error"` — global default strategy when a key collision is detected in S3.
    - `table?: { name?: string }` — overrides the default `"files"` table name.
 
@@ -27,7 +27,7 @@
 
 7. **`ajvFilePlugin`** — AJV keyword plugin that registers the `isFile` custom keyword. Schemas using `isFile: true` validate that the value is a multipart file object (`{ data, filename, mimetype }`). For array schemas it validates every element. During compile the keyword also rewrites the parent schema (`type: "string"`, `format: "binary"`) so OpenAPI tooling renders a proper file-upload schema.
 
-8. **`multipartParserPlugin`** — Fastify plugin that registers a catch-all `"*"` content-type parser, registered with a `MultipartParserOptions` object (`{ graphql?: { enabled?, path? } }`). For multipart requests it routes GraphQL-multipart requests (matching `options.graphql.path`, default `"/graphql"`) by setting `req.graphqlFileUploadMultipart = true`, while all other multipart requests are parsed immediately with Busboy into `{ fields..., files... }` and stored on `req.body`. Non-multipart content types fall through unchanged. Registering without options falls back to reading `req.config.graphql` per request with a deprecation warning. Augments `FastifyRequest` with the optional `graphqlFileUploadMultipart?: boolean` property.
+8. **`multipartParserPlugin` (deprecated compat wrapper)** — Thin wrapper around the upload transport from `@prefabs.tech/fastify-graphql`: logs a deprecation warning, defaults the graphql path from `fastify.config.graphql.path` when present, and no-ops if the transport is already registered (`hasPlugin` check). Removed in the next major; use the graphql plugin's `uploads` option instead.
 
 ## `S3Client` Utility Class
 
@@ -94,7 +94,7 @@
 
 ## Type Exports
 
-32. **`S3Config`** — Plugin configuration shape (see Feature 5). **`S3Options`** — plugin registration options: `S3Config` plus `graphql?: S3GraphqlConfig` and `rest?: { enabled? }`. **`S3GraphqlConfig`** — `{ enabled?: boolean, path?: string }`. **`MultipartParserOptions`** — options for `multipartParserPlugin` (see Feature 8).
+32. **`S3Config`** — Plugin configuration shape (see Feature 5). **`S3Options`** — plugin registration options: `S3Config` plus `rest?: { enabled? }`.
 
 33. **`FilePayload`** — Input type for `FileService.upload`, containing `{ file: { fileContent: Multipart, fileFields: FileCreateInput }, options?: FilePayloadOptions }`.
 
@@ -110,6 +110,6 @@
 
 39. **`FileCreateInput`** / **`FileUpdateInput`** — Input types for creating and updating file records.
 
-40. **`GraphQLFileUpload`** / **`GraphQLUpload`** — Re-exported from `graphql-upload-minimal` for consumers using GraphQL file uploads.
+40. **`GraphQLFileUpload`** / **`GraphQLUpload`** — Deprecated re-exports from `@prefabs.tech/fastify-graphql`; import them from there instead. Removed in the next major.
 
 41. **`S3ClientConfig`** — Re-exported from `@aws-sdk/client-s3` for consumers constructing raw S3 client configurations.

@@ -41,6 +41,8 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 
 To set up graphql in fastify project, follow these steps:
 
+### Define schema and resolvers
+
 Create a resolvers file at `src/graphql/resolvers.ts` to define all GraphQL mutations and queries.
 
 ```typescript
@@ -81,6 +83,8 @@ export { default as resolvers } from "./resolvers";
 export { default as schema } from "./schema";
 ```
 
+### Add the config block
+
 Add a `graphql` block (type `GraphqlOptions`) to your central config in `config/index.ts`. A single app-wide config from which every plugin's options are derived remains the recommended pattern — what changed is that the plugin no longer reads it from the fastify instance; you pass its slice explicitly at registration:
 
 ```typescript
@@ -106,6 +110,8 @@ const config: ApiConfig = {
 
 export default config;
 ```
+
+### Register plugin
 
 Register the plugin with your fastify instance in `src/index.ts`, passing its config slice as the second argument:
 

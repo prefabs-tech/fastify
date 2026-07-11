@@ -48,7 +48,7 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 
 When using AWS S3, you are required to enable the following permissions:
 
-**_Required Permission:_**
+**_Required Permissions:_**
 
 - GetObject Permission
 - GetObjectAttributes Permission
@@ -88,7 +88,7 @@ When using AWS S3, you are required to enable the following permissions:
 }
 ```
 
-### Register plugin
+### Registering the plugin
 
 Register the fastify-s3 package with your Fastify instance, passing its options directly. The recommended pattern is still a central app config (`ApiConfig`) with an `s3` block — you derive the plugin options from it and pass them explicitly; the plugin no longer reads them from the fastify instance. The slonik plugin must be registered first (file metadata is stored in the database):
 

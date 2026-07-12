@@ -14,18 +14,18 @@
 
 ## Configuration
 
-5. **`S3Config` interface** — Defines the `s3` key required inside `ApiConfig`:
+5. **`S3Config` interface** — The configuration required by the s3 plugin (`S3Options`, the `register()` argument, is `S3Config` plus the `rest` flag):
    - `clientConfig: S3ClientConfig` — passed straight to the AWS SDK `S3Client` constructor.
    - `bucket: string | Record<string, string>` — default bucket or named-bucket map.
    - `fileSizeLimitInBytes?: number` — optional file-size cap for the REST upload path (GraphQL upload limits are set via the graphql plugin's `uploads.maxFileSize`).
    - `filenameResolutionStrategy?: "overwrite" | "add-suffix" | "error"` — global default strategy when a key collision is detected in S3.
    - `table?: { name?: string }` — overrides the default `"files"` table name.
 
-6. **Module augmentation of `@prefabs.tech/fastify-config`** — Adds `s3: S3Config` to the `ApiConfig` interface so the config is accessible via `fastify.config.s3` throughout the application.
+6. **Module augmentation of `@prefabs.tech/fastify-config` (deprecated)** — Adds `s3: S3Config` to the `ApiConfig` interface so the config is accessible via `fastify.config.s3` throughout the application. Deprecated along with the `fastify.config` configuration fallback (Feature 1); will be removed in a future release. Pass the configuration directly to `register()` instead.
 
 ## Sub-plugins (independently exportable)
 
-7. **`ajvFilePlugin`** — AJV keyword plugin that registers the `isFile` custom keyword. Schemas using `isFile: true` validate that the value is a multipart file object (`{ data, filename, mimetype }`). For array schemas it validates every element. During compile the keyword also rewrites the parent schema (`type: "string"`, `format: "binary"`) so OpenAPI tooling renders a proper file-upload schema.
+7. **`ajvFilePlugin`** — AJV keyword plugin (passed via `Fastify({ ajv: { plugins: [...] } })`, not `register()`) that registers the `isFile` custom keyword. Schemas using `isFile: true` validate that the value is a multipart file object (`{ data, filename, mimetype }`). For array schemas it validates every element. During compile the keyword also rewrites the parent schema (`type: "string"`, `format: "binary"`) so OpenAPI tooling renders a proper file-upload schema. Optional: required only when a consumer route schema uses `isFile` (unknown-keyword startup throw otherwise); the plugin itself registers no schemas. Adaptation of `@fastify/multipart`'s `ajvFilePlugin` (not a re-export — the validator targets this package's normalized `Multipart` body shape and adds array support).
 
 8. **`multipartParserPlugin` (deprecated compat wrapper)** — Thin wrapper around the upload transport from `@prefabs.tech/fastify-graphql`: logs a deprecation warning, defaults the graphql path from `fastify.config.graphql.path` when present, and no-ops if the transport is already registered (`hasPlugin` check). Removed in a future release; use the graphql plugin's `uploads` option instead.
 

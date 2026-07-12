@@ -47,9 +47,7 @@ import Fastify from "fastify";
 import s3Plugin, { ajvFilePlugin } from "@prefabs.tech/fastify-s3";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 
-// Extend ApiConfig so TypeScript knows about config.s3
-// (the module augmentation in index.ts handles this automatically when you import the package)
-import "@prefabs.tech/fastify-s3";
+// Importing the package augments ApiConfig with the s3 key (deprecated — see Feature 6)
 
 const fastify = Fastify({
   ajv: {
@@ -231,7 +229,7 @@ See the fastify-graphql GUIDE (Feature 16) for details and gotchas.
 
 ### 5 — `S3Config` configuration shape
 
-Provide `s3` inside the config plugin options:
+The configuration required by the s3 plugin. Pass it — plus the optional `rest` flag — directly to `register()` (together they form `S3Options`). Keeping it under an `s3` key in a central `ApiConfig` is an optional app-level convenience (typed via a deprecated module augmentation — see Feature 6):
 
 ```typescript
 import type { S3Config } from "@prefabs.tech/fastify-s3";
@@ -251,7 +249,9 @@ const s3Config: S3Config = {
 };
 ```
 
-### 6 — Module augmentation of `@prefabs.tech/fastify-config`
+### 6 — Module augmentation of `@prefabs.tech/fastify-config` (deprecated)
+
+> **Deprecated** — this augmentation exists to support the `fastify.config` configuration fallback and will be removed in a future release together with it. Pass the configuration directly to `register()` (Feature 5); if your app keeps an `s3` block in a central config object, type that object yourself.
 
 Importing `@prefabs.tech/fastify-s3` automatically extends `ApiConfig` with the `s3` key. No manual interface merging is required.
 
@@ -265,6 +265,8 @@ const bucket = fastify.config.s3.bucket;
 ### 7 — `ajvFilePlugin` — custom `isFile` AJV keyword
 
 Pass the plugin to Fastify's AJV options to enable the `isFile` keyword in route body schemas.
+
+Optional — only needed when your own route schemas declare file fields with `isFile: true`; the s3 plugin itself never uses the keyword. Without it, any route schema containing `isFile` makes the app throw at startup (`strict mode: unknown keyword: "isFile"`). It is an adaptation of [`@fastify/multipart`'s `ajvFilePlugin`](https://www.npmjs.com/package/@fastify/multipart#usage) (not a re-export): the runtime validator matches the normalized `Multipart` object this plugin attaches to `req.body` (which the upstream validator would reject) and adds array-of-files support.
 
 ```typescript
 import Fastify from "fastify";

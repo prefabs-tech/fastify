@@ -6,6 +6,10 @@ import type { S3Config } from "./types";
 
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
+    /** @deprecated Supports the fastify.config configuration fallback only.
+     * Pass the configuration directly to register() instead. This
+     * augmentation is removed in a future release; type your own central
+     * config object if you keep an s3 block in one. */
     s3: S3Config;
   }
 }

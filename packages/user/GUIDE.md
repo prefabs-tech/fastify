@@ -353,6 +353,8 @@ Before every `PUT /me` update, `filterUserUpdateInput` silently drops any attemp
 - Default max size: 5 MB (override with `config.user.photoMaxSizeInMB`)
 - Stored at `{userId}/photo` in `config.user.s3.bucket`
 
+Transport prerequisites: the REST photo route (`PUT /me/photo`) requires multipart parsing (`rest.enabled` on the s3 plugin); the GraphQL `uploadPhoto` mutation requires the graphql plugin's upload transport (registered by default when graphql is enabled — its `uploads` option). Neither is needed if photo upload is unused.
+
 ### Custom handlers
 
 Any route handler can be replaced:

@@ -200,9 +200,18 @@ importers:
       '@graphql-tools/merge':
         specifier: 9.1.8
         version: 9.1.8(graphql@16.13.2)
+      '@types/busboy':
+        specifier: 1.5.4
+        version: 1.5.4
+      busboy:
+        specifier: 1.6.0
+        version: 1.6.0
       graphql-tag:
         specifier: 2.12.6
         version: 2.12.6(graphql@16.13.2)
+      graphql-upload-minimal:
+        specifier: 1.6.4
+        version: 1.6.4(graphql@16.13.2)
     devDependencies:
       '@prefabs.tech/eslint-config':
         specifier: git+https://github.com/prefabs-tech/tools.git#chore/disable-unicorn-rules&path:packages/eslint-config
@@ -337,21 +346,12 @@ importers:
       '@fastify/multipart':
         specifier: 9.4.0
         version: 9.4.0
-      '@types/busboy':
-        specifier: 1.5.4
-        version: 1.5.4
       '@types/uuid':
         specifier: 9.0.8
         version: 9.0.8
       ajv:
         specifier: 8.20.0
         version: 8.20.0
-      busboy:
-        specifier: 1.6.0
-        version: 1.6.0
-      graphql-upload-minimal:
-        specifier: 1.6.4
-        version: 1.6.4(graphql@16.13.2)
       uuid:
         specifier: 9.0.1
         version: 9.0.1

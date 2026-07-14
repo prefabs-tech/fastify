@@ -30,7 +30,10 @@
   },
   "dependencies": {
     "@graphql-tools/merge": "9.1.8",
-    "graphql-tag": "2.12.6"
+    "@types/busboy": "1.5.4",
+    "busboy": "1.6.0",
+    "graphql-tag": "2.12.6",
+    "graphql-upload-minimal": "1.6.4"
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "git+https://github.com/prefabs-tech/tools.git#chore/disable-unicorn-rules&path:packages/eslint-config",

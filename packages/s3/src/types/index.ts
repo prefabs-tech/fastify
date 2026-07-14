@@ -57,6 +57,12 @@ interface S3Config {
   };
 }
 
+type S3Options = S3Config & {
+  rest?: {
+    enabled?: boolean;
+  };
+};
+
 export type {
   BucketChoice,
   FilenameResolutionStrategy,
@@ -65,6 +71,7 @@ export type {
   Multipart,
   PresignedUrlOptions,
   S3Config,
+  S3Options,
 };
 
 export type * from "./file";

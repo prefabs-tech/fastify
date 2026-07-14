@@ -39,11 +39,7 @@ const hasUserPermission = async (
 
   const rolePermissions = await getPermissions(roles);
 
-  if (!rolePermissions || !rolePermissions.includes(permission)) {
-    return false;
-  }
-
-  return true;
+  return !(!rolePermissions || !rolePermissions.includes(permission));
 };
 
 export default hasUserPermission;

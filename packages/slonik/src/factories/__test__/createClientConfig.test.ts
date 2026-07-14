@@ -7,10 +7,10 @@ import { describe, expect, it } from "vitest";
 import fieldNameCaseConverter from "../../interceptors/fieldNameCaseConverter";
 import resultParser from "../../interceptors/resultParser";
 import { createBigintTypeParser } from "../../typeParsers/createBigintTypeParser";
-import createClientConfiguration from "../createClientConfiguration";
+import createClientConfig from "../createClientConfig";
 
 describe("createClientConfiguration helper", () => {
-  const defaultConfiguration = {
+  const defaultConfig = {
     captureStackTrace: false,
     connectionRetryLimit: 3,
     connectionTimeout: 5000,
@@ -25,9 +25,9 @@ describe("createClientConfiguration helper", () => {
   };
 
   it("creates default configuration", () => {
-    const configuration = createClientConfiguration();
+    const config = createClientConfig();
 
-    expect(configuration).toEqual(defaultConfiguration);
+    expect(config).toEqual(defaultConfig);
   });
 
   it("includes fieldNameCaseConvertor interceptor", () => {
@@ -37,39 +37,39 @@ describe("createClientConfiguration helper", () => {
       },
     };
 
-    const configuration = createClientConfiguration({
+    const config = createClientConfig({
       interceptors: [interceptor],
     });
 
-    expect(configuration.interceptors).toContain(fieldNameCaseConverter);
+    expect(config.interceptors).toContain(fieldNameCaseConverter);
   });
 
   it("includes query logging interceptor when queryLoggingEnabled is true", () => {
-    const configuration = createClientConfiguration(undefined, true);
+    const config = createClientConfig(undefined, true);
     // The logging interceptor is the extra one beyond fieldNameCaseConverter + resultParser
-    expect(configuration.interceptors.length).toBeGreaterThan(2);
+    expect(config.interceptors.length).toBeGreaterThan(2);
   });
 
   it("does not include query logging interceptor when queryLoggingEnabled is false", () => {
-    const configuration = createClientConfiguration(undefined, false);
-    expect(configuration.interceptors).toHaveLength(2);
+    const config = createClientConfig(undefined, false);
+    expect(config.interceptors).toHaveLength(2);
   });
 
   it("does not include query logging interceptor when queryLoggingEnabled is undefined", () => {
-    const configuration = createClientConfiguration();
-    expect(configuration.interceptors).toHaveLength(2);
+    const config = createClientConfig();
+    expect(config.interceptors).toHaveLength(2);
   });
 
   it("appends user interceptors after built-in interceptors", () => {
     const userInterceptor = {
       transformRow: (_context: unknown, _query: unknown, row: unknown) => row,
     };
-    const configuration = createClientConfiguration({
+    const config = createClientConfig({
       interceptors: [userInterceptor as never],
     });
     // built-ins come first, user interceptor is last
-    expect(configuration.interceptors[0]).toBe(fieldNameCaseConverter);
-    expect(configuration.interceptors[1]).toBe(resultParser);
-    expect(configuration.interceptors.at(-1)).toBe(userInterceptor);
+    expect(config.interceptors[0]).toBe(fieldNameCaseConverter);
+    expect(config.interceptors[1]).toBe(resultParser);
+    expect(config.interceptors.at(-1)).toBe(userInterceptor);
   });
 });

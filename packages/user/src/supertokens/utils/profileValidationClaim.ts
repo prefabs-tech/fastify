@@ -106,7 +106,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     const fields = profileValidation.fields || [];
 
     // Verify that none of the specified fields in the user are null
-    const isVerified = !fields.some((field) => user[field] === null);
+    const isVerified = fields.every((field) => user[field] !== null);
 
     // Calculate the grace period expiry date if the user is not verified
     const gracePeriodEndsAt =

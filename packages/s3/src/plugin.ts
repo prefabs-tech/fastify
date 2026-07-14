@@ -45,7 +45,7 @@ const plugin = async (
     await fastify.register(fastifyMultiPart, {
       attachFieldsToBody: "keyValues",
       limits: {
-        fileSize: options.fileSizeLimitInBytes || Number.POSITIVE_INFINITY,
+        fileSize: options.fileSizeLimitInBytes || Infinity,
       },
       async onFile(part) {
         // @ts-expect-error: data value and data is missing in MultipartFile type

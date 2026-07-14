@@ -7,7 +7,7 @@ const isMultipart = (file: unknown): boolean =>
   "filename" in file &&
   "mimetype" in file;
 
-const validateFile = (data: unknown): boolean => {
+const isValidFile = (data: unknown): boolean => {
   if (Array.isArray(data)) {
     return data.every((file) => isMultipart(file));
   }
@@ -34,7 +34,7 @@ export default function plugin(ajv: Ajv): Ajv {
       }
 
       // Runtime validator
-      return validateFile;
+      return isValidFile;
     },
     error: {
       message: "should be a file or array of files",

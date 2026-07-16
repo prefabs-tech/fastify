@@ -19,7 +19,9 @@
   "main": "./dist/prefabs-tech-fastify-s3.cjs",
   "module": "./dist/prefabs-tech-fastify-s3.js",
   "types": "./dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -29,9 +31,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1042.0",
-    "@aws-sdk/lib-storage": "3.1042.0",
-    "@aws-sdk/s3-request-presigner": "3.1042.0",
+    "@aws-sdk/client-s3": "3.1086.0",
+    "@aws-sdk/lib-storage": "3.1086.0",
+    "@aws-sdk/s3-request-presigner": "3.1086.0",
     "@fastify/multipart": "9.4.0",
     "@types/uuid": "9.0.8",
     "ajv": "8.20.0",
@@ -44,17 +46,17 @@
     "@prefabs.tech/fastify-graphql": "0.94.1",
     "@prefabs.tech/fastify-slonik": "0.94.1",
     "@prefabs.tech/tsconfig": "0.8.7",
-    "@types/node": "24.10.15",
-    "@vitest/coverage-istanbul": "3.2.4",
-    "eslint": "10.6.0",
-    "fastify": "5.8.5",
+    "@types/node": "24.13.3",
+    "@vitest/coverage-istanbul": "3.2.7",
+    "eslint": "10.7.0",
+    "fastify": "5.10.0",
     "fastify-plugin": "5.1.0",
-    "graphql": "16.13.2",
-    "prettier": "3.8.3",
+    "graphql": "16.14.2",
+    "prettier": "3.9.5",
     "slonik": "46.8.0",
     "typescript": "5.9.3",
-    "vite": "6.4.2",
-    "vitest": "3.2.4",
+    "vite": "6.4.3",
+    "vitest": "3.2.7",
     "zod": "3.25.76"
   },
   "peerDependencies": {
@@ -62,10 +64,10 @@
     "@prefabs.tech/fastify-error-handler": "0.94.1",
     "@prefabs.tech/fastify-graphql": "0.94.1",
     "@prefabs.tech/fastify-slonik": "0.94.1",
-    "fastify": ">=5.2.2",
-    "fastify-plugin": ">=5.0.1",
-    "slonik": ">=46.1.0",
-    "zod": ">=3.23.8"
+    "fastify": ">=5.10.0",
+    "fastify-plugin": ">=5.1.0",
+    "slonik": ">=46.8.0",
+    "zod": ">=3.25.76"
   },
   "engines": {
     "node": ">=20"

@@ -36,20 +36,20 @@
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/tsconfig": "0.8.7",
-    "@types/node": "24.10.15",
+    "@types/node": "24.13.3",
     "@types/stack-trace": "0.0.33",
-    "@vitest/coverage-istanbul": "3.2.4",
-    "eslint": "10.6.0",
-    "fastify": "5.8.5",
+    "@vitest/coverage-istanbul": "3.2.7",
+    "eslint": "10.7.0",
+    "fastify": "5.10.0",
     "fastify-plugin": "5.1.0",
-    "prettier": "3.8.3",
+    "prettier": "3.9.5",
     "typescript": "5.9.3",
-    "vite": "6.4.2",
-    "vitest": "3.2.4"
+    "vite": "6.4.3",
+    "vitest": "3.2.7"
   },
   "peerDependencies": {
-    "fastify": ">=5.2.2",
-    "fastify-plugin": ">=5.0.1"
+    "fastify": ">=5.10.0",
+    "fastify-plugin": ">=5.1.0"
   },
   "engines": {
     "node": ">=20"

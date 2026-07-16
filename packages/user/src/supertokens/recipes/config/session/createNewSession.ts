@@ -17,8 +17,7 @@ const createNewSession = (
     }
 
     const request = getRequestFromUserContext(input.userContext)?.original as
-      | FastifyRequest
-      | undefined;
+      FastifyRequest | undefined;
 
     if (request && !request.user) {
       const { config, dbSchema, slonik } = request;

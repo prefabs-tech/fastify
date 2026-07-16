@@ -18,9 +18,7 @@ interface BaseOption {
 type BucketChoice = typeof BUCKET_FROM_FILE_FIELDS | typeof BUCKET_FROM_OPTIONS;
 
 type FilenameResolutionStrategy =
-  | typeof ADD_SUFFIX
-  | typeof ERROR
-  | typeof OVERWRITE;
+  typeof ADD_SUFFIX | typeof ERROR | typeof OVERWRITE;
 
 interface FilePayload {
   file: {

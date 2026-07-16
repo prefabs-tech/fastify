@@ -19,7 +19,9 @@
   "main": "./dist/prefabs-tech-fastify-slonik.cjs",
   "module": "./dist/prefabs-tech-fastify-slonik.js",
   "types": "./dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
@@ -31,7 +33,7 @@
   "dependencies": {
     "@prefabs.tech/postgres-migrations": "5.4.3",
     "humps": "2.0.1",
-    "pg": "8.20.0",
+    "pg": "8.22.0",
     "slonik-interceptor-query-logging": "46.8.0"
   },
   "devDependencies": {
@@ -40,27 +42,27 @@
     "@prefabs.tech/tsconfig": "0.8.7",
     "@slonik/driver": "46.8.0",
     "@types/humps": "2.0.6",
-    "@types/node": "24.10.15",
+    "@types/node": "24.13.3",
     "@types/pg": "8.20.0",
-    "@vitest/coverage-istanbul": "3.2.4",
-    "eslint": "10.6.0",
-    "fastify": "5.8.5",
+    "@vitest/coverage-istanbul": "3.2.7",
+    "eslint": "10.7.0",
+    "fastify": "5.10.0",
     "fastify-plugin": "5.1.0",
     "pg-mem": "3.0.14",
-    "prettier": "3.8.3",
+    "prettier": "3.9.5",
     "slonik": "46.8.0",
     "typescript": "5.9.3",
-    "vite": "6.4.2",
-    "vitest": "3.2.4",
+    "vite": "6.4.3",
+    "vitest": "3.2.7",
     "zod": "3.25.76"
   },
   "peerDependencies": {
     "@prefabs.tech/fastify-config": "0.94.1",
-    "fastify": ">=5.2.2",
-    "fastify-plugin": ">=5.0.1",
+    "fastify": ">=5.10.0",
+    "fastify-plugin": ">=5.1.0",
     "pg-mem": ">=3.0.14",
-    "slonik": ">=46.1.0",
-    "zod": ">=3.23.8"
+    "slonik": ">=46.8.0",
+    "zod": ">=3.25.76"
   },
   "peerDependenciesMeta": {
     "pg-mem": {

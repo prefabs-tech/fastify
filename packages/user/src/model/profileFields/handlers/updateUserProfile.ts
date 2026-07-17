@@ -4,7 +4,7 @@ import type { SessionRequest } from "supertokens-node/framework/fastify";
 import getUserService from "../../../lib/getUserService";
 import { User } from "../../../types";
 
-const updateuserProfile = async (
+const updateUserProfile = async (
   request: SessionRequest,
   reply: FastifyReply,
 ) => {
@@ -29,4 +29,4 @@ const updateuserProfile = async (
   return reply.status(200).send(user);
 };
 
-export default updateuserProfile;
+export default updateUserProfile;

@@ -26,14 +26,12 @@ const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
 
   try {
     let file: File | undefined;
-    const { photo, ...input } = body as UserUpdateInput;
+    const { photo, profile, ...input } = body as UserUpdateInput;
 
-    if (input.profile) {
-      if (config.user.features?.profileFields?.enabled) {
-        input.profile = JSON.stringify(input.profile);
-      } else {
-        delete input.profile;
-      }
+    const updateInput: UserUpdateInput = { ...input };
+
+    if (config.user.features?.profileFields?.enabled && profile) {
+      updateInput.profile = JSON.stringify(profile);
     }
 
     const service = getUserService(config, slonik, dbSchema);
@@ -45,7 +43,7 @@ const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
     }
 
     const updatedUser = await service.update(user.id, {
-      ...input,
+      ...updateInput,
       ...(file && {
         photoId: file.id as number,
       }),

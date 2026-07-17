@@ -6,7 +6,6 @@ import {
   createInvitationsTableQuery,
   createProfileFieldsTablesQueries,
   createUsersTableQuery,
-  seedProfileFieldsDummyDataQueries,
 } from "./queries";
 
 const runMigrations = async (config: ApiConfig, database: Database) => {
@@ -20,12 +19,6 @@ const runMigrations = async (config: ApiConfig, database: Database) => {
 
         for (const query of createProfileFieldsTablesQueries(config)) {
           await transactionConnection.query(query);
-        }
-
-        if (config.user.features?.profileFields?.seedDummyData) {
-          for (const query of seedProfileFieldsDummyDataQueries(config)) {
-            await transactionConnection.query(query);
-          }
         }
       }
     });

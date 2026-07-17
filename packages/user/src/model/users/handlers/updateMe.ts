@@ -28,6 +28,14 @@ const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
     let file: File | undefined;
     const { photo, ...input } = body as UserUpdateInput;
 
+    if (input.profile) {
+      if (config.user.features?.profileFields?.enabled) {
+        input.profile = JSON.stringify(input.profile);
+      } else {
+        delete input.profile;
+      }
+    }
+
     const service = getUserService(config, slonik, dbSchema);
 
     filterUserUpdateInput(input);

@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         formats: ["cjs", "es"],
         name: "PrefabsTechFastifyErrorHandler",
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: [
           ...Object.keys(dependencies),
           ...Object.keys(peerDependencies),

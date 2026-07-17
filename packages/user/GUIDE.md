@@ -99,11 +99,11 @@ On startup the plugin:
 1. Initializes SuperTokens and registers the Fastify SuperTokens adapter.
 2. Runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables (before the server is ready).
 3. Seeds built-in roles (`ADMIN`, `SUPERADMIN`, `USER`) plus any extra roles in `config.user.roles` into SuperTokens on `onReady`.
-4. Registers four route groups under `config.user.routePrefix`, each independently disable-able.
+4. Registers five route groups under `config.user.routePrefix`, each independently disable-able.
 
 ### Route prefix and selective route disabling
 
-All routes are registered under `config.user.routePrefix`. Any of the four route groups can be disabled:
+All routes are registered under `config.user.routePrefix`. Any of the five route groups can be disabled:
 
 ```typescript
 user: {
@@ -111,6 +111,7 @@ user: {
   routes: {
     invitations: { disabled: true },
     permissions: { disabled: false },
+    profileFields: { disabled: false },
     roles: { disabled: false },
     users: { disabled: false },
   },
@@ -342,6 +343,37 @@ All user routes are registered under `routePrefix`. The session-protected routes
 | `DELETE` | `/me/photo`          | session         | Remove profile photo                  |
 | `POST`   | `/signup/admin`      | public          | First-admin sign-up                   |
 | `GET`    | `/signup/admin`      | public          | Check admin sign-up availability      |
+
+### Profile fields routes
+
+These routes are also registered under `routePrefix` and are enabled unless `config.user.routes.profileFields.disabled === true`.
+
+| Method  | Path              | Auth    | Description                              |
+| ------- | ----------------- | ------- | ---------------------------------------- |
+| `GET`   | `/profile/fields` | session | List configured profile field definitions |
+| `PATCH` | `/users/profile`  | session | Update current user's dynamic profile data |
+
+Example request for updating profile fields:
+
+```http
+PATCH /api/users/profile
+Content-Type: application/json
+
+{
+  "department": "Engineering",
+  "location": "Hyderabad"
+}
+```
+
+Notes:
+
+- `PATCH /users/profile` updates only profile data for the authenticated user.
+- `GET /profile/fields` returns the profile field metadata used to render/edit profile forms.
+- Profile field `type` is an app-defined integer. Example mapping: `date (1)`, `email (2)`, `location (3)`.
+- You can define or remap any profile field type to any integer value used by your application.
+- There is currently no API endpoint in this package to insert records into `user_profile_fields`; create/seed these rows manually in the database (or via your own SQL migration/query script).
+- When you add or change profile fields, also maintain `user_profile_fields_i18n` for labels/translations.
+- For option-based fields (for example, gender with options like male/female), also maintain `user_profile_field_options` and `user_profile_field_options_i18n`.
 
 ### Immutable field guard
 

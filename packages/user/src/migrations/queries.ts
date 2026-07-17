@@ -158,90 +158,9 @@ const createProfileFieldsTablesQueries = (
   ];
 };
 
-const seedProfileFieldsDummyDataQueries = (
-  config: ApiConfig,
-): Array<QuerySqlToken<ZodTypeAny>> => {
-  const userProfileFields =
-    config.user.tables?.userProfileFields?.name || TABLE_USER_PROFILE_FIELDS;
-  const userProfileFieldOptions =
-    config.user.tables?.userProfileFieldOptions?.name ||
-    TABLE_USER_PROFILE_FIELD_OPTIONS;
-  const userProfileFieldOptionsI18n =
-    config.user.tables?.userProfileFieldOptionsI18n?.name ||
-    TABLE_USER_PROFILE_FIELD_OPTIONS_I18N;
-  const userProfileFieldsI18n =
-    config.user.tables?.userProfileFieldsI18n?.name ||
-    TABLE_USER_PROFILE_FIELDS_I18N;
-
-  const insertProfileFieldsQuery = sql.unsafe`
-    INSERT INTO ${sql.identifier([userProfileFields])} (id, name, type, required, sort_order)
-    SELECT seed.id, seed.name, seed.type, seed.required, seed.sort_order
-    FROM (
-      VALUES
-        (1, 'gender', 7, true, 1),
-        (2, 'dateOfBirth', 1, true, 2),
-        (3, 'location', 3, false, 3)
-    ) AS seed(id, name, type, required, sort_order)
-    WHERE NOT EXISTS (
-      SELECT 1
-      FROM ${sql.identifier([userProfileFields])} p
-      WHERE p.name = seed.name
-    );
-  `;
-
-  const upsertProfileFieldsI18nQuery = sql.unsafe`
-    INSERT INTO ${sql.identifier([userProfileFieldsI18n])} (id, locale, label)
-    SELECT p.id, labels.locale, labels.label
-    FROM ${sql.identifier([userProfileFields])} p
-    JOIN (
-      VALUES
-        ('gender', 'en', 'Gender'),
-        ('dateOfBirth', 'en', 'Date of birth'),
-        ('location', 'en', 'Location')
-    ) AS labels(name, locale, label)
-      ON labels.name = p.name
-    ON CONFLICT (id, locale) DO UPDATE
-    SET label = EXCLUDED.label;
-  `;
-
-  const insertProfileFieldOptionsQuery = sql.unsafe`
-    INSERT INTO ${sql.identifier([userProfileFieldOptions])} (id, field_id, value, rank)
-    SELECT seed.id, seed.field_id, seed.value, seed.rank
-    FROM (
-      VALUES
-        (1, 1, 1, 1),
-        (2, 1, 2, 2),
-        (3, 1, 3, 3)
-    ) AS seed(id, field_id, value, rank)
-    WHERE NOT EXISTS (
-      SELECT 1
-      FROM ${sql.identifier([userProfileFieldOptions])} o
-      WHERE o.id = seed.id
-    );
-  `;
-
-  const upsertProfileFieldOptionsI18nQuery = sql.unsafe`
-    INSERT INTO ${sql.identifier([userProfileFieldOptionsI18n])} (id, locale, label)
-    VALUES
-      (1, 'en', 'Male'),
-      (2, 'en', 'Female'),
-      (3, 'en', 'Other')
-    ON CONFLICT (id, locale) DO UPDATE
-    SET label = EXCLUDED.label;
-  `;
-
-  return [
-    insertProfileFieldsQuery,
-    upsertProfileFieldsI18nQuery,
-    insertProfileFieldOptionsQuery,
-    upsertProfileFieldOptionsI18nQuery,
-  ];
-};
-
 export {
   addProfileInUsersTableQuery,
   createInvitationsTableQuery,
   createProfileFieldsTablesQueries,
   createUsersTableQuery,
-  seedProfileFieldsDummyDataQueries,
 };

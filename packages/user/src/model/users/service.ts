@@ -184,8 +184,6 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
     };
 
     const updatedUser = await this.update(userId, {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       profile: JSON.stringify(updatedProfile),
     });
 

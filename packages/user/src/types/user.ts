@@ -39,12 +39,14 @@ type UserUpdateInput = Partial<
     | "id"
     | "lastLoginAt"
     | "photo"
+    | "profile"
     | "roles"
     | "signedUpAt"
   >
 > & {
   lastLoginAt?: string;
   photo?: Multipart;
+  profile?: string;
 };
 
 export type { AuthUser, User, UserCreateInput, UserUpdateInput };

@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         formats: ["cjs", "es"],
         name: "PrefabsTechFastifyS3",
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: [
           ...Object.keys(dependencies),
           ...Object.keys(peerDependencies),

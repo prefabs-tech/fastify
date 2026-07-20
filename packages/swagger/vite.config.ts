@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         formats: ["cjs", "es"],
         name: "PrefabsTechFastifySwagger",
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: Object.keys({
           ...dependencies,
           ...peerDependencies,

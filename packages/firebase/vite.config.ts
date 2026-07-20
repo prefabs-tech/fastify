@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         formats: ["cjs", "es"],
         name: "PrefabsTechFastifyFirebase",
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: [
           ...Object.keys(dependencies),
           ...Object.keys(peerDependencies),

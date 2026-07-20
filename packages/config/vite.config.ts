@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => {
         formats: ["cjs", "es"],
         name: "PrefabsTechFastifyConfig",
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: Object.keys(peerDependencies),
         output: {
           exports: "named",

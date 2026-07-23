@@ -48,7 +48,7 @@
     "@vitest/coverage-istanbul": "3.2.7",
     "eslint": "10.7.0",
     "fastify": "5.10.0",
-    "fastify-plugin": "5.1.0",
+    "fastify-plugin": "6.0.0",
     "mjml": "4.18.0",
     "prettier": "3.9.5",
     "typescript": "5.9.3",

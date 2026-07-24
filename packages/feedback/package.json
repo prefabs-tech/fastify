@@ -1,0 +1,72 @@
+{
+  "name": "@prefabs.tech/fastify-feedback",
+  "version": "0.94.1",
+  "description": "Fastify feedback plugin",
+  "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/feedback#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prefabs-tech/fastify.git",
+    "directory": "packages/feedback"
+  },
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/prefabs-tech-fastify-feedback.js",
+      "require": "./dist/prefabs-tech-fastify-feedback.cjs"
+    }
+  },
+  "main": "./dist/prefabs-tech-fastify-feedback.cjs",
+  "module": "./dist/prefabs-tech-fastify-feedback.js",
+  "types": "./dist/types/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "sort-package": "npx sort-package-json",
+    "test": "vitest run --coverage",
+    "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
+  },
+  "dependencies": {
+    "zod": "3.25.76"
+  },
+  "devDependencies": {
+    "@prefabs.tech/eslint-config": "0.8.7",
+    "@prefabs.tech/fastify-config": "0.94.1",
+    "@prefabs.tech/fastify-error-handler": "0.94.1",
+    "@prefabs.tech/fastify-graphql": "0.94.1",
+    "@prefabs.tech/fastify-slonik": "0.94.1",
+    "@prefabs.tech/tsconfig": "0.8.7",
+    "@types/node": "24.13.3",
+    "@vitest/coverage-istanbul": "3.2.7",
+    "eslint": "10.7.0",
+    "fastify": "5.10.0",
+    "fastify-plugin": "5.1.0",
+    "graphql": "16.14.2",
+    "mercurius": "16.10.0",
+    "pg-mem": "3.0.14",
+    "prettier": "3.9.5",
+    "slonik": "46.8.0",
+    "supertokens-node": "14.1.4",
+    "typescript": "5.9.3",
+    "vite": "8.1.5",
+    "vitest": "3.2.7"
+  },
+  "peerDependencies": {
+    "@prefabs.tech/fastify-config": "0.94.1",
+    "@prefabs.tech/fastify-error-handler": "0.94.1",
+    "@prefabs.tech/fastify-graphql": "0.94.1",
+    "@prefabs.tech/fastify-slonik": "0.94.1",
+    "fastify": ">=5.10.0",
+    "fastify-plugin": ">=5.1.0",
+    "mercurius": ">=16.10.0",
+    "slonik": ">=46.8.0",
+    "supertokens-node": ">=14.1.4"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

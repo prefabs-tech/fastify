@@ -126,10 +126,6 @@ importers:
         version: 3.2.7(@types/node@24.13.3)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.1)
 
   packages/feedback:
-    dependencies:
-      zod:
-        specifier: 3.25.76
-        version: 3.25.76
     devDependencies:
       '@prefabs.tech/eslint-config':
         specifier: 0.8.7
@@ -191,6 +187,9 @@ importers:
       vitest:
         specifier: 3.2.7
         version: 3.2.7(@types/node@24.13.3)(jiti@2.6.1)(lightningcss@1.32.0)(yaml@2.8.1)
+      zod:
+        specifier: 3.25.76
+        version: 3.25.76
 
   packages/firebase:
     dependencies:

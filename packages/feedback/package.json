@@ -30,9 +30,7 @@
     "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
-  "dependencies": {
-    "zod": "3.25.76"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/fastify-config": "0.94.1",
@@ -53,7 +51,8 @@
     "supertokens-node": "14.1.4",
     "typescript": "5.9.3",
     "vite": "8.1.5",
-    "vitest": "3.2.7"
+    "vitest": "3.2.7",
+    "zod": "3.25.76"
   },
   "peerDependencies": {
     "@prefabs.tech/fastify-config": "0.94.1",
@@ -64,7 +63,8 @@
     "fastify-plugin": ">=5.1.0",
     "mercurius": ">=16.10.0",
     "slonik": ">=46.8.0",
-    "supertokens-node": ">=14.1.4"
+    "supertokens-node": ">=14.1.4",
+    "zod": ">=3.25.76"
   },
   "engines": {
     "node": ">=20"

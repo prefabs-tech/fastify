@@ -2,23 +2,23 @@ import { gql } from "@prefabs.tech/fastify-graphql";
 
 const feedbackSchema = gql`
   type Feedback {
-    id: Int!
-    typeId: Int!
-    message: String!
-    userId: String
     appVersion: String
-    deviceModel: String
-    platform: String
     createdAt: Float!
+    deviceModel: String
+    id: Int!
+    message: String!
+    platform: String
+    typeId: Int!
     updatedAt: Float!
+    userId: String
   }
 
   input FeedbackCreateInput {
-    typeId: Int!
-    message: String!
     appVersion: String
     deviceModel: String
+    message: String!
     platform: String
+    typeId: Int!
   }
 
   type Mutation {

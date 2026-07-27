@@ -54,3 +54,5 @@ export { default as feedbackResolver } from "./model/feedback/graphql/resolver";
 export { default as FeedbackService } from "./model/feedback/service";
 
 export { default } from "./plugin";
+
+export type * from "./types";

@@ -34,8 +34,7 @@ const consumeCode = (
     }
 
     const request = getRequestFromUserContext(input.userContext)?.original as
-      | FastifyRequest
-      | undefined;
+      FastifyRequest | undefined;
 
     const userService = getUserService(
       request?.config || fastify.config,

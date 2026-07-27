@@ -31,9 +31,7 @@ const consumeCodePOST = (
   fastify: FastifyInstance,
 ): APIInterface["consumeCodePOST"] => {
   return async (input) => {
-    input.userContext.roles = input.userContext.roles || [
-      fastify.config.user.role || ROLE_USER,
-    ];
+    input.userContext.roles ||= [fastify.config.user.role || ROLE_USER];
 
     if (originalImplementation.consumeCodePOST === undefined) {
       throw new Error("Should never come here");

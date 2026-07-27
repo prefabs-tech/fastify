@@ -61,10 +61,8 @@ const thirdPartySignInUp = (
         }
       }
 
-      let user: null | undefined | User;
-
       try {
-        user = await userService.create({
+        const user: null | undefined | User = await userService.create({
           email: originalResponse.user.email,
           id: originalResponse.user.id,
         });

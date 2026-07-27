@@ -44,6 +44,7 @@ export { default as InvitationService } from "./model/invitations/service";
 export { default as InvitationSqlFactory } from "./model/invitations/sqlFactory";
 export { default as permissionRoutes } from "./model/permissions/controller";
 export { default as permissionResolver } from "./model/permissions/resolver";
+export { default as profileFieldsRoutes } from "./model/profileFields/controller";
 export { default as roleRoutes } from "./model/roles/controller";
 export { default as roleResolver } from "./model/roles/graphql/resolver";
 export { default as RoleService } from "./model/roles/service";

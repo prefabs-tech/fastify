@@ -6,6 +6,8 @@ import { mercurius } from "mercurius";
 import type { GraphqlOptions } from "./types";
 
 import buildContext from "./buildContext";
+import { UPLOAD_TRANSPORT_PLUGIN_NAME } from "./constants";
+import graphqlUploadTransport from "./uploads/transport";
 
 const plugin = async (fastify: FastifyInstance, options: GraphqlOptions) => {
   fastify.log.info("Registering fastify-graphql plugin");
@@ -25,6 +27,18 @@ const plugin = async (fastify: FastifyInstance, options: GraphqlOptions) => {
   }
 
   if (options?.enabled) {
+    // Register the upload transport before mercurius so its catch-all
+    // content-type parser is snapshotted into the mercurius context
+    if (
+      options.uploads?.enabled !== false &&
+      !fastify.hasPlugin(UPLOAD_TRANSPORT_PLUGIN_NAME)
+    ) {
+      await fastify.register(graphqlUploadTransport, {
+        path: options.path,
+        ...options.uploads,
+      });
+    }
+
     // Register graphql
     await fastify.register(mercurius, {
       context: buildContext(options.plugins),

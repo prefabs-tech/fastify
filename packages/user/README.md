@@ -49,7 +49,7 @@ import corsPlugin from "@fastify/cors";
 import formBodyPlugin from "@fastify/formbody";
 import configPlugin from "@prefabs.tech/fastify-config";
 import mailerPlugin from "@prefabs.tech/fastify-mailer";
-import s3Plugin, { multipartParserPlugin } from "@prefabs.tech/fastify-s3";
+import s3Plugin from "@prefabs.tech/fastify-s3";
 import slonikPlugin, { migrationPlugin } from "@prefabs.tech/fastify-slonik";
 import userPlugin, {
   SUPERTOKENS_CORS_HEADERS,
@@ -87,11 +87,13 @@ const start = async () => {
   // Register mailer plugin
   await fastify.register(mailerPlugin, config.mailer);
 
-  // Register multipart content-type parser plugin
-  await fastify.register(multipartParserPlugin);
-
-  // Register s3 plugin
-  await fastify.register(s3Plugin);
+  // Register s3 plugin, passing its config slice explicitly
+  // (required by fastify-user: profile photos are stored via fastify-s3,
+  // and the user tables reference its files table)
+  await fastify.register(s3Plugin, {
+    ...config.s3,
+    rest: config.rest,
+  });
 
   // Register fastify-user plugin
   await fastify.register(userPlugin);

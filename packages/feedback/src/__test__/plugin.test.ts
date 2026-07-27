@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 /* istanbul ignore file */
 import Fastify from "fastify";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ROUTE_FEEDBACK } from "../constants";
 
@@ -63,6 +63,8 @@ describe("feedbackPlugin — initialization", async () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
+
+  afterEach(() => fastify.close());
 
   it("does not call runMigrations when enabled === false", async () => {
     fastify = buildFastify({ enabled: false });

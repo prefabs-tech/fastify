@@ -12,7 +12,7 @@
 
 ## Route Registration
 
-4. **Conditional feedback route** — `POST /feedback` is registered by default; set `config.feedback.routes.feedbacks.disabled = true` to skip registration entirely.
+4. **Conditional feedback route** — `POST /feedbacks` is registered by default; set `config.feedback.routes.feedbacks.disabled = true` to skip registration entirely.
 
 5. **Configurable route prefix** — the route is registered under `config.feedback.routePrefix`.
 
@@ -25,7 +25,7 @@
 
 ## REST Handler
 
-7. **Authenticated create** — `POST /feedback` runs behind `fastify.verifySession()`; the handler throws a `401 unauthorized` when `request.user` is absent.
+7. **Authenticated create** — `POST /feedbacks` runs behind `fastify.verifySession()`; the handler throws a `401 unauthorized` when `request.user` is absent.
 
 8. **Server-set userId** — the created feedback's `userId` always comes from the session (`user.id`), never from the request body.
 

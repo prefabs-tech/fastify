@@ -49,4 +49,4 @@ import feedbackPlugin from "@prefabs.tech/fastify-feedback";
 await fastify.register(feedbackPlugin);
 ```
 
-This runs the migration for the `feedbacks` table and registers `POST {routePrefix}/feedback`. See [GUIDE.md](./GUIDE.md) for configuration, the GraphQL mutation, and handler overrides.
+This runs the migration for the `feedbacks` table and registers `POST {routePrefix}/feedbacks`. See [GUIDE.md](./GUIDE.md) for configuration, the GraphQL mutation, and handler overrides.

@@ -37,7 +37,7 @@ await fastify.register(feedbackPlugin);
 ```
 
 On registration (unless disabled), the plugin runs an idempotent migration that creates the
-`feedbacks` table, then registers `POST {routePrefix}/feedback`.
+`feedbacks` table, then registers `POST {routePrefix}/feedbacks`.
 
 Configuration lives under the `feedback` namespace of your `ApiConfig`:
 
@@ -101,7 +101,7 @@ for the `feedbacks` table, plus an index on `user_id`. Columns:
 
 ### REST endpoint
 
-`POST {routePrefix}/feedback` — creates a feedback entry for the authenticated user. Runs behind
+`POST {routePrefix}/feedbacks` — creates a feedback entry for the authenticated user. Runs behind
 `fastify.verifySession()`; returns `401` when there is no session.
 
 Request body:

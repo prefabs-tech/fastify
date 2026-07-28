@@ -38,14 +38,14 @@
     "@prefabs.tech/tsconfig": "0.8.7",
     "@types/node": "24.13.3",
     "@types/stack-trace": "0.0.33",
-    "@vitest/coverage-istanbul": "3.2.7",
+    "@vitest/coverage-istanbul": "4.1.10",
     "eslint": "10.7.0",
     "fastify": "5.10.0",
     "fastify-plugin": "6.0.0",
     "prettier": "3.9.5",
     "typescript": "5.9.3",
     "vite": "8.1.5",
-    "vitest": "3.2.7"
+    "vitest": "4.1.10"
   },
   "peerDependencies": {
     "fastify": ">=5.10.0",

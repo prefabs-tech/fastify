@@ -25,11 +25,13 @@ const {
 }));
 
 vi.mock("../model/userDevice/service", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    create: mockCreate,
-    getByUserId: mockGetByUserId,
-    removeByDeviceToken: mockRemoveByDeviceToken,
-  })),
+  default: vi.fn().mockImplementation(function () {
+    return {
+      create: mockCreate,
+      getByUserId: mockGetByUserId,
+      removeByDeviceToken: mockRemoveByDeviceToken,
+    };
+  }),
 }));
 
 vi.mock("../lib/sendPushNotification", () => ({

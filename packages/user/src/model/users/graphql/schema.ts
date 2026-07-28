@@ -9,6 +9,7 @@ const user = gql`
     disabled: Boolean!
     email: String!
     lastLoginAt: Float!
+    phoneNumber: String
     photoId: Int
     photo: Photo
     roles: [String]

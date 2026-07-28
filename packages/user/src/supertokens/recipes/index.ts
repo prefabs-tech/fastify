@@ -2,7 +2,6 @@ import type { FastifyInstance } from "fastify";
 import type { RecipeListFunction } from "supertokens-node/types";
 
 import initEmailVerificationRecipe from "./initEmailVerificationRecipe";
-import initPasswordlessRecipe from "./initPasswordlessRecipe";
 import initSessionRecipe from "./initSessionRecipe";
 import initThirdPartyEmailPassword from "./initThirdPartyEmailPasswordRecipe";
 import initUserRolesRecipe from "./initUserRolesRecipe";
@@ -14,12 +13,14 @@ const getRecipeList = (fastify: FastifyInstance): RecipeListFunction[] => {
     initUserRolesRecipe(fastify),
   ];
 
-  if (fastify.config.user.features?.passwordlessLogin?.enabled) {
-    recipeList.push(initPasswordlessRecipe(fastify));
-  }
-
   if (fastify.config.user.features?.signUp?.emailVerification) {
     recipeList.push(initEmailVerificationRecipe(fastify));
+  }
+
+  const registeredRecipes = fastify.supertokensRecipes ?? [];
+
+  for (const factory of registeredRecipes) {
+    recipeList.push(factory(fastify));
   }
 
   return recipeList;

@@ -32,6 +32,24 @@ describe("filterUserUpdateInput", () => {
     expect(updateInput).not.toHaveProperty("id");
   });
 
+  it("removes camelCase 'phoneNumber'", () => {
+    const updateInput = { phoneNumber: "+15550001111" } as UserUpdateInput;
+
+    filterUserUpdateInput(updateInput);
+
+    expect(updateInput).not.toHaveProperty("phoneNumber");
+  });
+
+  it("removes snake_case 'phone_number' (camelized to phoneNumber)", () => {
+    const updateInput = {
+      phone_number: "+15550001111",
+    } as unknown as UserUpdateInput;
+
+    filterUserUpdateInput(updateInput);
+
+    expect(updateInput).not.toHaveProperty("phone_number");
+  });
+
   it("removes 'roles'", () => {
     const updateInput = { roles: ["ADMIN"] } as UserUpdateInput;
 

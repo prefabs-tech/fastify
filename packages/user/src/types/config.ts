@@ -1,5 +1,4 @@
 import type { FastifyRequest } from "fastify";
-import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
 
 import ProfileFieldService from "src/model/profileFields/service";
 
@@ -19,13 +18,6 @@ interface EmailOptions {
   templateName?: string;
 }
 
-type TwilioConfig = Omit<
-  TwilioServiceConfig,
-  "from" | "messagingServiceSid"
-> & {
-  verifyServiceSid: string;
-};
-
 interface UserConfig {
   email?: IsEmailOptions;
   emailOverrides?: {
@@ -36,9 +28,6 @@ interface UserConfig {
     resetPasswordNotification?: EmailOptions;
   };
   features?: {
-    passwordlessLogin?: {
-      enabled?: boolean;
-    };
     profileFields?: {
       enabled?: boolean;
     };
@@ -105,13 +94,6 @@ interface UserConfig {
     ) => Promise<void>;
   };
   password?: StrongPasswordOptions;
-  passwordLessConfig?: {
-    bypassSmsFor?: string[];
-    devModeOtp: string;
-    enableDevMode: boolean;
-    fallbackEmailDomain?: string;
-    twilio?: TwilioConfig;
-  };
   permissions?: string[];
   photoMaxSizeInMB?: number;
   role?: string;
@@ -165,4 +147,4 @@ interface UserConfig {
   };
 }
 
-export type { EmailOptions, TwilioConfig, UserConfig };
+export type { EmailOptions, UserConfig };

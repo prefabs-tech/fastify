@@ -71,6 +71,9 @@ describe("mailerPlugin — registration", async () => {
     const { templating } = createMailerConfig();
     await fastify.register(plugin, createMailerConfig());
     expect(nodemailerMjmlPlugin).toHaveBeenCalledWith({
+      mjmlOptions: {
+        validationLevel: "soft",
+      },
       templateFolder: templating.templateFolder,
     });
     expect(useMock).toHaveBeenCalledWith(

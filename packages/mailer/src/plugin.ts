@@ -42,6 +42,9 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
   transporter.use(
     "compile",
     nodemailerMjmlPlugin({
+      mjmlOptions: {
+        validationLevel: "soft",
+      },
       templateFolder: templating.templateFolder,
     }),
   );

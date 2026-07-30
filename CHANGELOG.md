@@ -1,3 +1,13 @@
+## [0.94.2](https://github.com/prefabs-tech/fastify/compare/v0.94.1...v0.94.2) (2026-07-30)
+
+
+### Features
+
+* implement user profile fields in user package ([#1125](https://github.com/prefabs-tech/fastify/issues/1125)) ([ebf8638](https://github.com/prefabs-tech/fastify/commit/ebf8638ad8b33e8fe277de346914b50f21381c7e))
+* **s3:** accept plugin options directly, deprecate fastify.config fa… ([#1127](https://github.com/prefabs-tech/fastify/issues/1127)) ([81251d3](https://github.com/prefabs-tech/fastify/commit/81251d3ff8d93eb01f7519c0bdf4c76d36f4054c))
+
+
+
 ## [0.94.1](https://github.com/prefabs-tech/fastify/compare/v0.94.0...v0.94.1) (2026-05-19)
 
 

@@ -81,3 +81,4 @@ export { default as userDeviceRoutes } from "./model/userDevice/controller";
 export { default as userDeviceResolver } from "./model/userDevice/graphql/resolver";
 export { default as UserDeviceService } from "./model/userDevice/service";
 export { default } from "./plugin";
+export { getAppCheck } from "firebase-admin/app-check";

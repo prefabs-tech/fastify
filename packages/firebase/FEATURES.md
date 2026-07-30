@@ -84,38 +84,40 @@
 
 24. **`initializeFirebase`** — exported utility that initializes the `firebase-admin` app from `ApiConfig`; handles private key normalization, re-init guard, and credential-missing guard.
 
+25. **`firebaseAdmin`** — re-export of the `firebase-admin` default export (the same module instance the plugin initializes), giving consumers access to the initialized app's services (`auth()`, `firestore()`, `messaging()`, ...) without a direct `firebase-admin` dependency.
+
 ## Module Augmentations
 
-25. **`FastifyInstance.verifySession`** — declares `verifySession` (from `supertokens-node`) on the Fastify instance interface.
+26. **`FastifyInstance.verifySession`** — declares `verifySession` (from `supertokens-node`) on the Fastify instance interface.
 
-26. **`FastifyRequest.user`** — declares an optional `user: User` property on all Fastify requests.
+27. **`FastifyRequest.user`** — declares an optional `user: User` property on all Fastify requests.
 
-27. **`MercuriusContext.user`** — declares a required `user: User` property on the Mercurius context interface.
+28. **`MercuriusContext.user`** — declares a required `user: User` property on the Mercurius context interface.
 
-28. **`ApiConfig.firebase`** — extends `@prefabs.tech/fastify-config`'s `ApiConfig` with the full `firebase` configuration block (appCheck, credentials, enabled, handlers, notification, routePrefix, routes, table).
+29. **`ApiConfig.firebase`** — extends `@prefabs.tech/fastify-config`'s `ApiConfig` with the full `firebase` configuration block (appCheck, credentials, enabled, handlers, notification, routePrefix, routes, table).
 
 ## Type Exports
 
-29. **`User`** — `{ id: string }`.
+30. **`User`** — `{ id: string }`.
 
-30. **`UserDevice`** — `{ userId, deviceToken, createdAt, updatedAt }`.
+31. **`UserDevice`** — `{ userId, deviceToken, createdAt, updatedAt }`.
 
-31. **`UserDeviceCreateInput`** — partial of `UserDevice` excluding timestamps.
+32. **`UserDeviceCreateInput`** — partial of `UserDevice` excluding timestamps.
 
-32. **`UserDeviceUpdateInput`** — partial of `UserDevice` excluding timestamps and `userId`.
+33. **`UserDeviceUpdateInput`** — partial of `UserDevice` excluding timestamps and `userId`.
 
-33. **`TestNotificationInput`** — `{ userId, title, body, data? }`.
+34. **`TestNotificationInput`** — `{ userId, title, body, data? }`.
 
 ## Constants
 
-34. **Exported route and table constants** — `ROUTE_SEND_NOTIFICATION` (`/send-notification`), `ROUTE_USER_DEVICE_ADD` (`/user-device`), `ROUTE_USER_DEVICE_REMOVE` (`/user-device`), `TABLE_USER_DEVICES` (`user_devices`).
+35. **Exported route and table constants** — `ROUTE_SEND_NOTIFICATION` (`/send-notification`), `ROUTE_USER_DEVICE_ADD` (`/user-device`), `ROUTE_USER_DEVICE_REMOVE` (`/user-device`), `TABLE_USER_DEVICES` (`user_devices`).
 
 ## Migration Queries
 
-35. **`createUserDevicesTableQuery` export** — exported SQL factory function for the user devices table DDL; uses the configured or default table name.
+36. **`createUserDevicesTableQuery` export** — exported SQL factory function for the user devices table DDL; uses the configured or default table name.
 
 ## Initialization and Route Guards
 
-36. **Initialization failure logging** — if `firebase-admin` initialization throws, `initializeFirebase` catches the error and logs both a fixed message (`"Failed to initialize firebase"`) and the original error object instead of crashing startup.
+37. **Initialization failure logging** — if `firebase-admin` initialization throws, `initializeFirebase` catches the error and logs both a fixed message (`"Failed to initialize firebase"`) and the original error object instead of crashing startup.
 
-37. **Explicit notification route disable flag** — even when `config.firebase.notification.test.enabled === true`, setting `config.firebase.routes.notifications.disabled = true` prevents notification route registration entirely.
+38. **Explicit notification route disable flag** — even when `config.firebase.notification.test.enabled === true`, setting `config.firebase.routes.notifications.disabled = true` prevents notification route registration entirely.

@@ -30,4 +30,6 @@ const initializeFirebase = (config: ApiConfig, fastify: FastifyInstance) => {
   }
 };
 
+export { default as firebaseAdmin } from "firebase-admin";
+
 export default initializeFirebase;

@@ -31,8 +31,11 @@ vi.mock("../migrations/runMigrations", () => ({
   default: runMigrationsMock,
 }));
 
+// lib/index.ts re-exports firebaseAdmin from this module, so the mock factory
+// must provide it or the re-export resolves to a missing binding.
 vi.mock("../lib/initializeFirebase", () => ({
   default: initializeFirebaseMock,
+  firebaseAdmin: {},
 }));
 
 const mockSlonik = { connect: vi.fn(), pool: {}, query: vi.fn() };

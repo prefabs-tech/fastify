@@ -23,6 +23,10 @@ export default defineConfig(({ mode }) => {
         external: [
           ...Object.keys(dependencies),
           ...Object.keys(peerDependencies),
+          // String externals match exact ids only; subpath imports
+          // (firebase-admin/app-check) would otherwise be bundled.
+          /^firebase-admin\//,
+          /^supertokens-node\//,
         ],
         output: {
           exports: "named",

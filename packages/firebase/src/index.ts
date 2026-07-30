@@ -24,6 +24,10 @@ declare module "mercurius" {
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     firebase: {
+      appCheck?: {
+        enabled?: boolean;
+        routes?: string[];
+      };
       credentials?: {
         clientEmail: string;
         privateKey: string;
@@ -68,6 +72,7 @@ export * from "./constants";
 export { default as firebaseSchema } from "./graphql/schema";
 export * from "./lib";
 
+export { default as verifyFirebaseAppCheck } from "./middlewares/verifyFirebaseAppCheck";
 export * from "./migrations/queries";
 export { default as notificationRoutes } from "./model/notification/controller";
 export { default as notificationResolver } from "./model/notification/graphql/resolver";

@@ -37,7 +37,18 @@
 
 ## Middleware
 
-11. **`isFirebaseEnabled` preHandler** — a reusable preHandler factory that throws a `404 notFound` error when `config.firebase.enabled === false`; applied to all firebase routes automatically.
+11a. **`isFirebaseEnabled` preHandler** — a reusable preHandler factory that throws a `404 notFound` error when `config.firebase.enabled === false`; applied to all firebase routes automatically.
+
+11b. **`verifyFirebaseAppCheck` hook** — an exported hook that validates the `x-firebase-appcheck` header against Firebase App Check. It is **not** registered by the plugin; the consumer wires it up as an `onRequest` hook:
+    ```typescript
+    // Add Firebase App Check verification hook
+    api.addHook("onRequest", verifyFirebaseAppCheck);
+    ```
+    Behaviour:
+    - Returns early (request allowed) when `config.firebase.appCheck.enabled` is falsy — note this flag is opt-**in**, unlike the repo-wide `=== false` convention.
+    - Returns early when the request path (query string stripped) is not listed in `config.firebase.appCheck.routes`. An absent or empty `routes` array therefore protects nothing.
+    - Replies `403 { code: "FORBIDDEN" }` when the `x-firebase-appcheck` header is missing or supplied more than once (array).
+    - Replies `403 { code: "FORBIDDEN" }` and logs via `request.log.error` when `getAppCheck().verifyToken(...)` rejects.
 
 ## HTTP Route Handlers
 
@@ -81,7 +92,7 @@
 
 27. **`MercuriusContext.user`** — declares a required `user: User` property on the Mercurius context interface.
 
-28. **`ApiConfig.firebase`** — extends `@prefabs.tech/fastify-config`'s `ApiConfig` with the full `firebase` configuration block (credentials, enabled, handlers, notification, routePrefix, routes, table).
+28. **`ApiConfig.firebase`** — extends `@prefabs.tech/fastify-config`'s `ApiConfig` with the full `firebase` configuration block (appCheck, credentials, enabled, handlers, notification, routePrefix, routes, table).
 
 ## Type Exports
 

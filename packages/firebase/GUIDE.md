@@ -81,6 +81,7 @@ What we add on top:
 - Re-initialization guard (`admin.apps.length > 0`).
 - Missing-credentials guard with structured error logging instead of a thrown exception.
 - `sendPushNotification` — a typed async wrapper around multicast messaging.
+- `verifyFirebaseAppCheck` — a Fastify hook over `getAppCheck().verifyToken` (from `firebase-admin/app-check`) that adds per-route opt-in and a uniform `403` response shape.
 
 ### `supertokens-node` — Partial Passthrough
 
@@ -236,7 +237,7 @@ config.firebase.handlers = {
 };
 ```
 
-### 11. `isFirebaseEnabled` preHandler
+### 11a. `isFirebaseEnabled` preHandler
 
 A preHandler factory that throws a Fastify `404 notFound` error if `config.firebase.enabled === false`. It is applied automatically to all firebase routes by this package.
 
@@ -249,6 +250,42 @@ config.firebase.enabled = false;
 // DELETE /user-device
 // POST /send-notification (when enabled in config)
 ```
+
+### 11b. `verifyFirebaseAppCheck` hook
+
+Validates the `x-firebase-appcheck` request header against [Firebase App Check](https://firebase.google.com/docs/app-check). Unlike `isFirebaseEnabled`, this hook is **not** registered for you — add it yourself as an `onRequest` hook so you control which encapsulation context it covers. `onRequest` rejects unverified requests before body parsing and validation run.
+
+```typescript
+import { verifyFirebaseAppCheck } from "@prefabs.tech/fastify-firebase";
+
+// Add Firebase App Check verification hook
+api.addHook("onRequest", verifyFirebaseAppCheck);
+```
+
+```typescript
+// config
+firebase: {
+  appCheck: {
+    enabled: true,
+    // Only these exact paths are checked. Omit or leave empty and
+    // nothing is protected.
+    routes: ["/user-device", "/send-notification"],
+  },
+}
+```
+
+Two behaviours worth calling out:
+
+- `appCheck.enabled` is opt-**in**. Leaving it `undefined` disables the check — this is deliberately the opposite of the `enabled === false` convention used elsewhere in this package.
+- Matching is exact on the path with the query string stripped, so `/user-device` does not cover `/user-device/123`.
+
+Requests that fail the check receive:
+
+```json
+{ "code": "FORBIDDEN", "message": "You aren't authorized to access this resource" }
+```
+
+with status `403` — when the header is missing, when it is sent more than once, or when `verifyToken` rejects (the underlying error is logged via `request.log.error`).
 
 ### 12. `POST /user-device` — register a device token
 

@@ -6,6 +6,7 @@ export const errorSchema = {
     error: { type: "string" },
     message: { type: "string" },
     name: { type: "string" },
+    requestId: { type: "string" },
     stack: {
       items: {
         additionalProperties: true,

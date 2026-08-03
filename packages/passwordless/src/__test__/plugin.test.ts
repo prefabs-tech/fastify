@@ -2,9 +2,14 @@ import type { FastifyInstance } from "fastify";
 
 /* istanbul ignore file */
 import Fastify from "fastify";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import runMigrations from "../migrations/runMigrations";
 import plugin from "../plugin";
+
+vi.mock("../migrations/runMigrations", () => ({
+  default: vi.fn(),
+}));
 
 /**
  * Builds a Fastify instance decorated with everything the passwordless plugin
@@ -21,11 +26,17 @@ const buildFastify = (
     passwordless: passwordlessConfig,
   });
 
+  fastify.decorate("slonik", {});
+
   return fastify;
 };
 
 describe("passwordlessPlugin", () => {
   let fastify: FastifyInstance;
+
+  beforeEach(() => {
+    vi.mocked(runMigrations).mockClear();
+  });
 
   afterEach(async () => {
     await fastify.close();
@@ -57,6 +68,25 @@ describe("passwordlessPlugin", () => {
     await fastify.register(plugin);
 
     expect(fastify.supertokensRecipes).toBeUndefined();
+  });
+
+  it("runs the migration on ready, not during registration", async () => {
+    fastify = buildFastify({});
+    await fastify.register(plugin);
+
+    expect(runMigrations).not.toHaveBeenCalled();
+
+    await fastify.ready();
+
+    expect(runMigrations).toHaveBeenCalledWith(fastify.config, fastify.slonik);
+  });
+
+  it("runs no migration when enabled === false", async () => {
+    fastify = buildFastify({ enabled: false });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(runMigrations).not.toHaveBeenCalled();
   });
 
   it("throws when registered after SuperTokens has already been initialised", async () => {

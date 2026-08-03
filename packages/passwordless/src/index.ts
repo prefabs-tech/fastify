@@ -6,6 +6,12 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
+declare module "@prefabs.tech/fastify-user" {
+  interface User {
+    phoneNumber?: string;
+  }
+}
+
 export * from "./constants";
 
 export { default as getTwilioClient } from "./lib/getTwilioClient";

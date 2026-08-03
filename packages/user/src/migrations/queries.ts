@@ -14,17 +14,6 @@ import {
   TABLE_USERS,
 } from "../constants";
 
-const addPhoneNumberInUsersTableQuery = (
-  config: ApiConfig,
-): QuerySqlToken<ZodTypeAny> => {
-  const users = config.user.tables?.users?.name || TABLE_USERS;
-
-  return sql.unsafe`
-    ALTER TABLE ${sql.identifier([users])}
-    ADD COLUMN IF NOT EXISTS phone_number VARCHAR ( 20 );
-  `;
-};
-
 const addProfileInUsersTableQuery = (
   config: ApiConfig,
 ): QuerySqlToken<ZodTypeAny> => {
@@ -170,7 +159,6 @@ const createProfileFieldsTablesQueries = (
 };
 
 export {
-  addPhoneNumberInUsersTableQuery,
   addProfileInUsersTableQuery,
   createInvitationsTableQuery,
   createProfileFieldsTablesQueries,

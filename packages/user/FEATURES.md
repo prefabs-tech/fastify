@@ -8,7 +8,7 @@
 
 2. **Selective route module disabling** — each of the four route groups (`users`, `invitations`, `roles`, `permissions`) can be disabled independently via `routes.<group>.disabled = true`. The service layer is unaffected.
 
-3. **Automatic database migrations** — on registration, runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables before the server is ready, plus an idempotent `ALTER TABLE ... ADD COLUMN IF NOT EXISTS phone_number` on the users table. The matching `phoneNumber?: string` field is present on `User` and `UserCreateInput`, exposed on the REST and GraphQL `User` types, and omitted from `UserUpdateInput` — it is written by the sign-up flow (see `@prefabs.tech/fastify-passwordless`), not by profile edits.
+3. **Automatic database migrations** — on registration, runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables before the server is ready.
 
 4. **Default role seeding** — on `onReady`, seeds `ADMIN`, `SUPERADMIN`, and `USER` into SuperTokens, plus any extra roles listed in `config.user.roles`.
 
@@ -73,7 +73,7 @@
 
 30. **`PUT /users/:id/enable`** — clears the user's `disabled` flag. Requires `users:enable` permission.
 
-31. **Immutable field guard (`filterUserUpdateInput`)** — applied automatically before every profile update; silently drops any attempt to set `id`, `email`, `roles`, `lastLoginAt`, `phoneNumber`, `signedUpAt`, `disable`, or `enable`. Handles both camelCase and snake_case variants (e.g. `last_login_at` is also stripped).
+31. **Immutable field guard (`filterUserUpdateInput`)** — applied automatically before every profile update; silently drops any attempt to set `id`, `email`, `roles`, `lastLoginAt`, `signedUpAt`, `disable`, or `enable`. Handles both camelCase and snake_case variants (e.g. `last_login_at` is also stripped).
 
 32. **Configurable table names** — `config.user.tables.users.name` and `config.user.tables.invitations.name` override the default table names.
 

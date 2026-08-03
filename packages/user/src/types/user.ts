@@ -14,7 +14,6 @@ interface User {
   email: string;
   id: string;
   lastLoginAt: number;
-  phoneNumber?: string;
   photo?: Photo;
   photoId?: null | number;
   profile?: { [key: string]: boolean | null | number | string };
@@ -39,7 +38,6 @@ type UserUpdateInput = Partial<
     | "email"
     | "id"
     | "lastLoginAt"
-    | "phoneNumber"
     | "photo"
     | "profile"
     | "roles"

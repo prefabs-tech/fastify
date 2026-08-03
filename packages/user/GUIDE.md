@@ -404,7 +404,7 @@ Notes:
 
 ### Immutable field guard
 
-Before every `PUT /me` update, `filterUserUpdateInput` silently drops any attempt to modify `id`, `email`, `roles`, `lastLoginAt`, `phoneNumber`, `signedUpAt`, `disabled`, `deletedAt`, and their `snake_case` equivalents. `phoneNumber` is written by the passwordless sign-up flow, not by profile edits.
+Before every `PUT /me` update, `filterUserUpdateInput` silently drops any attempt to modify `id`, `email`, `roles`, `lastLoginAt`, `signedUpAt`, `disabled`, `deletedAt`, and their `snake_case` equivalents.
 
 ### Profile photo constraints
 

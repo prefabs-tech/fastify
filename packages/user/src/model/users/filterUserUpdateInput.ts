@@ -8,7 +8,6 @@ const ignoredUpdateKeys = new Set([
   "enable",
   "id",
   "lastLoginAt",
-  "phoneNumber",
   "roles",
   "signedUpAt",
 ]) as Set<keyof UserUpdateInput>;

@@ -6,7 +6,6 @@ export const userSchema = {
     email: { format: "email", type: "string" },
     id: { type: "string" },
     lastLoginAt: { type: "number" },
-    phoneNumber: { nullable: true, type: "string" },
     photoId: { nullable: true, type: "number" },
     roles: { items: { type: "string" }, type: "array" },
     signedUpAt: { type: "number" },

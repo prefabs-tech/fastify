@@ -1,8 +1,8 @@
-import type { PasswordlessConfig } from "./types";
+import type { PhoneAuthConfig } from "./types";
 
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
-    passwordless?: PasswordlessConfig;
+    phoneAuth?: PhoneAuthConfig;
   }
 }
 

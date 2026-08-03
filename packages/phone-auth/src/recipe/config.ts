@@ -5,7 +5,7 @@ import type {
   RecipeInterface,
 } from "supertokens-node/recipe/passwordless/types";
 
-import type { PasswordlessConfig } from "../types";
+import type { PhoneAuthConfig } from "../types";
 
 import {
   DEFAULT_CONTACT_METHOD,
@@ -34,36 +34,35 @@ import consumeCodePOST from "./consumeCodePost";
 const getPasswordlessRecipeConfig = (
   fastify: FastifyInstance,
 ): PasswordlessRecipeConfig => {
-  const passwordless: PasswordlessConfig | undefined =
-    fastify.config.passwordless;
+  const phoneAuth: PhoneAuthConfig | undefined = fastify.config.phoneAuth;
 
-  if (!passwordless) {
+  if (!phoneAuth) {
     throw new Error(
-      "Passwordless recipe config is missing. Add `passwordless` to your app config.",
+      "Phone auth config is missing. Add `phoneAuth` to your app config.",
     );
   }
 
-  const isDevelopment = passwordless.enableDevMode === true;
-  const developmentModeOtp = passwordless.devModeOtp;
+  const isDevelopment = phoneAuth.enableDevMode === true;
+  const developmentModeOtp = phoneAuth.devModeOtp;
 
   if (isDevelopment && !developmentModeOtp) {
     throw new Error(
-      "passwordless.devModeOtp is required when passwordless.enableDevMode is true",
+      "phoneAuth.devModeOtp is required when phoneAuth.enableDevMode is true",
     );
   }
 
   const isDevelopmentNumber = (phoneNumber: string) => {
-    return (passwordless.bypassSmsFor || []).includes(phoneNumber);
+    return (phoneAuth.bypassSmsFor || []).includes(phoneNumber);
   };
 
   // Fail at boot rather than on the first sign-in attempt.
   if (!isDevelopment) {
-    getTwilioClient(passwordless.twilio);
+    getTwilioClient(phoneAuth.twilio);
   }
 
   return {
-    contactMethod: passwordless.contactMethod || DEFAULT_CONTACT_METHOD,
-    flowType: passwordless.flowType || DEFAULT_FLOW_TYPE,
+    contactMethod: phoneAuth.contactMethod || DEFAULT_CONTACT_METHOD,
+    flowType: phoneAuth.flowType || DEFAULT_FLOW_TYPE,
     getCustomUserInputCode: async (userContext) => {
       const phoneNumber = userContext?.phoneNumber as string | undefined;
 
@@ -77,8 +76,8 @@ const getPasswordlessRecipeConfig = (
       apis: (originalImplementation) => {
         const apiInterface: Partial<APIInterface> = {};
 
-        if (passwordless.override?.apis) {
-          const apis = passwordless.override.apis;
+        if (phoneAuth.override?.apis) {
+          const apis = phoneAuth.override.apis;
 
           let api: keyof APIInterface;
 
@@ -111,8 +110,8 @@ const getPasswordlessRecipeConfig = (
       functions: (originalImplementation) => {
         const recipeInterface: Partial<RecipeInterface> = {};
 
-        if (passwordless.override?.functions) {
-          const recipes = passwordless.override.functions;
+        if (phoneAuth.override?.functions) {
+          const recipes = phoneAuth.override.functions;
 
           let recipe: keyof RecipeInterface;
 
@@ -140,7 +139,7 @@ const getPasswordlessRecipeConfig = (
       ? {
           createAndSendCustomTextMessage: async () => {
             fastify.log.info(
-              `Skipping passwordless SMS delivery in development environment. Use default OTP [${developmentModeOtp}] for testing.`,
+              `Skipping phone auth SMS delivery in development environment. Use default OTP [${developmentModeOtp}] for testing.`,
             );
           },
         }
@@ -159,7 +158,7 @@ const getPasswordlessRecipeConfig = (
                   }
 
                   const { client, verifyServiceSid } = getTwilioClient(
-                    passwordless.twilio,
+                    phoneAuth.twilio,
                   );
 
                   try {

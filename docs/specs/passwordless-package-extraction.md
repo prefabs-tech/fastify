@@ -2,6 +2,11 @@
 
 Status: implemented on branch `feat/passwordless-verify-service` (2026-07-27).
 
+> Historical record. The package was later renamed to
+> `@prefabs.tech/fastify-phone-auth` (`packages/phone-auth`) and its config
+> namespace from `config.passwordless` to `config.phoneAuth`. Names below are
+> as they were at the time of writing.
+
 ## 1. Problem statement
 
 Passwordless login (phone/SMS OTP via Twilio Verify) was built inside

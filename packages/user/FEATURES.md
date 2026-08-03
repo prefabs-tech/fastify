@@ -12,7 +12,7 @@
 
 4. **Default role seeding** — on `onReady`, seeds `ADMIN`, `SUPERADMIN`, and `USER` into SuperTokens, plus any extra roles listed in `config.user.roles`.
 
-5. **SuperTokens recipe registry** — `addSupertokensRecipe(fastify, factory)` lets another plugin contribute a SuperTokens recipe. Factories are collected on the `fastify.supertokensRecipes` decorator and drained by `getRecipeList` during `supertokens.init()`. Since SuperTokens allows exactly one global `init()` and this package performs it during its own registration, contributing plugins must be registered **before** it; `addSupertokensRecipe` throws once `fastify.supertokensInitialized` is set. Used by `@prefabs.tech/fastify-passwordless`.
+5. **SuperTokens recipe registry** — `addSupertokensRecipe(fastify, factory)` lets another plugin contribute a SuperTokens recipe. Factories are collected on the `fastify.supertokensRecipes` decorator and drained by `getRecipeList` during `supertokens.init()`. Since SuperTokens allows exactly one global `init()` and this package performs it during its own registration, contributing plugins must be registered **before** it; `addSupertokensRecipe` throws once `fastify.supertokensInitialized` is set. Used by `@prefabs.tech/fastify-phone-auth`.
 
 ## Authentication
 

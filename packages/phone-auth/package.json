@@ -1,23 +1,23 @@
 {
-  "name": "@prefabs.tech/fastify-passwordless",
+  "name": "@prefabs.tech/fastify-phone-auth",
   "version": "0.94.1",
-  "description": "Fastify passwordless plugin",
-  "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/passwordless#readme",
+  "description": "Fastify phone auth plugin",
+  "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/phone-auth#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/prefabs-tech/fastify.git",
-    "directory": "packages/passwordless"
+    "directory": "packages/phone-auth"
   },
   "license": "MIT",
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/prefabs-tech-fastify-passwordless.js",
-      "require": "./dist/prefabs-tech-fastify-passwordless.cjs"
+      "import": "./dist/prefabs-tech-fastify-phone-auth.js",
+      "require": "./dist/prefabs-tech-fastify-phone-auth.cjs"
     }
   },
-  "main": "./dist/prefabs-tech-fastify-passwordless.cjs",
-  "module": "./dist/prefabs-tech-fastify-passwordless.js",
+  "main": "./dist/prefabs-tech-fastify-phone-auth.cjs",
+  "module": "./dist/prefabs-tech-fastify-phone-auth.js",
   "types": "./dist/types/index.d.ts",
   "files": [
     "dist"

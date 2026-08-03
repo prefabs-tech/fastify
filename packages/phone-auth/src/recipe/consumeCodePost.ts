@@ -41,13 +41,13 @@ const consumeCodePOST = (
       return originalImplementation.consumeCodePOST(input);
     }
 
-    const passwordless = fastify.config.passwordless;
+    const phoneAuth = fastify.config.phoneAuth;
 
-    if (!passwordless) {
-      throw new Error("Passwordless recipe config is missing");
+    if (!phoneAuth) {
+      throw new Error("Phone auth config is missing");
     }
 
-    const isDevelopment = passwordless.enableDevMode === true;
+    const isDevelopment = phoneAuth.enableDevMode === true;
 
     // Look up the device to retrieve the associated phone number
     const deviceContext = await Passwordless.listCodesByPreAuthSessionId({
@@ -59,8 +59,8 @@ const consumeCodePOST = (
     }
 
     const { phoneNumber } = deviceContext;
-    const bypassNumbers = passwordless.bypassSmsFor ?? [];
-    const fallbackEmailDomain = passwordless.fallbackEmailDomain ?? "";
+    const bypassNumbers = phoneAuth.bypassSmsFor ?? [];
+    const fallbackEmailDomain = phoneAuth.fallbackEmailDomain ?? "";
 
     // In dev mode or for bypassed numbers, skip Twilio Verify and let
     // SuperTokens verify the code directly (uses devModeOtp)
@@ -75,7 +75,7 @@ const consumeCodePOST = (
     let client, verifyServiceSid;
 
     try {
-      ({ client, verifyServiceSid } = getTwilioClient(passwordless.twilio));
+      ({ client, verifyServiceSid } = getTwilioClient(phoneAuth.twilio));
     } catch (error) {
       fastify.log.error(error);
 

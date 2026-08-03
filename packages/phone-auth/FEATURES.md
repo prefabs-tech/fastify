@@ -1,10 +1,10 @@
 <!-- Structured feature inventory — used by automated test generation. Developer docs: see GUIDE.md -->
 
-# @prefabs.tech/fastify-passwordless — Features
+# @prefabs.tech/fastify-phone-auth — Features
 
 ## Plugin Lifecycle
 
-1. **Enable/disable via config flag** — when `config.passwordless.enabled === false`, no recipe factory is contributed and the SuperTokens passwordless endpoints are not served. The check is `=== false`; `undefined` means enabled.
+1. **Enable/disable via config flag** — when `config.phoneAuth.enabled === false`, no recipe factory is contributed and the SuperTokens passwordless endpoints are not served. The check is `=== false`; `undefined` means enabled.
 
 2. **Automatic recipe registration** — on registration (when enabled), the plugin pushes `initPasswordlessRecipe` into the SuperTokens recipe registry via `addSupertokensRecipe` from `@prefabs.tech/fastify-user`. No consumer wiring beyond registering the plugin is required.
 
@@ -20,23 +20,23 @@
 
 ## Recipe Configuration
 
-8. **Default contact method and flow type** — `contactMethod` defaults to `"PHONE"` and `flowType` to `"USER_INPUT_CODE"`, both overridable through `config.passwordless`. `flowType` is typed to `"USER_INPUT_CODE"` only; magic-link flows are not supported.
+8. **Default contact method and flow type** — `contactMethod` defaults to `"PHONE"` and `flowType` to `"USER_INPUT_CODE"`, both overridable through `config.phoneAuth`. `flowType` is typed to `"USER_INPUT_CODE"` only; magic-link flows are not supported.
 
-9. **Full recipe escape hatch** — when `config.passwordless.recipe` is a function, it is called with the Fastify instance and its return value is passed straight to `Passwordless.init`, bypassing the generated config entirely.
+9. **Full recipe escape hatch** — when `config.phoneAuth.recipe` is a function, it is called with the Fastify instance and its return value is passed straight to `Passwordless.init`, bypassing the generated config entirely.
 
-10. **Boot-time config validation** — `getPasswordlessRecipeConfig` throws when `config.passwordless` is absent, when `enableDevMode` is true without a `devModeOtp`, and (outside dev mode) when the Twilio credentials are missing or incomplete. All three run inside `supertokens.init()`, so they fail at boot.
+10. **Boot-time config validation** — `getPasswordlessRecipeConfig` throws when `config.phoneAuth` is absent, when `enableDevMode` is true without a `devModeOtp`, and (outside dev mode) when the Twilio credentials are missing or incomplete. All three run inside `supertokens.init()`, so they fail at boot.
 
-11. **API override wrappers** — each entry in `config.passwordless.override.apis` is invoked with `(originalImplementation, fastify)` and spread over the built-in API overrides, so a consumer wrapper wins.
+11. **API override wrappers** — each entry in `config.phoneAuth.override.apis` is invoked with `(originalImplementation, fastify)` and spread over the built-in API overrides, so a consumer wrapper wins.
 
-12. **Function override wrappers** — same mechanism for `config.passwordless.override.functions` over the built-in `consumeCode` override.
+12. **Function override wrappers** — same mechanism for `config.phoneAuth.override.functions` over the built-in `consumeCode` override.
 
 ## Twilio Verify Integration
 
 13. **Placeholder user input code** — `getCustomUserInputCode` returns `TWILIO_VERIFY_PLACEHOLDER_CODE` (`"000000"`) for regular numbers, so SuperTokens stores a code while Twilio Verify owns the real OTP.
 
-14. **Dev mode OTP** — when `config.passwordless.enableDevMode` is true, `getCustomUserInputCode` returns `devModeOtp` for every number.
+14. **Dev mode OTP** — when `config.phoneAuth.enableDevMode` is true, `getCustomUserInputCode` returns `devModeOtp` for every number.
 
-15. **Per-number SMS bypass** — outside dev mode, numbers listed in `config.passwordless.bypassSmsFor` also get `devModeOtp` and no SMS is sent.
+15. **Per-number SMS bypass** — outside dev mode, numbers listed in `config.phoneAuth.bypassSmsFor` also get `devModeOtp` and no SMS is sent.
 
 16. **SMS delivery through Twilio Verify** — outside dev mode, `smsDelivery.override.sendSms` calls `verify.v2.services(verifyServiceSid).verifications.create({ channel: "sms", to })`. Send failures are logged and rethrown.
 

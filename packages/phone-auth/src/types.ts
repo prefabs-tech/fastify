@@ -13,7 +13,7 @@ type APIInterfaceWrapper = {
   ) => APIInterface[key];
 };
 
-interface PasswordlessConfig {
+interface PhoneAuthConfig {
   /**
    * Phone numbers that skip Twilio entirely and are verified against
    * `devModeOtp` instead.
@@ -72,7 +72,7 @@ type TwilioConfig = Omit<
 
 export type {
   APIInterfaceWrapper,
-  PasswordlessConfig,
+  PhoneAuthConfig,
   RecipeInterfaceWrapper,
   TwilioConfig,
 };

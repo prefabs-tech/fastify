@@ -1,4 +1,4 @@
-# @prefabs.tech/fastify-passwordless
+# @prefabs.tech/fastify-phone-auth
 
 A [Fastify](https://github.com/fastify/fastify) plugin that adds phone/SMS OTP passwordless login to an API built on [@prefabs.tech/fastify-user](../user/), backed by the [Twilio Verify](https://www.twilio.com/docs/verify) API.
 
@@ -31,13 +31,13 @@ Peer dependencies (install compatible versions — see [package.json](./package.
 Install with npm:
 
 ```bash
-npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user @prefabs.tech/fastify-passwordless fastify fastify-plugin slonik supertokens-node
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user @prefabs.tech/fastify-phone-auth fastify fastify-plugin slonik supertokens-node
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user @prefabs.tech/fastify-passwordless fastify fastify-plugin slonik supertokens-node
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-slonik @prefabs.tech/fastify-user @prefabs.tech/fastify-phone-auth fastify fastify-plugin slonik supertokens-node
 ```
 
 ## Usage
@@ -48,7 +48,7 @@ SuperTokens allows exactly one global `init()`, and `@prefabs.tech/fastify-user`
 
 ```typescript
 import configPlugin from "@prefabs.tech/fastify-config";
-import passwordlessPlugin from "@prefabs.tech/fastify-passwordless";
+import phoneAuthPlugin from "@prefabs.tech/fastify-phone-auth";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import userPlugin from "@prefabs.tech/fastify-user";
 import Fastify from "fastify";
@@ -57,7 +57,7 @@ const fastify = Fastify();
 
 await fastify.register(configPlugin, { config });
 await fastify.register(slonikPlugin);
-await fastify.register(passwordlessPlugin); // contributes the recipe
+await fastify.register(phoneAuthPlugin); // contributes the recipe
 await fastify.register(userPlugin); // runs supertokens.init()
 ```
 
@@ -72,7 +72,7 @@ SuperTokens is already initialised. Register SuperTokens recipe plugins before @
 ```typescript
 const config: ApiConfig = {
   // ...
-  passwordless: {
+  phoneAuth: {
     fallbackEmailDomain: "example.com",
     twilio: {
       accountSid: process.env.TWILIO_ACCOUNT_SID,
@@ -86,7 +86,7 @@ const config: ApiConfig = {
 For local development, skip Twilio entirely:
 
 ```typescript
-passwordless: {
+phoneAuth: {
   devModeOtp: "123456",
   enableDevMode: true,
   fallbackEmailDomain: "example.com",

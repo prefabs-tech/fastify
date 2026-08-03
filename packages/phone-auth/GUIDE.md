@@ -1,15 +1,15 @@
-# @prefabs.tech/fastify-passwordless — Developer Guide
+# @prefabs.tech/fastify-phone-auth — Developer Guide
 
 ## Installation
 
 ### For package consumers
 
 ```bash
-npm install @prefabs.tech/fastify-passwordless
+npm install @prefabs.tech/fastify-phone-auth
 ```
 
 ```bash
-pnpm add @prefabs.tech/fastify-passwordless
+pnpm add @prefabs.tech/fastify-phone-auth
 ```
 
 Peer dependencies are listed in [README.md](./README.md#requirements).
@@ -18,8 +18,8 @@ Peer dependencies are listed in [README.md](./README.md#requirements).
 
 ```bash
 pnpm install
-pnpm --filter @prefabs.tech/fastify-passwordless test
-pnpm --filter @prefabs.tech/fastify-passwordless build
+pnpm --filter @prefabs.tech/fastify-phone-auth test
+pnpm --filter @prefabs.tech/fastify-phone-auth build
 ```
 
 ## Registration order — read this first
@@ -29,7 +29,7 @@ SuperTokens permits exactly one global `supertokens.init()`. `@prefabs.tech/fast
 ```typescript
 await fastify.register(configPlugin, { config });
 await fastify.register(slonikPlugin);
-await fastify.register(passwordlessPlugin); // pushes the recipe factory
+await fastify.register(phoneAuthPlugin); // pushes the recipe factory
 await fastify.register(userPlugin); // supertokens.init() drains the registry
 ```
 
@@ -48,14 +48,14 @@ The registry itself is `addSupertokensRecipe`, exported from `@prefabs.tech/fast
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import configPlugin from "@prefabs.tech/fastify-config";
-import passwordlessPlugin from "@prefabs.tech/fastify-passwordless";
+import phoneAuthPlugin from "@prefabs.tech/fastify-phone-auth";
 import slonikPlugin from "@prefabs.tech/fastify-slonik";
 import userPlugin from "@prefabs.tech/fastify-user";
 import Fastify from "fastify";
 
 const config: ApiConfig = {
   // ...the rest of your app config
-  passwordless: {
+  phoneAuth: {
     fallbackEmailDomain: "example.com",
     twilio: {
       accountSid: process.env.TWILIO_ACCOUNT_SID as string,
@@ -69,7 +69,7 @@ const fastify = Fastify();
 
 await fastify.register(configPlugin, { config });
 await fastify.register(slonikPlugin);
-await fastify.register(passwordlessPlugin);
+await fastify.register(phoneAuthPlugin);
 await fastify.register(userPlugin);
 ```
 
@@ -152,7 +152,7 @@ Details:
 
 ## Configuration reference
 
-`config.passwordless`:
+`config.phoneAuth`:
 
 | Key | Type | Default | Notes |
 | --- | --- | --- | --- |
@@ -172,7 +172,7 @@ Details:
 ### Disabling the plugin
 
 ```typescript
-passwordless: {
+phoneAuth: {
   enabled: false;
 }
 ```
@@ -182,7 +182,7 @@ No recipe is contributed and the SuperTokens passwordless endpoints are not serv
 ### Development without Twilio
 
 ```typescript
-passwordless: {
+phoneAuth: {
   devModeOtp: "123456",
   enableDevMode: true,
   fallbackEmailDomain: "example.com",
@@ -196,7 +196,7 @@ Every number accepts `123456` and no SMS is sent. To keep Twilio live for real u
 Wrappers receive the original implementation and the Fastify instance, and are applied **after** the built-in overrides — so replacing `consumeCodePOST` or `consumeCode` removes the Twilio Verify integration or the local user creation respectively.
 
 ```typescript
-passwordless: {
+phoneAuth: {
   override: {
     apis: {
       consumeCodePOST: (originalImplementation, fastify) => async (input) => {
@@ -212,7 +212,7 @@ passwordless: {
 For total control, bypass the generated config entirely:
 
 ```typescript
-passwordless: {
+phoneAuth: {
   recipe: (fastify) => ({
     contactMethod: "PHONE",
     flowType: "USER_INPUT_CODE",
@@ -224,9 +224,9 @@ passwordless: {
 
 `getPasswordlessRecipeConfig` runs during `supertokens.init()`, so configuration mistakes fail at boot rather than on the first sign-in attempt:
 
-- No `config.passwordless` at all → `Passwordless recipe config is missing.`
-- `enableDevMode: true` without `devModeOtp` → `passwordless.devModeOtp is required when passwordless.enableDevMode is true`
-- Not in dev mode and `twilio` missing or incomplete → `Twilio config is missing for the passwordless recipe.` / `accountSid and ... authToken are required`
+- No `config.phoneAuth` at all → `Phone auth config is missing.`
+- `enableDevMode: true` without `devModeOtp` → `phoneAuth.devModeOtp is required when phoneAuth.enableDevMode is true`
+- Not in dev mode and `twilio` missing or incomplete → `Twilio config is missing for phone auth.` / `accountSid and ... authToken are required`
 
 At request time, a Twilio Verify failure is logged and returned as `RESTART_FLOW_ERROR`; a rejected code returns `INCORRECT_USER_INPUT_CODE_ERROR`.
 

@@ -22,7 +22,7 @@ const buildFastify = (
 ): FastifyInstance => {
   const fastify = Fastify({ logger: false });
 
-  fastify.decorate("config", { appName: "Test App", passwordless: {} });
+  fastify.decorate("config", { appName: "Test App", phoneAuth: {} });
   fastify.decorate("slonik", {});
 
   if (graphql) {

@@ -12,18 +12,18 @@ vi.mock("../migrations/runMigrations", () => ({
 }));
 
 /**
- * Builds a Fastify instance decorated with everything the passwordless plugin
+ * Builds a Fastify instance decorated with everything the phone auth plugin
  * reads. `addSupertokensRecipe` comes from @prefabs.tech/fastify-user and only
  * touches decorators, so no SuperTokens init happens here.
  */
 const buildFastify = (
-  passwordlessConfig?: Record<string, unknown>,
+  phoneAuthConfig?: Record<string, unknown>,
 ): FastifyInstance => {
   const fastify = Fastify({ logger: false });
 
   fastify.decorate("config", {
     appName: "Test App",
-    passwordless: passwordlessConfig,
+    phoneAuth: phoneAuthConfig,
   });
 
   fastify.decorate("slonik", {});
@@ -31,7 +31,7 @@ const buildFastify = (
   return fastify;
 };
 
-describe("passwordlessPlugin", () => {
+describe("phoneAuthPlugin", () => {
   let fastify: FastifyInstance;
 
   beforeEach(() => {
@@ -56,7 +56,7 @@ describe("passwordlessPlugin", () => {
     expect(fastify.supertokensRecipes).toHaveLength(1);
   });
 
-  it("registers the recipe factory when the passwordless config is absent", async () => {
+  it("registers the recipe factory when the phone auth config is absent", async () => {
     fastify = buildFastify();
     await fastify.register(plugin);
 

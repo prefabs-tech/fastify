@@ -7,14 +7,14 @@ import extendUserSchema from "./graphql/extendUserSchema";
 import runMigrations from "./migrations/runMigrations";
 import initPasswordlessRecipe from "./recipe/initPasswordlessRecipe";
 
-const passwordlessPlugin: FastifyPluginAsync = async (fastify) => {
-  if (fastify.config.passwordless?.enabled === false) {
-    fastify.log.info("fastify-passwordless plugin is not enabled");
+const phoneAuthPlugin: FastifyPluginAsync = async (fastify) => {
+  if (fastify.config.phoneAuth?.enabled === false) {
+    fastify.log.info("fastify-phone-auth plugin is not enabled");
 
     return;
   }
 
-  fastify.log.info("Registering fastify-passwordless plugin");
+  fastify.log.info("Registering fastify-phone-auth plugin");
 
   addSupertokensRecipe(fastify, initPasswordlessRecipe);
 
@@ -28,4 +28,4 @@ const passwordlessPlugin: FastifyPluginAsync = async (fastify) => {
   });
 };
 
-export default FastifyPlugin(passwordlessPlugin);
+export default FastifyPlugin(phoneAuthPlugin);

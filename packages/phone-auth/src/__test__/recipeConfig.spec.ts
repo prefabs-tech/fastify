@@ -31,13 +31,13 @@ const twilio = {
 };
 
 const buildFastify = (
-  passwordlessConfig?: Record<string, unknown>,
+  phoneAuthConfig?: Record<string, unknown>,
 ): FastifyInstance => {
   const fastify = Fastify({ logger: false });
 
   fastify.decorate("config", {
     appName: "Test App",
-    passwordless: passwordlessConfig,
+    phoneAuth: phoneAuthConfig,
   });
 
   return fastify;
@@ -67,11 +67,11 @@ describe("getPasswordlessRecipeConfig", () => {
     );
   });
 
-  it("throws when the passwordless config is missing", () => {
+  it("throws when the phone auth config is missing", () => {
     fastify = buildFastify();
 
     expect(() => getPasswordlessRecipeConfig(fastify)).toThrow(
-      /Passwordless recipe config is missing/,
+      /Phone auth config is missing/,
     );
   });
 

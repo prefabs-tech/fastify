@@ -5,19 +5,19 @@ import type { TwilioConfig } from "../types";
 const getTwilioClient = (config: TwilioConfig | undefined) => {
   if (!config) {
     throw new Error(
-      "Twilio config is missing for the passwordless recipe. Add `passwordless.twilio` to your app config.",
+      "Twilio config is missing for phone auth. Add `phoneAuth.twilio` to your app config.",
     );
   }
 
   if (!config.verifyServiceSid) {
     throw new Error(
-      "passwordless.twilio.verifyServiceSid is required for passwordless verification",
+      "phoneAuth.twilio.verifyServiceSid is required for phone auth verification",
     );
   }
 
   if (!config.accountSid || !config.authToken) {
     throw new Error(
-      "passwordless.twilio.accountSid and passwordless.twilio.authToken are required for passwordless verification",
+      "phoneAuth.twilio.accountSid and phoneAuth.twilio.authToken are required for phone auth verification",
     );
   }
 

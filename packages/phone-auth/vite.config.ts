@@ -15,9 +15,9 @@ export default defineConfig(({ mode }) => {
           path.dirname(fileURLToPath(import.meta.url)),
           "src/index.ts",
         ),
-        fileName: "prefabs-tech-fastify-passwordless",
+        fileName: "prefabs-tech-fastify-phone-auth",
         formats: ["cjs", "es"],
-        name: "PrefabsTechFastifyPasswordless",
+        name: "PrefabsTechFastifyPhoneAuth",
       },
       rolldownOptions: {
         external: [

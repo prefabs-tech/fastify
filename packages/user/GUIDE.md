@@ -275,7 +275,7 @@ await fastify.register(myRecipePlugin);
 await fastify.register(userPlugin);
 ```
 
-Registering it afterwards throws `SuperTokens is already initialised. Register SuperTokens recipe plugins before @prefabs.tech/fastify-user.` rather than silently dropping the recipe. `@prefabs.tech/fastify-passwordless` is built on this hook.
+Registering it afterwards throws `SuperTokens is already initialised. Register SuperTokens recipe plugins before @prefabs.tech/fastify-user.` rather than silently dropping the recipe. `@prefabs.tech/fastify-phone-auth` is built on this hook.
 
 ### Third-party OAuth providers
 

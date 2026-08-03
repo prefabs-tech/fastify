@@ -10,6 +10,7 @@ SuperTokens ships a Passwordless recipe, but wiring it to Twilio Verify and to y
 - **Keep the auth package lean**: passwordless is opt-in. Apps that do not use it never install `twilio`, and `@prefabs.tech/fastify-user` carries no passwordless config surface.
 - **Initialise the recipe automatically**: registering this plugin is all it takes — the SuperTokens Passwordless recipe is contributed to `@prefabs.tech/fastify-user`'s recipe list for you.
 - **Create the local user row**: on first sign-in a matching row is created in your `users` table with the phone number and a synthetic `<phoneNumber>@<fallbackEmailDomain>` email, since SuperTokens requires an email.
+- **Own the `phone_number` column**: an idempotent migration adds it to the users table, and the `User` type from `@prefabs.tech/fastify-user` is augmented with `phoneNumber?: string`.
 - **Support local development without Twilio**: a dev mode and a per-number bypass list accept a fixed OTP so you can develop and test without sending real SMS.
 
 ## Requirements

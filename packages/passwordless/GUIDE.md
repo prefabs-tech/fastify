@@ -117,7 +117,17 @@ On first successful sign-in, `functions.consumeCode`:
 
 On subsequent sign-ins it only updates `lastLoginAt`.
 
-The `phone_number` column and the `phoneNumber` field on `User` are provided by `@prefabs.tech/fastify-user`; its migrations add the column automatically.
+## Migration
+
+This package owns the `phone_number` column. On `onReady` it runs an idempotent
+
+```sql
+ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number VARCHAR ( 20 );
+```
+
+against `config.user.tables?.users?.name` (default `users`). It runs on `onReady`, not at registration time, because the table is created while `@prefabs.tech/fastify-user` registers — and this plugin has to be registered *before* that one.
+
+It also augments the `User` interface from `@prefabs.tech/fastify-user` with `phoneNumber?: string`, so the field is typed wherever `User`, `UserCreateInput`, or `request.user` is used in an app that registers this plugin. The augmentation is types only: `@prefabs.tech/fastify-user` does not list `phoneNumber` in its REST response schema or GraphQL SDL, so the column is not serialized on those endpoints unless you extend those schemas in your app.
 
 ## Configuration reference
 

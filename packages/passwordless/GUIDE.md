@@ -127,7 +127,28 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number VARCHAR ( 20 );
 
 against `config.user.tables?.users?.name` (default `users`). It runs on `onReady`, not at registration time, because the table is created while `@prefabs.tech/fastify-user` registers — and this plugin has to be registered *before* that one.
 
-It also augments the `User` interface from `@prefabs.tech/fastify-user` with `phoneNumber?: string`, so the field is typed wherever `User`, `UserCreateInput`, or `request.user` is used in an app that registers this plugin. The augmentation is types only: `@prefabs.tech/fastify-user` does not list `phoneNumber` in its REST response schema or GraphQL SDL, so the column is not serialized on those endpoints unless you extend those schemas in your app.
+It also augments the `User` interface from `@prefabs.tech/fastify-user` with `phoneNumber?: string`, so the field is typed wherever `User`, `UserCreateInput`, or `request.user` is used in an app that registers this plugin.
+
+## GraphQL
+
+`@prefabs.tech/fastify-user` does not carry `phoneNumber` in its `User` SDL, so this plugin adds it at runtime. In the same `onReady` hook as the migration it calls:
+
+```typescript
+fastify.graphql.extendSchema(`
+  extend type User {
+    phoneNumber: String
+  }
+`);
+```
+
+No consumer wiring is required — merge `userSchema` as you normally would and the field appears on the `User` type.
+
+Details:
+
+- **No resolver is needed.** The default field resolver reads `phoneNumber` off the row, which the slonik interceptor camelizes from `phone_number`; the user service selects `users.*`, so the value is already there.
+- **It is skipped, not failed, when there is nothing to extend.** The hook checks `fastify.graphql?.schema?.getType("User")` first, so an app with `config.graphql.enabled = false` — or one that never merged `userSchema` — boots normally. Without that guard `extendSchema` throws `Cannot extend type "User" because it is not defined.`
+- **Registration order does not matter.** The call happens on `onReady`, by which point mercurius has been registered regardless of whether this plugin was registered before or after `@prefabs.tech/fastify-graphql`.
+- The REST response schema is separate and unaffected — `phoneNumber` is not serialized on the users REST routes.
 
 ## Configuration reference
 

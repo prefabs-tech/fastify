@@ -3,6 +3,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { addSupertokensRecipe } from "@prefabs.tech/fastify-user";
 import FastifyPlugin from "fastify-plugin";
 
+import extendUserSchema from "./graphql/extendUserSchema";
 import runMigrations from "./migrations/runMigrations";
 import initPasswordlessRecipe from "./recipe/initPasswordlessRecipe";
 
@@ -23,6 +24,7 @@ const passwordlessPlugin: FastifyPluginAsync = async (fastify) => {
   // the table is guaranteed to exist.
   fastify.addHook("onReady", async () => {
     await runMigrations(fastify.config, fastify.slonik);
+    await extendUserSchema(fastify);
   });
 };
 

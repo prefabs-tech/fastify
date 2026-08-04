@@ -411,7 +411,7 @@ mutation {
     data: {
       userId: "target-user-uuid"
       title: "New message"
-      body: "You have a new message"
+      message: "You have a new message"
     }
   ) {
     message
@@ -528,7 +528,7 @@ import type {
 | `UserDevice`            | `{ userId, deviceToken, createdAt: number, updatedAt: number }`     |
 | `UserDeviceCreateInput` | `Partial<Omit<UserDevice, 'createdAt' \| 'updatedAt'>>`             |
 | `UserDeviceUpdateInput` | `Partial<Omit<UserDevice, 'createdAt' \| 'updatedAt' \| 'userId'>>` |
-| `TestNotificationInput` | `{ userId, title, body, data?: Record<string, string> }`            |
+| `TestNotificationInput` | `{ userId, title, message, data?: Record<string, string> }`         |
 
 ### 35. Route and table constants
 

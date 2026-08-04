@@ -39,8 +39,8 @@ const makeContext = (
 
 const arguments_ = {
   data: {
-    body: "World",
     data: {},
+    message: "World",
     title: "Hello",
     userId: "user-1",
   },

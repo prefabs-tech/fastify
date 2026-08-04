@@ -11,10 +11,10 @@ const Mutation = {
     parent: unknown,
     arguments_: {
       data: {
-        body: string;
         data: {
           [key: string]: string;
         };
+        message: string;
         title: string;
         userId: string;
       };
@@ -32,7 +32,12 @@ const Mutation = {
     }
 
     try {
-      const { body, data, title, userId: receiverId } = arguments_.data;
+      const {
+        data,
+        message: body,
+        title,
+        userId: receiverId,
+      } = arguments_.data;
 
       if (!receiverId) {
         return new mercurius.ErrorWithProps("Receiver id is required", {}, 400);

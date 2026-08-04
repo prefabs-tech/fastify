@@ -8,7 +8,7 @@ const notificationSchema = gql`
   input SendNotificationInput {
     userId: String!
     title: String!
-    body: String!
+    message: String!
   }
 
   type Mutation {

@@ -106,7 +106,7 @@
 
 33. **`UserDeviceUpdateInput`** — partial of `UserDevice` excluding timestamps and `userId`.
 
-34. **`TestNotificationInput`** — `{ userId, title, body, data? }`.
+34. **`TestNotificationInput`** — `{ userId, title, message, data? }`.
 
 ## Constants
 

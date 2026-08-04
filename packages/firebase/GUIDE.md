@@ -20,8 +20,7 @@ pnpm add @prefabs.tech/fastify-config \
          @prefabs.tech/fastify-graphql \
          @prefabs.tech/fastify-slonik \
          mercurius \
-         slonik \
-         supertokens-node
+         slonik
 ```
 
 ### For monorepo development (pnpm install / test / build)
@@ -84,16 +83,14 @@ What we add on top:
 - `firebaseAdmin` — re-export of the `firebase-admin` default export, so consumers can reach the initialized app without declaring the dependency themselves.
 - `verifyFirebaseAppCheck` — a Fastify hook over `getAppCheck().verifyToken` (from `firebase-admin/app-check`) that adds per-route opt-in and a uniform `403` response shape.
 
-### `supertokens-node` — Partial Passthrough
+### Auth prerequisite
 
-**Their docs:** https://www.npmjs.com/package/supertokens-node
-
-We use `verifySession` from `supertokens-node/recipe/session/framework/fastify` as a preHandler on every route. We do not wrap or re-export the supertokens initialization; you must configure SuperTokens in your application before registering this plugin.
+All REST routes in this package call `fastify.verifySession()` as a preHandler. This package does not depend on SuperTokens directly; the host application must register an auth plugin that decorates `verifySession` and populates `request.user` before this plugin is registered. In this monorepo, that is typically `@prefabs.tech/fastify-user`.
 
 What we add on top:
 
-- `FastifyInstance.verifySession` module augmentation so the decorator is typed everywhere.
-- `FastifyRequest.user` module augmentation (`{ id: string }`) populated by your application's session middleware.
+- `FastifyInstance.verifySession` module augmentation with a structural type so the decorator is typed everywhere.
+- `FastifyRequest.user` module augmentation (`{ id: string }`) populated by your application's auth middleware.
 
 ### `fastify-plugin` — Full Passthrough
 
@@ -219,10 +216,9 @@ config.firebase.notification = {
 Replace any default route handler with your own implementation:
 
 ```typescript
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-const myAddHandler = async (request: SessionRequest, reply: FastifyReply) => {
+const myAddHandler = async (request: FastifyRequest, reply: FastifyReply) => {
   // custom logic
   reply.send({ ok: true });
 };
@@ -652,11 +648,10 @@ async function notifyUser(
 ```typescript
 // Disable device routes; use only GraphQL for device management.
 // Override the notification handler with custom logic.
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 const customSendNotification = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   // custom auditing, rate limiting, etc.

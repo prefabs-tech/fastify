@@ -255,7 +255,6 @@ describe("firebase route handlers", () => {
       headers: { "x-user-id": "sender-1" },
       method: "POST",
       payload: {
-        body: "Body",
         data: { orderId: "42" },
         message: "Body",
         title: "Title",

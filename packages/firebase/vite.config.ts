@@ -26,7 +26,6 @@ export default defineConfig(({ mode }) => {
           // String externals match exact ids only; subpath imports
           // (firebase-admin/app-check) would otherwise be bundled.
           /^firebase-admin\//,
-          /^supertokens-node\//,
         ],
         output: {
           exports: "named",

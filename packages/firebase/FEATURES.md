@@ -88,7 +88,7 @@
 
 ## Module Augmentations
 
-26. **`FastifyInstance.verifySession`** — declares `verifySession` (from `supertokens-node`) on the Fastify instance interface.
+26. **`FastifyInstance.verifySession`** — declares a structural `verifySession` on the Fastify instance interface, expected to be decorated by the host auth plugin.
 
 27. **`FastifyRequest.user`** — declares an optional `user: User` property on all Fastify requests.
 

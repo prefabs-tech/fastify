@@ -250,6 +250,33 @@ user: {
 
 For `override.apis` and `override.functions`, provide a function `(originalImpl, fastify) => partialOverride`; only the keys you return are replaced.
 
+### Contributing a SuperTokens recipe from another plugin
+
+SuperTokens allows exactly one global `supertokens.init()`, and this package performs it synchronously while it is being registered — its recipe list is fixed at that moment. A plugin that wants to add a recipe of its own registers a factory instead:
+
+```typescript
+import { addSupertokensRecipe } from "@prefabs.tech/fastify-user";
+import FastifyPlugin from "fastify-plugin";
+import Passwordless from "supertokens-node/recipe/passwordless";
+
+const myRecipePlugin = async (fastify) => {
+  addSupertokensRecipe(fastify, (fastify) =>
+    Passwordless.init({ contactMethod: "PHONE", flowType: "USER_INPUT_CODE" }),
+  );
+};
+
+export default FastifyPlugin(myRecipePlugin);
+```
+
+Factories accumulate on the `fastify.supertokensRecipes` decorator and are drained by `getRecipeList` during `supertokens.init()`. **The contributing plugin must be registered before `@prefabs.tech/fastify-user`:**
+
+```typescript
+await fastify.register(myRecipePlugin);
+await fastify.register(userPlugin);
+```
+
+Registering it afterwards throws `SuperTokens is already initialised. Register SuperTokens recipe plugins before @prefabs.tech/fastify-user.` rather than silently dropping the recipe. `@prefabs.tech/fastify-phone-auth` is built on this hook.
+
 ### Third-party OAuth providers
 
 Configure Apple, Facebook, GitHub, and Google via `config.user.supertokens.providers`:

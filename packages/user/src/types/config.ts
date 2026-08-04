@@ -17,6 +17,7 @@ interface EmailOptions {
   subject?: string;
   templateName?: string;
 }
+
 interface UserConfig {
   email?: IsEmailOptions;
   emailOverrides?: {

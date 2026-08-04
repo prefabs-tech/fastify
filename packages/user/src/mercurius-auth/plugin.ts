@@ -6,10 +6,12 @@ import authPlugin from "./authPlugin";
 import hasPermissionPlugin from "./hasPermissionPlugin";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
-  if (fastify.config.graphql?.enabled) {
-    await fastify.register(hasPermissionPlugin);
-    await fastify.register(authPlugin);
+  if (!fastify.config.graphql?.enabled) {
+    return;
   }
+
+  await fastify.register(hasPermissionPlugin);
+  await fastify.register(authPlugin);
 });
 
 export default plugin;

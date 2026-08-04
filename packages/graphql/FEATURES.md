@@ -49,3 +49,9 @@
 14. **`gql`** tag re-exported from `graphql-tag` — parses GraphQL template literals into `DocumentNode`.
 
 15. **`DocumentNode`** type re-exported from `graphql`.
+
+16. **GraphQL upload transport (`uploads` option)** — When the plugin is enabled, a named sub-plugin (`prefabs-graphql-upload-transport`) is registered before mercurius unless `uploads.enabled === false` (default on) or a transport with the same name is already present (`hasPlugin` check). It adds (a) a catch-all `"*"` content-type parser that flags multipart requests to the GraphQL path (`options.path`, default `"/graphql"`) via `request.graphqlFileUploadMultipart = true` and busboy-parses multipart requests to other routes into `req.body` (`{ ...fields, ...files }`, files as `MultipartFile[]`), and (b) a `preValidation` hook that runs `processRequest` from `graphql-upload-minimal` on flagged requests. `uploads` extends `UploadOptions` (`maxFileSize`, `maxFiles`, ...). Augments `FastifyRequest` with `graphqlFileUploadMultipart?: boolean`.
+
+17. **`graphqlUploadTransport` export** — The upload transport as a standalone plugin for apps that need to register it manually (custom ordering); options: `{ path?: string } & GraphqlUploadsConfig`.
+
+18. **Upload type exports** — `GraphqlUploadsConfig`, `MultipartFile`, and the `GraphQLUpload` / `GraphQLFileUpload` types re-exported from `graphql-upload-minimal`. Constants `DEFAULT_GRAPHQL_PATH` and `UPLOAD_TRANSPORT_PLUGIN_NAME` are also exported.

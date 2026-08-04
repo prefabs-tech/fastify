@@ -5,13 +5,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 // ── Mocks (hoisted so vi.mock factories can reference them) ──────────────────
 
-const { graphqlUploadMock, runMigrationsMock } = vi.hoisted(() => ({
-  graphqlUploadMock: vi.fn(async () => {}),
+const { runMigrationsMock } = vi.hoisted(() => ({
   runMigrationsMock: vi.fn().mockResolvedValue(),
 }));
 
 vi.mock("../migrations/runMigrations", () => ({ default: runMigrationsMock }));
-vi.mock("../plugins/graphqlUpload", () => ({ default: graphqlUploadMock }));
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -24,6 +22,13 @@ const buildFastify = (configOverrides: Record<string, unknown> = {}) => {
   });
   fastify.decorate("slonik", {});
   return fastify;
+};
+
+/** Fastify instance without a config decoration, for new-pattern tests. */
+const buildBareFastify = () => {
+  const instance = Fastify({ logger: false });
+  instance.decorate("slonik", {});
+  return instance;
 };
 
 /** Minimal multipart/form-data body for inject tests (single file field). */
@@ -61,14 +66,98 @@ describe("s3 plugin — initialization", async () => {
     expect(runMigrationsMock).toHaveBeenCalledOnce();
   });
 
-  it("passes slonik and config to runMigrations", async () => {
+  it("passes slonik and the composed options to runMigrations when falling back to fastify.config", async () => {
     fastify = buildFastify();
     await fastify.register(plugin);
     await fastify.ready();
 
     expect(runMigrationsMock).toHaveBeenCalledWith(
       expect.any(Object),
-      expect.objectContaining({ s3: expect.any(Object) }),
+      expect.objectContaining({
+        bucket: "test-bucket",
+        rest: { enabled: true },
+      }),
+    );
+  });
+
+  it("logs a deprecation warning when falling back to fastify.config", async () => {
+    fastify = buildFastify();
+    const warnSpy = vi.spyOn(fastify.log, "warn");
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining("passing s3 options directly"),
+    );
+  });
+
+  it("throws when registered without options and without fastify.config", async () => {
+    fastify = Fastify({ logger: false });
+    fastify.decorate("slonik", {});
+
+    await expect(fastify.register(plugin).ready()).rejects.toThrow(
+      "Missing s3 configuration",
+    );
+  });
+
+  it("throws when the slonik decorator is missing", async () => {
+    fastify = Fastify({ logger: false });
+
+    await expect(
+      fastify
+        .register(plugin, { bucket: "options-bucket", clientConfig: {} })
+        .ready(),
+    ).rejects.toThrow("Missing slonik decorator");
+  });
+});
+
+describe("s3 plugin — options passed directly (new pattern)", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  let fastify: FastifyInstance;
+
+  beforeEach(() => vi.clearAllMocks());
+  afterEach(async () => fastify.close());
+
+  it("registers @fastify/multipart from options.rest without reading fastify.config", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+      rest: { enabled: true },
+    });
+    await fastify.ready();
+
+    expect(fastify.hasContentTypeParser("multipart/form-data")).toBe(true);
+  });
+
+  it("does not register @fastify/multipart when options.rest is omitted", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+    });
+    await fastify.ready();
+
+    expect(fastify.hasContentTypeParser("multipart/form-data")).toBe(false);
+  });
+
+  it("passes the options object to runMigrations", async () => {
+    fastify = buildBareFastify();
+    await fastify.register(plugin, {
+      bucket: "options-bucket",
+      clientConfig: {},
+      table: { name: "custom_files" },
+    });
+    await fastify.ready();
+
+    expect(runMigrationsMock).toHaveBeenCalledWith(
+      expect.any(Object),
+      expect.objectContaining({
+        bucket: "options-bucket",
+        table: { name: "custom_files" },
+      }),
     );
   });
 });
@@ -167,76 +256,5 @@ describe("s3 plugin — REST multipart registration", async () => {
         mimetype: "application/octet-stream",
       },
     });
-  });
-});
-
-describe("s3 plugin — GraphQL upload registration", async () => {
-  const { default: plugin } = await import("../plugin");
-
-  let fastify: FastifyInstance;
-
-  beforeEach(() => vi.clearAllMocks());
-  afterEach(async () => fastify.close());
-
-  it("registers the graphql upload plugin when config.graphql.enabled is true", async () => {
-    fastify = buildFastify({
-      graphql: { enabled: true },
-      rest: { enabled: false },
-    });
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(graphqlUploadMock).toHaveBeenCalledOnce();
-  });
-
-  it("does not register the graphql upload plugin when config.graphql is undefined", async () => {
-    fastify = buildFastify({ graphql: undefined, rest: { enabled: false } });
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(graphqlUploadMock).not.toHaveBeenCalled();
-  });
-
-  it("does not register the graphql upload plugin when config.graphql.enabled is false", async () => {
-    fastify = buildFastify({
-      graphql: { enabled: false },
-      rest: { enabled: false },
-    });
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(graphqlUploadMock).not.toHaveBeenCalled();
-  });
-
-  it("passes fileSizeLimitInBytes as maxFileSize to the graphql upload plugin", async () => {
-    fastify = buildFastify({
-      graphql: { enabled: true },
-      rest: { enabled: false },
-      s3: { fileSizeLimitInBytes: 5_000_000 },
-    });
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(graphqlUploadMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ maxFileSize: 5_000_000 }),
-      expect.any(Function),
-    );
-  });
-
-  it("passes Infinity as maxFileSize when fileSizeLimitInBytes is not set", async () => {
-    fastify = buildFastify({
-      graphql: { enabled: true },
-      rest: { enabled: false },
-      s3: { bucket: "test-bucket", clientConfig: {} },
-    });
-    await fastify.register(plugin);
-    await fastify.ready();
-
-    expect(graphqlUploadMock).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({ maxFileSize: Number.POSITIVE_INFINITY }),
-      expect.any(Function),
-    );
   });
 });

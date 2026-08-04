@@ -23,7 +23,7 @@ function buildDomainErrorStatusMap(
   for (const [errorName, statusCode] of map.entries()) {
     if (
       typeof statusCode !== "number" ||
-      !Number.isInteger(statusCode) ||
+      !Number.isSafeInteger(statusCode) ||
       statusCode < DOMAIN_STATUS_MIN ||
       statusCode > DOMAIN_STATUS_MAX
     ) {
@@ -43,7 +43,7 @@ const plugin = async (
   options: ErrorHandlerOptions,
 ) => {
   fastify.log.info("Registering fastify-error-handler plugin");
-  options.stackTrace = options.stackTrace || false;
+  options.stackTrace ||= options.stackTrace || false;
   options.domainErrorStatusMap = buildDomainErrorStatusMap(
     options.domainErrorStatusMap,
   );

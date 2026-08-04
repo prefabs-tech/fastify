@@ -42,6 +42,9 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
   transporter.use(
     "compile",
     nodemailerMjmlPlugin({
+      mjmlOptions: {
+        validationLevel: "soft",
+      },
       templateFolder: templating.templateFolder,
     }),
   );
@@ -93,9 +96,8 @@ const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
 
   if (fastify.mailer) {
     throw new Error("fastify-mailer has already been registered");
-  } else {
-    fastify.decorate("mailer", mailer);
   }
+  fastify.decorate("mailer", mailer);
 
   if (test && test?.enabled) {
     const { path, to } = test;

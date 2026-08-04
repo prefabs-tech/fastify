@@ -1,3 +1,12 @@
 import fastifyConfig from "@prefabs.tech/eslint-config/fastify.js";
 
-export default fastifyConfig;
+export default [
+  ...fastifyConfig,
+  {
+    files: ["**/__test__/**"],
+    rules: {
+      "unicorn/filename-case": "off",
+      "unicorn/require-array-sort-compare": "off"
+    },
+  },
+];

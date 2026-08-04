@@ -17,8 +17,8 @@ const testPushNotification = async (
   }
 
   const {
+    body,
     data,
-    message: body,
     title,
     userId: receiverId,
   } = request.body as TestNotificationInput;

@@ -1,10 +1,10 @@
 import "@prefabs.tech/fastify-error-handler";
 
 interface TestNotificationInput {
+  body: string;
   data?: {
     [key: string]: string;
   };
-  message: string;
   title: string;
   userId: string;
 }

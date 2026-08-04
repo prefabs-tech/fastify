@@ -182,9 +182,6 @@ importers:
       slonik:
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
-      supertokens-node:
-        specifier: 14.1.4
-        version: 14.1.4
       typescript:
         specifier: 5.9.3
         version: 5.9.3

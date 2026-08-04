@@ -1,4 +1,4 @@
-import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import type { FastifyReply } from "fastify";
 
 import type { User } from "./types";
 
@@ -7,7 +7,9 @@ import deviceHandlers from "./model/userDevice/handlers";
 
 declare module "fastify" {
   interface FastifyInstance {
-    verifySession: typeof verifySession;
+    verifySession: (options?: {
+      sessionRequired?: boolean;
+    }) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
 
   interface FastifyRequest {

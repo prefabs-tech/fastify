@@ -226,7 +226,7 @@ describe("firebase route handlers", () => {
     const response = await fastify.inject({
       headers: { "x-user-id": "sender-1" },
       method: "POST",
-      payload: { message: "Body", title: "Title", userId: "receiver-1" },
+      payload: { body: "Body", title: "Title", userId: "receiver-1" },
       url: ROUTE_SEND_NOTIFICATION,
     });
 
@@ -257,7 +257,6 @@ describe("firebase route handlers", () => {
       payload: {
         body: "Body",
         data: { orderId: "42" },
-        message: "Body",
         title: "Title",
         userId: "receiver-1",
       },

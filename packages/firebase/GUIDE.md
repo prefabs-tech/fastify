@@ -89,6 +89,7 @@ All REST routes in this package call `fastify.verifySession()` as a preHandler. 
 
 What we add on top:
 
+- `FastifyInstance.verifySession` module augmentation so the host-provided decorator is typed (shape only — this package does not implement it).
 - `FastifyRequest.user` module augmentation (`{ id: string }`) populated by your application's auth middleware.
 
 ### `fastify-plugin` — Full Passthrough
@@ -499,6 +500,7 @@ The package extends four interfaces automatically on import. No action needed �
 ```typescript
 import "@prefabs.tech/fastify-firebase"; // augmentations applied on import
 
+// fastify.verifySession is now typed (host auth plugin must decorate it)
 // request.user is now typed as User | undefined
 // MercuriusContext.user is now typed as User
 // ApiConfig.firebase is now typed with all config options

@@ -4,7 +4,6 @@ import {
   ROUTE_USER_DEVICE_ADD,
   ROUTE_USER_DEVICE_REMOVE,
 } from "../../constants";
-import getVerifySessionPreHandler from "../../lib/getVerifySessionPreHandler";
 import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
 import handlers from "./handlers";
 import { deleteUserDeviceSchema, postUserDeviceSchema } from "./schema";
@@ -15,10 +14,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_USER_DEVICE_ADD,
     {
-      preHandler: [
-        getVerifySessionPreHandler(fastify),
-        isFirebaseEnabled(fastify),
-      ],
+      preHandler: [fastify.verifySession(), isFirebaseEnabled(fastify)],
       schema: postUserDeviceSchema,
     },
     handlersConfig?.addUserDevice || handlers.addUserDevice,
@@ -27,10 +23,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_USER_DEVICE_REMOVE,
     {
-      preHandler: [
-        getVerifySessionPreHandler(fastify),
-        isFirebaseEnabled(fastify),
-      ],
+      preHandler: [fastify.verifySession(), isFirebaseEnabled(fastify)],
       schema: deleteUserDeviceSchema,
     },
     handlersConfig?.removeUserDevice || handlers.removeUserDevice,

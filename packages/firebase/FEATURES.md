@@ -88,7 +88,7 @@
 
 ## Module Augmentations
 
-26. **Auth prerequisite** — REST routes expect a host auth plugin to decorate `fastify.verifySession()` and populate `request.user`; in this monorepo that is typically `@prefabs.tech/fastify-user`.
+26. **`FastifyInstance.verifySession`** — declares a host-provided `verifySession` preHandler factory on the Fastify instance (no SuperTokens dependency); the host auth plugin (typically `@prefabs.tech/fastify-user`) must decorate it and populate `request.user`.
 
 27. **`FastifyRequest.user`** — declares an optional `user: User` property on all Fastify requests.
 

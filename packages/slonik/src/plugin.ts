@@ -5,7 +5,7 @@ import { stringifyDsn } from "slonik";
 
 import type { SlonikOptions } from "./types";
 
-import createClientConfiguration from "./factories/createClientConfiguration";
+import createClientConfig from "./factories/createClientConfig";
 import runMigrations from "./migrations/runMigrations";
 import { fastifySlonik } from "./slonik";
 
@@ -27,7 +27,7 @@ const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
   }
 
   await fastify.register(fastifySlonik, {
-    clientConfiguration: createClientConfiguration(
+    clientConfiguration: createClientConfig(
       options.clientConfiguration,
       options.queryLogging?.enabled,
     ),

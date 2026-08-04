@@ -26,8 +26,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
   validators = {
     isVerified: (
       maxAgeInSeconds:
-        | number
-        | undefined = ProfileValidationClaim.defaultMaxAgeInSeconds,
+        number | undefined = ProfileValidationClaim.defaultMaxAgeInSeconds,
       id?: string,
     ): SessionClaimValidator => {
       return {
@@ -95,8 +94,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     userContext: any,
   ): Promise<Response> => {
     const request = getRequestFromUserContext(userContext)?.original as
-      | SessionRequest
-      | undefined;
+      SessionRequest | undefined;
 
     if (!request) {
       // supertokens-node v15 multitenancy internal flow

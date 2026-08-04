@@ -9,9 +9,7 @@ const runMigrationsMock = vi.fn().mockResolvedValue();
 const stringifyDsnMock = vi
   .fn()
   .mockReturnValue("postgresql://user:pass@localhost/test");
-const createClientConfigurationMock = vi
-  .fn()
-  .mockReturnValue({ interceptors: [] });
+const createClientConfigMock = vi.fn().mockReturnValue({ interceptors: [] });
 
 // fastifySlonik must be wrapped with fastify-plugin so its decorations escape
 // the child scope and reach the parent fastify instance.
@@ -40,12 +38,17 @@ vi.mock("../migrations/runMigrations", () => ({
   default: runMigrationsMock,
 }));
 
-vi.mock("slonik", () => ({
-  stringifyDsn: stringifyDsnMock,
-}));
+vi.mock("slonik", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("slonik")>();
 
-vi.mock("../factories/createClientConfiguration", () => ({
-  default: createClientConfigurationMock,
+  return {
+    ...actual,
+    stringifyDsn: stringifyDsnMock,
+  };
+});
+
+vi.mock("../factories/createClientConfig", () => ({
+  default: createClientConfigMock,
 }));
 
 const baseOptions: SlonikOptions = {
@@ -107,7 +110,7 @@ describe("slonikPlugin — registration", async () => {
     };
     await fastify.register(plugin, options);
     await fastify.ready();
-    expect(createClientConfigurationMock).toHaveBeenCalledWith(
+    expect(createClientConfigMock).toHaveBeenCalledWith(
       options.clientConfiguration,
       true,
     );
@@ -116,10 +119,7 @@ describe("slonikPlugin — registration", async () => {
   it("passes undefined for queryLogging.enabled when queryLogging is not set", async () => {
     await fastify.register(plugin, baseOptions);
     await fastify.ready();
-    expect(createClientConfigurationMock).toHaveBeenCalledWith(
-      undefined,
-      undefined,
-    );
+    expect(createClientConfigMock).toHaveBeenCalledWith(undefined, undefined);
   });
 
   it("passes false for queryLogging.enabled when query logging is explicitly disabled", async () => {
@@ -129,7 +129,7 @@ describe("slonikPlugin — registration", async () => {
     };
     await fastify.register(plugin, options);
     await fastify.ready();
-    expect(createClientConfigurationMock).toHaveBeenCalledWith(
+    expect(createClientConfigMock).toHaveBeenCalledWith(
       options.clientConfiguration,
       false,
     );

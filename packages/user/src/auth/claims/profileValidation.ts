@@ -17,10 +17,12 @@ export function checkProfileValidation<T extends { signedUpAt: number }>(
 ): ProfileValidationResult {
   const fields = config.fields ?? [];
 
-  const isVerified = !fields.some(
+  const isVerified = fields.every(
     (field) =>
-      (user as Record<string, unknown>)[field as string] === null ||
-      (user as Record<string, unknown>)[field as string] === undefined,
+      !(
+        (user as Record<string, unknown>)[field as string] === null ||
+        (user as Record<string, unknown>)[field as string] === undefined
+      ),
   );
 
   const gracePeriodEndsAt =

@@ -113,6 +113,18 @@ Docs: https://graphql.org/graphql-js/ / https://www.npmjs.com/package/graphql
 
 Only the `DocumentNode` type is re-exported. No runtime code from this library is executed by us.
 
+### graphql-upload-minimal — Partial Passthrough
+
+Docs: https://www.npmjs.com/package/graphql-upload-minimal
+
+Used by the upload transport (Feature 16). `processRequest` is called internally for flagged multipart GraphQL requests; its `UploadOptions` (`maxFileSize`, `maxFiles`, `maxFieldSize`, ...) are exposed through the `uploads` option. The `Upload` and `FileUpload` types are re-exported as `GraphQLUpload` and `GraphQLFileUpload`.
+
+### busboy — Full Passthrough (internal)
+
+Docs: https://www.npmjs.com/package/busboy
+
+Used internally by the upload transport to parse multipart requests outside the GraphQL path. Not exposed to consumers.
+
 ---
 
 ## Features
@@ -405,6 +417,34 @@ function buildSchema(extra: DocumentNode[]): DocumentNode {
   return mergeTypeDefs([baseSchema, ...extra]);
 }
 ```
+
+### 16. GraphQL file uploads (`uploads` option + `graphqlUploadTransport`)
+
+When the plugin is enabled it also registers the upload transport — a named sub-plugin (`prefabs-graphql-upload-transport`) that makes GraphQL file uploads (via the [graphql multipart request spec](https://github.com/jaydenseric/graphql-multipart-request-spec)) work end to end:
+
+1. A catch-all `*` content-type parser: multipart requests to the GraphQL path (`options.path`, default `/graphql`) are flagged (`request.graphqlFileUploadMultipart = true`) and their stream left untouched; multipart requests to any other route are parsed with busboy into `req.body` (`{ ...fields, ...files }`, file values are `MultipartFile[]` arrays); other unknown content types fall through unchanged.
+2. A `preValidation` hook that runs `processRequest` from `graphql-upload-minimal` on flagged requests, so resolvers receive `Upload` values.
+
+```typescript
+await fastify.register(graphqlPlugin, {
+  ...config.graphql,
+  uploads: { maxFileSize: 10_485_760 }, // UploadOptions passthrough
+});
+```
+
+The transport is **enabled by default** (disable check is `uploads.enabled === false`). Declare `scalar Upload` in your SDL; resolvers receive the upload as a promise (`const upload = await args.file; upload.createReadStream()`).
+
+```typescript
+// Disable uploads entirely:
+await fastify.register(graphqlPlugin, { ...config.graphql, uploads: { enabled: false } });
+```
+
+Gotchas:
+
+- The `*` parser is a single app-global slot. If your app registers its own catch-all parser, registration throws Fastify's `FST_ERR_CTP_ALREADY_PRESENT` — set `uploads: { enabled: false }` and manage multipart parsing yourself. (`hasContentTypeParser("*")` cannot detect this ahead of time; see the repo's known Fastify gotchas.)
+- With the transport active, unknown content types no longer return 415 — the request reaches the route with an undefined body.
+- Mixed REST + GraphQL uploads with `@prefabs.tech/fastify-s3`: register the s3 plugin **after** this plugin. `@fastify/multipart` (s3 REST mode) adds a dedicated `multipart/form-data` parser; registered after mercurius it cannot leak into the GraphQL route's context, registered before it would consume GraphQL upload bodies.
+- If the transport is already registered (e.g. via the deprecated `multipartParserPlugin` re-export from `@prefabs.tech/fastify-s3`), the plugin detects it with `hasPlugin` and skips its own registration.
 
 ---
 

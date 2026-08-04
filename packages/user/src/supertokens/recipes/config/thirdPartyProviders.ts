@@ -38,19 +38,15 @@ const getThirdPartyProviders = (config: ApiConfig) => {
   for (const provider of providerFunctions) {
     if (provider.name === "apple") {
       const appleProviderConfigs = providersConfig?.apple as
-        | AppleSingleProviderConfig[]
-        | undefined;
+        AppleSingleProviderConfig[] | undefined;
 
       if (appleProviderConfigs && appleProviderConfigs.length > 0) {
-        const clients: (ProviderClientConfig & { isDefault?: boolean })[] = [];
-
-        for (const cfg of appleProviderConfigs) {
-          clients.push({
-            additionalConfig: { ...cfg.clientSecret },
-            clientId: cfg.clientId,
-            isDefault: cfg.isDefault,
-          });
-        }
+        const clients: (ProviderClientConfig & { isDefault?: boolean })[] =
+          Array.from(appleProviderConfigs, (config_) => ({
+            additionalConfig: { ...config_.clientSecret },
+            clientId: config_.clientId,
+            isDefault: config_.isDefault,
+          }));
 
         providers.push(
           Apple({
@@ -66,18 +62,17 @@ const getThirdPartyProviders = (config: ApiConfig) => {
       provider.name === "github" ||
       provider.name === "facebook"
     ) {
-      const cfg = providersConfig?.[provider.name] as
-        | NonAppleProviderConfig
-        | undefined;
+      const config_ = providersConfig?.[provider.name] as
+        NonAppleProviderConfig | undefined;
 
-      if (cfg && cfg.clientId) {
+      if (config_ && config_.clientId) {
         providers.push(
           provider.initProvider({
             config: {
               clients: [
                 {
-                  clientId: cfg.clientId,
-                  clientSecret: cfg.clientSecret,
+                  clientId: config_.clientId,
+                  clientSecret: config_.clientSecret,
                 },
               ],
               thirdPartyId: provider.name,

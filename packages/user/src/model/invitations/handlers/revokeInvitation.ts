@@ -20,13 +20,16 @@ const revokeInvitation = async (
 
   if (!invitation) {
     throw server.httpErrors.unprocessableEntity("Invitation not found");
-  } else if (invitation.acceptedAt) {
+  }
+  if (invitation.acceptedAt) {
     throw server.httpErrors.unprocessableEntity(
       "Invitation is already accepted",
     );
-  } else if (Date.now() > invitation.expiresAt) {
+  }
+  if (Date.now() > invitation.expiresAt) {
     throw server.httpErrors.unprocessableEntity("Invitation is expired");
-  } else if (invitation.revokedAt) {
+  }
+  if (invitation.revokedAt) {
     throw server.httpErrors.unprocessableEntity(
       "Invitation is already revoked",
     );

@@ -17,8 +17,7 @@ const createNewSession = (
     }
 
     const request = getRequestFromUserContext(input.userContext)?.original as
-      | FastifyRequest
-      | undefined;
+      FastifyRequest | undefined;
 
     let user: FastifyRequest["user"] | undefined;
 
@@ -56,7 +55,7 @@ const createNewSession = (
         throw fastify.httpErrors.unauthorized("User is disabled");
       }
 
-      input.userContext._default = input.userContext._default || {};
+      input.userContext._default ||= {};
       input.userContext._default.request = {
         original: {
           config,
@@ -69,7 +68,7 @@ const createNewSession = (
 
     // re-inject in case v15 cleared _default during createNewSession
     if (!request && user) {
-      input.userContext._default = input.userContext._default || {};
+      input.userContext._default ||= {};
       input.userContext._default.request = {
         original: {
           config: fastify.config,

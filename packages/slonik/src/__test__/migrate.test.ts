@@ -7,11 +7,13 @@ const pgClientConnectMock = vi.fn().mockResolvedValue();
 const pgClientEndMock = vi.fn().mockResolvedValue();
 
 vi.mock("pg", () => {
-  const Client = pgClientConstructorMock.mockImplementation(() => ({
-    connect: pgClientConnectMock,
-    end: pgClientEndMock,
-    query: vi.fn().mockResolvedValue({ rows: [] }),
-  }));
+  const Client = pgClientConstructorMock.mockImplementation(function () {
+    return {
+      connect: pgClientConnectMock,
+      end: pgClientEndMock,
+      query: vi.fn().mockResolvedValue({ rows: [] }),
+    };
+  });
   return { Client, default: { Client } };
 });
 

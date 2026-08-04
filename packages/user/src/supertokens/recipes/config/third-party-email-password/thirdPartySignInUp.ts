@@ -6,8 +6,6 @@ import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { deleteUser, listUsersByAccountInfo } from "supertokens-node";
 import UserRoles from "supertokens-node/recipe/userroles";
 
-import type { User } from "../../../../types";
-
 import { SUPERTOKENS_DEFAULT_TENANT_ID } from "../../../../constants";
 import getUserService from "../../../../lib/getUserService";
 import areRolesExist from "../../../utils/areRolesExist";
@@ -73,10 +71,8 @@ const thirdPartySignInUp = (
         }
       }
 
-      let user: null | undefined | User;
-
       try {
-        user = await userService.create({
+        const user = await userService.create({
           email: originalResponse.user.emails[0] ?? "",
           id: originalResponse.user.id,
         });

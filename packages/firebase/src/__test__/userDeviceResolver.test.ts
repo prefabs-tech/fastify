@@ -17,11 +17,13 @@ const mockRemoveByDeviceToken = vi
   .mockResolvedValue({ deviceToken: "token-abc", id: 1, userId: "user-1" });
 
 vi.mock("../model/userDevice/service", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    create: mockCreate,
-    getByUserId: mockGetByUserId,
-    removeByDeviceToken: mockRemoveByDeviceToken,
-  })),
+  default: vi.fn().mockImplementation(function () {
+    return {
+      create: mockCreate,
+      getByUserId: mockGetByUserId,
+      removeByDeviceToken: mockRemoveByDeviceToken,
+    };
+  }),
 }));
 
 const makeContext = (

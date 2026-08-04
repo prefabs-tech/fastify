@@ -20,8 +20,7 @@ pnpm add @prefabs.tech/fastify-config \
          @prefabs.tech/fastify-graphql \
          @prefabs.tech/fastify-slonik \
          mercurius \
-         slonik \
-         supertokens-node
+         slonik
 ```
 
 ### For monorepo development (pnpm install / test / build)
@@ -73,7 +72,7 @@ await app.register(firebasePlugin);
 
 **Their docs:** https://www.npmjs.com/package/firebase-admin
 
-We initialize `firebase-admin` internally via `initializeFirebase` and expose a single wrapper (`sendPushNotification`) over `messaging().sendEachForMulticast`. The rest of the `firebase-admin` surface area (Auth, Firestore, Storage, etc.) is not wrapped; call `firebase-admin` directly in your application code for those services.
+We initialize `firebase-admin` internally via `initializeFirebase` and expose a single wrapper (`sendPushNotification`) over `messaging().sendEachForMulticast`. The rest of the `firebase-admin` surface area (Auth, Firestore, Storage, etc.) is not wrapped; use the re-exported `firebaseAdmin` (or your own `firebase-admin` import) for those services.
 
 What we add on top:
 
@@ -81,17 +80,17 @@ What we add on top:
 - Re-initialization guard (`admin.apps.length > 0`).
 - Missing-credentials guard with structured error logging instead of a thrown exception.
 - `sendPushNotification` — a typed async wrapper around multicast messaging.
+- `firebaseAdmin` — re-export of the `firebase-admin` default export, so consumers can reach the initialized app without declaring the dependency themselves.
+- `verifyFirebaseAppCheck` — a Fastify hook over `getAppCheck().verifyToken` (from `firebase-admin/app-check`) that adds per-route opt-in and a uniform `403` response shape.
 
-### `supertokens-node` — Partial Passthrough
+### Auth prerequisite
 
-**Their docs:** https://www.npmjs.com/package/supertokens-node
-
-We use `verifySession` from `supertokens-node/recipe/session/framework/fastify` as a preHandler on every route. We do not wrap or re-export the supertokens initialization; you must configure SuperTokens in your application before registering this plugin.
+All REST routes in this package call `fastify.verifySession()` as a preHandler. This package does not depend on SuperTokens directly; the host application must register an auth plugin that decorates `verifySession` and populates `request.user` before this plugin is registered. In this monorepo, that is typically `@prefabs.tech/fastify-user`.
 
 What we add on top:
 
-- `FastifyInstance.verifySession` module augmentation so the decorator is typed everywhere.
-- `FastifyRequest.user` module augmentation (`{ id: string }`) populated by your application's session middleware.
+- `FastifyInstance.verifySession` module augmentation so the host-provided decorator is typed (shape only — this package does not implement it).
+- `FastifyRequest.user` module augmentation (`{ id: string }`) populated by your application's auth middleware.
 
 ### `fastify-plugin` — Full Passthrough
 
@@ -217,10 +216,9 @@ config.firebase.notification = {
 Replace any default route handler with your own implementation:
 
 ```typescript
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
-const myAddHandler = async (request: SessionRequest, reply: FastifyReply) => {
+const myAddHandler = async (request: FastifyRequest, reply: FastifyReply) => {
   // custom logic
   reply.send({ ok: true });
 };
@@ -236,7 +234,7 @@ config.firebase.handlers = {
 };
 ```
 
-### 11. `isFirebaseEnabled` preHandler
+### 11a. `isFirebaseEnabled` preHandler
 
 A preHandler factory that throws a Fastify `404 notFound` error if `config.firebase.enabled === false`. It is applied automatically to all firebase routes by this package.
 
@@ -250,13 +248,49 @@ config.firebase.enabled = false;
 // POST /send-notification (when enabled in config)
 ```
 
+### 11b. `verifyFirebaseAppCheck` hook
+
+Validates the `x-firebase-appcheck` request header against [Firebase App Check](https://firebase.google.com/docs/app-check). Unlike `isFirebaseEnabled`, this hook is **not** registered for you — add it yourself as an `onRequest` hook so you control which encapsulation context it covers. `onRequest` rejects unverified requests before body parsing and validation run.
+
+```typescript
+import { verifyFirebaseAppCheck } from "@prefabs.tech/fastify-firebase";
+
+// Add Firebase App Check verification hook
+api.addHook("onRequest", verifyFirebaseAppCheck);
+```
+
+```typescript
+// config
+firebase: {
+  appCheck: {
+    enabled: true,
+    // Only these exact paths are checked. Omit or leave empty and
+    // nothing is protected.
+    routes: ["/user-device", "/send-notification"],
+  },
+}
+```
+
+Two behaviours worth calling out:
+
+- `appCheck.enabled` is opt-**in**. Leaving it `undefined` disables the check — this is deliberately the opposite of the `enabled === false` convention used elsewhere in this package.
+- Matching is exact on the path with the query string stripped, so `/user-device` does not cover `/user-device/123`.
+
+Requests that fail the check receive:
+
+```json
+{ "code": "FORBIDDEN", "message": "You aren't authorized to access this resource" }
+```
+
+with status `403` — when the header is missing, when it is sent more than once, or when `verifyToken` rejects (the underlying error is logged via `request.log.error`).
+
 ### 12. `POST /user-device` — register a device token
 
 Requires a valid SuperTokens session. Associates the authenticated user's ID with a device token. Deduplicates automatically — if the token is already registered to another user, it is removed first.
 
 ```typescript
 // POST /user-device
-// Headers: Cookie: sAccessToken=...
+// Headers: authenticated session (via host auth plugin)
 // Body:
 { "deviceToken": "fcm-token-abc123" }
 
@@ -277,7 +311,7 @@ Requires authentication. Validates that the device token belongs to the requesti
 
 ```typescript
 // DELETE /user-device
-// Headers: Cookie: sAccessToken=...
+// Headers: authenticated session (via host auth plugin)
 // Body:
 { "deviceToken": "fcm-token-abc123" }
 
@@ -294,12 +328,12 @@ Only registered when `config.firebase.notification.test.enabled = true`. Sends a
 
 ```typescript
 // POST /send-notification (or your configured test path)
-// Headers: Cookie: sAccessToken=...
+// Headers: authenticated session (via host auth plugin)
 // Body:
 {
   "userId": "target-user-uuid",
   "title": "Hello",
-  "message": "World",
+  "body": "World",
 }
 
 // 200: { "message": "Notification sent successfully" }
@@ -446,20 +480,33 @@ initializeFirebase(config, fastify);
 // Logs error (does not throw) if credentials are missing.
 ```
 
-### 25–28. Module augmentations
+### 25. `firebaseAdmin` export
+
+The `firebase-admin` default export is re-exported so you can reach the app this plugin initialized without adding `firebase-admin` to your own dependencies. It is the same module instance the plugin uses, so services resolve against the already-initialized app.
+
+```typescript
+import { firebaseAdmin } from "@prefabs.tech/fastify-firebase";
+
+const decoded = await firebaseAdmin.auth().verifyIdToken(idToken);
+const doc = await firebaseAdmin.firestore().collection("orders").doc("42").get();
+```
+
+Nothing is wrapped here — the full `firebase-admin` API applies. Call it only after the plugin has registered (or after `initializeFirebase`), otherwise no app exists yet.
+
+### 26–29. Module augmentations
 
 The package extends four interfaces automatically on import. No action needed — these give you type safety throughout your application:
 
 ```typescript
 import "@prefabs.tech/fastify-firebase"; // augmentations applied on import
 
-// fastify.verifySession is now typed
+// fastify.verifySession is now typed (host auth plugin must decorate it)
 // request.user is now typed as User | undefined
 // MercuriusContext.user is now typed as User
 // ApiConfig.firebase is now typed with all config options
 ```
 
-### 29–33. Type exports
+### 30–34. Type exports
 
 ```typescript
 import type {
@@ -479,7 +526,7 @@ import type {
 | `UserDeviceUpdateInput` | `Partial<Omit<UserDevice, 'createdAt' \| 'updatedAt' \| 'userId'>>` |
 | `TestNotificationInput` | `{ userId, title, body, data?: Record<string, string> }`            |
 
-### 34. Route and table constants
+### 35. Route and table constants
 
 ```typescript
 import {
@@ -490,7 +537,7 @@ import {
 } from "@prefabs.tech/fastify-firebase";
 ```
 
-### 35. `createUserDevicesTableQuery` export
+### 36. `createUserDevicesTableQuery` export
 
 ```typescript
 import { createUserDevicesTableQuery } from "@prefabs.tech/fastify-firebase";
@@ -601,18 +648,17 @@ async function notifyUser(
 ```typescript
 // Disable device routes; use only GraphQL for device management.
 // Override the notification handler with custom logic.
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 const customSendNotification = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   // custom auditing, rate limiting, etc.
-  const { userId, title, message } = request.body as {
+  const { body, userId, title } = request.body as {
+    body: string;
     userId: string;
     title: string;
-    message: string;
   };
   // ... custom logic ...
   reply.send({ success: true, message: "sent" });

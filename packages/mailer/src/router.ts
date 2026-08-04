@@ -19,7 +19,7 @@ const router = async (
     async (request: FastifyRequest, reply: FastifyReply) => {
       const { mailer } = fastify;
 
-      const html = mjml2html(
+      const html = await mjml2html(
         `<mjml>
         <mj-head>
           <mj-attributes>

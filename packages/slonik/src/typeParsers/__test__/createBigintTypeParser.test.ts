@@ -23,6 +23,6 @@ describe("createBigintTypeParser", () => {
   it("parse returns an integer, not a float", () => {
     const { parse } = createBigintTypeParser();
     const result = parse("100");
-    expect(Number.isInteger(result)).toBe(true);
+    expect(Number.isSafeInteger(result)).toBe(true);
   });
 });

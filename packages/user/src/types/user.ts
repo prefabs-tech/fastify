@@ -13,6 +13,7 @@ interface User {
   lastLoginAt: number;
   photo?: Photo;
   photoId?: null | number;
+  profile?: { [key: string]: boolean | null | number | string };
   roles?: string[];
   signedUpAt: number;
 }
@@ -35,12 +36,14 @@ type UserUpdateInput = Partial<
     | "id"
     | "lastLoginAt"
     | "photo"
+    | "profile"
     | "roles"
     | "signedUpAt"
   >
 > & {
   lastLoginAt?: string;
   photo?: Multipart;
+  profile?: string;
 };
 
 export type { User, UserCreateInput, UserUpdateInput };

@@ -99,11 +99,11 @@ On startup the plugin:
 1. Initializes SuperTokens and registers the Fastify SuperTokens adapter.
 2. Runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables (before the server is ready).
 3. Seeds built-in roles (`ADMIN`, `SUPERADMIN`, `USER`) plus any extra roles in `config.user.roles` into SuperTokens on `onReady`.
-4. Registers four route groups under `config.user.routePrefix`, each independently disable-able.
+4. Registers five route groups under `config.user.routePrefix`, each independently disable-able.
 
 ### Route prefix and selective route disabling
 
-All routes are registered under `config.user.routePrefix`. Any of the four route groups can be disabled:
+All routes are registered under `config.user.routePrefix`. Any of the five route groups can be disabled:
 
 ```typescript
 user: {
@@ -111,6 +111,7 @@ user: {
   routes: {
     invitations: { disabled: true },
     permissions: { disabled: false },
+    profileFields: { disabled: false },
     roles: { disabled: false },
     users: { disabled: false },
   },
@@ -249,6 +250,33 @@ user: {
 
 For `override.apis` and `override.functions`, provide a function `(originalImpl, fastify) => partialOverride`; only the keys you return are replaced.
 
+### Contributing a SuperTokens recipe from another plugin
+
+SuperTokens allows exactly one global `supertokens.init()`, and this package performs it synchronously while it is being registered — its recipe list is fixed at that moment. A plugin that wants to add a recipe of its own registers a factory instead:
+
+```typescript
+import { addSupertokensRecipe } from "@prefabs.tech/fastify-user";
+import FastifyPlugin from "fastify-plugin";
+import Passwordless from "supertokens-node/recipe/passwordless";
+
+const myRecipePlugin = async (fastify) => {
+  addSupertokensRecipe(fastify, (fastify) =>
+    Passwordless.init({ contactMethod: "PHONE", flowType: "USER_INPUT_CODE" }),
+  );
+};
+
+export default FastifyPlugin(myRecipePlugin);
+```
+
+Factories accumulate on the `fastify.supertokensRecipes` decorator and are drained by `getRecipeList` during `supertokens.init()`. **The contributing plugin must be registered before `@prefabs.tech/fastify-user`:**
+
+```typescript
+await fastify.register(myRecipePlugin);
+await fastify.register(userPlugin);
+```
+
+Registering it afterwards throws `SuperTokens is already initialised. Register SuperTokens recipe plugins before @prefabs.tech/fastify-user.` rather than silently dropping the recipe. `@prefabs.tech/fastify-phone-auth` is built on this hook.
+
 ### Third-party OAuth providers
 
 Configure Apple, Facebook, GitHub, and Google via `config.user.supertokens.providers`:
@@ -343,6 +371,37 @@ All user routes are registered under `routePrefix`. The session-protected routes
 | `POST`   | `/signup/admin`      | public          | First-admin sign-up                   |
 | `GET`    | `/signup/admin`      | public          | Check admin sign-up availability      |
 
+### Profile fields routes
+
+These routes are also registered under `routePrefix` and are enabled unless `config.user.routes.profileFields.disabled === true`.
+
+| Method  | Path              | Auth    | Description                              |
+| ------- | ----------------- | ------- | ---------------------------------------- |
+| `GET`   | `/profile/fields` | session | List configured profile field definitions |
+| `PATCH` | `/users/profile`  | session | Update current user's dynamic profile data |
+
+Example request for updating profile fields:
+
+```http
+PATCH /api/users/profile
+Content-Type: application/json
+
+{
+  "department": "Engineering",
+  "location": "Hyderabad"
+}
+```
+
+Notes:
+
+- `PATCH /users/profile` updates only profile data for the authenticated user.
+- `GET /profile/fields` returns the profile field metadata used to render/edit profile forms.
+- Profile field `type` is an app-defined integer. Example mapping: `date (1)`, `email (2)`, `location (3)`.
+- You can define or remap any profile field type to any integer value used by your application.
+- There is currently no API endpoint in this package to insert records into `user_profile_fields`; create/seed these rows manually in the database (or via your own SQL migration/query script).
+- When you add or change profile fields, also maintain `user_profile_fields_i18n` for labels/translations.
+- For option-based fields (for example, gender with options like male/female), also maintain `user_profile_field_options` and `user_profile_field_options_i18n`.
+
 ### Immutable field guard
 
 Before every `PUT /me` update, `filterUserUpdateInput` silently drops any attempt to modify `id`, `email`, `roles`, `lastLoginAt`, `signedUpAt`, `disabled`, `deletedAt`, and their `snake_case` equivalents.
@@ -352,6 +411,8 @@ Before every `PUT /me` update, `filterUserUpdateInput` silently drops any attemp
 - Accepted MIME types: `image/jpeg`, `image/png`, `image/webp`
 - Default max size: 5 MB (override with `config.user.photoMaxSizeInMB`)
 - Stored at `{userId}/photo` in `config.user.s3.bucket`
+
+Transport prerequisites: the REST photo route (`PUT /me/photo`) requires multipart parsing (`rest.enabled` on the s3 plugin); the GraphQL `uploadPhoto` mutation requires the graphql plugin's upload transport (registered by default when graphql is enabled — its `uploads` option). Neither is needed if photo upload is unused.
 
 ### Custom handlers
 

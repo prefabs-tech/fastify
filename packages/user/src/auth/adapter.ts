@@ -29,8 +29,7 @@ export interface AuthProvider {
 }
 
 export type AuthResult<T = AuthUser> =
-  | { error: string; success: false }
-  | { success: true; user: T };
+  { error: string; success: false } | { success: true; user: T };
 
 export interface AuthSession {
   getAccessTokenPayload(userContext?: AuthUserContext): unknown;
@@ -203,29 +202,31 @@ export interface UpdateEmailOrPasswordResult {
 
 export type { ClaimValidationError, RefreshableClaim } from "./types";
 
-let authInstance: AuthAdapter | undefined;
+const authState: { instance: AuthAdapter | undefined } = {
+  instance: undefined,
+};
 
 export function getAuth(): AuthAdapter {
-  if (!authInstance) {
+  if (!authState.instance) {
     throw new Error("Auth adapter not initialized. Call initAuth() first.");
   }
 
-  return authInstance;
+  return authState.instance;
 }
 
 export async function initAuth(
   fastify: FastifyInstance,
   provider: AuthProvider,
 ): Promise<AuthAdapter> {
-  if (!authInstance) {
-    authInstance = provider.adapter;
+  if (!authState.instance) {
+    authState.instance = provider.adapter;
 
     if (provider.init) {
       await provider.init(fastify);
     }
   }
 
-  return authInstance;
+  return authState.instance;
 }
 
 export const auth = new Proxy({} as AuthAdapter, {

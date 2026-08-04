@@ -17,14 +17,29 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
+declare module "fastify" {
+  interface FastifyRequest {
+    graphqlFileUploadMultipart?: boolean;
+  }
+}
+
 export { default as baseSchema } from "./baseSchema";
+
+export * from "./constants";
 export { default } from "./plugin";
 export type {
   GraphqlConfig,
   GraphqlEnabledPlugin,
   GraphqlOptions,
+  GraphqlUploadsConfig,
+  MultipartFile,
 } from "./types";
+export { default as graphqlUploadTransport } from "./uploads/transport";
 export { mergeTypeDefs } from "@graphql-tools/merge";
 
 export type { DocumentNode } from "graphql";
 export { gql } from "graphql-tag";
+export type {
+  FileUpload as GraphQLFileUpload,
+  Upload as GraphQLUpload,
+} from "graphql-upload-minimal";

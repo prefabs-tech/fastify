@@ -4,12 +4,6 @@ import notificationHandlers from "./model/notification/handlers";
 import deviceHandlers from "./model/userDevice/handlers";
 
 declare module "fastify" {
-  interface FastifyInstance {
-    verifySession: (options?: {
-      sessionRequired?: boolean;
-    }) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
-  }
-
   interface FastifyRequest {
     user?: User;
   }

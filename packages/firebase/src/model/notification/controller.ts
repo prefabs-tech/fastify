@@ -1,6 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import { ROUTE_SEND_NOTIFICATION } from "../../constants";
+import getVerifySessionPreHandler from "../../lib/getVerifySessionPreHandler";
 import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
 import handlers from "./handlers";
 import { sendNotificationSchema } from "./schema";
@@ -17,7 +18,10 @@ const plugin = async (fastify: FastifyInstance) => {
     fastify.post(
       notificationConfig.test.path || ROUTE_SEND_NOTIFICATION,
       {
-        preHandler: [fastify.verifySession(), isFirebaseEnabled(fastify)],
+        preHandler: [
+          getVerifySessionPreHandler(fastify),
+          isFirebaseEnabled(fastify),
+        ],
         schema: sendNotificationSchema,
       },
       handlersConfig?.sendNotification || handlers.sendNotification,

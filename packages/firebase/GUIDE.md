@@ -89,7 +89,6 @@ All REST routes in this package call `fastify.verifySession()` as a preHandler. 
 
 What we add on top:
 
-- `FastifyInstance.verifySession` module augmentation with a structural type so the decorator is typed everywhere.
 - `FastifyRequest.user` module augmentation (`{ id: string }`) populated by your application's auth middleware.
 
 ### `fastify-plugin` â€” Full Passthrough
@@ -290,7 +289,7 @@ Requires a valid SuperTokens session. Associates the authenticated user's ID wit
 
 ```typescript
 // POST /user-device
-// Headers: Cookie: sAccessToken=...
+// Headers: authenticated session (via host auth plugin)
 // Body:
 { "deviceToken": "fcm-token-abc123" }
 
@@ -311,7 +310,7 @@ Requires authentication. Validates that the device token belongs to the requesti
 
 ```typescript
 // DELETE /user-device
-// Headers: Cookie: sAccessToken=...
+// Headers: authenticated session (via host auth plugin)
 // Body:
 { "deviceToken": "fcm-token-abc123" }
 
@@ -328,12 +327,12 @@ Only registered when `config.firebase.notification.test.enabled = true`. Sends a
 
 ```typescript
 // POST /send-notification (or your configured test path)
-// Headers: Cookie: sAccessToken=...
+// Headers: authenticated session (via host auth plugin)
 // Body:
 {
   "userId": "target-user-uuid",
   "title": "Hello",
-  "message": "World",
+  "body": "World",
 }
 
 // 200: { "message": "Notification sent successfully" }
@@ -500,7 +499,6 @@ The package extends four interfaces automatically on import. No action needed â€
 ```typescript
 import "@prefabs.tech/fastify-firebase"; // augmentations applied on import
 
-// fastify.verifySession is now typed
 // request.user is now typed as User | undefined
 // MercuriusContext.user is now typed as User
 // ApiConfig.firebase is now typed with all config options
@@ -655,10 +653,10 @@ const customSendNotification = async (
   reply: FastifyReply,
 ) => {
   // custom auditing, rate limiting, etc.
-  const { userId, title, message } = request.body as {
+  const { body, userId, title } = request.body as {
+    body: string;
     userId: string;
     title: string;
-    message: string;
   };
   // ... custom logic ...
   reply.send({ success: true, message: "sent" });

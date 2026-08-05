@@ -65,9 +65,9 @@ export {
 export { default as UserSqlFactory } from "./model/users/sqlFactory";
 export { default } from "./plugin";
 /*
- * @deprecated Import supertokens internals directly from "@prefabs.tech/fastify-user/supertokens"
- * if you need them. These exports will be removed in a future release.
- * The auth adapter is available via `import { auth } from "@prefabs.tech/fastify-user/auth"`.
+ * @deprecated Import supertokens internals from "@prefabs.tech/fastify-user".
+ * These exports will be removed in a future release.
+ * Auth adapter symbols are exported from the package root (auth, getAuth, initAuth, AuthUser, …).
  */
 export { errorHandler as supertokensErrorHandler } from "./supertokens/errorHandler";
 export { default as addSupertokensRecipe } from "./supertokens/recipeRegistry";

@@ -36,7 +36,7 @@ const me = async (request: FastifyRequest, reply: FastifyReply) => {
 
   const response = {
     ...user,
-    thirdParty: (authUser as Record<string, unknown>)?.thirdParty,
+    thirdParty: authUser?.thirdParty,
   };
 
   reply.send(response);

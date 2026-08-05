@@ -126,6 +126,20 @@ const createUserContext = (
   existing?: AuthUserContext,
 ): AuthUserContext => createUserContextImpl(existing, request);
 
+interface SupertokensUserLike {
+  emails: string[];
+  id: string;
+  thirdParty?: Array<{ id: string; userId: string }>;
+  timeJoined: number;
+}
+
+const mapSupertokensUser = (user: SupertokensUserLike): AuthUser => ({
+  email: user.emails[0] ?? "",
+  id: user.id,
+  ...(user.thirdParty?.[0] && { thirdParty: user.thirdParty[0] }),
+  timeJoined: user.timeJoined,
+});
+
 const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
   async createResetPasswordToken(
     userId: string,
@@ -162,10 +176,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     if (response.status === "OK" && response.user) {
       return {
         success: true,
-        user: {
-          ...response.user,
-          email: response.user.emails[0] ?? "",
-        } as AuthUser,
+        user: mapSupertokensUser(response.user),
       };
     }
 
@@ -190,11 +201,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
     if (response.status === "OK") {
       return {
         success: true,
-        user: {
-          email: response.user.emails[0] ?? "",
-          id: response.user.id,
-          timeJoined: response.user.timeJoined,
-        } as AuthUser,
+        user: mapSupertokensUser(response.user),
       };
     }
 
@@ -209,11 +216,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
 
     if (!user) return undefined;
 
-    return {
-      email: user.emails[0] ?? "",
-      id: user.id,
-      timeJoined: user.timeJoined,
-    } as AuthUser;
+    return mapSupertokensUser(user);
   },
 
   async getUsersByEmail(email: string): Promise<AuthUser[]> {
@@ -221,14 +224,7 @@ const supertokensEmailPasswordAdapter: EmailPasswordProvider = {
       email,
     });
 
-    return users.map(
-      (user) =>
-        ({
-          email: user.emails[0] ?? "",
-          id: user.id,
-          timeJoined: user.timeJoined,
-        }) as AuthUser,
-    );
+    return users.map((user) => mapSupertokensUser(user));
   },
 
   async resetPasswordUsingToken(

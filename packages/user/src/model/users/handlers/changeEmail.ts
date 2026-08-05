@@ -73,7 +73,7 @@ const changeEmail = async (request: FastifyRequest, reply: FastifyReply) => {
         const users = (await auth.emailPassword.getUsersByEmail?.(email)) || [];
 
         const emailPasswordRecipeUsers = users.filter(
-          (user) => !(user as Record<string, unknown>).thirdParty,
+          (account) => !account.thirdParty,
         );
 
         if (emailPasswordRecipeUsers.length > 0) {

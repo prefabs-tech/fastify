@@ -41,6 +41,10 @@ export interface AuthUser {
   [key: string]: unknown;
   email: string;
   id: string;
+  thirdParty?: {
+    id: string;
+    userId: string;
+  };
   timeJoined?: number;
 }
 

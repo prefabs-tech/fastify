@@ -89,7 +89,7 @@ describe("getPasswordlessRecipeConfig", () => {
     const { getCustomUserInputCode } = getPasswordlessRecipeConfig(fastify);
 
     await expect(
-      getCustomUserInputCode!({ phoneNumber: "+15550001111" }),
+      getCustomUserInputCode!("public", { phoneNumber: "+15550001111" }),
     ).resolves.toBe("123456");
   });
 
@@ -103,7 +103,7 @@ describe("getPasswordlessRecipeConfig", () => {
     const { getCustomUserInputCode } = getPasswordlessRecipeConfig(fastify);
 
     await expect(
-      getCustomUserInputCode!({ phoneNumber: "+15550001111" }),
+      getCustomUserInputCode!("public", { phoneNumber: "+15550001111" }),
     ).resolves.toBe("123456");
   });
 
@@ -113,17 +113,20 @@ describe("getPasswordlessRecipeConfig", () => {
     const { getCustomUserInputCode } = getPasswordlessRecipeConfig(fastify);
 
     await expect(
-      getCustomUserInputCode!({ phoneNumber: "+15559998888" }),
+      getCustomUserInputCode!("public", { phoneNumber: "+15559998888" }),
     ).resolves.toBe(TWILIO_VERIFY_PLACEHOLDER_CODE);
   });
 
-  it("swaps SMS delivery for a log line in dev mode", () => {
+  it("uses smsDelivery that only logs in dev mode", () => {
     fastify = buildFastify({ devModeOtp: "123456", enableDevMode: true });
 
     const config = getPasswordlessRecipeConfig(fastify);
 
-    expect(config.createAndSendCustomTextMessage).toBeDefined();
-    expect(config.smsDelivery).toBeUndefined();
+    expect(config.smsDelivery).toBeDefined();
+    expect(
+      (config as { createAndSendCustomTextMessage?: unknown })
+        .createAndSendCustomTextMessage,
+    ).toBeUndefined();
   });
 
   it("uses Twilio SMS delivery outside dev mode", () => {
@@ -132,6 +135,5 @@ describe("getPasswordlessRecipeConfig", () => {
     const config = getPasswordlessRecipeConfig(fastify);
 
     expect(config.smsDelivery).toBeDefined();
-    expect(config.createAndSendCustomTextMessage).toBeUndefined();
   });
 });

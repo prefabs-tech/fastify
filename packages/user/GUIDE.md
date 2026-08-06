@@ -80,6 +80,15 @@ We wrap `supertokens-node` (≥16) initialization and expose a subset of its sur
 
 **Auth adapter:** Route handlers and middleware use `auth` from `@prefabs.tech/fastify-user` instead of calling `supertokens-node` directly. The default provider is SuperTokens (`config.user.authProvider` defaults to `"supertokens"`). Custom providers can be registered with `registerAuthProvider`. When using the default provider, install `supertokens-node` ≥16 even though the peer is marked optional for custom-provider apps.
 
+### Upgrading to SuperTokens v16
+
+Breaking changes when moving to this package with `supertokens-node` ≥16:
+
+- **`AuthUser`** is no longer `SupertokensUser & User`. It is the thin auth-provider DTO (`id`, `email`, optional `thirdParty`, …). Use `request.user` / the `User` type for database fields (`disabled`, `roles`, `profile`, …).
+- **`request.session`** is typed as `AuthSession` (adapter surface: `getUserId`, `revokeSession`, …), not the raw SuperTokens session object. Prefer `auth.claims` / `auth.session` instead of calling SuperTokens session APIs from app code.
+- Install **`supertokens-node` ≥16** when using the default provider. The peer is marked optional only so apps with a fully custom `authProvider` can omit it.
+- On register, the plugin applies the SuperTokens core v6 `st__*` multitenancy upgrade automatically. Statements use `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` so re-runs are safe.
+
 ### mercurius-auth — Modified
 
 Provides `@auth`-style directive authentication for Mercurius/GraphQL.
@@ -99,7 +108,7 @@ We register two separate `mercurius-auth` instances: one for `@auth` and one for
 On startup the plugin:
 
 1. Initializes the configured auth provider (default: SuperTokens) and registers the Fastify SuperTokens adapter.
-2. Runs idempotent migrations for the `users` and `invitations` tables, then applies the SuperTokens core v6 multitenancy upgrade on `st__*` tables (before the server is ready).
+2. Runs idempotent migrations for the `users` and `invitations` tables, then applies the SuperTokens core v6 multitenancy upgrade on `st__*` tables (re-runnable `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` forms) before the server is ready.
 3. Seeds built-in roles (`ADMIN`, `SUPERADMIN`, `USER`) plus any extra roles in `config.user.roles` into SuperTokens on `onReady`.
 4. Registers five route groups under `config.user.routePrefix`, each independently disable-able.
 
@@ -295,6 +304,8 @@ user: {
   },
 }
 ```
+
+Provider factories (Apple, Google, Github, Facebook) are loaded from `supertokens-node/lib/build/recipe/thirdparty/providers` because SuperTokens v16 no longer re-exports them on the public recipe surface.
 
 ### Email verification (opt-in)
 
@@ -788,7 +799,7 @@ declare module "@prefabs.tech/fastify-config" {
 | `UserConfig`                    | Full plugin configuration shape                     |
 | `SupertokensConfig`             | SuperTokens sub-configuration                       |
 | `User`                          | User database record                                |
-| `AuthUser`                      | Auth-provider user record (`id`, `email`, optional `thirdParty`, …) |
+| `AuthUser`                      | Auth-provider DTO (`id`, `email`, optional `thirdParty`, …). **Breaking:** no longer `SupertokensUser & User`; use `User` / `request.user` for DB fields. |
 | `AuthSession`                   | Session handle exposed on `request.session`         |
 | `UserCreateInput`               | Input for creating a user                           |
 | `UserUpdateInput`               | Input for updating a user                           |

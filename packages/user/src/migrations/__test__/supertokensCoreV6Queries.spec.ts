@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import migrationSql from "../supertokens-core-v6.sql?raw";
 import {
   splitSupertokensCoreV6Statements,
   supertokensCoreV6Queries,
@@ -29,5 +30,19 @@ describe("supertokensCoreV6Queries", () => {
 
     expect(splitSupertokensCoreV6Statements(sample)).toHaveLength(2);
     expect(supertokensCoreV6Queries().length).toBeGreaterThan(100);
+  });
+
+  it("uses DROP CONSTRAINT IF EXISTS for every constraint drop in the dump", () => {
+    const statements = splitSupertokensCoreV6Statements(migrationSql);
+
+    const dropConstraints = statements.filter((statement) =>
+      /DROP CONSTRAINT\s+\S+/i.test(statement),
+    );
+
+    expect(dropConstraints.length).toBeGreaterThan(0);
+
+    for (const statement of dropConstraints) {
+      expect(statement).toMatch(/DROP CONSTRAINT IF EXISTS/i);
+    }
   });
 });

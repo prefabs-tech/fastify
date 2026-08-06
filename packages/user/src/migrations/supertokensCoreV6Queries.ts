@@ -5,6 +5,11 @@ import { sql } from "slonik";
 
 import migrationSql from "./supertokens-core-v6.sql?raw";
 
+/**
+ * Split the embedded SuperTokens core v6 dump into statements.
+ * Assumes statement-oriented SQL only: line `--` comments, no `;` inside
+ * string literals or PL/pgSQL bodies. Valid only for this dump.
+ */
 const splitSupertokensCoreV6Statements = (sqlText: string): string[] => {
   const withoutComments = sqlText.replaceAll(/^\s*--.*$/gm, "");
   const withoutNestedTransactions = withoutComments

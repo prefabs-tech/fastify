@@ -77,7 +77,7 @@ ALTER TABLE st__all_auth_recipe_users
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__all_auth_recipe_users
-  DROP CONSTRAINT st__all_auth_recipe_users_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__all_auth_recipe_users_pkey CASCADE;
 
 ALTER TABLE st__all_auth_recipe_users
   ADD CONSTRAINT st__all_auth_recipe_users_pkey
@@ -183,7 +183,7 @@ ALTER TABLE st__session_info
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__session_info
-  DROP CONSTRAINT st__session_info_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__session_info_pkey CASCADE;
 
 ALTER TABLE st__session_info
   ADD CONSTRAINT st__session_info_pkey
@@ -207,7 +207,7 @@ ALTER TABLE st__session_access_token_signing_keys
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__session_access_token_signing_keys
-  DROP CONSTRAINT st__session_access_token_signing_keys_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__session_access_token_signing_keys_pkey CASCADE;
 
 ALTER TABLE st__session_access_token_signing_keys
   ADD CONSTRAINT st__session_access_token_signing_keys_pkey
@@ -229,7 +229,7 @@ ALTER TABLE st__jwt_signing_keys
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__jwt_signing_keys
-  DROP CONSTRAINT st__jwt_signing_keys_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__jwt_signing_keys_pkey CASCADE;
 
 ALTER TABLE st__jwt_signing_keys
   ADD CONSTRAINT st__jwt_signing_keys_pkey
@@ -251,7 +251,7 @@ ALTER TABLE st__emailverification_verified_emails
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__emailverification_verified_emails
-  DROP CONSTRAINT st__emailverification_verified_emails_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__emailverification_verified_emails_pkey CASCADE;
 
 ALTER TABLE st__emailverification_verified_emails
   ADD CONSTRAINT st__emailverification_verified_emails_pkey
@@ -274,7 +274,7 @@ ALTER TABLE st__emailverification_tokens
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__emailverification_tokens
-  DROP CONSTRAINT st__emailverification_tokens_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__emailverification_tokens_pkey CASCADE;
 
 ALTER TABLE st__emailverification_tokens
   ADD CONSTRAINT st__emailverification_tokens_pkey
@@ -296,7 +296,7 @@ ALTER TABLE st__emailpassword_users
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__emailpassword_users
-  DROP CONSTRAINT st__emailpassword_users_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__emailpassword_users_pkey CASCADE;
 
 ALTER TABLE st__emailpassword_users
   DROP CONSTRAINT IF EXISTS st__emailpassword_users_email_key CASCADE;
@@ -353,7 +353,7 @@ ALTER TABLE st__emailpassword_pswd_reset_tokens
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__emailpassword_pswd_reset_tokens
-  DROP CONSTRAINT st__emailpassword_pswd_reset_tokens_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__emailpassword_pswd_reset_tokens_pkey CASCADE;
 
 ALTER TABLE st__emailpassword_pswd_reset_tokens
   ADD CONSTRAINT st__emailpassword_pswd_reset_tokens_pkey
@@ -375,7 +375,7 @@ ALTER TABLE st__passwordless_users
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__passwordless_users
-  DROP CONSTRAINT st__passwordless_users_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__passwordless_users_pkey CASCADE;
 
 ALTER TABLE st__passwordless_users
   ADD CONSTRAINT st__passwordless_users_pkey
@@ -432,7 +432,7 @@ ALTER TABLE st__passwordless_devices
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__passwordless_devices
-  DROP CONSTRAINT st__passwordless_devices_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__passwordless_devices_pkey CASCADE;
 
 ALTER TABLE st__passwordless_devices
   ADD CONSTRAINT st__passwordless_devices_pkey
@@ -463,7 +463,7 @@ ALTER TABLE st__passwordless_codes
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__passwordless_codes
-  DROP CONSTRAINT st__passwordless_codes_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__passwordless_codes_pkey CASCADE;
 
 ALTER TABLE st__passwordless_codes
   ADD CONSTRAINT st__passwordless_codes_pkey
@@ -478,7 +478,7 @@ ALTER TABLE st__passwordless_codes
     REFERENCES st__passwordless_devices (app_id, tenant_id, device_id_hash) ON DELETE CASCADE;
 
 ALTER TABLE st__passwordless_codes
-  DROP CONSTRAINT st__passwordless_codes_link_code_hash_key;
+  DROP CONSTRAINT IF EXISTS st__passwordless_codes_link_code_hash_key;
 
 ALTER TABLE st__passwordless_codes
   DROP CONSTRAINT IF EXISTS st__passwordless_codes_link_code_hash_key;
@@ -500,7 +500,7 @@ ALTER TABLE st__thirdparty_users
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__thirdparty_users
-  DROP CONSTRAINT st__thirdparty_users_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__thirdparty_users_pkey CASCADE;
 
 ALTER TABLE st__thirdparty_users
   DROP CONSTRAINT IF EXISTS st__thirdparty_users_user_id_key CASCADE;
@@ -602,7 +602,7 @@ ALTER TABLE st__roles
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__roles
-  DROP CONSTRAINT st__roles_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__roles_pkey CASCADE;
 
 ALTER TABLE st__roles
   ADD CONSTRAINT st__roles_pkey
@@ -624,7 +624,7 @@ ALTER TABLE st__role_permissions
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__role_permissions
-  DROP CONSTRAINT st__role_permissions_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__role_permissions_pkey CASCADE;
 
 ALTER TABLE st__role_permissions
   ADD CONSTRAINT st__role_permissions_pkey
@@ -651,7 +651,7 @@ ALTER TABLE st__user_roles
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__user_roles
-  DROP CONSTRAINT st__user_roles_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__user_roles_pkey CASCADE;
 
 ALTER TABLE st__user_roles
   ADD CONSTRAINT st__user_roles_pkey
@@ -687,7 +687,7 @@ ALTER TABLE st__user_metadata
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__user_metadata
-  DROP CONSTRAINT st__user_metadata_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__user_metadata_pkey CASCADE;
 
 ALTER TABLE st__user_metadata
   ADD CONSTRAINT st__user_metadata_pkey
@@ -709,7 +709,7 @@ ALTER TABLE st__dashboard_users
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__dashboard_users
-  DROP CONSTRAINT st__dashboard_users_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__dashboard_users_pkey CASCADE;
 
 ALTER TABLE st__dashboard_users
   ADD CONSTRAINT st__dashboard_users_pkey
@@ -738,7 +738,7 @@ ALTER TABLE st__dashboard_user_sessions
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__dashboard_user_sessions
-  DROP CONSTRAINT st__dashboard_user_sessions_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__dashboard_user_sessions_pkey CASCADE;
 
 ALTER TABLE st__dashboard_user_sessions
   ADD CONSTRAINT st__dashboard_user_sessions_pkey
@@ -760,7 +760,7 @@ ALTER TABLE st__totp_users
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__totp_users
-  DROP CONSTRAINT st__totp_users_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__totp_users_pkey CASCADE;
 
 ALTER TABLE st__totp_users
   ADD CONSTRAINT st__totp_users_pkey
@@ -782,7 +782,7 @@ ALTER TABLE st__totp_user_devices
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__totp_user_devices
-  DROP CONSTRAINT st__totp_user_devices_pkey;
+  DROP CONSTRAINT IF EXISTS st__totp_user_devices_pkey;
 
 ALTER TABLE st__totp_user_devices
   ADD CONSTRAINT st__totp_user_devices_pkey
@@ -805,7 +805,7 @@ ALTER TABLE st__totp_used_codes
   ADD COLUMN IF NOT EXISTS tenant_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__totp_used_codes
-  DROP CONSTRAINT st__totp_used_codes_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__totp_used_codes_pkey CASCADE;
 
 ALTER TABLE st__totp_used_codes
   ADD CONSTRAINT st__totp_used_codes_pkey
@@ -841,7 +841,7 @@ ALTER TABLE st__user_last_active
   ADD COLUMN IF NOT EXISTS app_id VARCHAR(64) DEFAULT 'public';
 
 ALTER TABLE st__user_last_active
-  DROP CONSTRAINT st__user_last_active_pkey CASCADE;
+  DROP CONSTRAINT IF EXISTS st__user_last_active_pkey CASCADE;
 
 ALTER TABLE st__user_last_active
   ADD CONSTRAINT st__user_last_active_pkey

@@ -8,7 +8,7 @@
 
 2. **Selective route module disabling** — each of the four route groups (`users`, `invitations`, `roles`, `permissions`) can be disabled independently via `routes.<group>.disabled = true`. The service layer is unaffected.
 
-3. **Automatic database migrations** — on registration, runs idempotent SQL for the `users` and `invitations` tables, then applies the SuperTokens core v6 multitenancy upgrade (`st__*` schema changes) in the same transaction, before the server is ready.
+3. **Automatic database migrations** — on registration, runs idempotent SQL for the `users` and `invitations` tables, then applies the SuperTokens core v6 multitenancy upgrade (`st__*` schema changes) in the same transaction, before the server is ready. The ST v6 upgrade uses re-runnable `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` forms.
 
 4. **Default role seeding** — on `onReady`, seeds `ADMIN`, `SUPERADMIN`, and `USER` into SuperTokens, plus any extra roles listed in `config.user.roles`.
 

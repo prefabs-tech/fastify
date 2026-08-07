@@ -9,10 +9,10 @@ import type {
   InvitationUpdateInput,
 } from "../../types";
 
+import { auth } from "../../auth/adapter";
 import { ERROR_CODES } from "../../constants";
 import computeInvitationExpiresAt from "../../lib/computeInvitationExpiresAt";
 import getUserService from "../../lib/getUserService";
-import areRolesExist from "../../supertokens/utils/areRolesExist";
 import validateEmail from "../../validator/email";
 import InvitationSqlFactory from "./sqlFactory";
 
@@ -78,7 +78,7 @@ class InvitationService extends BaseService<
       );
     }
 
-    if (!(await areRolesExist([role]))) {
+    if (!(await auth.roles.rolesExist([role]))) {
       throw new CustomError(
         `Role "${role}" does not exist`,
         ERROR_CODES.ROLE_NOT_FOUND,

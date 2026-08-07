@@ -89,7 +89,7 @@ Our delta over the stock recipe:
 - `flowType` is constrained to `"USER_INPUT_CODE"` — magic-link and link-or-code flows are deliberately not supported.
 - `getCustomUserInputCode` returns a placeholder rather than a real OTP (see below).
 - `apis.consumeCodePOST`, `apis.createCodePOST` and `functions.consumeCode` are overridden. `resendCodePOST` and `functions.createCode` are not.
-- `smsDelivery.sendSms` is replaced with a Twilio Verify call, or with a log line in dev mode.
+- `smsDelivery.override.sendSms` is replaced with a Twilio Verify call, or with a log-only override in dev mode (the deprecated `createAndSendCustomTextMessage` hook is not used).
 
 ### `twilio` — Verify API (PARTIAL passthrough)
 
@@ -108,12 +108,14 @@ SuperTokens insists on owning a user input code; Twilio Verify insists on owning
 
 ## User creation
 
-On first successful sign-in, `functions.consumeCode`:
+On first successful sign-in (`createdNewRecipeUser`), `functions.consumeCode`:
 
 - Verifies every role in `userContext.roles` (default `[config.user.role ?? "USER"]`) exists, throwing a `SIGNUP_FAILED_ERROR` `CustomError` otherwise.
-- Creates the local user with the phone number and a synthetic email of `<phoneNumber>@<fallbackEmailDomain>`, falling back to `<appName lowercased, spaces stripped>.com` when `fallbackEmailDomain` is unset. SuperTokens requires an email; passwordless phone users do not supply one.
-- Assigns the roles via `UserRoles.addRoleToUser`.
+- Creates the local user with `phoneNumbers[0]` and a synthetic email of `<phoneNumber>@<fallbackEmailDomain>`, falling back to `<appName lowercased, spaces stripped>.com` when `fallbackEmailDomain` is unset. SuperTokens requires an email; passwordless phone users do not supply one.
+- Assigns the roles via `UserRoles.addRoleToUser` (with the default tenant id).
 - Deletes the SuperTokens user again if the local insert fails, so the two stores cannot drift.
+
+The consume response uses SuperTokens v16 user fields (`emails`, `phoneNumbers`); `consumeCodePOST` enriches an empty `emails` array with the synthetic email when needed.
 
 On subsequent sign-ins it only updates `lastLoginAt`.
 

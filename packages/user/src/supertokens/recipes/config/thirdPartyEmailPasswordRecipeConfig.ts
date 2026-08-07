@@ -11,11 +11,11 @@ import type {
 } from "../../types/thirdPartyEmailPasswordRecipe";
 
 import appleRedirectHandlerPOST from "./third-party-email-password/appleRedirectHandlerPost";
+import consumePasswordResetToken from "./third-party-email-password/consumePasswordResetToken";
 import emailPasswordSignIn from "./third-party-email-password/emailPasswordSignIn";
 import emailPasswordSignUp from "./third-party-email-password/emailPasswordSignUp";
 import emailPasswordSignUpPOST from "./third-party-email-password/emailPasswordSignUpPost";
 import getFormFields from "./third-party-email-password/getFormFields";
-import resetPasswordUsingToken from "./third-party-email-password/resetPasswordUsingToken";
 import sendPasswordResetEmail from "./third-party-email-password/sendPasswordResetEmail";
 import thirdPartySignInUp from "./third-party-email-password/thirdPartySignInUp";
 import thirdPartySignInUpPOST from "./third-party-email-password/thirdPartySignInUpPost";
@@ -29,10 +29,11 @@ const getThirdPartyEmailPasswordRecipeConfig = (
   let thirdPartyEmailPassword: ThirdPartyEmailPasswordRecipe = {};
 
   if (
-    typeof config.user.supertokens.recipes?.thirdPartyEmailPassword === "object"
+    typeof config.user.supertokens!.recipes?.thirdPartyEmailPassword ===
+    "object"
   ) {
     thirdPartyEmailPassword =
-      config.user.supertokens.recipes.thirdPartyEmailPassword;
+      config.user.supertokens!.recipes.thirdPartyEmailPassword;
   }
 
   return {
@@ -84,6 +85,7 @@ const getThirdPartyEmailPasswordRecipeConfig = (
             originalImplementation,
             fastify,
           ),
+
           thirdPartySignInUpPOST: thirdPartySignInUpPOST(
             originalImplementation,
             fastify,
@@ -114,15 +116,15 @@ const getThirdPartyEmailPasswordRecipeConfig = (
 
         return {
           ...originalImplementation,
+          consumePasswordResetToken: consumePasswordResetToken(
+            originalImplementation,
+            fastify,
+          ),
           emailPasswordSignIn: emailPasswordSignIn(
             originalImplementation,
             fastify,
           ),
           emailPasswordSignUp: emailPasswordSignUp(
-            originalImplementation,
-            fastify,
-          ),
-          resetPasswordUsingToken: resetPasswordUsingToken(
             originalImplementation,
             fastify,
           ),

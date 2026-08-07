@@ -74,9 +74,20 @@ Provides authentication sessions, email/password sign-up/in, third-party OAuth, 
 
 → **Their docs:** [supertokens-node](https://www.npmjs.com/package/supertokens-node)
 
-We wrap `supertokens-node` initialization and expose a subset of its surface via `UserConfig.supertokens`. Recipe configuration can be partially or fully overridden with our merge pattern (see [Recipe overrides](#recipe-overrides)).
+We wrap `supertokens-node` (≥16) initialization and expose a subset of its surface via `UserConfig.supertokens`. Recipe configuration can be partially or fully overridden with our merge pattern (see [Recipe overrides](#recipe-overrides)).
 
-**What we add on top:** database integration, user model, invitation flow, profile validation claim, `verifySession` decorator, permission middleware, GraphQL directives.
+**What we add on top:** an auth adapter (`auth`) so handlers stay provider-agnostic, database integration, user model, invitation flow, profile validation claim, `verifySession` decorator, permission middleware, GraphQL directives.
+
+**Auth adapter:** Route handlers and middleware use `auth` from `@prefabs.tech/fastify-user` instead of calling `supertokens-node` directly. The default provider is SuperTokens (`config.user.authProvider` defaults to `"supertokens"`). Custom providers can be registered with `registerAuthProvider`. When using the default provider, install `supertokens-node` ≥16 even though the peer is marked optional for custom-provider apps.
+
+### Upgrading to SuperTokens v16
+
+Breaking changes when moving to this package with `supertokens-node` ≥16:
+
+- **`AuthUser`** is no longer `SupertokensUser & User`. It is the thin auth-provider DTO (`id`, `email`, optional `thirdParty`, …). Use `request.user` / the `User` type for database fields (`disabled`, `roles`, `profile`, …).
+- **`request.session`** is typed as `AuthSession` (adapter surface: `getUserId`, `revokeSession`, …), not the raw SuperTokens session object. Prefer `auth.claims` / `auth.session` instead of calling SuperTokens session APIs from app code.
+- Install **`supertokens-node` ≥16** when using the default provider. The peer is marked optional only so apps with a fully custom `authProvider` can omit it.
+- On register, the plugin applies the SuperTokens core v6 `st__*` multitenancy upgrade automatically. Statements use `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` so re-runs are safe.
 
 ### mercurius-auth — Modified
 
@@ -96,8 +107,8 @@ We register two separate `mercurius-auth` instances: one for `@auth` and one for
 
 On startup the plugin:
 
-1. Initializes SuperTokens and registers the Fastify SuperTokens adapter.
-2. Runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables (before the server is ready).
+1. Initializes the configured auth provider (default: SuperTokens) and registers the Fastify SuperTokens adapter.
+2. Runs idempotent migrations for the `users` and `invitations` tables, then applies the SuperTokens core v6 multitenancy upgrade on `st__*` tables (re-runnable `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` forms) before the server is ready.
 3. Seeds built-in roles (`ADMIN`, `SUPERADMIN`, `USER`) plus any extra roles in `config.user.roles` into SuperTokens on `onReady`.
 4. Registers five route groups under `config.user.routePrefix`, each independently disable-able.
 
@@ -134,7 +145,7 @@ fastify.get(
 );
 ```
 
-`request.session` (type: `Session`) is populated after this hook runs.
+`request.session` (type: `AuthSession`) is populated after this hook runs.
 
 ### `request.user` — authenticated user profile
 
@@ -293,6 +304,8 @@ user: {
   },
 }
 ```
+
+Provider factories (Apple, Google, Github, Facebook) are loaded from `supertokens-node/lib/build/recipe/thirdparty/providers` because SuperTokens v16 no longer re-exports them on the public recipe surface.
 
 ### Email verification (opt-in)
 
@@ -651,11 +664,18 @@ Exported SQL factory functions for use if you need to run migrations manually or
 import {
   createUsersTableQuery,
   createInvitationsTableQuery,
+  supertokensCoreV6Queries,
 } from "@prefabs.tech/fastify-user";
 
 await db.query(createUsersTableQuery(config));
 await db.query(createInvitationsTableQuery(config));
+
+for (const query of supertokensCoreV6Queries()) {
+  await db.query(query);
+}
 ```
+
+The plugin runs users, invitations, and SuperTokens core v6 migrations automatically on register; use the exports above only for manual inspection or custom migration tooling.
 
 ### Custom table names
 
@@ -779,7 +799,8 @@ declare module "@prefabs.tech/fastify-config" {
 | `UserConfig`                    | Full plugin configuration shape                     |
 | `SupertokensConfig`             | SuperTokens sub-configuration                       |
 | `User`                          | User database record                                |
-| `AuthUser`                      | Combined SuperTokens + database user                |
+| `AuthUser`                      | Auth-provider DTO (`id`, `email`, optional `thirdParty`, …). **Breaking:** no longer `SupertokensUser & User`; use `User` / `request.user` for DB fields. |
+| `AuthSession`                   | Session handle exposed on `request.session`         |
 | `UserCreateInput`               | Input for creating a user                           |
 | `UserUpdateInput`               | Input for updating a user                           |
 | `Invitation`                    | Invitation database record                          |

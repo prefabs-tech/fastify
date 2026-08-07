@@ -1,11 +1,10 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 
 import RoleService from "../service";
 
-const createRole = async (request: SessionRequest, reply: FastifyReply) => {
+const createRole = async (request: FastifyRequest, reply: FastifyReply) => {
   const { body } = request;
 
   const { permissions, role } = body as {

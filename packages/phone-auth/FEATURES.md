@@ -40,7 +40,7 @@
 
 16. **SMS delivery through Twilio Verify** — outside dev mode, `smsDelivery.override.sendSms` calls `verify.v2.services(verifyServiceSid).verifications.create({ channel: "sms", to })`. Send failures are logged and rethrown.
 
-17. **Dev mode skips SMS delivery entirely** — in dev mode the recipe supplies `createAndSendCustomTextMessage` (a log line) instead of `smsDelivery`.
+17. **Dev mode skips SMS delivery entirely** — in dev mode `smsDelivery.override.sendSms` only logs (no Twilio call). The deprecated `createAndSendCustomTextMessage` hook is not used.
 
 18. **Phone number capture on create** — the `createCodePOST` override copies `input.phoneNumber` onto `input.userContext` so downstream hooks can read it.
 
@@ -52,13 +52,13 @@
 
 22. **Magic link flows pass through untouched** — when `input` carries no `userInputCode`, `consumeCodePOST` delegates to the original implementation without contacting Twilio.
 
-23. **Synthetic email enrichment** — successful consume responses get `email` filled in as `<phoneNumber>@<fallbackEmailDomain>` when SuperTokens has none.
+23. **Synthetic email enrichment** — successful consume responses get `emails` filled with `[<phoneNumber>@<fallbackEmailDomain>]` when SuperTokens returns an empty `emails` array.
 
 ## Local User Creation
 
 24. **Role existence check before signup** — `functions.consumeCode` verifies every role in `userContext.roles` (default `[config.user.role ?? ROLE_USER]`) exists, throwing a `SIGNUP_FAILED_ERROR` `CustomError` otherwise.
 
-25. **Local user row on first sign-in** — when SuperTokens reports `createdNewUser`, a row is created through `getUserService` with the id, phone number, and synthetic email. The email domain falls back to the app name lowercased with whitespace stripped plus `.com`.
+25. **Local user row on first sign-in** — when SuperTokens reports `createdNewRecipeUser`, a row is created through `getUserService` with the id, phone number (`phoneNumbers[0]`), and synthetic email. The email domain falls back to the app name lowercased with whitespace stripped plus `.com`.
 
 26. **Rollback on failed insert** — if the local insert throws, the SuperTokens user is deleted via `deleteUser` before the error is rethrown, so the two stores cannot drift.
 

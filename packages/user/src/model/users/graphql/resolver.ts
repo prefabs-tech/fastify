@@ -1,27 +1,18 @@
 import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
+import type { FastifyRequest } from "fastify";
 import type { MercuriusContext } from "mercurius";
 
 import { GraphQLUpload } from "@prefabs.tech/fastify-graphql";
 import { Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
-import EmailVerification, {
-  EmailVerificationClaim,
-  isEmailVerified,
-} from "supertokens-node/recipe/emailverification";
-import { createNewSession } from "supertokens-node/recipe/session";
-import {
-  emailPasswordSignUp,
-  getUsersByEmail,
-} from "supertokens-node/recipe/thirdpartyemailpassword";
-import UserRoles from "supertokens-node/recipe/userroles";
 
+import type { AuthSession } from "../../../auth/adapter";
 import type { UserUpdateInput } from "../../../types";
 
+import { auth } from "../../../auth/adapter";
 import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
 import CustomApiError from "../../../customApiError";
 import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
 import filterUserUpdateInput from "../filterUserUpdateInput";
@@ -43,21 +34,22 @@ const Mutation = {
       const { email, password } = arguments_.data;
 
       // check if already admin user exists
-      const adminUsers = await UserRoles.getUsersThatHaveRole(ROLE_ADMIN);
+      const adminUsers = await auth.roles.getUsersThatHaveRole(ROLE_ADMIN);
       const superAdminUsers =
-        await UserRoles.getUsersThatHaveRole(ROLE_SUPERADMIN);
+        await auth.roles.getUsersThatHaveRole(ROLE_SUPERADMIN);
 
       let errorMessage: string | undefined;
 
-      if (
-        adminUsers.status === "UNKNOWN_ROLE_ERROR" &&
-        superAdminUsers.status === "UNKNOWN_ROLE_ERROR"
-      ) {
-        errorMessage = adminUsers.status;
-      } else if (
-        (adminUsers.status === "OK" && adminUsers.users.length > 0) ||
-        (superAdminUsers.status === "OK" && superAdminUsers.users.length > 0)
-      ) {
+      if (adminUsers.length === 0 && superAdminUsers.length === 0) {
+        const allRoles = await auth.roles.getAllRoles();
+
+        if (
+          !allRoles.includes(ROLE_ADMIN) &&
+          !allRoles.includes(ROLE_SUPERADMIN)
+        ) {
+          errorMessage = "UNKNOWN_ROLE_ERROR";
+        }
+      } else if (adminUsers.length > 0 || superAdminUsers.length > 0) {
         errorMessage = "First admin user already exists";
       }
 
@@ -90,31 +82,34 @@ const Mutation = {
       }
 
       // signup
-      const signUpResponse = await emailPasswordSignUp(email, password, {
-        _default: {
-          request: {
-            request: reply.request,
-          },
+      const signUpResponse = await auth.emailPassword.emailPasswordSignUp(
+        email,
+        password,
+        {
+          autoVerifyEmail: true,
+          roles: [
+            ROLE_ADMIN,
+            ...(superAdminUsers.length > 0 ? [ROLE_SUPERADMIN] : []),
+          ],
         },
-        autoVerifyEmail: true,
-        roles: [
-          ROLE_ADMIN,
-          ...(superAdminUsers.status === "OK" ? [ROLE_SUPERADMIN] : []),
-        ],
-      });
+      );
 
-      if (signUpResponse.status !== "OK") {
+      if (!signUpResponse.success) {
         const mercuriusError = new mercurius.ErrorWithProps(
-          signUpResponse.status,
+          signUpResponse.error || "UNKNOWN_ERROR",
         );
 
         return mercuriusError;
       }
 
       // create new session so the user be logged in on signup
-      await createNewSession(reply.request, reply, signUpResponse.user.id);
+      await auth.session.createNewSession(
+        reply.request,
+        reply,
+        signUpResponse.user.id,
+      );
 
-      return signUpResponse;
+      return { status: "OK", user: signUpResponse.user };
     } catch (error) {
       // FIXME [OP 28 SEP 2022]
       app.log.error(error);
@@ -144,18 +139,25 @@ const Mutation = {
         }
 
         const request = reply.request;
+        const session = (request as FastifyRequest & { session: AuthSession })
+          .session;
+        const userContext = auth.createUserContext(request);
 
-        if (config.user.features?.profileValidation?.enabled) {
-          await request.session?.fetchAndSetClaim(
-            new ProfileValidationClaim(),
-            createUserContext(undefined, request),
+        if (config.user.features?.profileValidation?.enabled && auth.claims) {
+          await auth.claims.refreshSessionClaims(
+            session,
+            request,
+            ["profileValidation"],
+            userContext,
           );
         }
 
-        if (config.user.features?.signUp?.emailVerification) {
-          await request.session?.fetchAndSetClaim(
-            EmailVerificationClaim,
-            createUserContext(undefined, request),
+        if (config.user.features?.signUp?.emailVerification && auth.claims) {
+          await auth.claims.refreshSessionClaims(
+            session,
+            request,
+            ["emailVerification"],
+            userContext,
           );
         }
 
@@ -169,41 +171,42 @@ const Mutation = {
           return new mercurius.ErrorWithProps("EMAIL_SAME_AS_CURRENT_ERROR");
         }
 
-        if (config.user.features?.signUp?.emailVerification) {
-          const isVerified = await isEmailVerified(user.id, arguments_.email);
+        if (
+          config.user.features?.signUp?.emailVerification &&
+          auth.emailVerification
+        ) {
+          const isVerified = await auth.emailVerification.isEmailVerified(
+            user.id,
+            arguments_.email,
+          );
 
           if (!isVerified) {
-            const users = await getUsersByEmail(arguments_.email);
+            const users =
+              (await auth.emailPassword.getUsersByEmail?.(arguments_.email)) ||
+              [];
 
             const emailPasswordRecipeUsers = users.filter(
-              (user) => !user.thirdParty,
+              (user) => !(user as Record<string, unknown>).thirdParty,
             );
 
             if (emailPasswordRecipeUsers.length > 0) {
               return new mercurius.ErrorWithProps("EMAIL_ALREADY_EXISTS_ERROR");
             }
 
-            const tokenResponse =
-              await EmailVerification.createEmailVerificationToken(
+            const token =
+              await auth.emailVerification.createEmailVerificationToken(
                 user.id,
                 arguments_.email,
+                userContext,
               );
 
-            if (tokenResponse.status === "OK") {
-              await EmailVerification.sendEmail({
-                emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
-                type: "EMAIL_VERIFICATION",
-                user: {
-                  email: arguments_.email,
-                  id: user.id,
-                },
-                userContext: {
-                  _default: {
-                    request: {
-                      request: request,
-                    },
-                  },
-                },
+            if (token) {
+              await auth.emailVerification.sendVerificationEmail?.({
+                appOrigin: config.appOrigin[0] as string,
+                email: arguments_.email,
+                token,
+                userContext,
+                userId: user.id,
               });
 
               return {
@@ -212,7 +215,9 @@ const Mutation = {
               };
             }
 
-            return new mercurius.ErrorWithProps(tokenResponse.status);
+            return new mercurius.ErrorWithProps(
+              "EMAIL_VERIFICATION_TOKEN_FAILED",
+            );
           }
         }
 
@@ -267,7 +272,7 @@ const Mutation = {
       );
 
       if (response.status === "OK") {
-        await createNewSession(reply.request, reply, user.id);
+        await auth.session.createNewSession(reply.request, reply, user.id);
       }
 
       return response;
@@ -405,17 +410,31 @@ const Mutation = {
 
       request.user = updatedUser;
 
-      if (request.config.user.features?.profileValidation?.enabled) {
-        await request.session?.fetchAndSetClaim(
-          new ProfileValidationClaim(),
-          createUserContext(undefined, request),
+      const userContext = auth.createUserContext(request);
+      const session = (request as FastifyRequest & { session: AuthSession })
+        .session;
+
+      if (
+        request.config.user.features?.profileValidation?.enabled &&
+        auth.claims
+      ) {
+        await auth.claims.refreshSessionClaims(
+          session,
+          request,
+          ["profileValidation"],
+          userContext,
         );
       }
 
-      if (request.config.user.features?.signUp?.emailVerification) {
-        await request.session?.fetchAndSetClaim(
-          EmailVerificationClaim,
-          createUserContext(undefined, request),
+      if (
+        request.config.user.features?.signUp?.emailVerification &&
+        auth.claims
+      ) {
+        await auth.claims.refreshSessionClaims(
+          session,
+          request,
+          ["emailVerification"],
+          userContext,
         );
       }
 
@@ -453,13 +472,17 @@ const Mutation = {
       const updatedUser = await service.update(user.id, data);
 
       const request = reply.request;
+      const session = (request as FastifyRequest & { session: AuthSession })
+        .session;
 
       request.user = updatedUser;
 
-      if (config.user.features?.profileValidation?.enabled) {
-        await request.session?.fetchAndSetClaim(
-          new ProfileValidationClaim(),
-          createUserContext(undefined, request),
+      if (config.user.features?.profileValidation?.enabled && auth.claims) {
+        await auth.claims.refreshSessionClaims(
+          session,
+          request,
+          ["profileValidation"],
+          auth.createUserContext(request),
         );
       }
 
@@ -525,17 +548,31 @@ const Mutation = {
 
       request.user = updatedUser;
 
-      if (request.config.user.features?.profileValidation?.enabled) {
-        await request.session?.fetchAndSetClaim(
-          new ProfileValidationClaim(),
-          createUserContext(undefined, request),
+      const userContext = auth.createUserContext(request);
+      const session = (request as FastifyRequest & { session: AuthSession })
+        .session;
+
+      if (
+        request.config.user.features?.profileValidation?.enabled &&
+        auth.claims
+      ) {
+        await auth.claims.refreshSessionClaims(
+          session,
+          request,
+          ["profileValidation"],
+          userContext,
         );
       }
 
-      if (request.config.user.features?.signUp?.emailVerification) {
-        await request.session?.fetchAndSetClaim(
-          EmailVerificationClaim,
-          createUserContext(undefined, request),
+      if (
+        request.config.user.features?.signUp?.emailVerification &&
+        auth.claims
+      ) {
+        await auth.claims.refreshSessionClaims(
+          session,
+          request,
+          ["emailVerification"],
+          userContext,
         );
       }
 
@@ -571,22 +608,26 @@ const Query = {
 
     try {
       // check if already admin user exists
-      const adminUsers = await UserRoles.getUsersThatHaveRole(ROLE_ADMIN);
+      const adminUsers = await auth.roles.getUsersThatHaveRole(ROLE_ADMIN);
       const superAdminUsers =
-        await UserRoles.getUsersThatHaveRole(ROLE_SUPERADMIN);
+        await auth.roles.getUsersThatHaveRole(ROLE_SUPERADMIN);
 
-      if (
-        adminUsers.status === "UNKNOWN_ROLE_ERROR" &&
-        superAdminUsers.status === "UNKNOWN_ROLE_ERROR"
-      ) {
-        const mercuriusError = new mercurius.ErrorWithProps(adminUsers.status);
+      if (adminUsers.length === 0 && superAdminUsers.length === 0) {
+        const allRoles = await auth.roles.getAllRoles();
 
-        return mercuriusError;
+        if (
+          !allRoles.includes(ROLE_ADMIN) &&
+          !allRoles.includes(ROLE_SUPERADMIN)
+        ) {
+          const mercuriusError = new mercurius.ErrorWithProps(
+            "UNKNOWN_ROLE_ERROR",
+          );
+
+          return mercuriusError;
+        }
       }
-      if (
-        (adminUsers.status === "OK" && adminUsers.users.length > 0) ||
-        (superAdminUsers.status === "OK" && superAdminUsers.users.length > 0)
-      ) {
+
+      if (adminUsers.length > 0 || superAdminUsers.length > 0) {
         return { signUp: false };
       }
 
@@ -637,12 +678,19 @@ const Query = {
 
     const user = await service.findById(arguments_.id);
 
-    if (context.config.user.features?.profileValidation?.enabled) {
+    if (
+      context.config.user.features?.profileValidation?.enabled &&
+      auth.claims
+    ) {
       const request = context.reply.request;
 
-      await request.session?.fetchAndSetClaim(
-        new ProfileValidationClaim(),
-        createUserContext(undefined, request),
+      const session = (request as FastifyRequest & { session: AuthSession })
+        .session;
+      await auth.claims.refreshSessionClaims(
+        session,
+        request,
+        ["profileValidation"],
+        auth.createUserContext(request),
       );
     }
 

@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
-import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
 
+import { auth } from "../auth/adapter";
 import { errorHandler } from "./errorHandler";
 import init from "./init";
 
@@ -14,7 +14,7 @@ const plugin = async (fastify: FastifyInstance) => {
 
   init(fastify);
 
-  if (config.user.supertokens.setErrorHandler !== false) {
+  if (config.user.supertokens!.setErrorHandler !== false) {
     fastify.setErrorHandler(errorHandler);
   }
 
@@ -22,12 +22,14 @@ const plugin = async (fastify: FastifyInstance) => {
 
   log.info("Registering supertokens plugin complete");
 
-  fastify.decorate("verifySession", verifySession);
+  fastify.decorate("verifySession", (options) =>
+    auth.session.getVerifySession(options),
+  );
 
   // [RL 2024-06-11] change sRefreshToken cookie path from config
   fastify.addHook("onSend", async (request, reply) => {
     const refreshTokenCookiePath =
-      request.server.config.user.supertokens.refreshTokenCookiePath;
+      request.server.config.user.supertokens!.refreshTokenCookiePath;
 
     const setCookieHeader = reply.getHeader("set-cookie");
 

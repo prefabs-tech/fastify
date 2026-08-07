@@ -20,7 +20,10 @@ const enrichResult = (
     ...result,
     user: {
       ...result.user,
-      email: result.user.email ?? `${phoneNumber}@${fallbackEmailDomain}`,
+      emails:
+        result.user.emails.length > 0
+          ? result.user.emails
+          : [`${phoneNumber}@${fallbackEmailDomain}`],
     },
   };
 };
@@ -52,6 +55,7 @@ const consumeCodePOST = (
     // Look up the device to retrieve the associated phone number
     const deviceContext = await Passwordless.listCodesByPreAuthSessionId({
       preAuthSessionId: input.preAuthSessionId,
+      tenantId: input.tenantId,
     });
 
     if (!deviceContext || !deviceContext.phoneNumber) {

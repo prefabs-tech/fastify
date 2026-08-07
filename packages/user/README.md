@@ -24,7 +24,7 @@ User management—authentication, password hashing, multifactor sessions, sessio
 - [@prefabs.tech/fastify-s3](../s3/)
 - [@prefabs.tech/fastify-slonik](../slonik/)
 - [slonik](https://github.com/spa5k/fastify-slonik)
-- [supertokens-node](https://github.com/supertokens/supertokens-node)
+- [supertokens-node](https://github.com/supertokens/supertokens-node) (≥16; required for the default auth provider — the peer is optional only when you supply a custom `authProvider`)
 
 ## Installation
 

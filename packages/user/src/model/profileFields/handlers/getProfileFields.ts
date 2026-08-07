@@ -1,10 +1,9 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import getProfileFieldService from "../../../lib/getProfileFieldService";
 
 const getProfileFields = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   const { config, dbSchema, slonik } = request;

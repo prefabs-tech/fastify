@@ -2,12 +2,13 @@ import type { FastifyInstance } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import { deleteUser } from "supertokens-node";
+import { deleteUser, RecipeUserId } from "supertokens-node";
 import EmailVerification from "supertokens-node/recipe/emailverification";
 import UserRoles from "supertokens-node/recipe/userroles";
 
 import type { User } from "../../../../types";
 
+import { SUPERTOKENS_DEFAULT_TENANT_ID } from "../../../../constants";
 import getUserService from "../../../../lib/getUserService";
 import sendEmail from "../../../../lib/sendEmail";
 import verifyEmail from "../../../../lib/verifyEmail";
@@ -39,7 +40,7 @@ const emailPasswordSignUp = (
 
       try {
         user = await userService.create({
-          email: originalResponse.user.email,
+          email: originalResponse.user.emails[0] ?? "",
           id: originalResponse.user.id,
         });
 
@@ -52,15 +53,9 @@ const emailPasswordSignUp = (
         throw error;
       }
 
-      user.roles = roles;
-
-      originalResponse.user = {
-        ...originalResponse.user,
-        ...user,
-      };
-
       for (const role of roles) {
         const rolesResponse = await UserRoles.addRoleToUser(
+          SUPERTOKENS_DEFAULT_TENANT_ID,
           originalResponse.user.id,
           role,
         );
@@ -79,7 +74,8 @@ const emailPasswordSignUp = (
             // send email verification
             const tokenResponse =
               await EmailVerification.createEmailVerificationToken(
-                originalResponse.user.id,
+                SUPERTOKENS_DEFAULT_TENANT_ID,
+                new RecipeUserId(originalResponse.user.id),
               );
 
             if (tokenResponse.status === "OK") {
@@ -87,8 +83,13 @@ const emailPasswordSignUp = (
               // emailVerifyLink is same as what would supertokens create.
               await EmailVerification.sendEmail({
                 emailVerifyLink: `${config.appOrigin[0]}/auth/verify-email?token=${tokenResponse.token}&rid=emailverification`,
+                tenantId: SUPERTOKENS_DEFAULT_TENANT_ID,
                 type: "EMAIL_VERIFICATION",
-                user: originalResponse.user,
+                user: {
+                  email: originalResponse.user.emails[0] ?? "",
+                  id: originalResponse.user.id,
+                  recipeUserId: new RecipeUserId(originalResponse.user.id),
+                },
                 userContext: input.userContext,
               });
             }
@@ -100,7 +101,7 @@ const emailPasswordSignUp = (
     }
 
     if (
-      config.user.supertokens.sendUserAlreadyExistsWarning &&
+      config.user.supertokens!.sendUserAlreadyExistsWarning &&
       originalResponse.status === "EMAIL_ALREADY_EXISTS_ERROR"
     ) {
       try {

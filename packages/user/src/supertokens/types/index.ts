@@ -6,16 +6,24 @@ import type { TypeInput as ThirdPartyEmailPasswordRecipeConfig } from "supertoke
 import type { TypeInput as UserRolesRecipeConfig } from "supertokens-node/recipe/userroles/types";
 import type { RecipeListFunction } from "supertokens-node/types";
 
-import {
-  Apple,
-  Facebook,
-  Github,
-  Google,
-} from "supertokens-node/recipe/thirdpartyemailpassword";
-
 import type { EmailVerificationRecipe } from "./emailVerificationRecipe";
 import type { SessionRecipe } from "./sessionRecipe";
 import type { ThirdPartyEmailPasswordRecipe } from "./thirdPartyEmailPasswordRecipe";
+
+interface AppleProviderConfig {
+  clientId: string;
+  clientSecret: {
+    keyId: string;
+    privateKey: string;
+    teamId: string;
+  };
+  isDefault?: boolean;
+}
+
+interface OAuthProviderConfig {
+  clientId: string;
+  clientSecret: string;
+}
 
 interface SupertokensConfig {
   apiBasePath?: string;
@@ -48,12 +56,16 @@ interface SupertokensRecipes {
   userRoles?: (fastify: FastifyInstance) => UserRolesRecipeConfig;
 }
 
+/**
+ * App-facing provider config. Mapped to SuperTokens `ProviderInput` in
+ * `thirdPartyProviders.ts` (v16 factories require a nested `config` object).
+ */
 interface SupertokensThirdPartyProvider {
-  apple?: Parameters<typeof Apple>[0][];
+  apple?: AppleProviderConfig[];
   custom?: TypeProvider[];
-  facebook?: Parameters<typeof Facebook>[0];
-  github?: Parameters<typeof Github>[0];
-  google?: Parameters<typeof Google>[0];
+  facebook?: OAuthProviderConfig;
+  github?: OAuthProviderConfig;
+  google?: OAuthProviderConfig;
 }
 
 export type { SupertokensConfig, SupertokensRecipeFactory, SupertokensRecipes };

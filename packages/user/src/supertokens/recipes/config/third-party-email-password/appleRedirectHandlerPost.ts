@@ -11,14 +11,14 @@ const appleRedirectHandlerPOST = (
       throw new Error("Should never come here");
     }
 
-    const stateInBase64 = input.state;
+    const { code, state: stateInBase64 } = input.formPostInfoFromProvider;
 
     const state = JSON.parse(
       Buffer.from(stateInBase64, "base64").toString("ascii"),
     );
 
     if (state.isAndroid && state.appId) {
-      const queryString = `code=${input.code}&state=${input.state}`;
+      const queryString = `code=${code}&state=${stateInBase64}`;
 
       const redirectUrl = `intent://callback?${queryString}#Intent;package=${state.appId};scheme=signinwithapple;end`;
 

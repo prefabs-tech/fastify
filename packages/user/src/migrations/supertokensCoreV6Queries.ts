@@ -22,9 +22,22 @@ const splitSupertokensCoreV6Statements = (sqlText: string): string[] => {
     .filter((statement) => statement.length > 0);
 };
 
+/**
+ * Build a QuerySqlToken from a raw SQL statement string.
+ * Interpolating the string into `sql.unsafe\`...\`` would bind it as $1.
+ */
+const toUnsafeQuery = (statement: string): QuerySqlToken<ZodTypeAny> => {
+  const sqlText = `${statement};`;
+  const parts = Object.freeze(
+    Object.assign([sqlText], { raw: Object.freeze([sqlText]) }),
+  ) as unknown as TemplateStringsArray;
+
+  return sql.unsafe(parts);
+};
+
 const supertokensCoreV6Queries = (): Array<QuerySqlToken<ZodTypeAny>> =>
-  splitSupertokensCoreV6Statements(migrationSql).map(
-    (statement) => sql.unsafe`${statement};`,
+  splitSupertokensCoreV6Statements(migrationSql).map((statement) =>
+    toUnsafeQuery(statement),
   );
 
 export { splitSupertokensCoreV6Statements, supertokensCoreV6Queries };

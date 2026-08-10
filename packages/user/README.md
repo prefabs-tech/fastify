@@ -25,6 +25,7 @@ User management—authentication, password hashing, multifactor sessions, sessio
 - [@prefabs.tech/fastify-slonik](../slonik/)
 - [slonik](https://github.com/spa5k/fastify-slonik)
 - [supertokens-node](https://github.com/supertokens/supertokens-node) (≥16; required for the default auth provider — the peer is optional only when you supply a custom `authProvider`)
+- SuperTokens **core 9** (self-hosted `supertokens-postgresql:9.x` or equivalent; CDI requires core ≥7)
 
 ## Installation
 

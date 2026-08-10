@@ -7,6 +7,7 @@ import {
   createProfileFieldsTablesQueries,
   createUsersTableQuery,
 } from "./queries";
+import shouldRunSupertokensCoreV6Migration from "./shouldRunSupertokensCoreV6Migration";
 import { supertokensCoreV6Queries } from "./supertokensCoreV6Queries";
 
 const runMigrations = async (config: ApiConfig, database: Database) => {
@@ -15,8 +16,10 @@ const runMigrations = async (config: ApiConfig, database: Database) => {
       await transactionConnection.query(createUsersTableQuery(config));
       await transactionConnection.query(createInvitationsTableQuery(config));
 
-      for (const query of supertokensCoreV6Queries()) {
-        await transactionConnection.query(query);
+      if (await shouldRunSupertokensCoreV6Migration(transactionConnection)) {
+        for (const query of supertokensCoreV6Queries()) {
+          await transactionConnection.query(query);
+        }
       }
 
       if (config.user.features?.profileFields?.enabled) {

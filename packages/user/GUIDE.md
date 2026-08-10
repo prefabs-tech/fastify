@@ -82,12 +82,28 @@ We wrap `supertokens-node` (≥16) initialization and expose a subset of its sur
 
 ### Upgrading to SuperTokens v16
 
+Required stack for the default SuperTokens provider:
+
+- **`supertokens-node` ≥16**
+- **SuperTokens core 9** (CDI requires core ≥7; use core 9 as the supported target)
+
 Breaking changes when moving to this package with `supertokens-node` ≥16:
 
 - **`AuthUser`** is no longer `SupertokensUser & User`. It is the thin auth-provider DTO (`id`, `email`, optional `thirdParty`, …). Use `request.user` / the `User` type for database fields (`disabled`, `roles`, `profile`, …).
 - **`request.session`** is typed as `AuthSession` (adapter surface: `getUserId`, `revokeSession`, …), not the raw SuperTokens session object. Prefer `auth.claims` / `auth.session` instead of calling SuperTokens session APIs from app code.
 - Install **`supertokens-node` ≥16** when using the default provider. The peer is marked optional only so apps with a fully custom `authProvider` can omit it.
-- On register, the plugin applies the SuperTokens core v6 `st__*` multitenancy upgrade automatically. Statements use `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` so re-runs are safe.
+
+#### SuperTokens core database (6 → 9)
+
+Core does **not** apply major-version schema upgrades when you only change the Docker image tag. For an existing DB:
+
+1. Stop SuperTokens core.
+2. Run the **official** migration SQL for every version between your current core and 9 from the [supertokens-core CHANGELOG](https://github.com/supertokens/supertokens-core/blob/master/CHANGELOG.md) (see also [Updating SuperTokens](https://supertokens.com/docs/references/updating-supertokens)).
+3. Start `supertokens/supertokens-postgresql:9.x`.
+
+Disposable environments may wipe `st__*` tables or the Postgres volume instead and let core 9 create a fresh schema.
+
+This package does **not** ship a core 6→9 SQL dump. On register it still runs idempotent migrations for app tables (`users`, `invitations`, optional profile fields). The embedded SuperTokens core v6 `st__*` multitenancy dump runs **only** for legacy schemas (ST tables exist and `primary_or_recipe_user_id` is missing). It is skipped on core ≥7/9 and when ST tables are absent.
 
 ### mercurius-auth — Modified
 
@@ -108,7 +124,7 @@ We register two separate `mercurius-auth` instances: one for `@auth` and one for
 On startup the plugin:
 
 1. Initializes the configured auth provider (default: SuperTokens) and registers the Fastify SuperTokens adapter.
-2. Runs idempotent migrations for the `users` and `invitations` tables, then applies the SuperTokens core v6 multitenancy upgrade on `st__*` tables (re-runnable `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` forms) before the server is ready.
+2. Runs idempotent migrations for the `users` and `invitations` tables, then — only when a legacy SuperTokens schema is detected — applies the SuperTokens core v6 multitenancy upgrade on `st__*` tables (re-runnable `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` forms). The v6 dump is skipped when the DB already has core ≥7/9 account-linking columns or no ST tables yet.
 3. Seeds built-in roles (`ADMIN`, `SUPERADMIN`, `USER`) plus any extra roles in `config.user.roles` into SuperTokens on `onReady`.
 4. Registers five route groups under `config.user.routePrefix`, each independently disable-able.
 
@@ -675,7 +691,7 @@ for (const query of supertokensCoreV6Queries()) {
 }
 ```
 
-The plugin runs users, invitations, and SuperTokens core v6 migrations automatically on register; use the exports above only for manual inspection or custom migration tooling.
+The plugin runs users and invitations migrations automatically on register, and may apply the gated SuperTokens core v6 `st__*` dump for legacy schemas only; use the exports above only for manual inspection or custom migration tooling.
 
 ### Custom table names
 

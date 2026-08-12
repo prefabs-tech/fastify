@@ -1,16 +1,14 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import type { AuthSession } from "../../../auth/adapter";
 import type { ChangeEmailInput } from "../../../types";
 
-import { auth } from "../../../auth/adapter";
+import { auth, getRequiredSession } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
 import validateEmail from "../../../validator/email";
 
 const changeEmail = async (request: FastifyRequest, reply: FastifyReply) => {
   const { body, config, server, slonik, user } = request;
-  const session = (request as FastifyRequest & { session: AuthSession })
-    .session;
+  const session = getRequiredSession(request);
 
   if (!user) {
     throw server.httpErrors.unauthorized("Unauthorised");

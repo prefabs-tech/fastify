@@ -8,7 +8,7 @@ import type { SessionRequest } from "supertokens-node/framework/fastify";
 import type { SessionClaimValidator } from "supertokens-node/recipe/session";
 
 import { getRequestFromUserContext, RecipeUserId } from "supertokens-node";
-import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims";
+import { SessionClaim } from "supertokens-node/recipe/session/claims";
 
 import type { ProfileValidationConfig } from "../../auth/claims/profileValidation";
 
@@ -97,10 +97,11 @@ class ProfileValidationClaim extends SessionClaim<Response> {
       SessionRequest | undefined;
 
     if (!request) {
-      // supertokens-node v15 multitenancy internal flow
-      // may call fetchValue without setting request in userContext.
-      // Return a safe fallback instead of crashing.
-      return { isVerified: true };
+      console.warn(
+        "ProfileValidationClaim.fetchValue called without request context; failing closed (isVerified: false)",
+      );
+
+      return { isVerified: false };
     }
 
     const profileValidation = request.config.user?.features

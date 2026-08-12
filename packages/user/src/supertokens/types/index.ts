@@ -39,6 +39,13 @@ interface SupertokensConfig {
   resetPasswordPath?: string;
   sendUserAlreadyExistsWarning?: boolean;
   setErrorHandler?: boolean;
+  /**
+   * Postgres schema that holds SuperTokens `st__*` tables.
+   * Must match core `POSTGRESQL_TABLE_SCHEMA` when non-default.
+   * Used only by the legacy core v6 migration gate (the dump stays unqualified).
+   * @default "public"
+   */
+  tableSchema?: string;
 }
 
 type SupertokensRecipeFactory = (

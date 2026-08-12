@@ -82,6 +82,21 @@ We wrap `supertokens-node` (≥16) initialization and expose a subset of its sur
 
 ### Upgrading to SuperTokens v16
 
+## Breaking changes (major version)
+
+This major version targets teams currently running **SuperTokens core 5** and upgrading to the current stack:
+
+- **`supertokens-node` ≥16**
+- **SuperTokens core 9**
+- **Upgrade order: core first, API second**
+- The package can apply the **core 5→6 multitenancy upgrade** automatically on first boot when it detects legacy `st__*` tables without the newer account-linking column.
+- You still need the **official SuperTokens SQL** for the remaining core **6→7→8→9** hops.
+- **`AuthUser`** is now a thin auth-provider DTO, not `SupertokensUser & User`.
+- **`request.session`** is typed as `AuthSession`.
+- phone-auth recipe users now use v16 arrays: **`emails`** and **`phoneNumbers`**.
+- `user.supertokens.tableSchema` is available when core stores `st__*` tables outside Postgres `public`.
+- To minimize app changes, prefer replacing direct `supertokens-node` usage with `auth.*`.
+
 Required stack for the default SuperTokens provider:
 
 - **`supertokens-node` ≥16**
@@ -93,7 +108,7 @@ Breaking changes when moving to this package with `supertokens-node` ≥16:
 - **`request.session`** is typed as `AuthSession` (adapter surface: `getUserId`, `revokeSession`, …), not the raw SuperTokens session object. Prefer `auth.claims` / `auth.session` instead of calling SuperTokens session APIs from app code.
 - Install **`supertokens-node` ≥16** when using the default provider. The peer is marked optional only so apps with a fully custom `authProvider` can omit it.
 
-#### SuperTokens core database (6 → 9)
+#### SuperTokens core database (5 → 9)
 
 Core does **not** apply major-version schema upgrades when you only change the Docker image tag. For an existing DB:
 
@@ -103,7 +118,19 @@ Core does **not** apply major-version schema upgrades when you only change the D
 
 Disposable environments may wipe `st__*` tables or the Postgres volume instead and let core 9 create a fresh schema.
 
-This package does **not** ship a core 6→9 SQL dump. On register it still runs idempotent migrations for app tables (`users`, `invitations`, optional profile fields). The embedded SuperTokens core v6 `st__*` multitenancy dump runs **only** for legacy schemas (ST tables exist and `primary_or_recipe_user_id` is missing). It is skipped on core ≥7/9 and when ST tables are absent.
+This package does **not** ship a full core 6→9 or 7→9 SQL dump. On register it still runs idempotent migrations for app tables (`users`, `invitations`, optional profile fields). The embedded SuperTokens core v6 `st__*` multitenancy dump handles the **core 5→6** schema step only, and runs **only** for legacy schemas (ST tables exist and `primary_or_recipe_user_id` is missing). It is skipped on core ≥7/9 and when ST tables are absent. The remaining **6→7→8→9** schema steps must use SuperTokens' official CHANGELOG SQL. The dump uses unqualified `st__*` names; the default probe schema is Postgres `public`. If SuperTokens core uses a non-`public` table schema (`POSTGRESQL_TABLE_SCHEMA`), set the same value on `user.supertokens.tableSchema` so the gate probes the correct schema. Qualifying the dump itself is not supported in this package.
+
+#### Consumer migration checklist
+
+1. **Upgrade core first, then the API.** The new API package expects the SuperTokens stack to be on core **9** before `supertokens-node` **16** starts talking to it.
+2. Stop your existing **SuperTokens core 5** deployment.
+3. Upgrade the database schema to core 9. Use the **official** SuperTokens CHANGELOG SQL for each hop from **5→6→7→8→9**. In environments where this package boots against the DB, the embedded gated dump can handle the **5→6** multitenancy step automatically when it detects legacy `st__*` tables without `primary_or_recipe_user_id`; the later **6→7→8→9** steps are still manual.
+4. Start `supertokens/supertokens-postgresql:9.x` (or equivalent core 9 deployment). If the environment is disposable, wiping the `st__*` tables / Postgres volume and letting core 9 recreate them is also valid.
+5. If core stores `st__*` tables outside Postgres `public`, set core `POSTGRESQL_TABLE_SCHEMA` and `user.supertokens.tableSchema` to the same value (default `"public"`).
+6. After core is on 9, bump the API dependencies: this package, `@prefabs.tech/fastify-phone-auth` if used, and `supertokens-node` **≥16**.
+7. Update app code with the minimal compatibility changes: use `request.user` / `User` for DB fields, treat `AuthUser` as the thin auth-provider DTO, prefer `auth.*` over direct `supertokens-node` calls, and use deprecated `getSupertokensSession(session)` only for temporary leftover raw session APIs.
+8. If you use phone-auth, prefer v16 `emails` / `phoneNumbers` on recipe users; HTTP `consumeCodePOST` may still expose compat `email` / `phoneNumber` aliases for older clients.
+9. Smoke-test sign-in, session refresh, profile validation, password reset, and phone OTP (if applicable) after both upgrades are complete.
 
 ### mercurius-auth — Modified
 
@@ -321,7 +348,7 @@ user: {
 }
 ```
 
-Provider factories (Apple, Google, Github, Facebook) are loaded from `supertokens-node/lib/build/recipe/thirdparty/providers` because SuperTokens v16 no longer re-exports them on the public recipe surface.
+Provider factories (Apple, Google, Github, Facebook) are loaded from `supertokens-node/lib/build/recipe/thirdparty/providers` because SuperTokens v16 no longer re-exports them on the public recipe surface. A few other SuperTokens types (e.g. the Fastify request wrapper class used in user-context construction, `EmailDeliveryInterface`) also have no public shim and intentionally stay on `lib/build`; prefer `recipe/*` and `framework/fastify` imports everywhere else.
 
 ### Email verification (opt-in)
 
@@ -353,7 +380,7 @@ user: {
 }
 ```
 
-After the grace period expires, requests to protected routes return `403` with `invalid claim` until the fields are filled. To skip the check on a specific route:
+After the grace period expires, requests to protected routes return `403` with `invalid claim` until the fields are filled. When SuperTokens refreshes the claim without a request in `userContext`, `fetchValue` returns `{ isVerified: false }` (fail-closed) rather than treating the profile as complete. Session creation injects a synthetic request so normal signup/sign-in still evaluates the real profile. To skip the check on a specific route:
 
 ```typescript
 fastify.get(
@@ -817,6 +844,7 @@ declare module "@prefabs.tech/fastify-config" {
 | `User`                          | User database record                                |
 | `AuthUser`                      | Auth-provider DTO (`id`, `email`, optional `thirdParty`, …). **Breaking:** no longer `SupertokensUser & User`; use `User` / `request.user` for DB fields. |
 | `AuthSession`                   | Session handle exposed on `request.session`         |
+| `getSupertokensSession`         | **Deprecated** cast from `AuthSession` to raw SuperTokens session; prefer `auth.*` |
 | `UserCreateInput`               | Input for creating a user                           |
 | `UserUpdateInput`               | Input for updating a user                           |
 | `Invitation`                    | Invitation database record                          |

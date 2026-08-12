@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
+// Intentional lib/build: EmailDeliveryInterface has no public ingredients shim.
 import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
 import type { TypeEmailVerificationEmailDeliveryInput } from "supertokens-node/recipe/emailverification/types";
 

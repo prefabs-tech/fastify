@@ -35,6 +35,7 @@ import { ERROR_CODES, SUPERTOKENS_DEFAULT_TENANT_ID } from "../constants";
 import supertokensPlugin from "../supertokens";
 import createUserContextImpl from "../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim";
+import { getSupertokensSession } from "./supertokensSession";
 
 const claimKeyByType: Record<RefreshableClaim, string> = {
   emailVerification: EmailVerificationClaim.key,
@@ -55,11 +56,7 @@ const supertokensClaimsAdapter: ClaimsProvider = {
     const context = createUserContextImpl(userContext, request);
 
     try {
-      await (
-        session as unknown as {
-          assertClaims?: (...arguments_: unknown[]) => Promise<void>;
-        }
-      ).assertClaims?.(
+      await getSupertokensSession(session).assertClaims(
         [profileValidationClaim.validators.isVerified()],
         context,
       );
@@ -81,19 +78,13 @@ const supertokensClaimsAdapter: ClaimsProvider = {
 
   async refreshSessionClaims(session, request, claims, userContext) {
     const context = createUserContextImpl(userContext, request);
+    const stSession = getSupertokensSession(session);
 
     for (const claim of claims) {
-      const stSession = session as unknown as {
-        fetchAndSetClaim?: (...arguments_: unknown[]) => Promise<void>;
-      };
-
       if (claim === "emailVerification") {
-        await stSession.fetchAndSetClaim?.(EmailVerificationClaim, context);
+        await stSession.fetchAndSetClaim(EmailVerificationClaim, context);
       } else if (claim === "profileValidation") {
-        await stSession.fetchAndSetClaim?.(
-          new ProfileValidationClaim(),
-          context,
-        );
+        await stSession.fetchAndSetClaim(new ProfileValidationClaim(), context);
       }
     }
   },
@@ -404,6 +395,12 @@ const supertokensRolesAdapter: RolesProvider = {
     permissions: string[],
   ): Promise<void> {
     await UserRoles.removePermissionsFromRole(role, permissions);
+  },
+
+  async roleExists(role: string): Promise<boolean> {
+    const allRoles = await supertokensRolesAdapter.getAllRoles();
+
+    return allRoles.includes(role);
   },
 
   async rolesExist(roles: string[]): Promise<boolean> {

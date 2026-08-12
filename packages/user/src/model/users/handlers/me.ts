@@ -1,13 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import type { AuthSession } from "../../../auth/adapter";
-
-import { auth } from "../../../auth/adapter";
+import { auth, getRequiredSession } from "../../../auth/adapter";
 
 const me = async (request: FastifyRequest, reply: FastifyReply) => {
-  const { config, server, session, user } = request as FastifyRequest & {
-    session: AuthSession;
-  };
+  const { config, server, user } = request;
+  const session = getRequiredSession(request);
 
   if (!user) {
     throw server.httpErrors.unauthorized("Unauthorised");

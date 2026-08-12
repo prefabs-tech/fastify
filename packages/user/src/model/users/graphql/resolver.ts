@@ -1,15 +1,13 @@
 import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
-import type { FastifyRequest } from "fastify";
 import type { MercuriusContext } from "mercurius";
 
 import { GraphQLUpload } from "@prefabs.tech/fastify-graphql";
 import { Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
 
-import type { AuthSession } from "../../../auth/adapter";
 import type { UserUpdateInput } from "../../../types";
 
-import { auth } from "../../../auth/adapter";
+import { auth, getRequiredSession } from "../../../auth/adapter";
 import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
 import CustomApiError from "../../../customApiError";
 import getUserService from "../../../lib/getUserService";
@@ -139,8 +137,7 @@ const Mutation = {
         }
 
         const request = reply.request;
-        const session = (request as FastifyRequest & { session: AuthSession })
-          .session;
+        const session = getRequiredSession(request);
         const userContext = auth.createUserContext(request);
 
         if (config.user.features?.profileValidation?.enabled && auth.claims) {
@@ -411,8 +408,7 @@ const Mutation = {
       request.user = updatedUser;
 
       const userContext = auth.createUserContext(request);
-      const session = (request as FastifyRequest & { session: AuthSession })
-        .session;
+      const session = getRequiredSession(request);
 
       if (
         request.config.user.features?.profileValidation?.enabled &&
@@ -472,8 +468,7 @@ const Mutation = {
       const updatedUser = await service.update(user.id, data);
 
       const request = reply.request;
-      const session = (request as FastifyRequest & { session: AuthSession })
-        .session;
+      const session = getRequiredSession(request);
 
       request.user = updatedUser;
 
@@ -549,8 +544,7 @@ const Mutation = {
       request.user = updatedUser;
 
       const userContext = auth.createUserContext(request);
-      const session = (request as FastifyRequest & { session: AuthSession })
-        .session;
+      const session = getRequiredSession(request);
 
       if (
         request.config.user.features?.profileValidation?.enabled &&
@@ -684,8 +678,7 @@ const Query = {
     ) {
       const request = context.reply.request;
 
-      const session = (request as FastifyRequest & { session: AuthSession })
-        .session;
+      const session = getRequiredSession(request);
       await auth.claims.refreshSessionClaims(
         session,
         request,

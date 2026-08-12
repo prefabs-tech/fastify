@@ -1,8 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import type { AuthSession } from "../../../auth/adapter";
-
-import { auth } from "../../../auth/adapter";
+import { auth, getRequiredSession } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
 
 const removePhoto = async (request: FastifyRequest, reply: FastifyReply) => {
@@ -25,9 +23,7 @@ const removePhoto = async (request: FastifyRequest, reply: FastifyReply) => {
 
   const authUser = await auth.emailPassword.getUserById(user.id);
   const userContext = auth.createUserContext(request);
-
-  const session = (request as FastifyRequest & { session: AuthSession })
-    .session;
+  const session = getRequiredSession(request);
 
   if (request.config.user.features?.profileValidation?.enabled && auth.claims) {
     await auth.claims.refreshSessionClaims(

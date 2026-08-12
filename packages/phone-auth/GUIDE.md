@@ -115,7 +115,7 @@ On first successful sign-in (`createdNewRecipeUser`), `functions.consumeCode`:
 - Assigns the roles via `UserRoles.addRoleToUser` (with the default tenant id).
 - Deletes the SuperTokens user again if the local insert fails, so the two stores cannot drift.
 
-The consume response uses SuperTokens v16 user fields (`emails`, `phoneNumbers`); `consumeCodePOST` enriches an empty `emails` array with the synthetic email when needed.
+The consume recipe path uses SuperTokens v16 user fields (`emails`, `phoneNumbers`) and returns the ST-correct object (no merged app `User`). Prefer those arrays in new code. `consumeCodePOST` still enriches an empty `emails` array with the synthetic email and adds best-effort HTTP compat aliases `email` / `phoneNumber` for older clients.
 
 On subsequent sign-ins it only updates `lastLoginAt`.
 

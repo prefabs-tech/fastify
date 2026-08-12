@@ -3,10 +3,9 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 
-import type { AuthSession } from "../../../auth/adapter";
 import type { UserUpdateInput } from "../../../types";
 
-import { auth } from "../../../auth/adapter";
+import { auth, getRequiredSession } from "../../../auth/adapter";
 import { ERROR_CODES } from "../../../constants";
 import getUserService from "../../../lib/getUserService";
 
@@ -50,9 +49,7 @@ const uploadPhoto = async (request: FastifyRequest, reply: FastifyReply) => {
 
     const authUser = await auth.emailPassword.getUserById(user.id);
     const userContext = auth.createUserContext(request);
-
-    const session = (request as FastifyRequest & { session: AuthSession })
-      .session;
+    const session = getRequiredSession(request);
 
     if (
       request.config.user.features?.profileValidation?.enabled &&

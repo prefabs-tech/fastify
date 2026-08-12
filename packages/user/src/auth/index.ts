@@ -1,4 +1,4 @@
-export { auth, getAuth, initAuth } from "./adapter";
+export { auth, getAuth, getRequiredSession, initAuth } from "./adapter";
 export type {
   AuthAdapter,
   AuthErrorsProvider,

@@ -1,12 +1,10 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 import mercuriusAuth from "mercurius-auth";
 
-import type { AuthSession } from "../auth/adapter";
-
-import { auth } from "../auth/adapter";
+import { auth, getRequiredSession } from "../auth/adapter";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {
@@ -63,8 +61,7 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
 
         if (profileValidation?.value?.value != false) {
           const request = context.reply.request;
-          const session = (request as FastifyRequest & { session: AuthSession })
-            .session;
+          const session = getRequiredSession(request);
 
           const userContext = auth.createUserContext(request);
 

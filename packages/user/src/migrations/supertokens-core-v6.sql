@@ -101,7 +101,7 @@ ALTER TABLE st__all_auth_recipe_users
 
 DROP INDEX IF EXISTS st__all_auth_recipe_users_pagination_index;
 
-CREATE INDEX st__all_auth_recipe_users_pagination_index ON st__all_auth_recipe_users (time_joined DESC, user_id DESC, tenant_id DESC, app_id DESC);
+CREATE INDEX IF NOT EXISTS st__all_auth_recipe_users_pagination_index ON st__all_auth_recipe_users (time_joined DESC, user_id DESC, tenant_id DESC, app_id DESC);
 
 CREATE INDEX IF NOT EXISTS st__all_auth_recipe_user_id_index ON st__all_auth_recipe_users (app_id, user_id);
 

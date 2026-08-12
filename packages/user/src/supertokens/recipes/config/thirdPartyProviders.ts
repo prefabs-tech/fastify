@@ -1,7 +1,9 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
-import type { ProviderClientConfig } from "supertokens-node/lib/build/recipe/thirdparty/types";
+import type { ProviderClientConfig } from "supertokens-node/recipe/thirdparty/types";
 import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
 
+// Intentional lib/build: Apple/Google/Github/Facebook factories are not on the
+// public recipe surface in supertokens-node v16.
 import {
   Apple,
   Facebook,

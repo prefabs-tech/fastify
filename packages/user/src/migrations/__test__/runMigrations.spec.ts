@@ -58,11 +58,35 @@ describe("runMigrations", () => {
     expect(mockShouldRunSupertokensCoreV6Migration).toHaveBeenCalledOnce();
     expect(mockShouldRunSupertokensCoreV6Migration).toHaveBeenCalledWith(
       transactionConnection,
+      "public",
     );
     expect(mockSupertokensCoreV6Queries).toHaveBeenCalledOnce();
     expect(query).toHaveBeenCalledTimes(3);
     expect(query.mock.calls[2]?.[0]).toBe(
       mockSupertokensCoreV6Queries.mock.results[0]?.value[0],
+    );
+  });
+
+  it("passes config.user.supertokens.tableSchema to the migration gate", async () => {
+    mockShouldRunSupertokensCoreV6Migration.mockResolvedValue(false);
+    const query = vi.fn().mockResolvedValue({ rows: [] });
+    const { database, transactionConnection } = buildDatabase(query);
+
+    await runMigrations(
+      {
+        user: {
+          supertokens: {
+            connectionUri: "postgresql://localhost/st",
+            tableSchema: "supertokens",
+          },
+        },
+      } as ApiConfig,
+      database,
+    );
+
+    expect(mockShouldRunSupertokensCoreV6Migration).toHaveBeenCalledWith(
+      transactionConnection,
+      "supertokens",
     );
   });
 
@@ -76,6 +100,7 @@ describe("runMigrations", () => {
     expect(mockShouldRunSupertokensCoreV6Migration).toHaveBeenCalledOnce();
     expect(mockShouldRunSupertokensCoreV6Migration).toHaveBeenCalledWith(
       transactionConnection,
+      "public",
     );
     expect(mockSupertokensCoreV6Queries).not.toHaveBeenCalled();
     expect(query).toHaveBeenCalledTimes(2);

@@ -16,17 +16,25 @@ const enrichResult = (
     return result;
   }
 
+  const emails =
+    result.user.emails.length > 0
+      ? result.user.emails
+      : [`${phoneNumber}@${fallbackEmailDomain}`];
+  const resolvedPhoneNumber = result.user.phoneNumbers[0] ?? phoneNumber;
+
   return {
     ...result,
     user: {
       ...result.user,
-      emails:
-        result.user.emails.length > 0
-          ? result.user.emails
-          : [`${phoneNumber}@${fallbackEmailDomain}`],
+      // Compat aliases for older HTTP clients; prefer emails / phoneNumbers.
+      email: emails[0],
+      emails,
+      phoneNumber: resolvedPhoneNumber,
     },
   };
 };
+
+export { enrichResult };
 
 const consumeCodePOST = (
   originalImplementation: APIInterface,

@@ -32,8 +32,14 @@ declare module "@prefabs.tech/fastify-config" {
 
 export * from "./auth";
 
-export * from "./constants";
+/*
+ * @deprecated Prefer root auth exports (`auth`, `getAuth`, `initAuth`, `AuthUser`,
+ * `AuthSession`, …) for application code. These SuperTokens-specific helpers remain
+ * for compatibility and will be removed in a future release.
+ */
+export { getSupertokensSession } from "./auth/supertokensSession";
 
+export * from "./constants";
 export { default as userSchema } from "./graphql/schema";
 export { default as computeInvitationExpiresAt } from "./lib/computeInvitationExpiresAt";
 export { default as getInvitationService } from "./lib/getInvitationService";
@@ -64,11 +70,6 @@ export {
 } from "./model/users/sql";
 export { default as UserSqlFactory } from "./model/users/sqlFactory";
 export { default } from "./plugin";
-/*
- * @deprecated Prefer root auth exports (`auth`, `getAuth`, `initAuth`, `AuthUser`,
- * `AuthSession`, …) for application code. These SuperTokens-specific helpers remain
- * for compatibility and will be removed in a future release.
- */
 export { errorHandler as supertokensErrorHandler } from "./supertokens/errorHandler";
 export { default as addSupertokensRecipe } from "./supertokens/recipeRegistry";
 export type { SupertokensRecipeFactory } from "./supertokens/types";

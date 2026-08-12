@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import type { AuthSession } from "../../../auth/adapter";
 import type { User } from "../../../types";
 
+import { getRequiredSession } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
 
 const updateUserProfile = async (
@@ -11,9 +11,7 @@ const updateUserProfile = async (
 ) => {
   const { body, config, dbSchema, server, slonik } = request;
 
-  const userId = (
-    request as FastifyRequest & { session: AuthSession }
-  ).session?.getUserId() as string;
+  const userId = getRequiredSession(request).getUserId();
 
   if (!userId) {
     throw server.httpErrors.unauthorized("Unauthorised");

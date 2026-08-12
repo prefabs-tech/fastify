@@ -28,11 +28,8 @@ class RoleService {
   async deleteRole(role: string): Promise<{ status: string }> {
     const users = await auth.roles.getUsersThatHaveRole(role);
 
-    if (users.length === 0) {
-      const allRoles = await auth.roles.getAllRoles();
-      if (!allRoles.includes(role)) {
-        throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
-      }
+    if (!(await auth.roles.roleExists(role))) {
+      throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
     }
 
     if (users.length > 0) {
@@ -73,14 +70,11 @@ class RoleService {
     role: string,
     permissions: string[],
   ): Promise<{ permissions: string[]; status: "OK" }> {
-    const rolePermissions = await auth.roles.getPermissionsForRole(role);
-
-    if (rolePermissions.length === 0) {
-      const allRoles = await auth.roles.getAllRoles();
-      if (!allRoles.includes(role)) {
-        throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
-      }
+    if (!(await auth.roles.roleExists(role))) {
+      throw new CustomError("Invalid role", ERROR_CODES.UNKNOWN_ROLE_ERROR);
     }
+
+    const rolePermissions = await auth.roles.getPermissionsForRole(role);
 
     const newPermissions = permissions.filter(
       (permission: string) => !rolePermissions.includes(permission),

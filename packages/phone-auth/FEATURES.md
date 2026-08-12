@@ -52,7 +52,7 @@
 
 22. **Magic link flows pass through untouched** — when `input` carries no `userInputCode`, `consumeCodePOST` delegates to the original implementation without contacting Twilio.
 
-23. **Synthetic email enrichment** — successful consume responses get `emails` filled with `[<phoneNumber>@<fallbackEmailDomain>]` when SuperTokens returns an empty `emails` array.
+23. **Synthetic email enrichment** — successful consume responses get `emails` filled with `[<phoneNumber>@<fallbackEmailDomain>]` when SuperTokens returns an empty `emails` array. HTTP responses also set compat aliases `email` / `phoneNumber` from the v16 arrays for older clients.
 
 ## Local User Creation
 

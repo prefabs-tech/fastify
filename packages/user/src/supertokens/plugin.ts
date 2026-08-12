@@ -12,6 +12,12 @@ const plugin = async (fastify: FastifyInstance) => {
 
   log.info("Registering supertokens plugin");
 
+  if (!config.user.supertokens) {
+    throw new Error(
+      "config.user.supertokens is required when using the supertokens auth provider",
+    );
+  }
+
   init(fastify);
 
   if (config.user.supertokens!.setErrorHandler !== false) {

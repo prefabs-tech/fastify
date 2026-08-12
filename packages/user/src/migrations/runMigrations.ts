@@ -16,7 +16,14 @@ const runMigrations = async (config: ApiConfig, database: Database) => {
       await transactionConnection.query(createUsersTableQuery(config));
       await transactionConnection.query(createInvitationsTableQuery(config));
 
-      if (await shouldRunSupertokensCoreV6Migration(transactionConnection)) {
+      const tableSchema = config.user.supertokens?.tableSchema ?? "public";
+
+      if (
+        await shouldRunSupertokensCoreV6Migration(
+          transactionConnection,
+          tableSchema,
+        )
+      ) {
         for (const query of supertokensCoreV6Queries()) {
           await transactionConnection.query(query);
         }

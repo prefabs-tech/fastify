@@ -162,6 +162,8 @@ export interface RolesProvider {
 
   removePermissionsFromRole(role: string, permissions: string[]): Promise<void>;
 
+  roleExists(role: string): Promise<boolean>;
+
   rolesExist(roles: string[]): Promise<boolean>;
 }
 
@@ -216,6 +218,14 @@ export function getAuth(): AuthAdapter {
   }
 
   return authState.instance;
+}
+
+export function getRequiredSession(request: FastifyRequest): AuthSession {
+  if (!request.session) {
+    throw request.server.httpErrors.unauthorized("Unauthorised");
+  }
+
+  return request.session;
 }
 
 export async function initAuth(

@@ -6,6 +6,33 @@ import { getRequestFromUserContext } from "supertokens-node";
 import getUserService from "../../../../lib/getUserService";
 import ProfileValidationClaim from "../../../utils/profileValidationClaim";
 
+const fetchAndValidateUser = async (
+  fastify: FastifyInstance,
+  userId: string,
+  requestLike: {
+    config: FastifyRequest["config"];
+    dbSchema?: FastifyRequest["dbSchema"];
+    slonik: FastifyRequest["slonik"];
+  },
+) => {
+  const userService = getUserService(
+    requestLike.config,
+    requestLike.slonik,
+    requestLike.dbSchema,
+  );
+  const user = (await userService.findById(userId)) || undefined;
+
+  if (user?.deletedAt) {
+    throw fastify.httpErrors.unauthorized("User not found");
+  }
+
+  if (user?.disabled) {
+    throw fastify.httpErrors.unauthorized("User is disabled");
+  }
+
+  return user;
+};
+
 const createNewSession = (
   originalImplementation: RecipeInterface,
 
@@ -22,20 +49,7 @@ const createNewSession = (
     let user: FastifyRequest["user"] | undefined;
 
     if (request && !request.user) {
-      const { config, dbSchema, slonik } = request;
-
-      const userService = getUserService(config, slonik, dbSchema);
-
-      user = (await userService.findById(input.userId)) || undefined;
-
-      if (user?.deletedAt) {
-        throw fastify.httpErrors.unauthorized("User not found");
-      }
-
-      if (user?.disabled) {
-        throw fastify.httpErrors.unauthorized("User is disabled");
-      }
-
+      user = await fetchAndValidateUser(fastify, input.userId, request);
       request.user = user;
     } else if (!request) {
       // supertokens-node v15 multitenancy internal flow
@@ -43,17 +57,11 @@ const createNewSession = (
       // a request-like object so ProfileValidationClaim.fetchValue works.
       const { config, slonik } = fastify;
 
-      const userService = getUserService(config, slonik);
-
-      user = (await userService.findById(input.userId)) || undefined;
-
-      if (user?.deletedAt) {
-        throw fastify.httpErrors.unauthorized("User not found");
-      }
-
-      if (user?.disabled) {
-        throw fastify.httpErrors.unauthorized("User is disabled");
-      }
+      user = await fetchAndValidateUser(fastify, input.userId, {
+        config,
+        dbSchema: undefined,
+        slonik,
+      });
 
       input.userContext._default ||= {};
       input.userContext._default.request = {

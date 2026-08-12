@@ -1,4 +1,3 @@
-import type { User } from "@prefabs.tech/fastify-user";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/passwordless/types";
 
@@ -45,7 +44,7 @@ const consumeCode = (
       request?.dbSchema,
     );
 
-    const phoneNumber = originalResponse.user.phoneNumber;
+    const phoneNumber = originalResponse.user.phoneNumbers[0];
 
     const emailDomain =
       fastify.config.phoneAuth?.fallbackEmailDomain ||
@@ -53,7 +52,7 @@ const consumeCode = (
 
     const email = phoneNumber
       ? `${phoneNumber}@${emailDomain}`
-      : originalResponse.user.email;
+      : originalResponse.user.emails[0];
 
     if (!email || !phoneNumber) {
       await deleteUser(originalResponse.user.id);
@@ -61,11 +60,9 @@ const consumeCode = (
       throw new Error("Phone auth user missing phone number or email");
     }
 
-    let user: null | undefined | User;
-
-    if (originalResponse.createdNewUser) {
+    if (originalResponse.createdNewRecipeUser) {
       try {
-        user = await userService.create({
+        const user = await userService.create({
           email,
           id: originalResponse.user.id,
           phoneNumber,
@@ -80,15 +77,9 @@ const consumeCode = (
         throw error;
       }
 
-      user.roles = roles;
-
-      originalResponse.user = {
-        ...originalResponse.user,
-        ...user,
-      };
-
       for (const role of roles) {
         const rolesResponse = await UserRoles.addRoleToUser(
+          input.tenantId,
           originalResponse.user.id,
           role,
         );
@@ -111,14 +102,7 @@ const consumeCode = (
         });
     }
 
-    return {
-      ...originalResponse,
-      user: {
-        ...originalResponse.user,
-        email,
-        phoneNumber,
-      },
-    };
+    return originalResponse;
   };
 };
 

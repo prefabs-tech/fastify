@@ -1,13 +1,15 @@
-import Session from "supertokens-node/lib/build/recipe/session/sessionClass";
-import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
+
+import type { AuthSession, GetSessionOptions } from "../auth/adapter";
 
 declare module "fastify" {
   interface FastifyInstance {
-    verifySession: typeof verifySession;
-  }
-
-  interface FastifyRequest {
-    session?: Session;
+    verifySession(
+      options?: GetSessionOptions,
+    ): (
+      request: FastifyRequest,
+      reply: FastifyReply,
+    ) => Promise<AuthSession | undefined>;
   }
 }
 

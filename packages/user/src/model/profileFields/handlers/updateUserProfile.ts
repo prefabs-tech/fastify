@@ -1,16 +1,17 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
+import type { User } from "../../../types";
+
+import { getRequiredSession } from "../../../auth/adapter";
 import getUserService from "../../../lib/getUserService";
-import { User } from "../../../types";
 
 const updateUserProfile = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   const { body, config, dbSchema, server, slonik } = request;
 
-  const userId = request.session?.getUserId() as string;
+  const userId = getRequiredSession(request).getUserId();
 
   if (!userId) {
     throw server.httpErrors.unauthorized("Unauthorised");

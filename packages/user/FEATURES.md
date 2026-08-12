@@ -8,7 +8,7 @@
 
 2. **Selective route module disabling** — each of the four route groups (`users`, `invitations`, `roles`, `permissions`) can be disabled independently via `routes.<group>.disabled = true`. The service layer is unaffected.
 
-3. **Automatic database migrations** — on registration, runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables before the server is ready.
+3. **Automatic database migrations** — on registration, runs idempotent SQL for the `users` and `invitations` tables in the same transaction before the server is ready. The SuperTokens core v6 multitenancy dump (`st__*`) runs only for legacy schemas (ST tables exist and `primary_or_recipe_user_id` is missing); it is skipped on SuperTokens core ≥7/9 (supported target: core 9) and when ST tables are absent. The gate probes `information_schema` in `config.user.supertokens.tableSchema` (default `"public"`) so it can match core’s `POSTGRESQL_TABLE_SCHEMA`; the dump itself stays unqualified. The embedded dump covers the core 5→6 multitenancy step only; core 6→9 (and beyond) schema upgrades use SuperTokens’ official CHANGELOG SQL, not this package. The gated ST v6 statements use re-runnable `IF EXISTS` / `IF NOT EXISTS` / `ON CONFLICT` forms.
 
 4. **Default role seeding** — on `onReady`, seeds `ADMIN`, `SUPERADMIN`, and `USER` into SuperTokens, plus any extra roles listed in `config.user.roles`.
 
@@ -18,7 +18,7 @@
 
 6. **`fastify.verifySession()` decorator** — added to the Fastify instance; use it as a `preHandler` to require a valid SuperTokens session on any route.
 
-7. **`req.session` request property** — `FastifyRequest` is augmented with an optional `session` property (populated by SuperTokens after `verifySession` runs).
+7. **`req.session` request property** — `FastifyRequest` is augmented with an optional `session: AuthSession` property (populated by SuperTokens after `verifySession` runs).
 
 8. **`req.user` request property** — `FastifyRequest` is augmented with an optional `user: User` property, populated from the database on every verified session.
 
@@ -167,7 +167,7 @@
 
 ## Profile Validation Claim
 
-66. **`ProfileValidationClaim` custom session claim** — a SuperTokens `SessionClaim` that checks whether required profile fields are populated. Re-fetched on every request. Enable via `config.user.features.profileValidation.enabled = true` and list required fields in `features.profileValidation.fields`.
+66. **`ProfileValidationClaim` custom session claim** — a SuperTokens `SessionClaim` that checks whether required profile fields are populated. Re-fetched on every request. Enable via `config.user.features.profileValidation.enabled = true` and list required fields in `features.profileValidation.fields`. When `fetchValue` runs without a request in `userContext`, it returns `{ isVerified: false }` (fail-closed).
 
 67. **Grace period** — `config.user.features.profileValidation.gracePeriodInDays` allows users to access protected resources for N days after sign-up before the claim is enforced. After the grace period, requests fail with 403.
 
@@ -198,3 +198,11 @@
 78. **`userSchema` merged schema export** — the complete SDL string combining all user, invitation, role, and permission type definitions; ready to pass to `mergeTypeDefs`.
 
 79. **Resolver exports** — `userResolver`, `invitationResolver`, `roleResolver`, `permissionResolver` are exported individually for spreading into a larger resolver map.
+
+80. **Auth adapter layer** — handlers and middleware call `auth` (email/password, session, roles, claims, errors) instead of importing `supertokens-node` directly. Symbols are exported from the package root (`auth`, `getAuth`, `initAuth`, `AuthUser`, `AuthSession`, …).
+
+81. **Configurable auth provider** — `config.user.authProvider` selects the provider implementation (default `"supertokens"`). Custom providers can be registered via `registerAuthProvider(name, provider)`.
+
+82. **`supertokens-node` peer dependency (≥16)** — required when using the default SuperTokens provider. The peer is marked optional in `package.json` so apps with a fully custom `authProvider` may omit it; the default provider still expects `supertokens-node` to be installed.
+
+83. **`getSupertokensSession` escape hatch** — deprecated helper that casts an `AuthSession` to the raw SuperTokens session container for leftover ST APIs during migration. Prefer `auth.claims` / `AuthSession` for new code.

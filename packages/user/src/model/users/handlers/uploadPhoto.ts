@@ -1,19 +1,15 @@
 import type { Multipart } from "@prefabs.tech/fastify-s3";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import type { UserUpdateInput } from "../../../types";
 
+import { auth, getRequiredSession } from "../../../auth/adapter";
 import { ERROR_CODES } from "../../../constants";
 import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 
-const uploadPhoto = async (request: SessionRequest, reply: FastifyReply) => {
+const uploadPhoto = async (request: FastifyRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, server, slonik, user } =
     request as FastifyRequest<{
       Body: UserUpdateInput;
@@ -51,25 +47,37 @@ const uploadPhoto = async (request: SessionRequest, reply: FastifyReply) => {
 
     request.user = updatedUser;
 
-    const authUser = await getUserById(user.id);
+    const authUser = await auth.emailPassword.getUserById(user.id);
+    const userContext = auth.createUserContext(request);
+    const session = getRequiredSession(request);
 
-    if (request.config.user.features?.profileValidation?.enabled) {
-      await request.session?.fetchAndSetClaim(
-        new ProfileValidationClaim(),
-        createUserContext(undefined, request),
+    if (
+      request.config.user.features?.profileValidation?.enabled &&
+      auth.claims
+    ) {
+      await auth.claims.refreshSessionClaims(
+        session,
+        request,
+        ["profileValidation"],
+        userContext,
       );
     }
 
-    if (request.config.user.features?.signUp?.emailVerification) {
-      await request.session?.fetchAndSetClaim(
-        EmailVerificationClaim,
-        createUserContext(undefined, request),
+    if (
+      request.config.user.features?.signUp?.emailVerification &&
+      auth.claims
+    ) {
+      await auth.claims.refreshSessionClaims(
+        session,
+        request,
+        ["emailVerification"],
+        userContext,
       );
     }
 
     const response = {
       ...updatedUser,
-      thirdParty: authUser?.thirdParty,
+      thirdParty: (authUser as Record<string, unknown>)?.thirdParty,
     };
 
     reply.send(response);

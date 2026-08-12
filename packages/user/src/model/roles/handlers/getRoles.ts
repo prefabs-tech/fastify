@@ -1,9 +1,8 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import RoleService from "../service";
 
-const getRoles = async (request: SessionRequest, reply: FastifyReply) => {
+const getRoles = async (request: FastifyRequest, reply: FastifyReply) => {
   const service = new RoleService();
   const roles = await service.getRoles();
 

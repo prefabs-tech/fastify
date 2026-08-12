@@ -19,6 +19,7 @@ interface EmailOptions {
 }
 
 interface UserConfig {
+  authProvider?: string;
   email?: IsEmailOptions;
   emailOverrides?: {
     duplicateEmail?: EmailOptions;
@@ -124,7 +125,7 @@ interface UserConfig {
     user?: typeof UserService;
     userProfileField?: typeof ProfileFieldService;
   };
-  supertokens: SupertokensConfig;
+  supertokens?: SupertokensConfig;
   tables?: {
     invitations?: {
       name?: string;

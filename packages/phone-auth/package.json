@@ -47,7 +47,7 @@
     "fastify-plugin": "6.0.0",
     "prettier": "3.9.5",
     "slonik": "46.8.0",
-    "supertokens-node": "14.1.4",
+    "supertokens-node": "16.0.0",
     "typescript": "5.9.3",
     "vite": "8.1.5",
     "vitest": "3.2.7"
@@ -60,7 +60,7 @@
     "fastify": ">=5.10.0",
     "fastify-plugin": ">=5.1.0",
     "slonik": ">=46.8.0",
-    "supertokens-node": ">=14.1.4"
+    "supertokens-node": ">=16.0.0"
   },
   "engines": {
     "node": ">=20"

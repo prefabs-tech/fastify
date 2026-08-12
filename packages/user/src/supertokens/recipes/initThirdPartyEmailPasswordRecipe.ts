@@ -8,7 +8,7 @@ import getThirdPartyEmailPasswordRecipeConfig from "./config/thirdPartyEmailPass
 
 const init = (fastify: FastifyInstance) => {
   const thirdPartyEmailPassword: SupertokensRecipes["thirdPartyEmailPassword"] =
-    fastify.config.user.supertokens.recipes?.thirdPartyEmailPassword;
+    fastify.config.user.supertokens!.recipes?.thirdPartyEmailPassword;
 
   if (typeof thirdPartyEmailPassword === "function") {
     return ThirdPartyEmailPassword.init(thirdPartyEmailPassword(fastify));

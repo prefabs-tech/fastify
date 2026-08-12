@@ -1,7 +1,4 @@
 import type { Multipart } from "@prefabs.tech/fastify-s3";
-import type { User as SupertokensUser } from "supertokens-node/recipe/thirdpartyemailpassword";
-
-interface AuthUser extends SupertokensUser, User {}
 
 interface Photo {
   id: number;
@@ -49,4 +46,4 @@ type UserUpdateInput = Partial<
   profile?: string;
 };
 
-export type { AuthUser, User, UserCreateInput, UserUpdateInput };
+export type { User, UserCreateInput, UserUpdateInput };

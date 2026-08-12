@@ -63,7 +63,7 @@ const getPasswordlessRecipeConfig = (
   return {
     contactMethod: phoneAuth.contactMethod || DEFAULT_CONTACT_METHOD,
     flowType: phoneAuth.flowType || DEFAULT_FLOW_TYPE,
-    getCustomUserInputCode: async (userContext) => {
+    getCustomUserInputCode: async (_tenantId, userContext) => {
       const phoneNumber = userContext?.phoneNumber as string | undefined;
 
       if (isDevelopment || (phoneNumber && isDevelopmentNumber(phoneNumber))) {
@@ -135,51 +135,46 @@ const getPasswordlessRecipeConfig = (
         };
       },
     },
-    ...(isDevelopment
-      ? {
-          createAndSendCustomTextMessage: async () => {
-            fastify.log.info(
-              `Skipping phone auth SMS delivery in development environment. Use default OTP [${developmentModeOtp}] for testing.`,
+    smsDelivery: {
+      override: (originalImplementation) => {
+        return {
+          ...originalImplementation,
+          sendSms: async (input: { phoneNumber: string }) => {
+            if (isDevelopment) {
+              fastify.log.info(
+                `Skipping phone auth SMS delivery in development environment. Use default OTP [${developmentModeOtp}] for testing.`,
+              );
+
+              return;
+            }
+
+            if (isDevelopmentNumber(input.phoneNumber)) {
+              fastify.log.info(
+                `Skipping SMS for test number ${input.phoneNumber}.`,
+              );
+
+              return;
+            }
+
+            const { client, verifyServiceSid } = getTwilioClient(
+              phoneAuth.twilio,
             );
+
+            try {
+              await client.verify.v2
+                .services(verifyServiceSid)
+                .verifications.create({
+                  channel: "sms",
+                  to: input.phoneNumber,
+                });
+            } catch (error) {
+              fastify.log.error(error, "Twilio Verify failed to send OTP");
+              throw error;
+            }
           },
-        }
-      : {
-          smsDelivery: {
-            override: (originalImplementation) => {
-              return {
-                ...originalImplementation,
-                sendSms: async (input: { phoneNumber: string }) => {
-                  if (isDevelopmentNumber(input.phoneNumber)) {
-                    fastify.log.info(
-                      `Skipping SMS for test number ${input.phoneNumber}.`,
-                    );
-
-                    return;
-                  }
-
-                  const { client, verifyServiceSid } = getTwilioClient(
-                    phoneAuth.twilio,
-                  );
-
-                  try {
-                    await client.verify.v2
-                      .services(verifyServiceSid)
-                      .verifications.create({
-                        channel: "sms",
-                        to: input.phoneNumber,
-                      });
-                  } catch (error) {
-                    fastify.log.error(
-                      error,
-                      "Twilio Verify failed to send OTP",
-                    );
-                    throw error;
-                  }
-                },
-              };
-            },
-          },
-        }),
+        };
+      },
+    },
   };
 };
 

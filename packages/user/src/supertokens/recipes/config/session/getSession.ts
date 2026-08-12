@@ -17,7 +17,7 @@ const getSession = (
       .request as FastifyRequest;
 
     input.options = {
-      checkDatabase: config.user.supertokens.checkSessionInDatabase ?? true,
+      checkDatabase: config.user.supertokens!.checkSessionInDatabase ?? true,
       ...input.options,
     };
 

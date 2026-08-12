@@ -1,5 +1,4 @@
-import UserRoles from "supertokens-node/recipe/userroles";
-
+import { auth } from "../auth/adapter";
 import { ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_USER } from "../constants";
 import { UserConfig } from "../types";
 
@@ -12,7 +11,7 @@ const seedRoles = async (userConfig?: Partial<UserConfig>) => {
   ];
 
   for (const role of roles) {
-    await UserRoles.createNewRoleOrAddPermissions(role, []);
+    await auth.roles.createNewRoleOrAddPermissions(role, []);
   }
 };
 

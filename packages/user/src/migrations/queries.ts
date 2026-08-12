@@ -158,6 +158,8 @@ const createProfileFieldsTablesQueries = (
   ];
 };
 
+export { supertokensCoreV6Queries } from "./supertokensCoreV6Queries";
+
 export {
   addProfileInUsersTableQuery,
   createInvitationsTableQuery,

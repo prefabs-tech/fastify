@@ -7,8 +7,12 @@
 import type { SessionRequest } from "supertokens-node/framework/fastify";
 import type { SessionClaimValidator } from "supertokens-node/recipe/session";
 
-import { getRequestFromUserContext } from "supertokens-node";
-import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims";
+import { getRequestFromUserContext, RecipeUserId } from "supertokens-node";
+import { SessionClaim } from "supertokens-node/recipe/session/claims";
+
+import type { ProfileValidationConfig } from "../../auth/claims/profileValidation";
+
+import { checkProfileValidation } from "../../auth/claims/profileValidation";
 
 interface Response {
   gracePeriodEndsAt?: number;
@@ -81,15 +85,27 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     };
   }
 
-  fetchValue = async (userId: string, userContext: any): Promise<Response> => {
+  // supertokens-node v16 SessionClaim.fetchValue signature:
+  // (userId, recipeUserId, tenantId, userContext)
+  fetchValue = async (
+    userId: string,
+    _recipeUserId: RecipeUserId,
+    _tenantId: string,
+    userContext: any,
+  ): Promise<Response> => {
     const request = getRequestFromUserContext(userContext)?.original as
       SessionRequest | undefined;
 
     if (!request) {
-      throw new Error("Request not set in userContext");
+      console.warn(
+        "ProfileValidationClaim.fetchValue called without request context; failing closed (isVerified: false)",
+      );
+
+      return { isVerified: false };
     }
 
-    const profileValidation = request.config.user?.features?.profileValidation;
+    const profileValidation = request.config.user?.features
+      ?.profileValidation as ProfileValidationConfig | undefined;
 
     if (!profileValidation?.enabled) {
       throw new Error("Profile validation is not enabled");
@@ -101,22 +117,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
       throw new Error("User not found");
     }
 
-    const fields = profileValidation.fields || [];
-
-    // Verify that none of the specified fields in the user are null
-    const isVerified = fields.every((field) => user[field] !== null);
-
-    // Calculate the grace period expiry date if the user is not verified
-    const gracePeriodEndsAt =
-      !isVerified && profileValidation.gracePeriodInDays
-        ? user.signedUpAt +
-          profileValidation.gracePeriodInDays * (24 * 60 * 60 * 1000)
-        : undefined;
-
-    return {
-      gracePeriodEndsAt,
-      isVerified,
-    };
+    return checkProfileValidation(user, profileValidation);
   };
 
   getLastRefetchTime(payload: any, _userContext: any): number | undefined {

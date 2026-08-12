@@ -21,8 +21,8 @@ const getEmailVerificationRecipeConfig = (
 
   let emailVerification: EmailVerificationRecipe = {};
 
-  if (typeof config.user.supertokens.recipes?.emailVerification === "object") {
-    emailVerification = config.user.supertokens.recipes.emailVerification;
+  if (typeof config.user.supertokens!.recipes?.emailVerification === "object") {
+    emailVerification = config.user.supertokens!.recipes.emailVerification;
   }
 
   return {
@@ -92,7 +92,7 @@ const getEmailVerificationRecipeConfig = (
                 const userService = getUserService(config, slonik);
 
                 await userService.changeEmail(
-                  response.user.id,
+                  response.user.recipeUserId.getAsString(),
                   response.user.email,
                 );
               }

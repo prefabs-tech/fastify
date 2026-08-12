@@ -1,5 +1,4 @@
 import type { FastifyInstance } from "fastify";
-import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
 import type {
   APIInterface,
   TypeInput as PasswordlessRecipeConfig,
@@ -69,6 +68,16 @@ type TwilioConfig = Omit<
 > & {
   verifyServiceSid: string;
 };
+
+/**
+ * Local structural stand-in for SuperTokens' private TwilioServiceConfig
+ * (no public export in supertokens-node v16).
+ */
+interface TwilioServiceConfig {
+  accountSid: string;
+  authToken: string;
+  opts?: Record<string, unknown>;
+}
 
 export type {
   APIInterfaceWrapper,

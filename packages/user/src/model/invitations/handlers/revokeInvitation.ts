@@ -1,5 +1,4 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 
@@ -8,7 +7,7 @@ import type { Invitation } from "../../../types/invitation";
 import getInvitationService from "../../../lib/getInvitationService";
 
 const revokeInvitation = async (
-  request: SessionRequest,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   const { config, dbSchema, params, server, slonik } = request;

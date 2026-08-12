@@ -1,8 +1,23 @@
+import { RecipeUserId } from "supertokens-node";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+const { mockGetRequestFromUserContext } = vi.hoisted(() => ({
+  mockGetRequestFromUserContext: vi.fn(),
+}));
+
+vi.mock("supertokens-node", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("supertokens-node")>();
+
+  return {
+    ...actual,
+    getRequestFromUserContext: mockGetRequestFromUserContext,
+  };
+});
 
 import ProfileValidationClaim from "../profileValidationClaim";
 
 const FIXED_NOW = new Date("2024-06-15T12:00:00.000Z").getTime();
+const RECIPE_USER_ID = new RecipeUserId("recipe-user-1");
 
 const makePayload = (
   value: undefined | { gracePeriodEndsAt?: number; isVerified: boolean },
@@ -124,6 +139,70 @@ describe("ProfileValidationClaim", () => {
       const result = claim.removeFromPayloadByMerge_internal(payload, {});
 
       expect(result.other).toBe("value");
+    });
+  });
+
+  describe("fetchValue", () => {
+    beforeEach(() => {
+      mockGetRequestFromUserContext.mockReset();
+    });
+
+    it("returns isVerified: false when request is missing from userContext", async () => {
+      mockGetRequestFromUserContext.mockReturnValue(undefined);
+
+      await expect(
+        claim.fetchValue("user-1", RECIPE_USER_ID, "public", {}),
+      ).resolves.toEqual({ isVerified: false });
+    });
+
+    it("throws when profile validation is not enabled", async () => {
+      mockGetRequestFromUserContext.mockReturnValue({
+        original: {
+          config: { user: { features: {} } },
+          user: { id: "user-1" },
+        },
+      });
+
+      await expect(
+        claim.fetchValue("user-1", RECIPE_USER_ID, "public", {}),
+      ).rejects.toThrow("Profile validation is not enabled");
+    });
+
+    it("throws when request.user is missing", async () => {
+      mockGetRequestFromUserContext.mockReturnValue({
+        original: {
+          config: {
+            user: {
+              features: {
+                profileValidation: { enabled: true, fields: ["photo"] },
+              },
+            },
+          },
+        },
+      });
+
+      await expect(
+        claim.fetchValue("user-1", RECIPE_USER_ID, "public", {}),
+      ).rejects.toThrow("User not found");
+    });
+
+    it("returns checkProfileValidation result when enabled with a user", async () => {
+      mockGetRequestFromUserContext.mockReturnValue({
+        original: {
+          config: {
+            user: {
+              features: {
+                profileValidation: { enabled: true, fields: ["photo"] },
+              },
+            },
+          },
+          user: { id: "user-1", photo: { id: 1, url: "https://example.com" } },
+        },
+      });
+
+      await expect(
+        claim.fetchValue("user-1", RECIPE_USER_ID, "public", {}),
+      ).resolves.toEqual({ isVerified: true });
     });
   });
 

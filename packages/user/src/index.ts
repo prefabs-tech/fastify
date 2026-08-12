@@ -1,3 +1,4 @@
+import type { AuthSession } from "./auth/adapter";
 import type { SupertokensRecipeFactory } from "./supertokens/types";
 import type { User, UserConfig } from "./types";
 
@@ -11,6 +12,7 @@ declare module "fastify" {
   }
 
   interface FastifyRequest {
+    session?: AuthSession;
     user?: User;
   }
 }
@@ -28,8 +30,16 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
-export * from "./constants";
+export * from "./auth";
 
+/*
+ * @deprecated Prefer root auth exports (`auth`, `getAuth`, `initAuth`, `AuthUser`,
+ * `AuthSession`, …) for application code. These SuperTokens-specific helpers remain
+ * for compatibility and will be removed in a future release.
+ */
+export { getSupertokensSession } from "./auth/supertokensSession";
+
+export * from "./constants";
 export { default as userSchema } from "./graphql/schema";
 export { default as computeInvitationExpiresAt } from "./lib/computeInvitationExpiresAt";
 export { default as getInvitationService } from "./lib/getInvitationService";

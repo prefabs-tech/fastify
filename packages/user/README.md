@@ -24,7 +24,10 @@ User management—authentication, password hashing, multifactor sessions, sessio
 - [@prefabs.tech/fastify-s3](../s3/)
 - [@prefabs.tech/fastify-slonik](../slonik/)
 - [slonik](https://github.com/spa5k/fastify-slonik)
-- [supertokens-node](https://github.com/supertokens/supertokens-node)
+- [supertokens-node](https://github.com/supertokens/supertokens-node) (≥16; required for the default auth provider — the peer is optional only when you supply a custom `authProvider`)
+- SuperTokens **core 9** (self-hosted `supertokens-postgresql:9.x` or equivalent; CDI requires core ≥7)
+
+**Upgrading** from SuperTokens node 14 / core 5: follow the [Consumer migration checklist](./GUIDE.md#consumer-migration-checklist) in `GUIDE.md` (core-first rollout, official core SQL, `AuthUser` / `AuthSession` changes, optional `tableSchema`).
 
 ## Installation
 

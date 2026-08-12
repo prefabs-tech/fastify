@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+// Intentional lib/build: BaseRequest / OpenId TypeInput have no clean public shims.
 import type { BaseRequest } from "supertokens-node/lib/build/framework";
 import type { TypeInput as OpenIdTypeInput } from "supertokens-node/lib/build/recipe/openid/types";
 import type {

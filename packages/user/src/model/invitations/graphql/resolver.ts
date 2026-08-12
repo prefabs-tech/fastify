@@ -3,8 +3,6 @@ import type { MercuriusContext } from "mercurius";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { mercurius } from "mercurius";
-import { createNewSession } from "supertokens-node/recipe/session";
-import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
 
 import type { User } from "../../../types";
 import type {
@@ -12,6 +10,7 @@ import type {
   InvitationCreateInput,
 } from "../../../types/invitation";
 
+import { auth } from "../../../auth/adapter";
 import getInvitationService from "../../../lib/getInvitationService";
 import isInvitationValid from "../../../lib/isInvitationValid";
 import sendInvitation from "../../../lib/sendInvitation";
@@ -82,13 +81,17 @@ const Mutation = {
       }
 
       // signup
-      const signUpResponse = await emailPasswordSignUp(email, password, {
-        autoVerifyEmail: true,
-        roles: [invitation.role],
-      });
+      const signUpResponse = await auth.emailPassword.emailPasswordSignUp(
+        email,
+        password,
+        {
+          autoVerifyEmail: true,
+          roles: [invitation.role],
+        },
+      );
 
-      if (signUpResponse.status !== "OK") {
-        return signUpResponse;
+      if (!signUpResponse.success) {
+        return { status: signUpResponse.error, user: undefined };
       }
 
       // update invitation's acceptedAt value with current time
@@ -108,10 +111,14 @@ const Mutation = {
       }
 
       // create new session so the user be logged in on signup
-      await createNewSession(reply.request, reply, signUpResponse.user.id);
+      await auth.session.createNewSession(
+        reply.request,
+        reply,
+        signUpResponse.user.id,
+      );
 
       return {
-        ...signUpResponse,
+        status: "OK",
         user: {
           ...signUpResponse.user,
           roles: [invitation.role],

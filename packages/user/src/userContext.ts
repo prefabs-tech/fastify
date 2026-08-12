@@ -1,11 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { MercuriusContext } from "mercurius";
 
-import { wrapResponse } from "supertokens-node/framework/fastify";
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import Session from "supertokens-node/recipe/session";
-
-import ProfileValidationClaim from "./supertokens/utils/profileValidationClaim";
+import { auth } from "./auth/adapter";
 
 const userContext = async (
   context: MercuriusContext,
@@ -13,18 +9,13 @@ const userContext = async (
   reply: FastifyReply,
 ) => {
   try {
-    request.session = (await Session.getSession(request, wrapResponse(reply), {
-      overrideGlobalClaimValidators: async (globalValidators) =>
-        globalValidators.filter(
-          (sessionClaimValidator) =>
-            ![EmailVerificationClaim.key, ProfileValidationClaim.key].includes(
-              sessionClaimValidator.id,
-            ),
-        ),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (request as any).session = await auth.session.getSession(request, reply, {
       sessionRequired: false,
-    })) as (typeof request)["session"];
+      skipClaims: ["emailVerification", "profileValidation"],
+    });
   } catch (error) {
-    if (!Session.Error.isErrorFromSuperTokens(error)) {
+    if (!auth.errors.isAuthError(error)) {
       throw error;
     }
   }

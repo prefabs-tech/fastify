@@ -1,4 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
+// Intentional lib/build: EmailDeliveryInterface has no public ingredients shim.
 import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
 import type { TypeEmailVerificationEmailDeliveryInput } from "supertokens-node/recipe/emailverification/types";
 
@@ -32,7 +33,7 @@ const sendEmailVerificationEmail = (
     const emailVerifyLink = input.emailVerifyLink.replace(
       websiteDomain + "/auth/verify-email",
       origin +
-        (fastify.config.user.supertokens.emailVerificationPath ||
+        (fastify.config.user.supertokens!.emailVerificationPath ||
           EMAIL_VERIFICATION_PATH),
     );
 

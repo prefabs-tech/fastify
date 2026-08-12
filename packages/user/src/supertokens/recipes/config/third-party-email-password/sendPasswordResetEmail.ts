@@ -1,7 +1,8 @@
 import type { AppConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance, FastifyRequest } from "fastify";
+// Intentional lib/build: EmailDeliveryInterface has no public ingredients shim.
 import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
-import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types";
+import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/recipe/emailpassword/types";
 
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
@@ -39,7 +40,7 @@ const sendPasswordResetEmail = (
     const passwordResetLink = input.passwordResetLink.replace(
       websiteDomain + "/auth/reset-password",
       origin +
-        (fastify.config.user.supertokens.resetPasswordPath ||
+        (fastify.config.user.supertokens!.resetPasswordPath ||
           RESET_PASSWORD_PATH),
     );
 

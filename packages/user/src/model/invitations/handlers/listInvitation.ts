@@ -1,12 +1,11 @@
 import type { PaginatedList } from "@prefabs.tech/fastify-slonik";
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import type { Invitation } from "../../../types/invitation";
 
 import getInvitationService from "../../../lib/getInvitationService";
 
-const listInvitation = async (request: SessionRequest, reply: FastifyReply) => {
+const listInvitation = async (request: FastifyRequest, reply: FastifyReply) => {
   const { config, dbSchema, query, slonik } = request;
 
   const { filters, limit, offset, sort } = query as {

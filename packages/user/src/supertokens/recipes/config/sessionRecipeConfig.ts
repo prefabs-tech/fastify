@@ -19,8 +19,8 @@ const getSessionRecipeConfig = (
 
   let session: SessionRecipe = {};
 
-  if (typeof config.user.supertokens.recipes?.session === "object") {
-    session = config.user.supertokens.recipes.session;
+  if (typeof config.user.supertokens!.recipes?.session === "object") {
+    session = config.user.supertokens!.recipes.session;
   }
 
   return {

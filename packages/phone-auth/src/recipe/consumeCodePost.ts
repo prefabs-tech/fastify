@@ -16,14 +16,25 @@ const enrichResult = (
     return result;
   }
 
+  const emails =
+    result.user.emails.length > 0
+      ? result.user.emails
+      : [`${phoneNumber}@${fallbackEmailDomain}`];
+  const resolvedPhoneNumber = result.user.phoneNumbers[0] ?? phoneNumber;
+
   return {
     ...result,
     user: {
       ...result.user,
-      email: result.user.email ?? `${phoneNumber}@${fallbackEmailDomain}`,
+      // Compat aliases for older HTTP clients; prefer emails / phoneNumbers.
+      email: emails[0],
+      emails,
+      phoneNumber: resolvedPhoneNumber,
     },
   };
 };
+
+export { enrichResult };
 
 const consumeCodePOST = (
   originalImplementation: APIInterface,
@@ -52,6 +63,7 @@ const consumeCodePOST = (
     // Look up the device to retrieve the associated phone number
     const deviceContext = await Passwordless.listCodesByPreAuthSessionId({
       preAuthSessionId: input.preAuthSessionId,
+      tenantId: input.tenantId,
     });
 
     if (!deviceContext || !deviceContext.phoneNumber) {

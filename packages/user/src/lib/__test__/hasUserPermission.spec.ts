@@ -5,19 +5,20 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ROLE_SUPERADMIN } from "../../constants";
 import hasUserPermission from "../hasUserPermission";
 
-// Mock supertokens UserRoles so we can control what roles/permissions come back
-// without needing a running SuperTokens server.
-vi.mock("supertokens-node/recipe/userroles", () => ({
-  default: {
-    getPermissionsForRole: vi.fn(),
-    getRolesForUser: vi.fn(),
-  },
+const { mockGetPermissionsForRole, mockGetRolesForUser } = vi.hoisted(() => ({
+  mockGetPermissionsForRole: vi.fn(),
+  mockGetRolesForUser: vi.fn(),
 }));
 
-import UserRoles from "supertokens-node/recipe/userroles";
-
-const mockGetRolesForUser = vi.mocked(UserRoles.getRolesForUser);
-const mockGetPermissionsForRole = vi.mocked(UserRoles.getPermissionsForRole);
+// Mock the auth adapter
+vi.mock("../../auth/adapter", () => ({
+  auth: {
+    roles: {
+      getPermissionsForRole: mockGetPermissionsForRole,
+      getRolesForUser: mockGetRolesForUser,
+    },
+  },
+}));
 
 const makeFastify = (permissions?: string[]) =>
   ({ config: { user: { permissions } } }) as unknown as FastifyInstance;
@@ -64,10 +65,7 @@ describe("hasUserPermission", () => {
 
   describe("SUPERADMIN bypass", () => {
     it("returns true for a SUPERADMIN regardless of the requested permission", async () => {
-      mockGetRolesForUser.mockResolvedValue({
-        roles: [ROLE_SUPERADMIN],
-        status: "OK",
-      });
+      mockGetRolesForUser.mockResolvedValue([ROLE_SUPERADMIN]);
 
       const result = await hasUserPermission(
         makeFastify(["billing:manage"]),
@@ -82,14 +80,11 @@ describe("hasUserPermission", () => {
 
   describe("permission check via role", () => {
     it("returns true when the user holds a role that grants the required permission", async () => {
-      mockGetRolesForUser.mockResolvedValue({
-        roles: ["EDITOR"],
-        status: "OK",
-      });
-      mockGetPermissionsForRole.mockResolvedValue({
-        permissions: ["content:publish", "billing:manage"],
-        status: "OK",
-      });
+      mockGetRolesForUser.mockResolvedValue(["EDITOR"]);
+      mockGetPermissionsForRole.mockResolvedValue([
+        "content:publish",
+        "billing:manage",
+      ]);
 
       const result = await hasUserPermission(
         makeFastify(["billing:manage"]),
@@ -101,14 +96,8 @@ describe("hasUserPermission", () => {
     });
 
     it("returns false when none of the user's roles grant the required permission", async () => {
-      mockGetRolesForUser.mockResolvedValue({
-        roles: ["VIEWER"],
-        status: "OK",
-      });
-      mockGetPermissionsForRole.mockResolvedValue({
-        permissions: ["content:read"],
-        status: "OK",
-      });
+      mockGetRolesForUser.mockResolvedValue(["VIEWER"]);
+      mockGetPermissionsForRole.mockResolvedValue(["content:read"]);
 
       const result = await hasUserPermission(
         makeFastify(["billing:manage"]),
@@ -120,15 +109,9 @@ describe("hasUserPermission", () => {
     });
 
     it("de-duplicates permissions when multiple roles grant the same permission", async () => {
-      mockGetRolesForUser.mockResolvedValue({
-        roles: ["ROLE_A", "ROLE_B"],
-        status: "OK",
-      });
+      mockGetRolesForUser.mockResolvedValue(["ROLE_A", "ROLE_B"]);
       // Both roles grant the same permission
-      mockGetPermissionsForRole.mockResolvedValue({
-        permissions: ["billing:manage"],
-        status: "OK",
-      });
+      mockGetPermissionsForRole.mockResolvedValue(["billing:manage"]);
 
       const result = await hasUserPermission(
         makeFastify(["billing:manage"]),

@@ -1,9 +1,8 @@
-import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
 
 import getUserService from "../../../lib/getUserService";
 
-const disable = async (request: SessionRequest, reply: FastifyReply) => {
+const disable = async (request: FastifyRequest, reply: FastifyReply) => {
   const { config, dbSchema, server, slonik, user } = request;
 
   if (!user) {

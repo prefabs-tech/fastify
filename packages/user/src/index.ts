@@ -41,6 +41,11 @@ export { default as sendEmail } from "./lib/sendEmail";
 export { default as sendInvitation } from "./lib/sendInvitation";
 export { default as verifyEmail } from "./lib/verifyEmail";
 export * from "./migrations/queries";
+export { default as runSupertokensCoreMigrations } from "./migrations/runSupertokensCoreMigrations";
+export type {
+  RunSupertokensCoreMigrationsOptions,
+  RunSupertokensCoreMigrationsResult,
+} from "./migrations/runSupertokensCoreMigrations";
 export { default as invitationRoutes } from "./model/invitations/controller";
 export { default as invitationResolver } from "./model/invitations/graphql/resolver";
 export { default as InvitationService } from "./model/invitations/service";

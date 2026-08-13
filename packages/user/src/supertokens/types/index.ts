@@ -31,6 +31,18 @@ interface SupertokensConfig {
   resetPasswordPath?: string;
   sendUserAlreadyExistsWarning?: boolean;
   setErrorHandler?: boolean;
+  /**
+   * Table-name prefix used by SuperTokens core.
+   * Must match core `POSTGRESQL_TABLE_NAMES_PREFIX`.
+   * @default ""
+   */
+  tableNamesPrefix?: string;
+  /**
+   * Postgres schema that holds SuperTokens tables.
+   * Must match core `POSTGRESQL_TABLE_SCHEMA` when non-default.
+   * @default "public"
+   */
+  tableSchema?: string;
 }
 
 type SupertokensRecipeFactory = (

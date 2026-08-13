@@ -8,7 +8,7 @@
 
 2. **Selective route module disabling** — each of the four route groups (`users`, `invitations`, `roles`, `permissions`) can be disabled independently via `routes.<group>.disabled = true`. The service layer is unaffected.
 
-3. **Automatic database migrations** — on registration, runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables before the server is ready.
+3. **Automatic app-table migrations plus explicit Core bridge** — on registration, runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables before the server is ready. SuperTokens Core schema upgrades are intentionally excluded from plugin boot; instead, the package exports `runSupertokensCoreMigrations(database, { tableSchema, tableNamesPrefix })` for controlled Core 5→9 upgrades. The migrator detects legacy schemas, applies only the missing 5→6 / 6→7 / 7→9 SQL hops, mirrors Core `POSTGRESQL_TABLE_SCHEMA` and `POSTGRESQL_TABLE_NAMES_PREFIX`, and is safe to re-run once the schema is already at the Core 9 target.
 
 4. **Default role seeding** — on `onReady`, seeds `ADMIN`, `SUPERADMIN`, and `USER` into SuperTokens, plus any extra roles listed in `config.user.roles`.
 

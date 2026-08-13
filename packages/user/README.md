@@ -2,6 +2,8 @@
 
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of user model (service, controller, resolver) in a fastify API.
 
+If you are upgrading a self-hosted SuperTokens deployment from **Core 5** to **Core 9**, this package now ships an explicit bridge migrator: `runSupertokensCoreMigrations(...)`. Run it during a controlled Core upgrade window with the same `tableSchema` / `tableNamesPrefix` as Core before moving to a later API release that requires newer SuperTokens SDKs.
+
 ## Why this plugin?
 
 User management—authentication, password hashing, multifactor sessions, session invalidation, and third-party SSO—is historically the most highly audited and volatile part of any backend system. We created this plugin to abstract that immense architectural complexity entirely by marrying SuperTokens directly into our monorepo toolset:
@@ -109,6 +111,21 @@ const start = async () => {
 
 start();
 ```
+
+## Core 5 to 9 bridge
+
+Use the exported migrator during a maintenance window:
+
+```typescript
+import { runSupertokensCoreMigrations } from "@prefabs.tech/fastify-user";
+
+await runSupertokensCoreMigrations(fastify.slonik, {
+  tableNamesPrefix: "st__",
+  tableSchema: "public",
+});
+```
+
+`tableSchema` must match Core `POSTGRESQL_TABLE_SCHEMA`, and `tableNamesPrefix` must match `POSTGRESQL_TABLE_NAMES_PREFIX`.
 
 ## Configuration
 

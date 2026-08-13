@@ -78,6 +78,27 @@ We wrap `supertokens-node` initialization and expose a subset of its surface via
 
 **What we add on top:** database integration, user model, invitation flow, profile validation claim, `verifySession` decorator, permission middleware, GraphQL directives.
 
+### SuperTokens core 9 bridge
+
+This release is the **bridge step** before the later `supertokens-node` 16 upgrade:
+
+- it keeps application runtime compatibility with **`supertokens-node` 14**
+- it adds an explicit **Core 5→9 Postgres migrator** owned by this package
+- it does **not** run Core schema upgrades automatically on plugin boot
+
+Why: projects on Core 5 need the database schema upgraded before they can move to a later API release that requires Core 7+ / 9. This package now owns that SQL migration path so consumers do not need to copy statements from SuperTokens changelogs by hand.
+
+#### Consumer cutover checklist
+
+1. Deploy this bridge release while still running **Core 5** and `supertokens-node` 14.
+2. Stop the SuperTokens Core 5 deployment.
+3. Run `runSupertokensCoreMigrations(...)` against Postgres with the same `tableSchema` / `tableNamesPrefix` as Core.
+4. Start **Core 9**.
+5. Smoke-test auth flows while still on this bridge release.
+6. Upgrade to the later `supertokens-node` 16 package release.
+
+Disposable environments may wipe the SuperTokens tables / Postgres volume instead of migrating in place.
+
 ### mercurius-auth — Modified
 
 Provides `@auth`-style directive authentication for Mercurius/GraphQL.
@@ -100,6 +121,8 @@ On startup the plugin:
 2. Runs `CREATE TABLE IF NOT EXISTS` for the `users` and `invitations` tables (before the server is ready).
 3. Seeds built-in roles (`ADMIN`, `SUPERADMIN`, `USER`) plus any extra roles in `config.user.roles` into SuperTokens on `onReady`.
 4. Registers five route groups under `config.user.routePrefix`, each independently disable-able.
+
+Core schema upgrades are intentionally **not** part of normal plugin boot. Use `runSupertokensCoreMigrations(...)` during a controlled Core migration window instead.
 
 ### Route prefix and selective route disabling
 
@@ -656,6 +679,29 @@ import {
 await db.query(createUsersTableQuery(config));
 await db.query(createInvitationsTableQuery(config));
 ```
+
+### SuperTokens core migrator
+
+Use the exported `runSupertokensCoreMigrations` helper during the bridge release when moving a project from **Core 5** to **Core 9**:
+
+```typescript
+import { runSupertokensCoreMigrations } from "@prefabs.tech/fastify-user";
+
+await runSupertokensCoreMigrations(fastify.slonik, {
+  tableNamesPrefix: "st__",
+  tableSchema: "public",
+});
+```
+
+`tableSchema` and `tableNamesPrefix` must match SuperTokens Core `POSTGRESQL_TABLE_SCHEMA` and `POSTGRESQL_TABLE_NAMES_PREFIX`.
+
+Behavior:
+
+- detects the current SuperTokens schema stage
+- applies only the missing Core **5→6**, **6→7**, and **7→9** SQL hops
+- is safe to re-run once the schema is already at the Core 9 target
+
+The normal Fastify plugin still migrates only this package's own application tables (`users`, `invitations`, profile fields).
 
 ### Custom table names
 

@@ -1,5 +1,9 @@
 # @prefabs.tech/fastify-slonik
 
+## For AI agents
+
+**Read order:** [AGENTS.md](./AGENTS.md) → [docs/llm/INDEX.md](./docs/llm/INDEX.md) → [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md). Deep links to source and tests: [REFERENCE (slonik)](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#slonik). Avoid scanning `dist/` or large trees unless those docs are stale or insufficient.
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of slonik in a fastify API.
 
 The plugin is a thin wrapper around the [`fastify-slonik`](https://github.com/spa5k/fastify-slonik) plugin.

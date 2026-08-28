@@ -1,5 +1,9 @@
 # @prefabs.tech/fastify-error-handler
 
+## For AI agents
+
+**Read order:** [AGENTS.md](./AGENTS.md) → [docs/llm/INDEX.md](./docs/llm/INDEX.md) → [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md). Deep links to source and tests: [REFERENCE (error-handler)](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#error-handler). Avoid scanning `dist/` or large trees unless those docs are stale or insufficient.
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides a standardized, production-safe global error handler for APIs.
 
 ## Why This Plugin?

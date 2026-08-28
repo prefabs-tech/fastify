@@ -1,5 +1,9 @@
 # @prefabs.tech/fastify-s3
 
+## For AI agents
+
+**Read order:** [AGENTS.md](./AGENTS.md) → [docs/llm/INDEX.md](./docs/llm/INDEX.md) → [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md). Deep links to source and tests: [REFERENCE (s3)](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#s3). Avoid scanning `dist/` or large trees unless those docs are stale or insufficient.
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides an easy integration of S3 in a fastify API.
 
 ## Why this plugin?

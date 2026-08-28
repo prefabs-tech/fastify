@@ -1,5 +1,9 @@
 # @prefabs.tech/fastify-config
 
+## For AI agents
+
+**Read order:** [AGENTS.md](./AGENTS.md) → [docs/llm/INDEX.md](./docs/llm/INDEX.md) → [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md). Deep links to source and tests: [REFERENCE (config)](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#config). Avoid scanning `dist/` or large trees unless those docs are stale or insufficient.
+
 A [Fastify](https://github.com/fastify/fastify) plugin that provides opinionated, typed configuration management for APIs.
 
 ## Why This Plugin?

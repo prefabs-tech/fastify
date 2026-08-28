@@ -1,5 +1,9 @@
 # @prefabs.tech/fastify-mailer
 
+## For AI agents
+
+**Read order:** [AGENTS.md](./AGENTS.md) → [docs/llm/INDEX.md](./docs/llm/INDEX.md) → [docs/llm/EXAMPLES.md](./docs/llm/EXAMPLES.md). Deep links to source and tests: [REFERENCE (mailer)](https://github.com/prefabs-tech/fastify/blob/main/docs/llm/REFERENCE.md#mailer). Avoid scanning `dist/` or large trees unless those docs are stale or insufficient.
+
 A [Fastify](https://github.com/fastify/fastify) plugin that when registered on a Fastify instance, will decorate it with a `mailer` object for email.
 
 ## Why this plugin?

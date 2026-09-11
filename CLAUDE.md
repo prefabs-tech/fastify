@@ -1,3 +1,5 @@
+@REPOKB.md
+
 # CLAUDE.md — Operating manual for @prefabs.tech/fastify
 
 This is a pnpm + turborepo monorepo of **published npm packages** (`@prefabs.tech/fastify-*`): opinionated Fastify 5 plugins that give a consuming API config, error handling, Postgres (slonik), GraphQL (mercurius), auth (supertokens), S3, mailer, Firebase, and swagger — each as a config-driven plugin. Every package here has external consumers. Treat every exported symbol as a public API contract.

@@ -4,6 +4,10 @@ import type { User, UserConfig } from "./types";
 import hasPermission from "./middlewares/hasPermission";
 
 declare module "fastify" {
+  interface FastifyContextConfig {
+    verified?: boolean;
+  }
+
   interface FastifyInstance {
     hasPermission: typeof hasPermission;
     supertokensInitialized?: boolean;

@@ -2,6 +2,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { RecipeInterface } from "supertokens-node/recipe/session/types";
 
 import { getRequestFromUserContext } from "supertokens-node";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
 
 import ProfileValidationClaim from "../../../utils/profileValidationClaim";
 
@@ -18,14 +19,21 @@ const getGlobalClaimValidators = (
     const request = getRequestFromUserContext(input.userContext)?.original as
       FastifyRequest | undefined;
 
+    const claimValidators =
+      request?.routeOptions.config.verified === false
+        ? input.claimValidatorsAddedByOtherRecipes.filter(
+            (validator) => validator.id !== EmailVerificationClaim.key,
+          )
+        : input.claimValidatorsAddedByOtherRecipes;
+
     if (request && request.config.user.features?.profileValidation?.enabled) {
       return [
-        ...input.claimValidatorsAddedByOtherRecipes,
+        ...claimValidators,
         new ProfileValidationClaim().validators.isVerified(),
       ];
     }
 
-    return input.claimValidatorsAddedByOtherRecipes;
+    return claimValidators;
   };
 };
 

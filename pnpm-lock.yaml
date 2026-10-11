@@ -138,16 +138,16 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/fastify-error-handler':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../error-handler
       '@prefabs.tech/fastify-graphql':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../graphql
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7
@@ -214,10 +214,10 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7
@@ -284,7 +284,7 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7
@@ -339,16 +339,16 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/fastify-error-handler':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../error-handler
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../slonik
       '@prefabs.tech/fastify-user':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../user
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7
@@ -412,16 +412,16 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/fastify-error-handler':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../error-handler
       '@prefabs.tech/fastify-graphql':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../graphql
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7
@@ -482,7 +482,7 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7
@@ -589,22 +589,22 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1))(prettier@3.9.5)(typescript@5.9.3)
       '@prefabs.tech/fastify-config':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../config
       '@prefabs.tech/fastify-error-handler':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../error-handler
       '@prefabs.tech/fastify-graphql':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../graphql
       '@prefabs.tech/fastify-mailer':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../mailer
       '@prefabs.tech/fastify-s3':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../s3
       '@prefabs.tech/fastify-slonik':
-        specifier: 0.94.1
+        specifier: 0.95.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
         specifier: 0.8.7

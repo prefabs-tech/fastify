@@ -308,6 +308,21 @@ user: {
 
 `POST /change-email`, `GET /me`, `PUT /me`, `DELETE /me`, and `PUT/DELETE /me/photo` bypass the email-verification claim so users can still access their account while verifying.
 
+To let unverified users reach one of your own routes, set `verified: false` in the route's `config` (the backend equivalent of `meta.verified: false` in `@prefabs.tech/vue-user`):
+
+```typescript
+fastify.get(
+  "/options",
+  {
+    config: { verified: false },
+    preHandler: fastify.verifySession(),
+  },
+  handler,
+);
+```
+
+The session is still required and every other claim (including profile validation) is still enforced. Omitting `verified` or setting it to `true` keeps the email-verification claim.
+
 ### Profile Validation Claim
 
 A custom SuperTokens session claim that checks required profile fields are populated. Enable and configure required fields:

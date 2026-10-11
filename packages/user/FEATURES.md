@@ -39,7 +39,7 @@
 
 14. **Override merging for `apis` and `functions`** — when a recipe override includes `override.apis` or `override.functions`, each key is called as `fn(originalImplementation, fastify)` and merged on top of the default implementation, so only the keys you provide are replaced.
 
-15. **Email verification (opt-in)** — setting `config.user.features.signUp.emailVerification = true` adds the `EmailVerification` recipe and enforces the email-verified claim on protected routes. Default: `false`.
+15. **Email verification (opt-in)** — setting `config.user.features.signUp.emailVerification = true` adds the `EmailVerification` recipe and enforces the email-verified claim on protected routes. Default: `false`. A route opts out of the email-verified claim (only) with the Fastify route option `config: { verified: false }`; omitting it or `verified: true` keeps the claim enforced. Equivalent of `meta.verified: false` in `@prefabs.tech/vue-user`.
 
 16. **Third-party OAuth providers** — Apple, Facebook, GitHub, and Google providers are configurable via `config.user.supertokens.providers`; custom providers are supported via `providers.custom`.
 

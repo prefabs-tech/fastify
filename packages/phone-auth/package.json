@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-phone-auth",
-  "version": "0.95.0",
+  "version": "0.95.1",
   "description": "Fastify phone auth plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/phone-auth#readme",
   "repository": {
@@ -33,10 +33,10 @@
   },
   "devDependencies": {
     "@prefabs.tech/eslint-config": "0.8.7",
-    "@prefabs.tech/fastify-config": "0.95.0",
-    "@prefabs.tech/fastify-error-handler": "0.95.0",
-    "@prefabs.tech/fastify-slonik": "0.95.0",
-    "@prefabs.tech/fastify-user": "0.95.0",
+    "@prefabs.tech/fastify-config": "0.95.1",
+    "@prefabs.tech/fastify-error-handler": "0.95.1",
+    "@prefabs.tech/fastify-slonik": "0.95.1",
+    "@prefabs.tech/fastify-user": "0.95.1",
     "@prefabs.tech/tsconfig": "0.8.7",
     "@types/node": "24.13.3",
     "@vitest/coverage-istanbul": "3.2.7",
@@ -51,10 +51,10 @@
     "vitest": "3.2.7"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.95.0",
-    "@prefabs.tech/fastify-error-handler": "0.95.0",
-    "@prefabs.tech/fastify-slonik": "0.95.0",
-    "@prefabs.tech/fastify-user": "0.95.0",
+    "@prefabs.tech/fastify-config": "0.95.1",
+    "@prefabs.tech/fastify-error-handler": "0.95.1",
+    "@prefabs.tech/fastify-slonik": "0.95.1",
+    "@prefabs.tech/fastify-user": "0.95.1",
     "fastify": ">=5.10.0",
     "fastify-plugin": ">=5.1.0",
     "slonik": ">=46.8.0",

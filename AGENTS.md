@@ -2,7 +2,7 @@
 
 This is a pnpm + turborepo monorepo of **published npm packages** (`@prefabs.tech/fastify-*`): opinionated Fastify 5 plugins that give a consuming API config, error handling, Postgres (slonik), GraphQL (mercurius), auth (supertokens), S3, mailer, Firebase, and swagger — each as a config-driven plugin. Every package here has external consumers. Treat every exported symbol as a public API contract.
 
-All packages share **one lockstep version** (root `package.json` version). Releases are automated with shipjs. Node >= 20, pnpm >= 10. Lint/tsconfig come from external shared packages `@prefabs.tech/eslint-config` (flat config, perfectionist + unicorn) and `@prefabs.tech/tsconfig`.
+All packages share **one lockstep version** (root `package.json` version). Releases are automated with shipjs. Node >= 24, pnpm >= 12 (pinned in `mise.toml`). Lint/tsconfig come from external shared packages `@prefabs.tech/eslint-config` (flat config, perfectionist + unicorn) and `@prefabs.tech/tsconfig`.
 
 ## Commands
 
@@ -19,7 +19,7 @@ Run from the repo root unless stated otherwise.
 
 - `test` = `vitest run --coverage` per package. Never use watch mode; never run bare `vitest` at the root.
 - Packages import siblings from their **built `dist/`**. If you change `packages/slonik` and want to test `packages/user`, run root `pnpm build` first.
-- CI runs on Node 20/22/24 with `--frozen-lockfile --strict-peer-dependencies`. A package.json edit without a committed lockfile update is a guaranteed CI failure.
+- CI runs on Node 22/24 with `--frozen-lockfile --strict-peer-dependencies`. A package.json edit without a committed lockfile update is a guaranteed CI failure.
 
 ## Architecture: the package pattern
 

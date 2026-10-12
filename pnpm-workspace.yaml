@@ -14,3 +14,8 @@ packages:
 
 autoInstallPeers: false
 linkWorkspacePackages: true
+allowBuilds:
+  "@firebase/util": false
+  esbuild: true
+  protobufjs: false
+  unrs-resolver: true

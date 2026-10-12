@@ -19,31 +19,31 @@ A set of fastify libraries
 Install dependencies recursively with this command
 
 ```
-make install
+just install
 ```
 
 ### Build all packages
 
 ```
-make build
+just build
 ```
 
 ### Lint code
 
 ```
-make lint
+just lint
 ```
 
 ### Typecheck code
 
 ```
-make typecheck
+just typecheck
 ```
 
 ### Test
 
 ```
-make test
+just test
 ```
 
 ## Developing locally & testing

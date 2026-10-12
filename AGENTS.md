@@ -19,7 +19,7 @@ Run from the repo root unless stated otherwise.
 
 - `test` = `vitest run --coverage` per package. Never use watch mode; never run bare `vitest` at the root.
 - Packages import siblings from their **built `dist/`**. If you change `packages/slonik` and want to test `packages/user`, run root `pnpm build` first.
-- CI runs on Node 22/24 with `--frozen-lockfile --strict-peer-dependencies`. A package.json edit without a committed lockfile update is a guaranteed CI failure.
+- CI runs on Node 22/24/26 with `--frozen-lockfile --strict-peer-dependencies`. A package.json edit without a committed lockfile update is a guaranteed CI failure.
 
 ## Architecture: the package pattern
 

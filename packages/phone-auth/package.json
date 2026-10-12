@@ -61,6 +61,6 @@
     "supertokens-node": ">=14.1.4"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }

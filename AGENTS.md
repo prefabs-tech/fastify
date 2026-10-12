@@ -2,7 +2,7 @@
 
 This is a pnpm + turborepo monorepo of **published npm packages** (`@prefabs.tech/fastify-*`): opinionated Fastify 5 plugins that give a consuming API config, error handling, Postgres (slonik), GraphQL (mercurius), auth (supertokens), S3, mailer, Firebase, and swagger — each as a config-driven plugin. Every package here has external consumers. Treat every exported symbol as a public API contract.
 
-All packages share **one lockstep version** (root `package.json` version). Releases are automated with shipjs. Node >= 24, pnpm >= 12 (pinned in `mise.toml`). Lint/tsconfig come from external shared packages `@prefabs.tech/eslint-config` (flat config, perfectionist + unicorn) and `@prefabs.tech/tsconfig`.
+All packages share **one lockstep version** (root `package.json` version). Releases are automated with shipjs. Node >= 22 (24 pinned in `mise.toml` for development), pnpm >= 12. Lint/tsconfig come from external shared packages `@prefabs.tech/eslint-config` (flat config, perfectionist + unicorn) and `@prefabs.tech/tsconfig`.
 
 ## Commands
 
@@ -166,7 +166,7 @@ Any PR that changes public behavior updates GUIDE.md and FEATURES.md in the same
 
 **New package** (see `/new-package` skill)
 - [ ] Anatomy + all 7 scaffold files match an existing package byte-for-byte except names (package.json exports/fileName pattern, vite.config.ts, tsconfig.json, eslint.config.js, .gitignore, vitest coverage)
-- [ ] Version = current root version (lockstep); `files: ["dist"]`; engines node >= 20
+- [ ] Version = current root version (lockstep); `files: ["dist"]`; engines node >= 22
 - [ ] Listed in root README.md; `pnpm -r install` run; full root gate green
 
 **Docs update**

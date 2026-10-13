@@ -183,6 +183,23 @@ import { hasUserPermission } from "@prefabs.tech/fastify-user";
 const allowed = await hasUserPermission(fastify, userId, "posts:create");
 ```
 
+### `config.user.getGrants` — grants with the signed-in user
+
+Set `getGrants` to send the user's grants to the front end with the user itself, from whichever access-control library the app uses:
+
+```typescript
+user: {
+  getGrants: (user, fastify) => fastify.accessControl.getEffectiveGrants(user.id, { user }),
+},
+```
+
+- The user returned by email and password sign-in and sign-up, third-party sign-in, accepting an invitation and `GET /me` gets `grants`, the list `getGrants` returns. A front end that stores the user, such as `@prefabs.tech/react-user`, stores the grants with it.
+- Sign-in and `GET /me` must both carry them: the front end takes the user from the sign-in response at login and from `GET /me` on reload.
+- Accepting an invitation reads the grants after `invitation.postAccept`, so grants given there are included.
+- If `getGrants` throws, the request fails rather than returning the user without grants.
+- The list is for display. It goes stale when the user's grants change, until the next `GET /me`; the API must still check every request.
+- Unset (the default), responses are unchanged.
+
 ### SuperTokens error handler
 
 By default the plugin calls `fastify.setErrorHandler(supertokensErrorHandler)` automatically. To disable auto-registration and wire it manually (e.g. into `@prefabs.tech/fastify-error-handler`'s `preErrorHandler`):

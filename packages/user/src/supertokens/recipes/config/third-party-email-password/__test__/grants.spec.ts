@@ -37,7 +37,7 @@ const grants = [{ permission: "report.view" }];
 
 const makeFastify = (getGrants?: unknown) =>
   ({
-    config: { user: { getGrants, supertokens: {} } },
+    config: { user: { accessControl: { getGrants }, supertokens: {} } },
     log: { error: vi.fn() },
     slonik: {},
   }) as unknown as FastifyInstance;

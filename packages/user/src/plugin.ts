@@ -42,7 +42,7 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
       }
 
       const { hasPermission: check, mapPermissionName } =
-        this.server.config.user;
+        this.server.config.user.accessControl ?? {};
 
       if (check) {
         return (

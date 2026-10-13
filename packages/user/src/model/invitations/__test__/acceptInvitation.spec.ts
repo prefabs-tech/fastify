@@ -62,7 +62,10 @@ describe("accepting an invitation", () => {
       given.map((permission) => ({ permission })),
     );
 
-    const response = await accept({ getGrants, invitation: { postAccept } });
+    const response = await accept({
+      accessControl: { getGrants },
+      invitation: { postAccept },
+    });
 
     expect(response.user).toMatchObject({
       grants: [{ permission: "report.view" }],

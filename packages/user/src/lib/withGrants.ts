@@ -6,7 +6,7 @@ const withGrants = async <T extends User>(
   user: T,
   fastify: FastifyInstance,
 ): Promise<T> => {
-  const getGrants = fastify.config.user.getGrants;
+  const getGrants = fastify.config.user.accessControl?.getGrants;
 
   if (!getGrants) {
     return user;

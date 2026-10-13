@@ -11,11 +11,39 @@ import InvitationService from "../model/invitations/service";
 import userHandlers from "../model/users/handlers";
 import UserService from "../model/users/service";
 
+/** The access-control library the app uses in place of SuperTokens roles. */
+interface AccessControlProvider {
+  /**
+   * Adds `grants` to the user returned by sign-in, sign-up, accepting an
+   * invitation and `GET /me`, so the front end stores them with the user.
+   */
+  getGrants?: (user: User, fastify: FastifyInstance) => Promise<unknown[]>;
+  /**
+   * Decides every `hasPermission` check, in place of SuperTokens roles,
+   * `permissions` and the superadmin role.
+   */
+  hasPermission?: (
+    request: FastifyRequest,
+    permission: string,
+    context: Record<string, unknown>,
+  ) => Promise<boolean>;
+  /**
+   * Renames each permission before `hasPermission` checks it, such as
+   * `users:list` to `users.list`. Ignored without `hasPermission`: the
+   * SuperTokens check allows any name missing from `permissions`, so a renamed
+   * one would pass.
+   */
+  mapPermissionName?: (permission: string) => string;
+}
 interface EmailOptions {
   subject?: string;
   templateName?: string;
 }
 interface UserConfig {
+  /**
+   * @default undefined
+   */
+  accessControl?: AccessControlProvider;
   email?: IsEmailOptions;
   emailOverrides?: {
     duplicateEmail?: EmailOptions;
@@ -51,12 +79,6 @@ interface UserConfig {
       enabled?: boolean;
     };
   };
-  /**
-   * Adds `grants` to the user returned by sign-in, sign-up, accepting an
-   * invitation and `GET /me`, so the front end stores them with the user.
-   * @default undefined
-   */
-  getGrants?: (user: User, fastify: FastifyInstance) => Promise<unknown[]>;
   handlers?: {
     invitation?: {
       accept?: typeof invitationHandlers.acceptInvitation;
@@ -80,16 +102,6 @@ interface UserConfig {
       users?: typeof userHandlers.users;
     };
   };
-  /**
-   * Decides every `hasPermission` check, in place of SuperTokens roles,
-   * `permissions` and the superadmin role.
-   * @default undefined
-   */
-  hasPermission?: (
-    request: FastifyRequest,
-    permission: string,
-    context: Record<string, unknown>,
-  ) => Promise<boolean>;
   invitation?: {
     acceptLinkPath?: string;
     /**
@@ -103,14 +115,6 @@ interface UserConfig {
       user: User,
     ) => Promise<void>;
   };
-  /**
-   * Renames each permission before `hasPermission` checks it, such as
-   * `users:list` to `users.list`. Ignored without `hasPermission`: the
-   * SuperTokens check allows any name missing from `permissions`, so a renamed
-   * one would pass.
-   * @default undefined
-   */
-  mapPermissionName?: (permission: string) => string;
   password?: StrongPasswordOptions;
   permissions?: string[];
   photoMaxSizeInMB?: number;
@@ -149,4 +153,4 @@ interface UserConfig {
   };
 }
 
-export type { EmailOptions, UserConfig };
+export type { AccessControlProvider, EmailOptions, UserConfig };

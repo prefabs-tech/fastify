@@ -83,7 +83,7 @@
 
 34. **`hasUserPermission(fastify, userId, permission)` utility** — programmatic permission check; returns a boolean.
 
-35. **SUPERADMIN bypass** — users with the `SUPERADMIN` role pass all `hasPermission` and `hasUserPermission` checks automatically, without being explicitly granted every permission. Not when `config.user.hasPermission` is set.
+35. **SUPERADMIN bypass** — users with the `SUPERADMIN` role pass all `hasPermission` and `hasUserPermission` checks automatically, without being explicitly granted every permission. Not when `config.user.accessControl.hasPermission` is set.
 
 36. **Built-in permission constants** — pre-defined strings to avoid typos:
 
@@ -101,9 +101,9 @@
 
 37. **Application-defined custom permissions** — `config.user.permissions` registers additional permission strings returned by `GET /permissions`, making them discoverable by role-management UIs.
 
-38. **Grants with the signed-in user** — when `config.user.getGrants(user, fastify)` is set, the user returned by email and password sign-in and sign-up, third-party sign-in, accepting an invitation and `GET /me` carries `grants`, the list it returns. When it throws, the request fails. Unset, responses are unchanged.
+38. **Grants with the signed-in user** — when `config.user.accessControl.getGrants(user, fastify)` is set, the user returned by email and password sign-in and sign-up, third-party sign-in, accepting an invitation and `GET /me` carries `grants`, the list it returns. When it throws, the request fails. Unset, responses are unchanged.
 
-39. **App-supplied permission check** — when `config.user.hasPermission(request, permission, context)` is set, it decides every check made by `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, with the context (`{}` when none is given); SuperTokens roles, `config.user.permissions` and the SUPERADMIN bypass no longer apply. When it throws, the request fails. Unset, checks are unchanged. `config.user.mapPermissionName(permission)` renames each permission before it reaches the check (`users:list` to `users.list`, for a library that splits names on dots); it is ignored without `config.user.hasPermission`.
+39. **App-supplied permission check** — when `config.user.accessControl.hasPermission(request, permission, context)` is set, it decides every check made by `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, with the context (`{}` when none is given); SuperTokens roles, `config.user.permissions` and the SUPERADMIN bypass no longer apply. When it throws, the request fails. Unset, checks are unchanged. `config.user.accessControl.mapPermissionName(permission)` renames each permission before it reaches the check (`users:list` to `users.list`, for a library that splits names on dots); it is ignored without `config.user.accessControl.hasPermission`.
 
 40. **`request.hasPermission(permission, context?)`** — the same check as a boolean, for code that needs the answer without refusing the request. `false` without a user.
 
@@ -185,7 +185,7 @@
 
 72. **`@auth` directive** — protects a field or mutation; checks (1) authenticated session, (2) non-disabled account, (3) email verified (if enabled, unless `emailVerification: false` is passed), (4) profile complete (if enabled, unless `profileValidation: false` is passed).
 
-73. **`@hasPermission(permission)` directive** — enforces a named permission on a GraphQL field, through `config.user.hasPermission` when set; otherwise SUPERADMIN bypasses automatically.
+73. **`@hasPermission(permission)` directive** — enforces a named permission on a GraphQL field, through `config.user.accessControl.hasPermission` when set; otherwise SUPERADMIN bypasses automatically.
 
 74. **User GraphQL types** — `User`, `Photo`, `Users` (paginated wrapper with `totalCount`, `filteredCount`, `data`).
 

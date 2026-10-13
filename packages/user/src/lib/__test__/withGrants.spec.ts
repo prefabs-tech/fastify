@@ -15,7 +15,9 @@ const user: User = {
 };
 
 const makeFastify = (getGrants?: unknown) =>
-  ({ config: { user: { getGrants } } }) as unknown as FastifyInstance;
+  ({
+    config: { user: { accessControl: { getGrants } } },
+  }) as unknown as FastifyInstance;
 
 describe("withGrants", () => {
   it("returns the user unchanged when getGrants is not configured", async () => {

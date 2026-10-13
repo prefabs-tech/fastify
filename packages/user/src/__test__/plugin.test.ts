@@ -166,7 +166,7 @@ describe("userPlugin — request.hasPermission", async () => {
 
   beforeEach(() => vi.clearAllMocks());
 
-  it("falls back to hasUserPermission without config.user.hasPermission", async () => {
+  it("falls back to hasUserPermission without config.user.accessControl.hasPermission", async () => {
     mockHasUserPermission.mockResolvedValue(true);
 
     const response = await check({});
@@ -179,11 +179,11 @@ describe("userPlugin — request.hasPermission", async () => {
     );
   });
 
-  it("calls config.user.hasPermission with the request, the permission and the context", async () => {
+  it("calls config.user.accessControl.hasPermission with the request, the permission and the context", async () => {
     const delegate = vi.fn().mockResolvedValue(true);
 
     const response = await check(
-      { hasPermission: delegate },
+      { accessControl: { hasPermission: delegate } },
       { context: { orgId: 7 }, permission: "report.edit" },
     );
 
@@ -201,31 +201,38 @@ describe("userPlugin — request.hasPermission", async () => {
   it("passes {} when no context is given", async () => {
     const delegate = vi.fn().mockResolvedValue(true);
 
-    await check({ hasPermission: delegate });
+    await check({ accessControl: { hasPermission: delegate } });
 
     expect(delegate.mock.calls[0]?.[2]).toEqual({});
   });
 
-  it("lets config.user.hasPermission decide where config.user.permissions would allow", async () => {
+  it("lets config.user.accessControl.hasPermission decide where config.user.permissions would allow", async () => {
     const delegate = vi.fn().mockResolvedValue(false);
 
-    const response = await check({ hasPermission: delegate, permissions: [] });
+    const response = await check({
+      accessControl: { hasPermission: delegate },
+      permissions: [],
+    });
 
     expect(response.json()).toEqual({ allowed: false });
     expect(mockHasUserPermission).not.toHaveBeenCalled();
   });
 
-  it("refuses anything but true from config.user.hasPermission", async () => {
+  it("refuses anything but true from config.user.accessControl.hasPermission", async () => {
     const response = await check({
-      hasPermission: vi.fn().mockResolvedValue("yes"),
+      accessControl: {
+        hasPermission: vi.fn().mockResolvedValue("yes"),
+      },
     });
 
     expect(response.json()).toEqual({ allowed: false });
   });
 
-  it("fails the request when config.user.hasPermission throws", async () => {
+  it("fails the request when config.user.accessControl.hasPermission throws", async () => {
     const response = await check({
-      hasPermission: vi.fn().mockRejectedValue(new Error("database down")),
+      accessControl: {
+        hasPermission: vi.fn().mockRejectedValue(new Error("database down")),
+      },
     });
 
     expect(response.statusCode).toBe(500);
@@ -235,7 +242,7 @@ describe("userPlugin — request.hasPermission", async () => {
     const delegate = vi.fn().mockResolvedValue(true);
 
     const response = await check(
-      { hasPermission: delegate },
+      { accessControl: { hasPermission: delegate } },
       { signedIn: false },
     );
 
@@ -248,20 +255,24 @@ describe("userPlugin — request.hasPermission", async () => {
     const delegate = vi.fn().mockResolvedValue(true);
 
     await check({
-      hasPermission: delegate,
-      mapPermissionName: (permission: string) =>
-        permission.replaceAll(":", "."),
+      accessControl: {
+        hasPermission: delegate,
+        mapPermissionName: (permission: string) =>
+          permission.replaceAll(":", "."),
+      },
     });
 
     expect(delegate.mock.calls[0]?.[1]).toBe("users.list");
   });
 
-  it("ignores mapPermissionName without config.user.hasPermission", async () => {
+  it("ignores mapPermissionName without config.user.accessControl.hasPermission", async () => {
     mockHasUserPermission.mockResolvedValue(false);
 
     const response = await check({
-      mapPermissionName: (permission: string) =>
-        permission.replaceAll(":", "."),
+      accessControl: {
+        mapPermissionName: (permission: string) =>
+          permission.replaceAll(":", "."),
+      },
     });
 
     expect(response.json()).toEqual({ allowed: false });
@@ -272,10 +283,12 @@ describe("userPlugin — request.hasPermission", async () => {
     const delegate = vi.fn().mockResolvedValue(true);
 
     const response = await check({
-      hasPermission: delegate,
-      mapPermissionName: vi.fn(() => {
-        throw new Error("bad name");
-      }),
+      accessControl: {
+        hasPermission: delegate,
+        mapPermissionName: vi.fn(() => {
+          throw new Error("bad name");
+        }),
+      },
     });
 
     expect(response.statusCode).toBe(500);

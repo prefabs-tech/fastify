@@ -18,7 +18,7 @@ const user = {
 };
 
 const callMe = async (getGrants?: unknown) => {
-  const config = { user: { getGrants } };
+  const config = { user: { accessControl: { getGrants } } };
   const send = vi.fn();
   const request = {
     config,

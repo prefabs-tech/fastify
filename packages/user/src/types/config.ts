@@ -80,6 +80,16 @@ interface UserConfig {
       users?: typeof userHandlers.users;
     };
   };
+  /**
+   * Decides every `hasPermission` check, in place of SuperTokens roles,
+   * `permissions` and the superadmin role.
+   * @default undefined
+   */
+  hasPermission?: (
+    request: FastifyRequest,
+    permission: string,
+    context: Record<string, unknown>,
+  ) => Promise<boolean>;
   invitation?: {
     acceptLinkPath?: string;
     /**

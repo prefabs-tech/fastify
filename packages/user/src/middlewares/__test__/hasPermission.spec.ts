@@ -1,6 +1,4 @@
-import type { SessionRequest } from "supertokens-node/framework/fastify";
-
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { type FastifyInstance, type FastifyRequest } from "fastify";
 import { Error as STError } from "supertokens-node/recipe/session";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -17,11 +15,15 @@ vi.mock("../../lib/hasUserPermission", () => ({
 const buildRequest = (
   fastify: FastifyInstance,
   user?: { id: string },
-): SessionRequest => {
+): FastifyRequest => {
   return {
     server: fastify,
     user,
-  } as unknown as SessionRequest;
+  } as unknown as FastifyRequest;
+};
+
+const withDelegate = (fastify: FastifyInstance, delegate: unknown) => {
+  fastify.config.user.hasPermission = delegate as never;
 };
 
 describe("hasPermission middleware", () => {
@@ -30,6 +32,7 @@ describe("hasPermission middleware", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fastify = Fastify({ logger: false });
+    fastify.decorate("config", { user: {} } as FastifyInstance["config"]);
   });
 
   afterEach(async () => {
@@ -88,5 +91,69 @@ describe("hasPermission middleware", () => {
     await expect(
       preHandler(buildRequest(fastify, { id: "user-7" })),
     ).rejects.toBeInstanceOf(STError);
+  });
+
+  describe("with config.user.hasPermission set", () => {
+    it("calls it once with the request, the permission and {}", async () => {
+      const delegate = vi.fn().mockResolvedValue(true);
+      withDelegate(fastify, delegate);
+      const request = buildRequest(fastify, { id: "user-1" });
+
+      await expect(
+        hasPermission("report.view")(request),
+      ).resolves.toBeUndefined();
+      expect(delegate).toHaveBeenCalledOnce();
+      expect(delegate.mock.calls[0]?.[0]).toBe(request);
+      expect(delegate.mock.calls[0]?.slice(1)).toEqual(["report.view", {}]);
+      expect(mockHasUserPermission).not.toHaveBeenCalled();
+    });
+
+    it("passes what the context function returns, also from an async one", async () => {
+      const delegate = vi.fn().mockResolvedValue(true);
+      withDelegate(fastify, delegate);
+      const request = buildRequest(fastify, { id: "user-1" });
+
+      await hasPermission("report.edit", { context: () => ({ orgId: 7 }) })(
+        request,
+      );
+      await hasPermission("report.edit", {
+        context: async (r) => ({ userId: r.user?.id }),
+      })(request);
+
+      expect(delegate.mock.calls[0]?.[2]).toEqual({ orgId: 7 });
+      expect(delegate.mock.calls[1]?.[2]).toEqual({ userId: "user-1" });
+    });
+
+    it("throws INVALID_CLAIMS when it refuses", async () => {
+      withDelegate(fastify, vi.fn().mockResolvedValue(false));
+
+      await expect(
+        hasPermission("report.edit")(buildRequest(fastify, { id: "user-1" })),
+      ).rejects.toMatchObject({
+        payload: [{ reason: { expectedToInclude: "report.edit" } }],
+        type: "INVALID_CLAIMS",
+      });
+    });
+
+    it("never calls it without a user", async () => {
+      const delegate = vi.fn().mockResolvedValue(true);
+      withDelegate(fastify, delegate);
+
+      await expect(
+        hasPermission("report.view")(buildRequest(fastify)),
+      ).rejects.toMatchObject({ type: "UNAUTHORISED" });
+      expect(delegate).not.toHaveBeenCalled();
+    });
+
+    it("fails the request when it throws, never allowing it", async () => {
+      withDelegate(
+        fastify,
+        vi.fn().mockRejectedValue(new Error("database down")),
+      );
+
+      await expect(
+        hasPermission("report.view")(buildRequest(fastify, { id: "user-1" })),
+      ).rejects.toThrow("database down");
+    });
   });
 });

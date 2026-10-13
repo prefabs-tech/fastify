@@ -170,8 +170,24 @@ fastify.delete(
 
 - Returns `401` if no session.
 - Returns `403` if the user lacks the permission.
-- `SUPERADMIN` users bypass all permission checks.
-- If the permission string is not in `config.user.permissions`, the check passes automatically.
+- `SUPERADMIN` users bypass all permission checks, unless `config.user.hasPermission` is set.
+- If the permission string is not in `config.user.permissions`, the check passes automatically, unless `config.user.hasPermission` is set.
+- `{ context: (request) => object }` gives the object to check against, for a check that depends on the object (sync or async). It reaches `config.user.hasPermission`; the SuperTokens check ignores it.
+
+```typescript
+fastify.put(
+  "/posts/:id",
+  {
+    preHandler: [
+      fastify.verifySession(),
+      fastify.hasPermission("posts:edit", {
+        context: async (request) => getPost(request.params.id),
+      }),
+    ],
+  },
+  handler,
+);
+```
 
 ### `hasUserPermission(fastify, userId, permission)` utility
 
@@ -199,6 +215,31 @@ user: {
 - If `getGrants` throws, the request fails rather than returning the user without grants.
 - The list is for display. It goes stale when the user's grants change, until the next `GET /me`; the API must still check every request.
 - Unset (the default), responses are unchanged.
+
+### `config.user.hasPermission` — the app's permission check
+
+Set `hasPermission` to have every permission check answered by whichever access-control library the app uses, instead of SuperTokens roles:
+
+```typescript
+user: {
+  hasPermission: (request, permission, context) => request.checkPermission(permission, context),
+},
+```
+
+- It decides `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, including on fastify-user's own users and invitations routes.
+- It gets the request, the permission and the context. Without a `context` option the context is `{}`, so only grants without conditions count.
+- `config.user.permissions` and the `SUPERADMIN` bypass are SuperTokens rules and don't apply to it: a user it refuses is refused.
+- Without a user, the guard returns `401` and `request.hasPermission` returns `false`, without calling it.
+- Anything but `true` refuses. If it throws, the request fails.
+- Unset (the default), checks are unchanged.
+
+### `request.hasPermission(permission, context?)`
+
+The same check as a boolean, for code that needs the answer without refusing the request, such as a flag in a response:
+
+```typescript
+const canEdit = await request.hasPermission("posts:edit", post);
+```
 
 ### SuperTokens error handler
 
@@ -679,7 +720,7 @@ Pass `emailVerification: false` or `profileValidation: false` to skip those chec
 
 ### `@hasPermission` directive
 
-Enforces a named permission on a GraphQL field. `SUPERADMIN` bypasses automatically:
+Enforces a named permission on a GraphQL field, through `config.user.hasPermission` when set, with the context `{}`. Otherwise `SUPERADMIN` bypasses automatically:
 
 ```graphql
 type Mutation {

@@ -1,8 +1,9 @@
 import type { GraphqlEnabledPlugin } from "@prefabs.tech/fastify-graphql";
-import type { FastifyPluginAsync } from "fastify";
+import type { FastifyPluginAsync, FastifyRequest } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 
+import checkPermission from "./lib/checkPermission";
 import seedRoles from "./lib/seedRoles";
 import mercuriusAuthPlugin from "./mercurius-auth/plugin";
 import hasPermission from "./middlewares/hasPermission";
@@ -26,6 +27,16 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
   await runMigrations(fastify.config, fastify.slonik);
 
   fastify.decorate("hasPermission", hasPermission);
+  fastify.decorateRequest(
+    "hasPermission",
+    function (
+      this: FastifyRequest,
+      permission: string,
+      context?: Record<string, unknown>,
+    ) {
+      return checkPermission(this, permission, context);
+    },
+  );
 
   if (graphql?.enabled) {
     await fastify.register(mercuriusAuthPlugin);

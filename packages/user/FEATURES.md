@@ -79,11 +79,11 @@
 
 ## Authorization
 
-33. **`fastify.hasPermission(permission)` decorator** — added to the Fastify instance; returns a `preHandler` that checks the authenticated user holds the given permission. Returns 401 without a session, 403 without the permission.
+33. **`fastify.hasPermission(permission, { context? })` decorator** — added to the Fastify instance; returns a `preHandler` that checks the authenticated user holds the given permission. `context(request)`, sync or async, returns the object the check is made against. Returns 401 without a session, 403 without the permission.
 
 34. **`hasUserPermission(fastify, userId, permission)` utility** — programmatic permission check; returns a boolean.
 
-35. **SUPERADMIN bypass** — users with the `SUPERADMIN` role pass all `hasPermission` and `hasUserPermission` checks automatically, without being explicitly granted every permission.
+35. **SUPERADMIN bypass** — users with the `SUPERADMIN` role pass all `hasPermission` and `hasUserPermission` checks automatically, without being explicitly granted every permission. Not when `config.user.hasPermission` is set.
 
 36. **Built-in permission constants** — pre-defined strings to avoid typos:
 
@@ -103,98 +103,102 @@
 
 38. **Grants with the signed-in user** — when `config.user.getGrants(user, fastify)` is set, the user returned by email and password sign-in and sign-up, third-party sign-in, accepting an invitation and `GET /me` carries `grants`, the list it returns. When it throws, the request fails. Unset, responses are unchanged.
 
+39. **App-supplied permission check** — when `config.user.hasPermission(request, permission, context)` is set, it decides every check made by `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, with the context (`{}` when none is given); SuperTokens roles, `config.user.permissions` and the SUPERADMIN bypass no longer apply. When it throws, the request fails. Unset, checks are unchanged.
+
+40. **`request.hasPermission(permission, context?)`** — the same check as a boolean, for code that needs the answer without refusing the request. `false` without a user.
+
 ## Roles
 
-39. **Built-in role constants** — `ROLE_ADMIN`, `ROLE_SUPERADMIN`, `ROLE_USER` are exported.
+41. **Built-in role constants** — `ROLE_ADMIN`, `ROLE_SUPERADMIN`, `ROLE_USER` are exported.
 
-40. **`POST /roles`** — creates a new role with optional initial permissions. Requires a valid session.
+42. **`POST /roles`** — creates a new role with optional initial permissions. Requires a valid session.
 
-41. **`DELETE /roles`** — deletes a role; returns `ROLE_IN_USE` error if any user holds it. Requires a valid session.
+43. **`DELETE /roles`** — deletes a role; returns `ROLE_IN_USE` error if any user holds it. Requires a valid session.
 
-42. **`GET /roles`** — returns all roles with their permissions. Requires a valid session.
+44. **`GET /roles`** — returns all roles with their permissions. Requires a valid session.
 
-43. **`GET /roles/permissions`** — returns the permissions for a named role. Requires a valid session.
+45. **`GET /roles/permissions`** — returns the permissions for a named role. Requires a valid session.
 
-44. **`PUT /roles/permissions`** — replaces the permission set of a named role. Requires a valid session.
+46. **`PUT /roles/permissions`** — replaces the permission set of a named role. Requires a valid session.
 
-45. **`isRoleExists(name)` / `areRolesExist(names)` utilities** — programmatic existence checks against SuperTokens.
+47. **`isRoleExists(name)` / `areRolesExist(names)` utilities** — programmatic existence checks against SuperTokens.
 
 ## Invitations
 
-46. **`POST /invitations`** — creates an invitation record, validates the target email and role, checks for a duplicate pending invitation, and sends the invitation email. Requires `invitations:create` permission.
+48. **`POST /invitations`** — creates an invitation record, validates the target email and role, checks for a duplicate pending invitation, and sends the invitation email. Requires `invitations:create` permission.
 
-47. **Configurable invitation expiry** — `config.user.invitation.expireAfterInDays` sets how long an invitation is valid (default: `30`).
+49. **Configurable invitation expiry** — `config.user.invitation.expireAfterInDays` sets how long an invitation is valid (default: `30`).
 
-48. **Configurable accept link path** — `config.user.invitation.acceptLinkPath` sets the front-end path embedded in the invitation email (default: `"/signup/token/:token"`). The `:token` placeholder is replaced with the actual token.
+50. **Configurable accept link path** — `config.user.invitation.acceptLinkPath` sets the front-end path embedded in the invitation email (default: `"/signup/token/:token"`). The `:token` placeholder is replaced with the actual token.
 
-49. **`GET /invitations/token/:token`** — public endpoint returning the invitation record for UI display before acceptance.
+51. **`GET /invitations/token/:token`** — public endpoint returning the invitation record for UI display before acceptance.
 
-50. **`POST /invitations/token/:token`** — public endpoint that validates the invitation, creates a SuperTokens account, opens a session, and optionally calls `config.user.invitation.postAccept(request, invitation, user)`.
+52. **`POST /invitations/token/:token`** — public endpoint that validates the invitation, creates a SuperTokens account, opens a session, and optionally calls `config.user.invitation.postAccept(request, invitation, user)`.
 
-51. **`GET /invitations`** — paginatable list of all invitations. Requires `invitations:list` permission.
+53. **`GET /invitations`** — paginatable list of all invitations. Requires `invitations:list` permission.
 
-52. **`PUT /invitations/revoke/:id`** — marks an invitation as revoked. Requires `invitations:revoke` permission.
+54. **`PUT /invitations/revoke/:id`** — marks an invitation as revoked. Requires `invitations:revoke` permission.
 
-53. **`POST /invitations/resend/:id`** — re-sends the invitation email. Requires `invitations:resend` permission.
+55. **`POST /invitations/resend/:id`** — re-sends the invitation email. Requires `invitations:resend` permission.
 
-54. **`DELETE /invitations/:id`** — permanently removes an invitation record. Requires `invitations:delete` permission.
+56. **`DELETE /invitations/:id`** — permanently removes an invitation record. Requires `invitations:delete` permission.
 
-55. **`isInvitationValid(invitation)` utility** — returns `true` only when the invitation is pending, non-expired, non-revoked, and non-accepted.
+57. **`isInvitationValid(invitation)` utility** — returns `true` only when the invitation is pending, non-expired, non-revoked, and non-accepted.
 
-56. **`computeInvitationExpiresAt(config, explicitDate?)` utility** — computes the expiry timestamp using the configured `expireAfterInDays`, or returns `explicitDate` when provided.
+58. **`computeInvitationExpiresAt(config, explicitDate?)` utility** — computes the expiry timestamp using the configured `expireAfterInDays`, or returns `explicitDate` when provided.
 
-57. **`getOrigin(url)` utility** — extracts `scheme://host[:non-default-port]` from a URL string. Returns an empty string for bare hostnames, IP addresses without a scheme, relative paths, or any input that is not a full URL. Default ports (`80` / `443`) are stripped.
+59. **`getOrigin(url)` utility** — extracts `scheme://host[:non-default-port]` from a URL string. Returns an empty string for bare hostnames, IP addresses without a scheme, relative paths, or any input that is not a full URL. Default ports (`80` / `443`) are stripped.
 
-58. **`sendInvitation(fastify, invitation, origin)` utility** — sends the invitation email; usable from custom code that bypasses the REST route.
+60. **`sendInvitation(fastify, invitation, origin)` utility** — sends the invitation email; usable from custom code that bypasses the REST route.
 
 ## Email
 
-59. **`validateEmail(email, config)` utility** — validates an email string against `config.user.email` options using `validator.js`. Returns `{ success: true }` or `{ success: false, message }`. Gracefully falls back to permissive defaults when no email config is provided.
+61. **`validateEmail(email, config)` utility** — validates an email string against `config.user.email` options using `validator.js`. Returns `{ success: true }` or `{ success: false, message }`. Gracefully falls back to permissive defaults when no email config is provided.
 
-60. **Email domain whitelist / blacklist** — `config.user.email.host_whitelist` and `config.user.email.host_blacklist` restrict which domains are accepted during sign-up and invitation.
+62. **Email domain whitelist / blacklist** — `config.user.email.host_whitelist` and `config.user.email.host_blacklist` restrict which domains are accepted during sign-up and invitation.
 
-61. **Custom email subjects and templates** — `config.user.emailOverrides` overrides the subject and `templateName` for any of the five system emails: `invitation`, `resetPassword`, `resetPasswordNotification`, `emailVerification`, `duplicateEmail`.
+63. **Custom email subjects and templates** — `config.user.emailOverrides` overrides the subject and `templateName` for any of the five system emails: `invitation`, `resetPassword`, `resetPasswordNotification`, `emailVerification`, `duplicateEmail`.
 
-62. **`sendEmail(options)` utility** — sends a templated email via `fastify.mailer`; accepts `{ fastify, subject, templateName, to, templateData }`.
+64. **`sendEmail(options)` utility** — sends a templated email via `fastify.mailer`; accepts `{ fastify, subject, templateName, to, templateData }`.
 
-63. **`verifyEmail(userId, email)` utility** — programmatically marks a user's email as verified in SuperTokens (useful for invited users who skip the verification link).
+65. **`verifyEmail(userId, email)` utility** — programmatically marks a user's email as verified in SuperTokens (useful for invited users who skip the verification link).
 
 ## Password
 
-64. **`validatePassword(password, config)` utility** — validates password strength against `config.user.password` options. Returns `{ success: true }` or `{ success: false, message }` listing all failed requirements.
+66. **`validatePassword(password, config)` utility** — validates password strength against `config.user.password` options. Returns `{ success: true }` or `{ success: false, message }` listing all failed requirements.
 
-65. **Configurable strength thresholds** — `config.user.password` accepts `minLength` (default: `8`), `minLowercase`, `minUppercase`, `minNumbers`, `minSymbols` (all default to `0` unless configured), and scoring tuning fields (`pointsPerUnique`, `pointsPerRepeat`, `pointsForContaining*`).
+67. **Configurable strength thresholds** — `config.user.password` accepts `minLength` (default: `8`), `minLowercase`, `minUppercase`, `minNumbers`, `minSymbols` (all default to `0` unless configured), and scoring tuning fields (`pointsPerUnique`, `pointsPerRepeat`, `pointsForContaining*`).
 
 ## Profile Validation Claim
 
-66. **`ProfileValidationClaim` custom session claim** — a SuperTokens `SessionClaim` that checks whether required profile fields are populated. Re-fetched on every request. Enable via `config.user.features.profileValidation.enabled = true` and list required fields in `features.profileValidation.fields`.
+68. **`ProfileValidationClaim` custom session claim** — a SuperTokens `SessionClaim` that checks whether required profile fields are populated. Re-fetched on every request. Enable via `config.user.features.profileValidation.enabled = true` and list required fields in `features.profileValidation.fields`.
 
-67. **Grace period** — `config.user.features.profileValidation.gracePeriodInDays` allows users to access protected resources for N days after sign-up before the claim is enforced. After the grace period, requests fail with 403.
+69. **Grace period** — `config.user.features.profileValidation.gracePeriodInDays` allows users to access protected resources for N days after sign-up before the claim is enforced. After the grace period, requests fail with 403.
 
-68. **Per-route claim opt-out** — routes that must stay accessible regardless of profile completeness can bypass the claim via `verifySession({ overrideGlobalClaimValidators: () => [] })` (REST) or `@auth(profileValidation: false)` (GraphQL).
+70. **Per-route claim opt-out** — routes that must stay accessible regardless of profile completeness can bypass the claim via `verifySession({ overrideGlobalClaimValidators: () => [] })` (REST) or `@auth(profileValidation: false)` (GraphQL).
 
 ## GraphQL Integration
 
 > Requires `config.graphql.enabled = true` and `@prefabs.tech/fastify-graphql`.
 
-69. **MercuriusContext extended with `user` and `roles`** — `context.user: User | undefined` and `context.roles: string[] | undefined` are populated before each resolver via `plugin.updateContext`.
+71. **MercuriusContext extended with `user` and `roles`** — `context.user: User | undefined` and `context.roles: string[] | undefined` are populated before each resolver via `plugin.updateContext`.
 
-70. **`@auth` directive** — protects a field or mutation; checks (1) authenticated session, (2) non-disabled account, (3) email verified (if enabled, unless `emailVerification: false` is passed), (4) profile complete (if enabled, unless `profileValidation: false` is passed).
+72. **`@auth` directive** — protects a field or mutation; checks (1) authenticated session, (2) non-disabled account, (3) email verified (if enabled, unless `emailVerification: false` is passed), (4) profile complete (if enabled, unless `profileValidation: false` is passed).
 
-71. **`@hasPermission(permission)` directive** — enforces a named permission on a GraphQL field; SUPERADMIN bypasses automatically.
+73. **`@hasPermission(permission)` directive** — enforces a named permission on a GraphQL field, through `config.user.hasPermission` when set; otherwise SUPERADMIN bypasses automatically.
 
-72. **User GraphQL types** — `User`, `Photo`, `Users` (paginated wrapper with `totalCount`, `filteredCount`, `data`).
+74. **User GraphQL types** — `User`, `Photo`, `Users` (paginated wrapper with `totalCount`, `filteredCount`, `data`).
 
-73. **User queries** — `canAdminSignUp`, `me`, `user(id)`, `users(limit, offset, filters, sort)`.
+75. **User queries** — `canAdminSignUp`, `me`, `user(id)`, `users(limit, offset, filters, sort)`.
 
-74. **User mutations** — `adminSignUp`, `changeEmail`, `changePassword`, `deleteMe`, `disableUser`, `enableUser`, `removePhoto`, `updateMe`, `uploadPhoto`.
+76. **User mutations** — `adminSignUp`, `changeEmail`, `changePassword`, `deleteMe`, `disableUser`, `enableUser`, `removePhoto`, `updateMe`, `uploadPhoto`.
 
-75. **Invitation GraphQL types and operations** — `Invitation` type; queries `getInvitationByToken`, `listInvitation`; mutations `acceptInvitation`, `createInvitation`, `deleteInvitation`, `resendInvitation`, `revokeInvitation`.
+77. **Invitation GraphQL types and operations** — `Invitation` type; queries `getInvitationByToken`, `listInvitation`; mutations `acceptInvitation`, `createInvitation`, `deleteInvitation`, `resendInvitation`, `revokeInvitation`.
 
-76. **Role GraphQL types and operations** — `Role` type; queries `roles`, `rolePermissions`; mutations `createRole`, `deleteRole`, `updateRolePermissions`.
+78. **Role GraphQL types and operations** — `Role` type; queries `roles`, `rolePermissions`; mutations `createRole`, `deleteRole`, `updateRolePermissions`.
 
-77. **`permissions` GraphQL query** — returns the configured permission strings.
+79. **`permissions` GraphQL query** — returns the configured permission strings.
 
-78. **`userSchema` merged schema export** — the complete SDL string combining all user, invitation, role, and permission type definitions; ready to pass to `mergeTypeDefs`.
+80. **`userSchema` merged schema export** — the complete SDL string combining all user, invitation, role, and permission type definitions; ready to pass to `mergeTypeDefs`.
 
-79. **Resolver exports** — `userResolver`, `invitationResolver`, `roleResolver`, `permissionResolver` are exported individually for spreading into a larger resolver map.
+81. **Resolver exports** — `userResolver`, `invitationResolver`, `roleResolver`, `permissionResolver` are exported individually for spreading into a larger resolver map.

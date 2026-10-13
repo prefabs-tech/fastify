@@ -4,7 +4,7 @@ import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 import mercuriusAuth from "mercurius-auth";
 
-import hasUserPermission from "../lib/hasUserPermission";
+import checkPermission from "../lib/checkPermission";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {
@@ -18,9 +18,8 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
         return new mercurius.ErrorWithProps("unauthorized", {}, 401);
       }
 
-      const hasPermission = await hasUserPermission(
-        context.app,
-        context.user?.id,
+      const hasPermission = await checkPermission(
+        context.reply.request,
         permission,
       );
 

@@ -109,6 +109,27 @@ describe("userPlugin — decorators", async () => {
     await fastify.close();
   });
 
+  it("decorates requests with hasPermission, answering through the delegate", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+    fastify = buildFastify({ hasPermission: delegate });
+    fastify.addHook("onRequest", async (request) => {
+      request.user = { id: "user-1" } as never;
+    });
+    await fastify.register(plugin);
+    fastify.get("/check", async (request) => ({
+      allowed: await request.hasPermission("report.edit", { orgId: 7 }),
+    }));
+    await fastify.ready();
+
+    const response = await fastify.inject({ method: "GET", url: "/check" });
+
+    expect(response.json()).toEqual({ allowed: true });
+    expect(delegate).toHaveBeenCalledWith(expect.anything(), "report.edit", {
+      orgId: 7,
+    });
+    await fastify.close();
+  });
+
   it("calls runMigrations during registration", async () => {
     fastify = buildFastify();
     await fastify.register(plugin);

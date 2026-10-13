@@ -3,6 +3,7 @@ import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpasswo
 
 import { ROLE_USER } from "../../../../constants";
 import getUserService from "../../../../lib/getUserService";
+import withGrants from "../../../../lib/withGrants";
 
 const thirdPartySignInUpPOST = (
   originalImplementation: APIInterface,
@@ -42,10 +43,7 @@ const thirdPartySignInUpPOST = (
 
       return {
         ...originalResponse,
-        user: {
-          ...originalResponse.user,
-          ...user,
-        },
+        user: await withGrants({ ...originalResponse.user, ...user }, fastify),
       };
     }
 

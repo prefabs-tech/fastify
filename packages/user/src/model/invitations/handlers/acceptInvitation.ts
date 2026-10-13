@@ -8,6 +8,7 @@ import type { User } from "../../../types";
 
 import getInvitationService from "../../../lib/getInvitationService";
 import isInvitationValid from "../../../lib/isInvitationValid";
+import withGrants from "../../../lib/withGrants";
 import validateEmail from "../../../validator/email";
 import validatePassword from "../../../validator/password";
 
@@ -98,10 +99,14 @@ const acceptInvitation = async (
 
   reply.send({
     ...signUpResponse,
-    user: {
-      ...signUpResponse.user,
-      roles: [invitation.role],
-    },
+    // Again after postAccept, which may have given the user roles or grants.
+    user: await withGrants(
+      {
+        ...(signUpResponse.user as unknown as User),
+        roles: [invitation.role],
+      },
+      request.server,
+    ),
   });
 };
 

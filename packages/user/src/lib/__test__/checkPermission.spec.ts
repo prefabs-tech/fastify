@@ -12,11 +12,15 @@ vi.mock("../hasUserPermission", () => ({
   default: mockHasUserPermission,
 }));
 
-const makeRequest = (hasPermission?: unknown) =>
+const makeRequest = (hasPermission?: unknown, mapPermissionName?: unknown) =>
   ({
-    server: { config: { user: { hasPermission, permissions: [] } } },
+    server: {
+      config: { user: { hasPermission, mapPermissionName, permissions: [] } },
+    },
     user: { id: "user-1" },
   }) as unknown as FastifyRequest;
+
+const toDots = (permission: string) => permission.replaceAll(":", ".");
 
 describe("checkPermission", () => {
   beforeEach(() => {
@@ -78,6 +82,39 @@ describe("checkPermission", () => {
     await expect(
       checkPermission(makeRequest(delegate), "users:list"),
     ).rejects.toThrow("database down");
+  });
+
+  it("passes the mapped name to the delegate", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+
+    expect(
+      await checkPermission(makeRequest(delegate, toDots), "users:list"),
+    ).toBe(true);
+    expect(delegate).toHaveBeenCalledWith(expect.anything(), "users.list", {});
+  });
+
+  it("ignores mapPermissionName without a delegate", async () => {
+    mockHasUserPermission.mockResolvedValue(false);
+    const request = makeRequest(undefined, toDots);
+
+    expect(await checkPermission(request, "users:list")).toBe(false);
+    expect(mockHasUserPermission).toHaveBeenCalledWith(
+      request.server,
+      "user-1",
+      "users:list",
+    );
+  });
+
+  it("rejects when mapPermissionName throws, never calling the delegate", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+    const map = vi.fn(() => {
+      throw new Error("bad name");
+    });
+
+    await expect(
+      checkPermission(makeRequest(delegate, map), "users:list"),
+    ).rejects.toThrow("bad name");
+    expect(delegate).not.toHaveBeenCalled();
   });
 
   it("returns false without a user, never calling the delegate", async () => {

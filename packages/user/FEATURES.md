@@ -103,7 +103,7 @@
 
 38. **Grants with the signed-in user** — when `config.user.getGrants(user, fastify)` is set, the user returned by email and password sign-in and sign-up, third-party sign-in, accepting an invitation and `GET /me` carries `grants`, the list it returns. When it throws, the request fails. Unset, responses are unchanged.
 
-39. **App-supplied permission check** — when `config.user.hasPermission(request, permission, context)` is set, it decides every check made by `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, with the context (`{}` when none is given); SuperTokens roles, `config.user.permissions` and the SUPERADMIN bypass no longer apply. When it throws, the request fails. Unset, checks are unchanged.
+39. **App-supplied permission check** — when `config.user.hasPermission(request, permission, context)` is set, it decides every check made by `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, with the context (`{}` when none is given); SuperTokens roles, `config.user.permissions` and the SUPERADMIN bypass no longer apply. When it throws, the request fails. Unset, checks are unchanged. `config.user.mapPermissionName(permission)` renames each permission before it reaches the check (`users:list` to `users.list`, for a library that splits names on dots); it is ignored without `config.user.hasPermission`.
 
 40. **`request.hasPermission(permission, context?)`** — the same check as a boolean, for code that needs the answer without refusing the request. `false` without a user.
 

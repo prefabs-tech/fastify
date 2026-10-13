@@ -18,7 +18,15 @@ const checkPermission = async (
   const hasPermission = request.server.config.user.hasPermission;
 
   if (hasPermission) {
-    return (await hasPermission(request, permission, context)) === true;
+    const { mapPermissionName } = request.server.config.user;
+
+    return (
+      (await hasPermission(
+        request,
+        mapPermissionName ? mapPermissionName(permission) : permission,
+        context,
+      )) === true
+    );
   }
 
   return hasUserPermission(request.server, user.id, permission);

@@ -103,6 +103,14 @@ interface UserConfig {
       user: User,
     ) => Promise<void>;
   };
+  /**
+   * Renames each permission before `hasPermission` checks it, such as
+   * `users:list` to `users.list`. Ignored without `hasPermission`: the
+   * SuperTokens check allows any name missing from `permissions`, so a renamed
+   * one would pass.
+   * @default undefined
+   */
+  mapPermissionName?: (permission: string) => string;
   password?: StrongPasswordOptions;
   permissions?: string[];
   photoMaxSizeInMB?: number;

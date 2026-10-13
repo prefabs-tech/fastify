@@ -233,6 +233,19 @@ user: {
 - Anything but `true` refuses. If it throws, the request fails.
 - Unset (the default), checks are unchanged.
 
+Set `mapPermissionName` too when the library names permissions differently, such as with dots, so a seeded `users.*` covers fastify-user's `users:list`:
+
+```typescript
+user: {
+  hasPermission: (request, permission, context) => request.checkPermission(permission, context),
+  mapPermissionName: (permission) => permission.replaceAll(":", "."),
+},
+```
+
+- `hasPermission` gets the mapped name; the 403 response still names the permission the route asked for.
+- It is ignored without `hasPermission`: the SuperTokens check allows any name missing from `config.user.permissions`, so a renamed one would pass.
+- If it throws, the request fails.
+
 ### `request.hasPermission(permission, context?)`
 
 The same check as a boolean, for code that needs the answer without refusing the request, such as a flag in a response:

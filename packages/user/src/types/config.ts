@@ -1,4 +1,4 @@
-import type { FastifyRequest } from "fastify";
+import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import type { SupertokensConfig } from "../supertokens";
 import type { Invitation } from "./invitation";
@@ -51,6 +51,12 @@ interface UserConfig {
       enabled?: boolean;
     };
   };
+  /**
+   * Adds `grants` to the user returned by sign-in, sign-up, accepting an
+   * invitation and `GET /me`, so the front end stores them with the user.
+   * @default undefined
+   */
+  getGrants?: (user: User, fastify: FastifyInstance) => Promise<unknown[]>;
   handlers?: {
     invitation?: {
       accept?: typeof invitationHandlers.acceptInvitation;

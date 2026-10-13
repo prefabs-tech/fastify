@@ -12,6 +12,7 @@ interface User {
   deletedAt?: number;
   disabled: boolean;
   email: string;
+  grants?: unknown[];
   id: string;
   lastLoginAt: number;
   photo?: Photo;
@@ -23,7 +24,13 @@ interface User {
 type UserCreateInput = Partial<
   Omit<
     User,
-    "deletedAt" | "disabled" | "lastLoginAt" | "photo" | "roles" | "signedUpAt"
+    | "deletedAt"
+    | "disabled"
+    | "grants"
+    | "lastLoginAt"
+    | "photo"
+    | "roles"
+    | "signedUpAt"
   >
 > & {
   lastLoginAt?: string;
@@ -35,6 +42,7 @@ type UserUpdateInput = Partial<
     User,
     | "deletedAt"
     | "email"
+    | "grants"
     | "id"
     | "lastLoginAt"
     | "photo"

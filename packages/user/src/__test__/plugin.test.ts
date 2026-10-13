@@ -16,9 +16,13 @@ import {
 const mockRunMigrations = vi.fn().mockResolvedValue();
 const mockSeedRoles = vi.fn().mockResolvedValue();
 const mockMercuriusAuthPlugin = vi.fn().mockResolvedValue();
+const mockHasUserPermission = vi.fn();
 
 vi.mock("../migrations/runMigrations", () => ({ default: mockRunMigrations }));
 vi.mock("../lib/seedRoles", () => ({ default: mockSeedRoles }));
+vi.mock("../lib/hasUserPermission", () => ({
+  default: mockHasUserPermission,
+}));
 vi.mock("../mercurius-auth/plugin", () => ({
   default: mockMercuriusAuthPlugin,
 }));
@@ -109,27 +113,6 @@ describe("userPlugin — decorators", async () => {
     await fastify.close();
   });
 
-  it("decorates requests with hasPermission, answering through the delegate", async () => {
-    const delegate = vi.fn().mockResolvedValue(true);
-    fastify = buildFastify({ hasPermission: delegate });
-    fastify.addHook("onRequest", async (request) => {
-      request.user = { id: "user-1" } as never;
-    });
-    await fastify.register(plugin);
-    fastify.get("/check", async (request) => ({
-      allowed: await request.hasPermission("report.edit", { orgId: 7 }),
-    }));
-    await fastify.ready();
-
-    const response = await fastify.inject({ method: "GET", url: "/check" });
-
-    expect(response.json()).toEqual({ allowed: true });
-    expect(delegate).toHaveBeenCalledWith(expect.anything(), "report.edit", {
-      orgId: 7,
-    });
-    await fastify.close();
-  });
-
   it("calls runMigrations during registration", async () => {
     fastify = buildFastify();
     await fastify.register(plugin);
@@ -146,6 +129,157 @@ describe("userPlugin — decorators", async () => {
 
     expect(mockSeedRoles).toHaveBeenCalledOnce();
     await fastify.close();
+  });
+});
+
+describe("userPlugin — request.hasPermission", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  // Asks request.hasPermission from a route, as an app's handler would.
+  const check = async (
+    userConfig: Record<string, unknown>,
+    {
+      context,
+      permission = "users:list",
+      signedIn = true,
+    }: {
+      context?: Record<string, unknown>;
+      permission?: string;
+      signedIn?: boolean;
+    } = {},
+  ) => {
+    const fastify = buildFastify(userConfig);
+    fastify.addHook("onRequest", async (request) => {
+      request.user = signedIn ? ({ id: "user-1" } as never) : undefined;
+    });
+    await fastify.register(plugin);
+    fastify.get("/check", async (request) => ({
+      allowed: await request.hasPermission(permission, context),
+    }));
+    await fastify.ready();
+
+    const response = await fastify.inject({ method: "GET", url: "/check" });
+    await fastify.close();
+
+    return response;
+  };
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("falls back to hasUserPermission without config.user.hasPermission", async () => {
+    mockHasUserPermission.mockResolvedValue(true);
+
+    const response = await check({});
+
+    expect(response.json()).toEqual({ allowed: true });
+    expect(mockHasUserPermission).toHaveBeenCalledWith(
+      expect.anything(),
+      "user-1",
+      "users:list",
+    );
+  });
+
+  it("calls config.user.hasPermission with the request, the permission and the context", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+
+    const response = await check(
+      { hasPermission: delegate },
+      { context: { orgId: 7 }, permission: "report.edit" },
+    );
+
+    expect(response.json()).toEqual({ allowed: true });
+    expect(delegate).toHaveBeenCalledOnce();
+    expect(delegate.mock.calls[0]?.[0]).toHaveProperty("user", {
+      id: "user-1",
+    });
+    expect(delegate.mock.calls[0]?.slice(1)).toEqual([
+      "report.edit",
+      { orgId: 7 },
+    ]);
+  });
+
+  it("passes {} when no context is given", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+
+    await check({ hasPermission: delegate });
+
+    expect(delegate.mock.calls[0]?.[2]).toEqual({});
+  });
+
+  it("lets config.user.hasPermission decide where config.user.permissions would allow", async () => {
+    const delegate = vi.fn().mockResolvedValue(false);
+
+    const response = await check({ hasPermission: delegate, permissions: [] });
+
+    expect(response.json()).toEqual({ allowed: false });
+    expect(mockHasUserPermission).not.toHaveBeenCalled();
+  });
+
+  it("refuses anything but true from config.user.hasPermission", async () => {
+    const response = await check({
+      hasPermission: vi.fn().mockResolvedValue("yes"),
+    });
+
+    expect(response.json()).toEqual({ allowed: false });
+  });
+
+  it("fails the request when config.user.hasPermission throws", async () => {
+    const response = await check({
+      hasPermission: vi.fn().mockRejectedValue(new Error("database down")),
+    });
+
+    expect(response.statusCode).toBe(500);
+  });
+
+  it("answers false without a user, checking nothing", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+
+    const response = await check(
+      { hasPermission: delegate },
+      { signedIn: false },
+    );
+
+    expect(response.json()).toEqual({ allowed: false });
+    expect(delegate).not.toHaveBeenCalled();
+    expect(mockHasUserPermission).not.toHaveBeenCalled();
+  });
+
+  it("passes the name mapPermissionName returns", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+
+    await check({
+      hasPermission: delegate,
+      mapPermissionName: (permission: string) =>
+        permission.replaceAll(":", "."),
+    });
+
+    expect(delegate.mock.calls[0]?.[1]).toBe("users.list");
+  });
+
+  it("ignores mapPermissionName without config.user.hasPermission", async () => {
+    mockHasUserPermission.mockResolvedValue(false);
+
+    const response = await check({
+      mapPermissionName: (permission: string) =>
+        permission.replaceAll(":", "."),
+    });
+
+    expect(response.json()).toEqual({ allowed: false });
+    expect(mockHasUserPermission.mock.calls[0]?.[2]).toBe("users:list");
+  });
+
+  it("fails the request when mapPermissionName throws, never checking", async () => {
+    const delegate = vi.fn().mockResolvedValue(true);
+
+    const response = await check({
+      hasPermission: delegate,
+      mapPermissionName: vi.fn(() => {
+        throw new Error("bad name");
+      }),
+    });
+
+    expect(response.statusCode).toBe(500);
+    expect(delegate).not.toHaveBeenCalled();
   });
 });
 

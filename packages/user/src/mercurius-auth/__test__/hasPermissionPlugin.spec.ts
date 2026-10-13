@@ -1,14 +1,10 @@
 import Fastify from "fastify";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockCheckPermission, mockMercuriusAuth } = vi.hoisted(() => ({
-  mockCheckPermission: vi.fn(),
+const { mockMercuriusAuth } = vi.hoisted(() => ({
   mockMercuriusAuth: vi.fn(async () => {}),
 }));
 
-vi.mock("../../lib/checkPermission", () => ({
-  default: mockCheckPermission,
-}));
 vi.mock("mercurius-auth", () => ({ default: mockMercuriusAuth }));
 
 import plugin from "../hasPermissionPlugin";
@@ -38,9 +34,11 @@ describe("@hasPermission directive", () => {
     vi.clearAllMocks();
   });
 
-  it("checks the permission against the request through checkPermission", async () => {
-    mockCheckPermission.mockResolvedValue(true);
-    const request = { user: { id: "user-1" } };
+  it("checks the permission through request.hasPermission", async () => {
+    const request = {
+      hasPermission: vi.fn().mockResolvedValue(true),
+      user: { id: "user-1" },
+    };
     const applyPolicy = await getApplyPolicy();
 
     const result = await applyPolicy(
@@ -54,12 +52,14 @@ describe("@hasPermission directive", () => {
     );
 
     expect(result).toBe(true);
-    expect(mockCheckPermission).toHaveBeenCalledWith(request, "posts:delete");
+    expect(request.hasPermission).toHaveBeenCalledWith("posts:delete");
   });
 
   it("returns a 403 with the claim error when the check refuses", async () => {
-    mockCheckPermission.mockResolvedValue(false);
-    const request = { user: { id: "user-1" } };
+    const request = {
+      hasPermission: vi.fn().mockResolvedValue(false),
+      user: { id: "user-1" },
+    };
     const applyPolicy = await getApplyPolicy();
 
     const result = await applyPolicy(
@@ -83,6 +83,7 @@ describe("@hasPermission directive", () => {
   });
 
   it("returns a 401 without a user, never checking", async () => {
+    const request = { hasPermission: vi.fn() };
     const applyPolicy = await getApplyPolicy();
 
     const result = await applyPolicy(
@@ -90,11 +91,11 @@ describe("@hasPermission directive", () => {
       {},
       {},
       {
-        reply: { request: {} },
+        reply: { request },
       },
     );
 
     expect(result).toMatchObject({ statusCode: 401 });
-    expect(mockCheckPermission).not.toHaveBeenCalled();
+    expect(request.hasPermission).not.toHaveBeenCalled();
   });
 });

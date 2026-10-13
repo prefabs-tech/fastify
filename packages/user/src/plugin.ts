@@ -3,7 +3,7 @@ import type { FastifyPluginAsync, FastifyRequest } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 
-import checkPermission from "./lib/checkPermission";
+import hasUserPermission from "./lib/hasUserPermission";
 import seedRoles from "./lib/seedRoles";
 import mercuriusAuthPlugin from "./mercurius-auth/plugin";
 import hasPermission from "./middlewares/hasPermission";
@@ -27,14 +27,34 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
   await runMigrations(fastify.config, fastify.slonik);
 
   fastify.decorate("hasPermission", hasPermission);
+  // The one permission check: the guard and the @hasPermission directive call it.
   fastify.decorateRequest(
     "hasPermission",
-    function (
+    async function (
       this: FastifyRequest,
       permission: string,
-      context?: Record<string, unknown>,
-    ) {
-      return checkPermission(this, permission, context);
+      // Without one, only unconditional grants count: a back-end check never
+      // asks "on some object?"
+      context: Record<string, unknown> = {},
+    ): Promise<boolean> {
+      if (!this.user) {
+        return false;
+      }
+
+      const { hasPermission: check, mapPermissionName } =
+        this.server.config.user;
+
+      if (check) {
+        return (
+          (await check(
+            this,
+            mapPermissionName ? mapPermissionName(permission) : permission,
+            context,
+          )) === true
+        );
+      }
+
+      return hasUserPermission(this.server, this.user.id, permission);
     },
   );
 

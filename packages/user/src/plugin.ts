@@ -15,6 +15,31 @@ import usersRoutes from "./model/users/controller";
 import supertokensPlugin from "./supertokens";
 import userContext from "./userContext";
 
+const checkRequestPermission = async (
+  request: FastifyRequest,
+  permission: string,
+  context: Record<string, unknown>,
+): Promise<boolean> => {
+  if (!request.user) {
+    return false;
+  }
+
+  const { hasPermission: check, mapPermissionName } =
+    request.server.config.user.accessControl ?? {};
+
+  if (check) {
+    return (
+      (await check(
+        request,
+        mapPermissionName ? mapPermissionName(permission) : permission,
+        context,
+      )) === true
+    );
+  }
+
+  return hasUserPermission(request.server, request.user.id, permission);
+};
+
 const userPlugin: FastifyPluginAsync = async (fastify) => {
   const { graphql, user } = fastify.config;
 
@@ -30,31 +55,16 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
   // The one permission check: the guard and the @hasPermission directive call it.
   fastify.decorateRequest(
     "hasPermission",
-    async function (
+    function (
       this: FastifyRequest,
       permission: string,
       // Without one, only unconditional grants count: a back-end check never
       // asks "on some object?"
       context: Record<string, unknown> = {},
     ): Promise<boolean> {
-      if (!this.user) {
-        return false;
-      }
-
-      const { hasPermission: check, mapPermissionName } =
-        this.server.config.user.accessControl ?? {};
-
-      if (check) {
-        return (
-          (await check(
-            this,
-            mapPermissionName ? mapPermissionName(permission) : permission,
-            context,
-          )) === true
-        );
-      }
-
-      return hasUserPermission(this.server, this.user.id, permission);
+      // Fastify hands a request decorator its request only as this.
+      // eslint-disable-next-line unicorn/no-this-outside-of-class
+      return checkRequestPermission(this, permission, context);
     },
   );
 

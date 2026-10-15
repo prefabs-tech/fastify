@@ -1,3 +1,12 @@
+# [0.96.0](https://github.com/prefabs-tech/fastify/compare/v0.95.1...v0.96.0) (2026-10-15)
+
+
+### Features
+
+* **user:** basic support of access-control library for grants and permission checks ([#1155](https://github.com/prefabs-tech/fastify/issues/1155)) ([df1cd24](https://github.com/prefabs-tech/fastify/commit/df1cd2472bab0cf110755b3b2f2e5820b806f992))
+
+
+
 ## [0.95.1](https://github.com/prefabs-tech/fastify/compare/v0.94.1...v0.95.1) (2026-10-11)
 
 

@@ -19,7 +19,6 @@ In a complex API or monorepo with multiple Fastify plugins and services, maintai
 - **`fastify.config`** — decorates the Fastify instance with your `ApiConfig` object, accessible everywhere on the instance
 - **`request.config`** — decorates every incoming request with the same config reference via an `onRequest` hook (useful for mercurius `buildContext`, route handlers, etc.)
 - **`fastify.hostname`** — computed `${baseUrl}:${port}` string, derived from your config
-- **`parse(value, fallback)`** — type-coercing env var parser: returns a boolean, number, or string based on the fallback type; returns the fallback when the value is `undefined`
 - **`ApiConfig` type** — strongly typed interface covering app identity, origins, logging (pino), pagination, REST feature flag, and multi-tenant app list
 - **`AppConfig` type** — per-app shape for multi-tenant configurations (`id`, `name`, `origin`, `supportedRoles`)
 
@@ -38,8 +37,8 @@ No sibling `@prefabs.tech` plugins need to be registered before this one.
 
 ```typescript
 // config.ts
-import { parse } from "@prefabs.tech/fastify-config";
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
+import { parse } from "@prefabs.tech/utilities";
 
 const config: ApiConfig = {
   appName: process.env.APP_NAME as string,

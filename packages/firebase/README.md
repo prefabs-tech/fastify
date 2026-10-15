@@ -23,20 +23,19 @@ Peer dependencies (install compatible versions — see [package.json](./package.
 - [`fastify-plugin`](https://www.npmjs.com/package/fastify-plugin)
 - [`mercurius`](https://www.npmjs.com/package/mercurius)
 - [`slonik`](https://www.npmjs.com/package/slonik)
-- [`supertokens-node`](https://www.npmjs.com/package/supertokens-node)
 
 ## Installation
 
 Install with npm:
 
 ```bash
-npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase fastify fastify-plugin mercurius slonik supertokens-node
+npm install @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase fastify fastify-plugin mercurius slonik
 ```
 
 Install with pnpm:
 
 ```bash
-pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase fastify fastify-plugin mercurius slonik supertokens-node
+pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fastify-error-handler @prefabs.tech/fastify-graphql @prefabs.tech/fastify-slonik @prefabs.tech/fastify-firebase fastify fastify-plugin mercurius slonik
 ```
 
 ## Usage
@@ -105,10 +104,10 @@ const config: ApiConfig = {
     };
     handlers: {
       userDevice?: {
-        addUserDevice: (request: SessionRequest, reply: FastifyReply) => Promise<void>
+        addUserDevice: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
       },
       notification: {
-        sendNotification: (request: SessionRequest, reply: FastifyReply) => Promise<void>
+        sendNotification: (request: FastifyRequest, reply: FastifyReply) => Promise<void>
       },
     };
   }

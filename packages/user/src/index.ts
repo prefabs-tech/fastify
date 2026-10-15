@@ -1,10 +1,17 @@
+import type { SupertokensRecipeFactory } from "./supertokens/types";
 import type { User, UserConfig } from "./types";
 
 import hasPermission from "./middlewares/hasPermission";
 
 declare module "fastify" {
+  interface FastifyContextConfig {
+    verified?: boolean;
+  }
+
   interface FastifyInstance {
     hasPermission: typeof hasPermission;
+    supertokensInitialized?: boolean;
+    supertokensRecipes?: SupertokensRecipeFactory[];
   }
 
   interface FastifyRequest {
@@ -48,6 +55,7 @@ export { default as InvitationService } from "./model/invitations/service";
 export { default as InvitationSqlFactory } from "./model/invitations/sqlFactory";
 export { default as permissionRoutes } from "./model/permissions/controller";
 export { default as permissionResolver } from "./model/permissions/resolver";
+export { default as profileFieldsRoutes } from "./model/profileFields/controller";
 export { default as roleRoutes } from "./model/roles/controller";
 export { default as roleResolver } from "./model/roles/graphql/resolver";
 export { default as RoleService } from "./model/roles/service";
@@ -61,6 +69,8 @@ export {
 export { default as UserSqlFactory } from "./model/users/sqlFactory";
 export { default } from "./plugin";
 export { errorHandler as supertokensErrorHandler } from "./supertokens/errorHandler";
+export { default as addSupertokensRecipe } from "./supertokens/recipeRegistry";
+export type { SupertokensRecipeFactory } from "./supertokens/types";
 export { default as areRolesExist } from "./supertokens/utils/areRolesExist";
 export { default as createUserContext } from "./supertokens/utils/createUserContext";
 export { default as isRoleExists } from "./supertokens/utils/isRoleExists";

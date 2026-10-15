@@ -71,7 +71,7 @@ describe("notification controller — custom handler overrides", async () => {
 
     await fastify.inject({
       method: "POST",
-      payload: { message: "Hello", title: "Test", userId: "user-1" },
+      payload: { body: "Hello", title: "Test", userId: "user-1" },
       url: ROUTE_SEND_NOTIFICATION,
     });
 

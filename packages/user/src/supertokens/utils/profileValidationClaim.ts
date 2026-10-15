@@ -22,8 +22,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
   validators = {
     isVerified: (
       maxAgeInSeconds:
-        | number
-        | undefined = ProfileValidationClaim.defaultMaxAgeInSeconds,
+        number | undefined = ProfileValidationClaim.defaultMaxAgeInSeconds,
       id?: string,
     ): SessionClaimValidator => {
       return {
@@ -84,8 +83,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
 
   fetchValue = async (userId: string, userContext: any): Promise<Response> => {
     const request = getRequestFromUserContext(userContext)?.original as
-      | SessionRequest
-      | undefined;
+      SessionRequest | undefined;
 
     if (!request) {
       throw new Error("Request not set in userContext");
@@ -106,7 +104,7 @@ class ProfileValidationClaim extends SessionClaim<Response> {
     const fields = profileValidation.fields || [];
 
     // Verify that none of the specified fields in the user are null
-    const isVerified = !fields.some((field) => user[field] === null);
+    const isVerified = fields.every((field) => user[field] !== null);
 
     // Calculate the grace period expiry date if the user is not verified
     const gracePeriodEndsAt =

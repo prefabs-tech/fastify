@@ -66,5 +66,8 @@ module.exports = {
     packagesToBump: expandPackageList(["packages/*"]),
     packagesToPublish: expandPackageList(["packages/*"]),
   },
-  publishCommand: () => "pnpm publish --access public",
+  // npm trusted publishing (OIDC): shipjs skips the NPM_AUTH_TOKEN setup and its
+  // default command is `npm publish --tag <tag> --provenance`.
+  publishCommand: ({ defaultCommand }) => `${defaultCommand} --access public`,
+  useOidcTokenProvider: true,
 };

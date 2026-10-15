@@ -17,6 +17,12 @@ const getRecipeList = (fastify: FastifyInstance): RecipeListFunction[] => {
     recipeList.push(initEmailVerificationRecipe(fastify));
   }
 
+  const registeredRecipes = fastify.supertokensRecipes ?? [];
+
+  for (const factory of registeredRecipes) {
+    recipeList.push(factory(fastify));
+  }
+
   return recipeList;
 };
 

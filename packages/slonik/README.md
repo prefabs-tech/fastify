@@ -43,7 +43,7 @@ pnpm add --filter "@scope/project" @prefabs.tech/fastify-config @prefabs.tech/fa
 Add a `slonik` block to your config:
 
 ```typescript
-import { parse } from "@prefabs.tech/fastify-config";
+import { parse } from "@prefabs.tech/utilities";
 import dotenv from "dotenv";
 
 import type { ApiConfig } from "@prefabs.tech/fastify-config";

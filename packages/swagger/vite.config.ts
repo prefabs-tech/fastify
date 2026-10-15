@@ -1,4 +1,4 @@
-import { dirname, resolve } from "node:path";
+import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { defineConfig, loadEnv } from "vite";
 
@@ -11,12 +11,15 @@ export default defineConfig(({ mode }) => {
   return {
     build: {
       lib: {
-        entry: resolve(dirname(fileURLToPath(import.meta.url)), "src/index.ts"),
+        entry: path.resolve(
+          path.dirname(fileURLToPath(import.meta.url)),
+          "src/index.ts",
+        ),
         fileName: "prefabs-tech-fastify-swagger",
         formats: ["cjs", "es"],
         name: "PrefabsTechFastifySwagger",
       },
-      rollupOptions: {
+      rolldownOptions: {
         external: Object.keys({
           ...dependencies,
           ...peerDependencies,

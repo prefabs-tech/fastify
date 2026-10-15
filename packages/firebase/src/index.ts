@@ -1,4 +1,4 @@
-import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import type { FastifyReply } from "fastify";
 
 import type { User } from "./types";
 
@@ -7,7 +7,9 @@ import deviceHandlers from "./model/userDevice/handlers";
 
 declare module "fastify" {
   interface FastifyInstance {
-    verifySession: typeof verifySession;
+    verifySession: (options?: {
+      sessionRequired?: boolean;
+    }) => (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
   }
 
   interface FastifyRequest {
@@ -24,6 +26,10 @@ declare module "mercurius" {
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     firebase: {
+      appCheck?: {
+        enabled?: boolean;
+        routes?: string[];
+      };
       credentials?: {
         clientEmail: string;
         privateKey: string;
@@ -68,6 +74,7 @@ export * from "./constants";
 export { default as firebaseSchema } from "./graphql/schema";
 export * from "./lib";
 
+export { default as verifyFirebaseAppCheck } from "./middlewares/verifyFirebaseAppCheck";
 export * from "./migrations/queries";
 export { default as notificationRoutes } from "./model/notification/controller";
 export { default as notificationResolver } from "./model/notification/graphql/resolver";
@@ -76,3 +83,4 @@ export { default as userDeviceRoutes } from "./model/userDevice/controller";
 export { default as userDeviceResolver } from "./model/userDevice/graphql/resolver";
 export { default as UserDeviceService } from "./model/userDevice/service";
 export { default } from "./plugin";
+export { getAppCheck } from "firebase-admin/app-check";

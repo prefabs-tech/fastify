@@ -18,9 +18,7 @@ interface BaseOption {
 type BucketChoice = typeof BUCKET_FROM_FILE_FIELDS | typeof BUCKET_FROM_OPTIONS;
 
 type FilenameResolutionStrategy =
-  | typeof ADD_SUFFIX
-  | typeof ERROR
-  | typeof OVERWRITE;
+  typeof ADD_SUFFIX | typeof ERROR | typeof OVERWRITE;
 
 interface FilePayload {
   file: {
@@ -57,6 +55,12 @@ interface S3Config {
   };
 }
 
+type S3Options = S3Config & {
+  rest?: {
+    enabled?: boolean;
+  };
+};
+
 export type {
   BucketChoice,
   FilenameResolutionStrategy,
@@ -65,6 +69,7 @@ export type {
   Multipart,
   PresignedUrlOptions,
   S3Config,
+  S3Options,
 };
 
 export type * from "./file";

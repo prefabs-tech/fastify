@@ -7,6 +7,7 @@ A set of fastify libraries
 - @prefabs.tech/fastify-config (https://www.npmjs.com/package/@prefabs.tech/fastify-config)
 - @prefabs.tech/fastify-graphql (https://www.npmjs.com/package/@prefabs.tech/fastify-graphql)
 - @prefabs.tech/fastify-mailer (https://www.npmjs.com/package/@prefabs.tech/fastify-mailer)
+- @prefabs.tech/fastify-phone-auth (https://www.npmjs.com/package/@prefabs.tech/fastify-phone-auth)
 - @prefabs.tech/fastify-s3 (https://www.npmjs.com/package/@prefabs.tech/fastify-s3)
 - @prefabs.tech/fastify-slonik (https://www.npmjs.com/package/@prefabs.tech/fastify-slonik)
 - @prefabs.tech/fastify-user (https://www.npmjs.com/package/@prefabs.tech/fastify-user)
@@ -18,31 +19,31 @@ A set of fastify libraries
 Install dependencies recursively with this command
 
 ```
-make install
+just install
 ```
 
 ### Build all packages
 
 ```
-make build
+just build
 ```
 
 ### Lint code
 
 ```
-make lint
+just lint
 ```
 
 ### Typecheck code
 
 ```
-make typecheck
+just typecheck
 ```
 
 ### Test
 
 ```
-make test
+just test
 ```
 
 ## Developing locally & testing

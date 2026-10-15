@@ -21,7 +21,9 @@ const { mockS3 } = vi.hoisted(() => ({
 }));
 
 vi.mock("../utils/s3Client", () => ({
-  default: vi.fn(() => mockS3),
+  default: vi.fn(function () {
+    return mockS3;
+  }),
 }));
 
 vi.mock("@prefabs.tech/fastify-slonik", () => {

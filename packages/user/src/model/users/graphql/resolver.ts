@@ -1,7 +1,8 @@
 import type { FilterInput, SortInput } from "@prefabs.tech/fastify-slonik";
 import type { MercuriusContext } from "mercurius";
 
-import { GraphQLUpload, Multipart } from "@prefabs.tech/fastify-s3";
+import { GraphQLUpload } from "@prefabs.tech/fastify-graphql";
+import { Multipart } from "@prefabs.tech/fastify-s3";
 import { mercurius } from "mercurius";
 import EmailVerification, {
   EmailVerificationClaim,
@@ -225,9 +226,8 @@ const Mutation = {
           message: "Email updated successfully.",
           status: "OK",
         };
-      } else {
-        return new mercurius.ErrorWithProps("USER_NOT_FOUND");
       }
+      return new mercurius.ErrorWithProps("USER_NOT_FOUND");
       /*eslint-disable-next-line @typescript-eslint/no-explicit-any */
     } catch (error: any) {
       app.log.error(error);
@@ -582,7 +582,8 @@ const Query = {
         const mercuriusError = new mercurius.ErrorWithProps(adminUsers.status);
 
         return mercuriusError;
-      } else if (
+      }
+      if (
         (adminUsers.status === "OK" && adminUsers.users.length > 0) ||
         (superAdminUsers.status === "OK" && superAdminUsers.users.length > 0)
       ) {

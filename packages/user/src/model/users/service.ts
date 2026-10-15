@@ -1,6 +1,7 @@
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { File, FileService, Multipart } from "@prefabs.tech/fastify-s3";
 import { BaseService } from "@prefabs.tech/fastify-slonik";
+import humps from "humps";
 import Session from "supertokens-node/recipe/session";
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
 
@@ -104,27 +105,23 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
             return {
               status: "OK",
             };
-          } else {
-            throw new CustomError(
-              "Failed to change password",
-              ERROR_CODES.CHANGE_PASSWORD,
-            );
           }
-        } else {
-          return {
-            message: "Invalid password",
-            status: "INVALID_PASSWORD",
-          };
+          throw new CustomError(
+            "Failed to change password",
+            ERROR_CODES.CHANGE_PASSWORD,
+          );
         }
-      } else {
-        throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
+        return {
+          message: "Invalid password",
+          status: "INVALID_PASSWORD",
+        };
       }
-    } else {
-      return {
-        message: "Password cannot be empty",
-        status: "FIELD_ERROR",
-      };
+      throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
     }
+    return {
+      message: "Password cannot be empty",
+      status: "FIELD_ERROR",
+    };
   }
 
   async deleteFile(fileId: number): Promise<File | null | undefined> {
@@ -162,9 +159,35 @@ class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
 
     if (signInResponse.status === "OK") {
       return await this.delete(userId);
-    } else {
-      throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
     }
+    throw new CustomError("Invalid password", ERROR_CODES.INVALID_PASSWORD);
+  }
+
+  async updateProfile(userId: string, data: User["profile"]) {
+    const user = await this.findById(userId);
+
+    if (!user) {
+      throw new CustomError("User not found", ERROR_CODES.USER_NOT_FOUND);
+    }
+
+    const filteredData: Partial<User["profile"]> = {};
+    const dataKeys = Object.keys(data ?? {});
+
+    for (const key of dataKeys) {
+      filteredData[key as keyof User["profile"]] =
+        data![key as keyof User["profile"]];
+    }
+
+    const updatedProfile = {
+      ...(humps.decamelizeKeys(user.profile) as Record<string, unknown>),
+      ...(humps.decamelizeKeys(filteredData) as Record<string, unknown>),
+    };
+
+    const updatedUser = await this.update(userId, {
+      profile: JSON.stringify(updatedProfile),
+    });
+
+    return updatedUser;
   }
 
   async uploadPhoto(

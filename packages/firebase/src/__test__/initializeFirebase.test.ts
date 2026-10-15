@@ -46,6 +46,15 @@ const makeFastify = () =>
     },
   }) as unknown as FastifyInstance;
 
+describe("firebaseAdmin", async () => {
+  const { firebaseAdmin } = await import("../lib/initializeFirebase");
+  const { default: admin } = await import("firebase-admin");
+
+  it("re-exports the same firebase-admin instance the module initializes", () => {
+    expect(firebaseAdmin).toBe(admin);
+  });
+});
+
 describe("initializeFirebase", async () => {
   const { default: initializeFirebase } =
     await import("../lib/initializeFirebase");

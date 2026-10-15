@@ -1,11 +1,15 @@
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { Database } from "@prefabs.tech/fastify-slonik";
+
+import type { S3Options } from "../types";
 
 import { createFilesTableQuery } from "./queries";
 
-const runMigrations = async (database: Database, config: ApiConfig) => {
+const runMigrations = async (
+  database: Database,
+  options: Partial<S3Options>,
+) => {
   await database.connect(async (connection) => {
-    await connection.query(createFilesTableQuery(config));
+    await connection.query(createFilesTableQuery(options));
   });
 };
 

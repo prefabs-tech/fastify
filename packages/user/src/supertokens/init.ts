@@ -20,6 +20,8 @@ const init = (fastify: FastifyInstance) => {
       connectionURI: config.user.supertokens.connectionUri as string,
     },
   });
+
+  fastify.decorate("supertokensInitialized", true);
 };
 
 export default init;

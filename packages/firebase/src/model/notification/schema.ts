@@ -1,11 +1,11 @@
 export const sendNotificationSchema = {
   body: {
     properties: {
-      message: { type: "string" },
+      body: { type: "string" },
       title: { type: "string" },
       userId: { type: "string" },
     },
-    required: ["title", "message", "userId"],
+    required: ["title", "body", "userId"],
     type: "object",
   },
   description: "Send a notification to a specific user",

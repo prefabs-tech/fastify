@@ -1,4 +1,4 @@
-const userSchema = {
+export const userSchema = {
   additionalProperties: true,
   properties: {
     deletedAt: { nullable: true, type: "number" },

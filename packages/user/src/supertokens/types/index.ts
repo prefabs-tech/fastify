@@ -4,6 +4,7 @@ import type { TypeInput as SessionRecipeConfig } from "supertokens-node/recipe/s
 import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
 import type { TypeInput as ThirdPartyEmailPasswordRecipeConfig } from "supertokens-node/recipe/thirdpartyemailpassword/types";
 import type { TypeInput as UserRolesRecipeConfig } from "supertokens-node/recipe/userroles/types";
+import type { RecipeListFunction } from "supertokens-node/types";
 
 import {
   Apple,
@@ -32,6 +33,10 @@ interface SupertokensConfig {
   setErrorHandler?: boolean;
 }
 
+type SupertokensRecipeFactory = (
+  fastify: FastifyInstance,
+) => RecipeListFunction;
+
 interface SupertokensRecipes {
   emailVerification?:
     | ((fastify: FastifyInstance) => EmailVerificationRecipeConfig)
@@ -51,4 +56,4 @@ interface SupertokensThirdPartyProvider {
   google?: Parameters<typeof Google>[0];
 }
 
-export type { SupertokensConfig, SupertokensRecipes };
+export type { SupertokensConfig, SupertokensRecipeFactory, SupertokensRecipes };

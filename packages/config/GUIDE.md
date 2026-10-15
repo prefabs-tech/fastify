@@ -67,7 +67,6 @@ We wrap this library with a different surface:
 - `fastify.hostname` decorator derived from `baseUrl` and `port`
 - `request.config` population via `onRequest`
 - Type exports and Fastify module augmentation
-- `parse` utility for typed env parsing
 
 ---
 
@@ -123,20 +122,6 @@ An `onRequest` hook makes `config` available on every `FastifyRequest`, so route
 fastify.get("/me", async (request) => {
   return { origin: request.config.appOrigin };
 });
-```
-
-### `parse` — typed env var parser
-
-The exported `parse` utility converts raw environment variables to their intended types. Pass a fallback value; its type determines how the string is coerced.
-
-```typescript
-import { parse } from "@prefabs.tech/fastify-config";
-
-const config: ApiConfig = {
-  port: parse(process.env.PORT, 3000) as number,
-  env: parse(process.env.NODE_ENV, "development") as string,
-  // ...
-};
 ```
 
 Rules:
@@ -199,30 +184,6 @@ The plugin ships with module augmentation for Fastify's types. No extra setup is
 ---
 
 ## Use Cases
-
-### Building config from environment variables
-
-Use `parse` to construct a fully typed `ApiConfig` from `process.env`:
-
-```typescript
-import { parse } from "@prefabs.tech/fastify-config";
-import type { ApiConfig } from "@prefabs.tech/fastify-config";
-
-const config: ApiConfig = {
-  appName: parse(process.env.APP_NAME, "my-api") as string,
-  appOrigin: (process.env.APP_ORIGIN ?? "http://localhost:3000").split(","),
-  baseUrl: parse(process.env.BASE_URL, "http://localhost") as string,
-  env: parse(process.env.NODE_ENV, "development") as string,
-  logger: {
-    level: parse(process.env.LOG_LEVEL, "info") as string as Level,
-  },
-  name: "my-api",
-  port: parse(process.env.PORT, 3000) as number,
-  protocol: parse(process.env.PROTOCOL, "http") as string,
-  rest: { enabled: parse(process.env.REST_ENABLED, true) as boolean },
-  version: parse(process.env.APP_VERSION, "0.0.0") as string,
-};
-```
 
 ### Accessing config in a route handler
 

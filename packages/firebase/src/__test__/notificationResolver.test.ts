@@ -16,11 +16,13 @@ vi.mock("../lib/sendPushNotification", () => ({
 }));
 
 vi.mock("../model/userDevice/service", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    getByUserId: vi
-      .fn()
-      .mockResolvedValue([{ deviceToken: "token-abc", userId: "user-1" }]),
-  })),
+  default: vi.fn().mockImplementation(function () {
+    return {
+      getByUserId: vi
+        .fn()
+        .mockResolvedValue([{ deviceToken: "token-abc", userId: "user-1" }]),
+    };
+  }),
 }));
 
 const makeContext = (
@@ -89,12 +91,11 @@ describe("notificationResolver.sendNotification", () => {
   it("returns 404 ErrorWithProps when receiver has no registered devices", async () => {
     const { default: UserDeviceService } =
       await import("../model/userDevice/service");
-    vi.mocked(UserDeviceService).mockImplementationOnce(
-      () =>
-        ({
-          getByUserId: vi.fn().mockResolvedValue([]),
-        }) as unknown as ReturnType<typeof UserDeviceService>,
-    );
+    vi.mocked(UserDeviceService).mockImplementationOnce(function () {
+      return {
+        getByUserId: vi.fn().mockResolvedValue([]),
+      } as unknown as ReturnType<typeof UserDeviceService>;
+    });
 
     const context = makeContext();
     const result = await notificationResolver.Mutation.sendNotification(

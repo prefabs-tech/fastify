@@ -4,6 +4,7 @@ import type { SessionRequest } from "supertokens-node/framework/fastify";
 import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
 import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
 
+import withGrants from "../../../lib/withGrants";
 import createUserContext from "../../../supertokens/utils/createUserContext";
 import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
 
@@ -35,7 +36,7 @@ const me = async (request: SessionRequest, reply: FastifyReply) => {
     thirdParty: authUser?.thirdParty,
   };
 
-  reply.send(response);
+  reply.send(await withGrants(response, server));
 };
 
 export default me;

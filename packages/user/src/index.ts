@@ -15,6 +15,10 @@ declare module "fastify" {
   }
 
   interface FastifyRequest {
+    hasPermission: (
+      permission: string,
+      context?: Record<string, unknown>,
+    ) => Promise<boolean>;
     user?: User;
   }
 }

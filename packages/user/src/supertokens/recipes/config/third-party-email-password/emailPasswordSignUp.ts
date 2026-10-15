@@ -11,6 +11,7 @@ import type { User } from "../../../../types";
 import getUserService from "../../../../lib/getUserService";
 import sendEmail from "../../../../lib/sendEmail";
 import verifyEmail from "../../../../lib/verifyEmail";
+import withGrants from "../../../../lib/withGrants";
 import areRolesExist from "../../../utils/areRolesExist";
 
 const emailPasswordSignUp = (
@@ -97,6 +98,11 @@ const emailPasswordSignUp = (
           log.error(error);
         }
       }
+
+      originalResponse.user = await withGrants(
+        { ...originalResponse.user, ...user },
+        fastify,
+      );
     }
 
     if (

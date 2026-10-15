@@ -6,6 +6,7 @@ import { formatDate } from "@prefabs.tech/fastify-slonik";
 import type { AuthUser } from "../../../../types";
 
 import getUserService from "../../../../lib/getUserService";
+import withGrants from "../../../../lib/withGrants";
 
 const emailPasswordSignIn = (
   originalImplementation: RecipeInterface,
@@ -52,7 +53,7 @@ const emailPasswordSignIn = (
 
     return {
       status: "OK",
-      user: authUser,
+      user: await withGrants(authUser, fastify),
     };
   };
 };

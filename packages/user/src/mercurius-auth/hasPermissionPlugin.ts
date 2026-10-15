@@ -4,8 +4,6 @@ import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 import mercuriusAuth from "mercurius-auth";
 
-import hasUserPermission from "../lib/hasUserPermission";
-
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {
     applyPolicy: async (authDirectiveAST, parent, arguments_, context) => {
@@ -18,11 +16,8 @@ const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
         return new mercurius.ErrorWithProps("unauthorized", {}, 401);
       }
 
-      const hasPermission = await hasUserPermission(
-        context.app,
-        context.user?.id,
-        permission,
-      );
+      const hasPermission =
+        await context.reply.request.hasPermission(permission);
 
       if (!hasPermission) {
         // Added the claim validation errors to match with rest endpoint

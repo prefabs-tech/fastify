@@ -1,13 +1,17 @@
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { FastifyRequest } from "fastify";
 
 import { Error as STError } from "supertokens-node/recipe/session";
 import UserRoles from "supertokens-node/recipe/userroles";
 
-import hasUserPermission from "../lib/hasUserPermission";
+interface HasPermissionOptions {
+  context?: (
+    request: FastifyRequest,
+  ) => Promise<Record<string, unknown>> | Record<string, unknown>;
+}
 
 const hasPermission =
-  (permission: string) =>
-  async (request: SessionRequest): Promise<void> => {
+  (permission: string, options?: HasPermissionOptions) =>
+  async (request: FastifyRequest): Promise<void> => {
     const user = request.user;
 
     if (!user) {
@@ -17,7 +21,9 @@ const hasPermission =
       });
     }
 
-    if (!(await hasUserPermission(request.server, user.id, permission))) {
+    const context = options?.context ? await options.context(request) : {};
+
+    if (!(await request.hasPermission(permission, context))) {
       // this error tells SuperTokens to return a 403 http response.
       throw new STError({
         message: "Not have enough permission",

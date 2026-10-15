@@ -4,6 +4,7 @@ export const userSchema = {
     deletedAt: { nullable: true, type: "number" },
     disabled: { type: "boolean" },
     email: { format: "email", type: "string" },
+    grants: { items: {}, type: "array" },
     id: { type: "string" },
     lastLoginAt: { type: "number" },
     photoId: { nullable: true, type: "number" },

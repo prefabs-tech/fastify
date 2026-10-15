@@ -171,8 +171,24 @@ fastify.delete(
 
 - Returns `401` if no session.
 - Returns `403` if the user lacks the permission.
-- `SUPERADMIN` users bypass all permission checks.
-- If the permission string is not in `config.user.permissions`, the check passes automatically.
+- `SUPERADMIN` users bypass all permission checks, unless `config.user.accessControl.hasPermission` is set.
+- If the permission string is not in `config.user.permissions`, the check passes automatically, unless `config.user.accessControl.hasPermission` is set.
+- `{ context: (request) => object }` gives the object to check against, for a check that depends on the object (sync or async). It reaches `config.user.accessControl.hasPermission`; the SuperTokens check ignores it.
+
+```typescript
+fastify.put(
+  "/posts/:id",
+  {
+    preHandler: [
+      fastify.verifySession(),
+      fastify.hasPermission("posts:edit", {
+        context: async (request) => getPost(request.params.id),
+      }),
+    ],
+  },
+  handler,
+);
+```
 
 ### `hasUserPermission(fastify, userId, permission)` utility
 
@@ -182,6 +198,54 @@ Programmatic boolean permission check, for use outside route preHandlers:
 import { hasUserPermission } from "@prefabs.tech/fastify-user";
 
 const allowed = await hasUserPermission(fastify, userId, "posts:create");
+```
+
+### `config.user.accessControl` — the app's access-control library
+
+Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups three optional functions:
+
+```typescript
+user: {
+  accessControl: {
+    getGrants: (user, fastify) => fastify.accessControl.getEffectiveGrants(user.id, { user }),
+    hasPermission: (request, permission, context) => request.checkPermission(permission, context),
+    mapPermissionName: (permission) => permission.replaceAll(":", "."),
+  },
+},
+```
+
+Unset (the default), responses and checks are unchanged.
+
+#### `getGrants` — grants with the signed-in user
+
+- The user returned by email and password sign-in and sign-up, third-party sign-in, accepting an invitation and `GET /me` gets `grants`, the list `getGrants` returns. A front end that stores the user, such as `@prefabs.tech/react-user`, stores the grants with it.
+- Sign-in and `GET /me` must both carry them: the front end takes the user from the sign-in response at login and from `GET /me` on reload.
+- Accepting an invitation reads the grants after `invitation.postAccept`, so grants given there are included.
+- If `getGrants` throws, the request fails rather than returning the user without grants.
+- The list is for display. It goes stale when the user's grants change, until the next `GET /me`; the API must still check every request.
+
+#### `hasPermission` — the app's permission check
+
+- It decides `fastify.hasPermission`, `request.hasPermission` and the `@hasPermission` directive, including on fastify-user's own users and invitations routes.
+- It gets the request, the permission and the context. Without a `context` option the context is `{}`, so only grants without conditions count.
+- `config.user.permissions` and the `SUPERADMIN` bypass are SuperTokens rules and don't apply to it: a user it refuses is refused.
+- Without a user, the guard returns `401` and `request.hasPermission` returns `false`, without calling it.
+- Anything but `true` refuses. If it throws, the request fails.
+
+#### `mapPermissionName` — renaming before the check
+
+For a library that names permissions differently, such as with dots, so a seeded `users.*` covers fastify-user's `users:list`.
+
+- `hasPermission` gets the mapped name; the 403 response still names the permission the route asked for.
+- It is ignored without `hasPermission`: the SuperTokens check allows any name missing from `config.user.permissions`, so a renamed one would pass.
+- If it throws, the request fails.
+
+### `request.hasPermission(permission, context?)`
+
+The same check as a boolean, for code that needs the answer without refusing the request, such as a flag in a response:
+
+```typescript
+const canEdit = await request.hasPermission("posts:edit", post);
 ```
 
 ### SuperTokens error handler
@@ -738,7 +802,7 @@ Pass `emailVerification: false` or `profileValidation: false` to skip those chec
 
 ### `@hasPermission` directive
 
-Enforces a named permission on a GraphQL field. `SUPERADMIN` bypasses automatically:
+Enforces a named permission on a GraphQL field, through `config.user.accessControl.hasPermission` when set, with the context `{}`. Otherwise `SUPERADMIN` bypasses automatically:
 
 ```graphql
 type Mutation {

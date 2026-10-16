@@ -18,6 +18,7 @@ type ErrorResponse = {
   error?: string;
   message: string;
   name: string;
+  requestId: string;
   stack?: StackTracey.Entry[];
   statusCode: number;
 };

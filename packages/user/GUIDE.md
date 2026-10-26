@@ -244,7 +244,7 @@ For a library that names permissions differently, such as with dots, so a seeded
 
 #### `admin` — the library's roles and grants
 
-An object implementing the exported `AccessControlAdmin` type, so fastify-user can manage the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one.
+An object implementing the exported `AccessControlAdmin` type, so fastify-user can manage the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one. A library implementing it imports the types from `@prefabs.tech/fastify-user/access-control-provider` (see Type Exports).
 
 - It lists the permissions and the roles with their grants, creates and deletes roles, and gets and replaces a role's grants, a user's roles and a user's direct grants.
 - Roles are identified by name. A grant is `{ permission, effect?, conditions? }`, with `effect` `"allow"` (the default) or `"deny"`.
@@ -907,6 +907,8 @@ declare module "@prefabs.tech/fastify-config" {
 | `AccessControlPermission`       | A permission as `admin.listPermissions` returns it  |
 | `AccessControlRole`             | A role with its grants, as `admin` returns it       |
 | `AccessControlRoleInput`        | What `admin.createRole` takes                       |
+
+`AccessControlProvider`, the other `AccessControl…` types and `User` are also exported, types only, from `@prefabs.tech/fastify-user/access-control-provider`, for an access-control library implementing them. It loads nothing else of fastify-user, so none of its augmentations of Fastify (`request.user`, `fastify.hasPermission`) reach the library's code. `typesVersions` maps it for `moduleResolution: node`.
 
 ---
 

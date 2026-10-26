@@ -10,6 +10,7 @@ import UserRoles from "supertokens-node/recipe/userroles";
 import type { User } from "../../../../types";
 
 import getUserService from "../../../../lib/getUserService";
+import giveProviderRoles from "../../../../lib/giveProviderRoles";
 import areRolesExist from "../../../utils/areRolesExist";
 
 const thirdPartySignInUp = (
@@ -75,6 +76,13 @@ const thirdPartySignInUp = (
 
         throw error;
       }
+
+      await giveProviderRoles(
+        fastify,
+        input.userContext._default?.request?.request,
+        originalResponse.user.id,
+        roles,
+      );
     } else {
       await userService
         .update(originalResponse.user.id, {

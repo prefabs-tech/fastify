@@ -3,6 +3,7 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 import ProfileFieldService from "src/model/profileFields/service";
 
 import type { SupertokensConfig } from "../supertokens";
+import type { AccessControlAdmin } from "./accessControl";
 import type { Invitation } from "./invitation";
 import type { IsEmailOptions } from "./isEmailOptions";
 import type { StrongPasswordOptions } from "./strongPasswordOptions";
@@ -15,6 +16,8 @@ import UserService from "../model/users/service";
 
 /** The access-control library the app uses in place of SuperTokens roles. */
 interface AccessControlProvider {
+  /** Manages the library's roles and grants; `roleMap` gives roles through it. */
+  admin?: AccessControlAdmin;
   /**
    * Adds `grants` to the user returned by sign-in, sign-up, accepting an
    * invitation and `GET /me`, so the front end stores them with the user.
@@ -36,6 +39,12 @@ interface AccessControlProvider {
    * one would pass.
    */
   mapPermissionName?: (permission: string) => string;
+  /**
+   * For each SuperTokens role given at sign-up, admin sign-up or on accepting
+   * an invitation, the library's roles to give as well, through `admin`.
+   * SuperTokens roles still decide who may enter an app, so they are kept.
+   */
+  roleMap?: Record<string, string[]>;
 }
 interface EmailOptions {
   subject?: string;

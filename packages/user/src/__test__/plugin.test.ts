@@ -132,6 +132,36 @@ describe("userPlugin — decorators", async () => {
   });
 });
 
+describe("userPlugin — config.user.accessControl.roleMap", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("refuses to register when roleMap has no admin to give roles through", async () => {
+    const fastify = buildFastify({
+      accessControl: { roleMap: { ADMIN: ["user-admin"] } },
+    });
+
+    await expect(fastify.register(plugin)).rejects.toThrow(
+      "config.user.accessControl.roleMap needs config.user.accessControl.admin",
+    );
+    expect(mockRunMigrations).not.toHaveBeenCalled();
+    await fastify.close();
+  });
+
+  it("registers with roleMap and an admin object", async () => {
+    const fastify = buildFastify({
+      accessControl: { admin: {}, roleMap: { ADMIN: ["user-admin"] } },
+    });
+
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(mockRunMigrations).toHaveBeenCalledOnce();
+    await fastify.close();
+  });
+});
+
 describe("userPlugin — request.hasPermission", async () => {
   const { default: plugin } = await import("../plugin");
 

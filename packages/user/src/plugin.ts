@@ -5,6 +5,7 @@ import FastifyPlugin from "fastify-plugin";
 
 import hasUserPermission from "./lib/hasUserPermission";
 import seedRoles from "./lib/seedRoles";
+import validateRoleMap from "./lib/validateRoleMap";
 import mercuriusAuthPlugin from "./mercurius-auth/plugin";
 import hasPermission from "./middlewares/hasPermission";
 import runMigrations from "./migrations/runMigrations";
@@ -43,6 +44,8 @@ const checkRequestPermission = async (
 
 const userPlugin: FastifyPluginAsync = async (fastify) => {
   const { graphql, user } = fastify.config;
+
+  validateRoleMap(user.accessControl);
 
   await fastify.register(supertokensPlugin);
 

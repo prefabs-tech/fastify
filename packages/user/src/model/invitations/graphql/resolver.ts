@@ -83,6 +83,11 @@ const Mutation = {
 
       // signup
       const signUpResponse = await emailPasswordSignUp(email, password, {
+        _default: {
+          request: {
+            request: reply.request,
+          },
+        },
         autoVerifyEmail: true,
         roles: [invitation.role],
       });

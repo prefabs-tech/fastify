@@ -9,6 +9,7 @@ import UserRoles from "supertokens-node/recipe/userroles";
 import type { User } from "../../../../types";
 
 import getUserService from "../../../../lib/getUserService";
+import giveProviderRoles from "../../../../lib/giveProviderRoles";
 import sendEmail from "../../../../lib/sendEmail";
 import verifyEmail from "../../../../lib/verifyEmail";
 import withGrants from "../../../../lib/withGrants";
@@ -70,6 +71,13 @@ const emailPasswordSignUp = (
           log.error(rolesResponse.status);
         }
       }
+
+      await giveProviderRoles(
+        fastify,
+        input.userContext._default?.request?.request,
+        originalResponse.user.id,
+        roles,
+      );
 
       if (config.user.features?.signUp?.emailVerification) {
         try {

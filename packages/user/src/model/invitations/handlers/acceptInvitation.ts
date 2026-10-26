@@ -68,6 +68,11 @@ const acceptInvitation = async (
 
   // signup
   const signUpResponse = await emailPasswordSignUp(email, password, {
+    _default: {
+      request: {
+        request,
+      },
+    },
     autoVerifyEmail: true,
     roles: [invitation.role],
   });

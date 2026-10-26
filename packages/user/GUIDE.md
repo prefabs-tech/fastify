@@ -202,19 +202,21 @@ const allowed = await hasUserPermission(fastify, userId, "posts:create");
 
 ### `config.user.accessControl` — the app's access-control library
 
-Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups three optional functions:
+Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups optional members, each described below:
 
 ```typescript
 user: {
   accessControl: {
+    admin: libraryAdmin, // an AccessControlAdmin
     getGrants: (user, fastify) => fastify.accessControl.getEffectiveGrants(user.id, { user }),
     hasPermission: (request, permission, context) => request.checkPermission(permission, context),
     mapPermissionName: (permission) => permission.replaceAll(":", "."),
+    roleMap: { ADMIN: ["user-admin"], SUPERADMIN: ["superadmin"] },
   },
 },
 ```
 
-Unset (the default), responses and checks are unchanged.
+Unset (the default), responses, checks and sign-up are unchanged.
 
 #### `getGrants` — grants with the signed-in user
 
@@ -239,6 +241,34 @@ For a library that names permissions differently, such as with dots, so a seeded
 - `hasPermission` gets the mapped name; the 403 response still names the permission the route asked for.
 - It is ignored without `hasPermission`: the SuperTokens check allows any name missing from `config.user.permissions`, so a renamed one would pass.
 - If it throws, the request fails.
+
+#### `admin` — the library's roles and grants
+
+An object implementing the exported `AccessControlAdmin` type, so fastify-user can manage the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one.
+
+- It lists the permissions and the roles with their grants, creates and deletes roles, and gets and replaces a role's grants, a user's roles and a user's direct grants.
+- Roles are identified by name. A grant is `{ permission, effect?, conditions? }`, with `effect` `"allow"` (the default) or `"deny"`.
+- Every method takes the request, so the library can work in the request's database schema.
+- `getCapabilities(request)` says whether the library stores deny grants, conditions and direct grants; `getUserGrants` and `setUserGrants` may be missing when it doesn't store direct grants.
+- Today only `roleMap` calls it.
+
+#### `roleMap` — the library's roles at sign-up
+
+Maps each SuperTokens role fastify-user gives to the library's roles to give as well. SuperTokens roles still decide who may enter an app (`supportedRoles` on the front end), so they are kept; `roleMap` gives the same people their permissions in the library.
+
+```typescript
+roleMap: {
+  ADMIN: ["user-admin"],
+  SUPERADMIN: ["superadmin"],
+},
+```
+
+- It applies to email and password sign-up, third-party sign-up of a new user, admin sign-up (`POST /signup/admin`) and accepting an invitation, over REST and GraphQL. An existing user's third-party sign-in gives nothing.
+- The mapped roles are added to any the user holds, through `admin.getUserRoles` and `admin.setUserRoles`. A role the map leaves out, or maps to `[]`, gives nothing.
+- They are given before the response's `grants` are read and before `invitation.postAccept` runs, so both see them.
+- The account exists by then, so a failure is logged and the sign-up still succeeds; the user lacks only those roles. A sign-up function called without a request in its user context (`_default.request.request`) gives nothing and logs a warning.
+- Only users created after it is set get roles from it. Give existing users theirs once, by hand.
+- Registration fails when `roleMap` is set without an `admin` object, or when a role doesn't map to an array of names.
 
 ### `request.hasPermission(permission, context?)`
 
@@ -870,6 +900,13 @@ declare module "@prefabs.tech/fastify-config" {
 | `SessionRecipe`                 | SuperTokens session recipe override type            |
 | `ThirdPartyEmailPasswordRecipe` | SuperTokens TPEP recipe override type               |
 | `EmailVerificationRecipe`       | SuperTokens email verification recipe override type |
+| `AccessControlProvider`         | `config.user.accessControl`                         |
+| `AccessControlAdmin`            | The library's role management, for `admin`          |
+| `AccessControlCapabilities`     | What `admin` can store                              |
+| `AccessControlGrant`            | A grant as `admin` takes and returns it             |
+| `AccessControlPermission`       | A permission as `admin.listPermissions` returns it  |
+| `AccessControlRole`             | A role with its grants, as `admin` returns it       |
+| `AccessControlRoleInput`        | What `admin.createRole` takes                       |
 
 ---
 

@@ -3,7 +3,7 @@ import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
 import humps from "humps";
 import { sql } from "slonik";
 
-import type { BaseFilterInput, FilterInput } from "./types";
+import type { BaseFilterInput, FilterInput } from "./types/index.js";
 
 const applyFilter = (
   tableIdentifier: IdentifierSqlToken,

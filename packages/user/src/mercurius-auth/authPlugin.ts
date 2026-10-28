@@ -2,12 +2,16 @@ import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
-import mercuriusAuth from "mercurius-auth";
-import emailVerificationRecipe from "supertokens-node/recipe/emailverification";
-import { Error } from "supertokens-node/recipe/session";
+import mercuriusAuthModule from "mercurius-auth";
+import emailVerificationRecipe from "supertokens-node/recipe/emailverification/index.js";
+import { Error } from "supertokens-node/recipe/session/index.js";
 
-import createUserContext from "../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim";
+import createUserContext from "../supertokens/utils/createUserContext.js";
+import ProfileValidationClaim from "../supertokens/utils/profileValidationClaim.js";
+
+// mercurius-auth is CommonJS (`module.exports = plugin`) but its typings declare `export default`
+const mercuriusAuth =
+  mercuriusAuthModule as unknown as typeof mercuriusAuthModule.default;
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {

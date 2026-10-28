@@ -3,7 +3,7 @@ import type { MercuriusContext } from "mercurius";
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { mercurius } from "mercurius";
 
-import RoleService from "../service";
+import RoleService from "../service.js";
 
 const Mutation = {
   createRole: async (

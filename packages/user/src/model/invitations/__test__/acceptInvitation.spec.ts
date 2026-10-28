@@ -2,16 +2,16 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("supertokens-node/recipe/thirdpartyemailpassword", () => ({
+vi.mock("supertokens-node/recipe/thirdpartyemailpassword/index.js", () => ({
   emailPasswordSignUp: vi.fn().mockResolvedValue({
     status: "OK",
     user: { email: "user@example.com", id: "user-1", timeJoined: 0 },
   }),
 }));
-vi.mock("supertokens-node/recipe/session", () => ({
+vi.mock("supertokens-node/recipe/session/index.js", () => ({
   createNewSession: vi.fn(),
 }));
-vi.mock("../../../lib/getInvitationService", () => ({
+vi.mock("../../../lib/getInvitationService.js", () => ({
   default: () => ({
     findByToken: vi
       .fn()
@@ -19,15 +19,15 @@ vi.mock("../../../lib/getInvitationService", () => ({
     update: vi.fn(),
   }),
 }));
-vi.mock("../../../lib/isInvitationValid", () => ({ default: () => true }));
-vi.mock("../../../validator/email", () => ({
+vi.mock("../../../lib/isInvitationValid.js", () => ({ default: () => true }));
+vi.mock("../../../validator/email.js", () => ({
   default: () => ({ success: true }),
 }));
-vi.mock("../../../validator/password", () => ({
+vi.mock("../../../validator/password.js", () => ({
   default: () => ({ success: true }),
 }));
 
-import acceptInvitation from "../handlers/acceptInvitation";
+import acceptInvitation from "../handlers/acceptInvitation.js";
 
 const accept = async (user: Record<string, unknown>) => {
   const send = vi.fn();

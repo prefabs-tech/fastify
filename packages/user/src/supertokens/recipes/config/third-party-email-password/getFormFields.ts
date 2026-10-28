@@ -1,8 +1,8 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
-import type { TypeInputFormField } from "supertokens-node/lib/build/recipe/emailpassword/types";
+import type { TypeInputFormField } from "supertokens-node/lib/build/recipe/emailpassword/types.js";
 
-import validateEmail from "../../../../validator/email";
-import validatePassword from "../../../../validator/password";
+import validateEmail from "../../../../validator/email.js";
+import validatePassword from "../../../../validator/password.js";
 
 const getDefaultFormFields = (config: ApiConfig): TypeInputFormField[] => {
   return [

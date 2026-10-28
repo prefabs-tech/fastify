@@ -4,9 +4,9 @@ import type {
   ProfileField,
   ProfileFieldCreateInput,
   ProfileFieldUpdateInput,
-} from "../../types/profileField";
+} from "../../types/profileField.js";
 
-import ProfileFieldSqlFactory from "./sqlFactory";
+import ProfileFieldSqlFactory from "./sqlFactory.js";
 
 class ProfileFieldService extends BaseService<
   ProfileField,

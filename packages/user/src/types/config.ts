@@ -1,17 +1,16 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
-import ProfileFieldService from "src/model/profileFields/service";
+import type { SupertokensConfig } from "../supertokens/index.js";
+import type { Invitation } from "./invitation.js";
+import type { IsEmailOptions } from "./isEmailOptions.js";
+import type { StrongPasswordOptions } from "./strongPasswordOptions.js";
+import type { User, UserUpdateInput } from "./user.js";
 
-import type { SupertokensConfig } from "../supertokens";
-import type { Invitation } from "./invitation";
-import type { IsEmailOptions } from "./isEmailOptions";
-import type { StrongPasswordOptions } from "./strongPasswordOptions";
-import type { User, UserUpdateInput } from "./user";
-
-import invitationHandlers from "../model/invitations/handlers";
-import InvitationService from "../model/invitations/service";
-import userHandlers from "../model/users/handlers";
-import UserService from "../model/users/service";
+import invitationHandlers from "../model/invitations/handlers/index.js";
+import InvitationService from "../model/invitations/service.js";
+import ProfileFieldService from "../model/profileFields/service.js";
+import userHandlers from "../model/users/handlers/index.js";
+import UserService from "../model/users/service.js";
 
 /** The access-control library the app uses in place of SuperTokens roles. */
 interface AccessControlProvider {

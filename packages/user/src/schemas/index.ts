@@ -1,3 +1,3 @@
-export { default as emailSchema } from "./email";
+export { default as emailSchema } from "./email.js";
 
-export { default as passwordSchema } from "./password";
+export { default as passwordSchema } from "./password.js";

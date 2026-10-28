@@ -1,4 +1,4 @@
-import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
+import type { MulticastMessage } from "firebase-admin/messaging";
 
 import admin from "firebase-admin";
 

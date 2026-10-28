@@ -8,7 +8,7 @@ import {
   DEFAULT_CONTACT_METHOD,
   DEFAULT_FLOW_TYPE,
   TWILIO_VERIFY_PLACEHOLDER_CODE,
-} from "../constants";
+} from "../constants.js";
 
 const twilioClientMock = {
   client: { verify: { v2: { services: vi.fn() } } },
@@ -17,12 +17,12 @@ const twilioClientMock = {
 
 // getTwilioClient is our own module and is the only thing here that reaches an
 // external service, so it is the mock seam.
-vi.mock("../lib/getTwilioClient", () => ({
+vi.mock("../lib/getTwilioClient.js", () => ({
   default: vi.fn(() => twilioClientMock),
 }));
 
 const { default: getPasswordlessRecipeConfig } =
-  await import("../recipe/config");
+  await import("../recipe/config.js");
 
 const twilio = {
   accountSid: "AC123",

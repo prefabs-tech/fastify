@@ -4,7 +4,7 @@ import type { ZodTypeAny } from "zod";
 
 import { sql } from "slonik";
 
-import { TABLE_USER_DEVICES } from "../constants";
+import { TABLE_USER_DEVICES } from "../constants.js";
 
 const createUserDevicesTableQuery = (
   config: ApiConfig,

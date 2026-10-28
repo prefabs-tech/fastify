@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
-import { errorHandler as supertokensErrorHandler } from "supertokens-node/framework/fastify";
+import { errorHandler as supertokensErrorHandler } from "supertokens-node/framework/fastify/index.js";
 
 export const errorHandler = (
   error: unknown,

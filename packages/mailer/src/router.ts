@@ -2,7 +2,7 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 
 import mjml2html from "mjml";
 
-import { testEmailSchema } from "./schema";
+import { testEmailSchema } from "./schema.js";
 
 const router = async (
   fastify: FastifyInstance,

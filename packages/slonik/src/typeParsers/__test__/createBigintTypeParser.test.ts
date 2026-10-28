@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createBigintTypeParser } from "../createBigintTypeParser";
+import { createBigintTypeParser } from "../createBigintTypeParser.js";
 
 describe("createBigintTypeParser", () => {
   it("returns a type parser with name int8", () => {

@@ -3,9 +3,9 @@ import type { FastifyPluginAsync } from "fastify";
 import { addSupertokensRecipe } from "@prefabs.tech/fastify-user";
 import FastifyPlugin from "fastify-plugin";
 
-import extendUserSchema from "./graphql/extendUserSchema";
-import runMigrations from "./migrations/runMigrations";
-import initPasswordlessRecipe from "./recipe/initPasswordlessRecipe";
+import extendUserSchema from "./graphql/extendUserSchema.js";
+import runMigrations from "./migrations/runMigrations.js";
+import initPasswordlessRecipe from "./recipe/initPasswordlessRecipe.js";
 
 const phoneAuthPlugin: FastifyPluginAsync = async (fastify) => {
   if (fastify.config.phoneAuth?.enabled === false) {

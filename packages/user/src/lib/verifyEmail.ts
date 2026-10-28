@@ -1,4 +1,4 @@
-import EmailVerification from "supertokens-node/recipe/emailverification";
+import EmailVerification from "supertokens-node/recipe/emailverification/index.js";
 
 /**
  * Auto verify user email.

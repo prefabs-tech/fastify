@@ -3,10 +3,10 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import graphqlPlugin from "../plugin";
-import createConfig from "./helpers/createConfig";
-import testPlugin from "./helpers/testPlugin";
-import testPluginAsync from "./helpers/testPluginAsync";
+import graphqlPlugin from "../plugin.js";
+import createConfig from "./helpers/createConfig.js";
+import testPlugin from "./helpers/testPlugin.js";
+import testPluginAsync from "./helpers/testPluginAsync.js";
 
 describe("Graphql Context", () => {
   let api: FastifyInstance;

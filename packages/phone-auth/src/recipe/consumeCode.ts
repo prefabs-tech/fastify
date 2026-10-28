@@ -1,6 +1,6 @@
 import type { User } from "@prefabs.tech/fastify-user";
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/passwordless/types";
+import type { RecipeInterface } from "supertokens-node/recipe/passwordless/types/index.js";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { formatDate } from "@prefabs.tech/fastify-slonik";
@@ -10,9 +10,9 @@ import {
   ROLE_USER,
 } from "@prefabs.tech/fastify-user";
 import { deleteUser, getRequestFromUserContext } from "supertokens-node";
-import UserRoles from "supertokens-node/recipe/userroles";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import { ERROR_CODES } from "../constants";
+import { ERROR_CODES } from "../constants.js";
 
 const consumeCode = (
   originalImplementation: RecipeInterface,

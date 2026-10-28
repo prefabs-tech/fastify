@@ -8,7 +8,7 @@ import {
   TABLE_USER_PROFILE_FIELD_OPTIONS_I18N,
   TABLE_USER_PROFILE_FIELDS,
   TABLE_USER_PROFILE_FIELDS_I18N,
-} from "../../constants";
+} from "../../constants.js";
 
 class ProfileFieldSqlFactory extends DefaultSqlFactory {
   get table(): string {

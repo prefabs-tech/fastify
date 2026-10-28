@@ -8,17 +8,17 @@ import type {
   FilePayload,
   FileUpdateInput,
   PresignedUrlOptions,
-} from "../../types";
+} from "../../types/index.js";
 
-import { ADD_SUFFIX, ERROR, ERROR_CODES } from "../../constants";
+import { ADD_SUFFIX, ERROR, ERROR_CODES } from "../../constants.js";
 import {
   getBaseName,
   getFileExtension,
   getFilenameWithSuffix,
   getPreferredBucket,
-} from "../../utils";
-import S3Client from "../../utils/s3Client";
-import FileSqlFactory from "./sqlFactory";
+} from "../../utils/index.js";
+import S3Client from "../../utils/s3Client.js";
+import FileSqlFactory from "./sqlFactory.js";
 
 class FileService extends BaseService<File, FileCreateInput, FileUpdateInput> {
   get fileExtension() {

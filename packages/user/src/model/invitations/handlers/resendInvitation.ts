@@ -1,11 +1,11 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
-import type { Invitation } from "../../../types/invitation";
+import type { Invitation } from "../../../types/invitation.js";
 
-import getInvitationService from "../../../lib/getInvitationService";
-import isInvitationValid from "../../../lib/isInvitationValid";
-import sendInvitation from "../../../lib/sendInvitation";
+import getInvitationService from "../../../lib/getInvitationService.js";
+import isInvitationValid from "../../../lib/isInvitationValid.js";
+import sendInvitation from "../../../lib/sendInvitation.js";
 
 const resendInvitation = async (
   request: SessionRequest,

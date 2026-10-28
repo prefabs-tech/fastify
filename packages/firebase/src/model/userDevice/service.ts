@@ -4,8 +4,8 @@ import {
   UserDevice,
   UserDeviceCreateInput,
   UserDeviceUpdateInput,
-} from "../../types";
-import UserDeviceSqlFactory from "./sqlFactory";
+} from "../../types.js";
+import UserDeviceSqlFactory from "./sqlFactory.js";
 
 class UserDeviceService extends BaseService<
   UserDevice,

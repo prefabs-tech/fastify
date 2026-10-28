@@ -1,7 +1,7 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { Database } from "@prefabs.tech/fastify-slonik";
 
-import type { GraphqlConfig } from "./types";
+import type { GraphqlConfig } from "./types.js";
 
 declare module "mercurius" {
   interface MercuriusContext {
@@ -23,18 +23,18 @@ declare module "fastify" {
   }
 }
 
-export { default as baseSchema } from "./baseSchema";
+export { default as baseSchema } from "./baseSchema.js";
 
-export * from "./constants";
-export { default } from "./plugin";
+export * from "./constants.js";
+export { default } from "./plugin.js";
 export type {
   GraphqlConfig,
   GraphqlEnabledPlugin,
   GraphqlOptions,
   GraphqlUploadsConfig,
   MultipartFile,
-} from "./types";
-export { default as graphqlUploadTransport } from "./uploads/transport";
+} from "./types.js";
+export { default as graphqlUploadTransport } from "./uploads/transport.js";
 export { mergeTypeDefs } from "@graphql-tools/merge";
 
 export type { DocumentNode } from "graphql";

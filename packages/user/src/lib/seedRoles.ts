@@ -1,7 +1,7 @@
-import UserRoles from "supertokens-node/recipe/userroles";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import { ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_USER } from "../constants";
-import { UserConfig } from "../types";
+import { ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_USER } from "../constants.js";
+import { UserConfig } from "../types/index.js";
 
 const seedRoles = async (userConfig?: Partial<UserConfig>) => {
   const roles = [

@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import type { BaseRequest } from "supertokens-node/lib/build/framework";
-import type { TypeInput as OpenIdTypeInput } from "supertokens-node/lib/build/recipe/openid/types";
+import type { BaseRequest } from "supertokens-node/lib/build/framework/index.js";
+import type { TypeInput as OpenIdTypeInput } from "supertokens-node/lib/build/recipe/openid/types.js";
 import type {
   APIInterface,
   ErrorHandlers,
   RecipeInterface,
   TokenTransferMethod,
-} from "supertokens-node/recipe/session/types";
+} from "supertokens-node/recipe/session/types/index.js";
 
 type APIInterfaceWrapper = {
   [key in keyof APIInterface]?: (

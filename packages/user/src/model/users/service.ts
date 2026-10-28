@@ -2,17 +2,21 @@ import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { File, FileService, Multipart } from "@prefabs.tech/fastify-s3";
 import { BaseService } from "@prefabs.tech/fastify-slonik";
 import humps from "humps";
-import Session from "supertokens-node/recipe/session";
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
+import Session from "supertokens-node/recipe/session/index.js";
+import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { User, UserCreateInput, UserUpdateInput } from "../../types";
+import type {
+  User,
+  UserCreateInput,
+  UserUpdateInput,
+} from "../../types/index.js";
 
 import {
   DEFAULT_USER_PHOTO_MAX_SIZE_IN_MB,
   ERROR_CODES,
-} from "../../constants";
-import validatePassword from "../../validator/password";
-import UserSqlFactory from "./sqlFactory";
+} from "../../constants.js";
+import validatePassword from "../../validator/password.js";
+import UserSqlFactory from "./sqlFactory.js";
 
 class UserService extends BaseService<User, UserCreateInput, UserUpdateInput> {
   get bucket(): string | undefined {

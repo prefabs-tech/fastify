@@ -1,8 +1,14 @@
 import { FastifyInstance } from "fastify";
 
-import { ROUTE_USER_PROFILE, ROUTE_USER_PROFILE_FIELDS } from "../../constants";
-import handlers from "./handlers";
-import { getProfileFieldsListSchema, updateUserProfileSchema } from "./schema";
+import {
+  ROUTE_USER_PROFILE,
+  ROUTE_USER_PROFILE_FIELDS,
+} from "../../constants.js";
+import handlers from "./handlers/index.js";
+import {
+  getProfileFieldsListSchema,
+  updateUserProfileSchema,
+} from "./schema.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   fastify.get(

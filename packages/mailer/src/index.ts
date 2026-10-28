@@ -1,7 +1,7 @@
 /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-import type { FastifyMailer, MailerConfig } from "./types";
+import type { FastifyMailer, MailerConfig } from "./types.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -15,10 +15,10 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
-export { default } from "./plugin";
+export { default } from "./plugin.js";
 
 export type {
   FastifyMailer,
   FastifyMailerNamedInstance,
   MailerConfig,
-} from "./types";
+} from "./types.js";

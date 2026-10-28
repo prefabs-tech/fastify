@@ -3,11 +3,11 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { SlonikOptions } from "../types";
+import type { SlonikOptions } from "../types/index.js";
 
 const migrateMock = vi.fn().mockResolvedValue();
 
-vi.mock("../migrate", () => ({
+vi.mock("../migrate.js", () => ({
   default: migrateMock,
 }));
 
@@ -21,7 +21,7 @@ const baseOptions: SlonikOptions = {
 };
 
 describe("migrationPlugin — registration", async () => {
-  const { default: plugin } = await import("../migrationPlugin");
+  const { default: plugin } = await import("../migrationPlugin.js");
 
   let fastify: FastifyInstance;
 
@@ -42,7 +42,7 @@ describe("migrationPlugin — registration", async () => {
 });
 
 describe("migrationPlugin — legacy config fallback", async () => {
-  const { default: plugin } = await import("../migrationPlugin");
+  const { default: plugin } = await import("../migrationPlugin.js");
 
   let fastify: FastifyInstance;
 

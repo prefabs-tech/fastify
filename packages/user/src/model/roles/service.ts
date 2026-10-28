@@ -1,7 +1,7 @@
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import UserRoles from "supertokens-node/recipe/userroles";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import { ERROR_CODES } from "../../constants";
+import { ERROR_CODES } from "../../constants.js";
 
 class RoleService {
   async createRole(

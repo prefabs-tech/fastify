@@ -1,4 +1,4 @@
-import UserRoles from "supertokens-node/recipe/userroles";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
 const isRoleExists = async (role: string): Promise<boolean> => {
   const { roles } = await UserRoles.getAllRoles();

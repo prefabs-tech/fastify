@@ -3,11 +3,11 @@ import type { FastifyInstance } from "fastify";
 import FastifyPlugin from "fastify-plugin";
 import { stringifyDsn } from "slonik";
 
-import type { SlonikOptions } from "./types";
+import type { SlonikOptions } from "./types/index.js";
 
-import createClientConfig from "./factories/createClientConfig";
-import runMigrations from "./migrations/runMigrations";
-import { fastifySlonik } from "./slonik";
+import createClientConfig from "./factories/createClientConfig.js";
+import runMigrations from "./migrations/runMigrations.js";
+import { fastifySlonik } from "./slonik.js";
 
 const plugin = async (fastify: FastifyInstance, options: SlonikOptions) => {
   fastify.log.info("Registering fastify-slonik plugin");

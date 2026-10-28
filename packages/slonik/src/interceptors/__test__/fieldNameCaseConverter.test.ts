@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 import { describe, expect, it } from "vitest";
 
-import fieldNameCaseConverter from "../fieldNameCaseConverter";
-import createQueryContext from "./helpers/createQueryContext";
+import fieldNameCaseConverter from "../fieldNameCaseConverter.js";
+import createQueryContext from "./helpers/createQueryContext.js";
 
 describe("fielNameCaseConverter interceptor", () => {
   const interceptor = fieldNameCaseConverter;

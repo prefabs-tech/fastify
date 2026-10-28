@@ -3,14 +3,14 @@ import type { ListObjectsOutput } from "@aws-sdk/client-s3";
 import { Readable } from "node:stream";
 import { describe, expect, it } from "vitest";
 
-import { BUCKET_FROM_FILE_FIELDS, BUCKET_FROM_OPTIONS } from "../constants";
+import { BUCKET_FROM_FILE_FIELDS, BUCKET_FROM_OPTIONS } from "../constants.js";
 import {
   convertStreamToBuffer,
   getBaseName,
   getFileExtension,
   getFilenameWithSuffix,
   getPreferredBucket,
-} from "../utils";
+} from "../utils/index.js";
 
 describe("getBaseName", () => {
   it("removes the file extension", () => {

@@ -1,13 +1,13 @@
 import type { AppConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
-import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types";
+import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types.js";
+import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types.js";
 
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
+import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import { RESET_PASSWORD_PATH } from "../../../../constants";
-import getOrigin from "../../../../lib/getOrigin";
-import sendEmail from "../../../../lib/sendEmail";
+import { RESET_PASSWORD_PATH } from "../../../../constants.js";
+import getOrigin from "../../../../lib/getOrigin.js";
+import sendEmail from "../../../../lib/sendEmail.js";
 
 const sendPasswordResetEmail = (
   originalImplementation: EmailDeliveryInterface<TypeEmailPasswordPasswordResetEmailDeliveryInput>,

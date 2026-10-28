@@ -3,7 +3,7 @@ import type { IMemoryDb, SlonikAdapterOptions } from "pg-mem";
 /* istanbul ignore file */
 import { newDb } from "pg-mem";
 
-import fieldNameCaseConverter from "../../interceptors/fieldNameCaseConverter";
+import fieldNameCaseConverter from "../../interceptors/fieldNameCaseConverter.js";
 
 interface IOptions {
   db?: IMemoryDb;

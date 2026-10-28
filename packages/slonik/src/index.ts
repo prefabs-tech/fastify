@@ -2,7 +2,7 @@ import type { ConnectionRoutine, DatabasePool, QueryFunction } from "slonik";
 
 import { sql } from "slonik";
 
-import type { SlonikConfig } from "./types";
+import type { SlonikConfig } from "./types/index.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -31,16 +31,16 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
-export { default as createDatabase } from "./createDatabase";
+export { default as createDatabase } from "./createDatabase.js";
 
-export * from "./filters";
-export { default as formatDate } from "./formatDate";
+export * from "./filters.js";
+export { default as formatDate } from "./formatDate.js";
 
-export { default as migrationPlugin } from "./migrationPlugin";
-export { default } from "./plugin";
-export { default as BaseService } from "./service";
-export * from "./sql";
-export { default as DefaultSqlFactory } from "./sqlFactory";
-export { createBigintTypeParser } from "./typeParsers/createBigintTypeParser";
+export { default as migrationPlugin } from "./migrationPlugin.js";
+export { default } from "./plugin.js";
+export { default as BaseService } from "./service.js";
+export * from "./sql.js";
+export { default as DefaultSqlFactory } from "./sqlFactory.js";
+export { createBigintTypeParser } from "./typeParsers/createBigintTypeParser.js";
 
-export type * from "./types";
+export type * from "./types/index.js";

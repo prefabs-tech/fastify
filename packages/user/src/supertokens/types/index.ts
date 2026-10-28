@@ -1,21 +1,21 @@
 import type { FastifyInstance } from "fastify";
-import type { TypeInput as EmailVerificationRecipeConfig } from "supertokens-node/recipe/emailverification/types";
-import type { TypeInput as SessionRecipeConfig } from "supertokens-node/recipe/session/types";
-import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword";
-import type { TypeInput as ThirdPartyEmailPasswordRecipeConfig } from "supertokens-node/recipe/thirdpartyemailpassword/types";
-import type { TypeInput as UserRolesRecipeConfig } from "supertokens-node/recipe/userroles/types";
-import type { RecipeListFunction } from "supertokens-node/types";
+import type { TypeInput as EmailVerificationRecipeConfig } from "supertokens-node/recipe/emailverification/types/index.js";
+import type { TypeInput as SessionRecipeConfig } from "supertokens-node/recipe/session/types/index.js";
+import type { TypeProvider } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
+import type { TypeInput as ThirdPartyEmailPasswordRecipeConfig } from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
+import type { TypeInput as UserRolesRecipeConfig } from "supertokens-node/recipe/userroles/types/index.js";
+import type { RecipeListFunction } from "supertokens-node/types/index.js";
 
 import {
   Apple,
   Facebook,
   Github,
   Google,
-} from "supertokens-node/recipe/thirdpartyemailpassword";
+} from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { EmailVerificationRecipe } from "./emailVerificationRecipe";
-import type { SessionRecipe } from "./sessionRecipe";
-import type { ThirdPartyEmailPasswordRecipe } from "./thirdPartyEmailPasswordRecipe";
+import type { EmailVerificationRecipe } from "./emailVerificationRecipe.js";
+import type { SessionRecipe } from "./sessionRecipe.js";
+import type { ThirdPartyEmailPasswordRecipe } from "./thirdPartyEmailPasswordRecipe.js";
 
 interface SupertokensConfig {
   apiBasePath?: string;

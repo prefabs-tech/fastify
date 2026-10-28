@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import getOrigin from "../getOrigin";
+import getOrigin from "../getOrigin.js";
 
 describe.concurrent("getOrigin", () => {
   it.each([

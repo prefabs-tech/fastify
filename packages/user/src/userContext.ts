@@ -1,11 +1,11 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { MercuriusContext } from "mercurius";
 
-import { wrapResponse } from "supertokens-node/framework/fastify";
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import Session from "supertokens-node/recipe/session";
+import { wrapResponse } from "supertokens-node/framework/fastify/index.js";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification/index.js";
+import Session from "supertokens-node/recipe/session/index.js";
 
-import ProfileValidationClaim from "./supertokens/utils/profileValidationClaim";
+import ProfileValidationClaim from "./supertokens/utils/profileValidationClaim.js";
 
 const userContext = async (
   context: MercuriusContext,

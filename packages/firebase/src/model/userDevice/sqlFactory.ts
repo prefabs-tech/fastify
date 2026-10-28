@@ -1,7 +1,7 @@
 import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 import { QuerySqlToken, sql } from "slonik";
 
-import { TABLE_USER_DEVICES } from "../../constants";
+import { TABLE_USER_DEVICES } from "../../constants.js";
 
 class UserDeviceSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_USER_DEVICES;

@@ -2,17 +2,17 @@
 import { newDb } from "pg-mem";
 import { describe, expect, it } from "vitest";
 
-import type { SlonikOptions } from "../types";
+import type { SlonikOptions } from "../types/index.js";
 
-import createConfig from "./helpers/createConfig";
-import createDatabase from "./helpers/createDatabase";
-import TestSqlFactory from "./helpers/sqlFactory";
-import TestService from "./helpers/testService";
+import createConfig from "./helpers/createConfig.js";
+import createDatabase from "./helpers/createDatabase.js";
+import TestSqlFactory from "./helpers/sqlFactory.js";
+import TestService from "./helpers/testService.js";
 import {
   getFilterDataset,
   getLimitAndOffsetDataset,
   getSortDataset,
-} from "./helpers/utils";
+} from "./helpers/utils.js";
 
 describe("Service", async () => {
   const db = newDb();

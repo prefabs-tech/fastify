@@ -2,9 +2,9 @@
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import type { ApiConfig } from "../types";
+import type { ApiConfig } from "../types.js";
 
-import configPlugin from "../plugin";
+import configPlugin from "../plugin.js";
 
 const baseConfig: ApiConfig = {
   appName: "TestApp",

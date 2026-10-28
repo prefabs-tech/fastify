@@ -1,12 +1,12 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification/index.js";
+import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import withGrants from "../../../lib/withGrants";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
+import withGrants from "../../../lib/withGrants.js";
+import createUserContext from "../../../supertokens/utils/createUserContext.js";
+import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim.js";
 
 const me = async (request: SessionRequest, reply: FastifyReply) => {
   const { config, server, session, user } = request;

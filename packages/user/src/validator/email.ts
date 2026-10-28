@@ -1,6 +1,6 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-import { emailSchema } from "../schemas";
+import { emailSchema } from "../schemas/index.js";
 
 const validateEmail = (email: string, config: ApiConfig) => {
   const result = emailSchema(

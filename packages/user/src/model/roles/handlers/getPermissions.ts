@@ -1,7 +1,7 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
-import RoleService from "../service";
+import RoleService from "../service.js";
 
 const getPermissions = async (request: SessionRequest, reply: FastifyReply) => {
   const { query } = request;

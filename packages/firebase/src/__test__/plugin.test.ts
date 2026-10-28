@@ -8,7 +8,7 @@ import {
   ROUTE_SEND_NOTIFICATION,
   ROUTE_USER_DEVICE_ADD,
   ROUTE_USER_DEVICE_REMOVE,
-} from "../constants";
+} from "../constants.js";
 
 // The route schemas reference "ErrorResponse#" which is registered by the error-handler plugin.
 // We add it directly here so the test instance can resolve the $ref.
@@ -27,13 +27,13 @@ const errorResponseSchema = {
 const runMigrationsMock = vi.fn().mockResolvedValue();
 const initializeFirebaseMock = vi.fn();
 
-vi.mock("../migrations/runMigrations", () => ({
+vi.mock("../migrations/runMigrations.js", () => ({
   default: runMigrationsMock,
 }));
 
 // lib/index.ts re-exports firebaseAdmin from this module, so the mock factory
 // must provide it or the re-export resolves to a missing binding.
-vi.mock("../lib/initializeFirebase", () => ({
+vi.mock("../lib/initializeFirebase.js", () => ({
   default: initializeFirebaseMock,
   firebaseAdmin: {},
 }));
@@ -70,7 +70,7 @@ const buildFastify = (firebaseConfig: Record<string, unknown> = {}) => {
 };
 
 describe("firebasePlugin — initialization", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 
@@ -128,7 +128,7 @@ describe("firebasePlugin — initialization", async () => {
 });
 
 describe("firebasePlugin — userDevice route registration", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 
@@ -205,7 +205,7 @@ describe("firebasePlugin — userDevice route registration", async () => {
 });
 
 describe("firebasePlugin — notification route registration", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 

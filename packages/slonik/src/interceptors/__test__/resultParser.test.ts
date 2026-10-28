@@ -2,8 +2,8 @@ import { SchemaValidationError } from "slonik";
 import { describe, expect, it } from "vitest";
 import { z } from "zod";
 
-import resultParser from "../resultParser";
-import createQueryContext from "./helpers/createQueryContext";
+import resultParser from "../resultParser.js";
+import createQueryContext from "./helpers/createQueryContext.js";
 
 const fakeQuery = { sql: "SELECT 1", values: [] };
 const fakeFields = [{ dataTypeId: 1, name: "id" }];

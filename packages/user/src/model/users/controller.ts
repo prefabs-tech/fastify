@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification/index.js";
 
 import {
   PERMISSIONS_USERS_DISABLE,
@@ -16,9 +16,9 @@ import {
   ROUTE_USERS_DISABLE,
   ROUTE_USERS_ENABLE,
   ROUTE_USERS_FIND_BY_ID,
-} from "../../constants";
-import ProfileValidationClaim from "../../supertokens/utils/profileValidationClaim";
-import handlers from "./handlers";
+} from "../../constants.js";
+import ProfileValidationClaim from "../../supertokens/utils/profileValidationClaim.js";
+import handlers from "./handlers/index.js";
 import {
   adminSignUpSchema,
   canAdminSignUpSchema,
@@ -33,7 +33,7 @@ import {
   removePhotoSchema,
   updateMeSchema,
   uploadPhotoSchema,
-} from "./schema";
+} from "./schema.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   const handlersConfig = fastify.config.user.handlers?.user;

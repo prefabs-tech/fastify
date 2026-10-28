@@ -134,7 +134,7 @@ fastify.get(
 );
 ```
 
-`request.session` (type: `Session`) is populated after this hook runs.
+`request.session` (type: `SessionContainer` from `supertokens-node/recipe/session`) is populated after this hook runs.
 
 ### `request.user` — authenticated user profile
 

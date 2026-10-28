@@ -5,9 +5,9 @@ import type { ClientConfigurationInput } from "slonik";
 import fastifyPlugin from "fastify-plugin";
 import { sql } from "slonik";
 
-import type { Database } from "./types";
+import type { Database } from "./types/index.js";
 
-import createDatabase from "./createDatabase";
+import createDatabase from "./createDatabase.js";
 
 type SlonikOptions = {
   clientConfiguration?: ClientConfigurationInput;

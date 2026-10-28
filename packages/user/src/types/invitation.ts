@@ -1,4 +1,4 @@
-import type { User } from "./index";
+import type { User } from "./index.js";
 
 interface Invitation {
   acceptedAt?: number;

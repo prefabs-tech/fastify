@@ -4,8 +4,8 @@ import type { FragmentSqlToken, QuerySqlToken } from "slonik";
 import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 import { sql } from "slonik";
 
-import { TABLE_INVITATIONS } from "../../constants";
-import UserSqlFactory from "../users/sqlFactory";
+import { TABLE_INVITATIONS } from "../../constants.js";
+import UserSqlFactory from "../users/sqlFactory.js";
 
 class InvitationSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_INVITATIONS;

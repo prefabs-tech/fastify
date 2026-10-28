@@ -1,9 +1,9 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
-import type { Invitation } from "../../../types/invitation";
+import type { Invitation } from "../../../types/invitation.js";
 
-import Service from "../service";
+import Service from "../service.js";
 
 const deleteInvitation = async (
   request: SessionRequest,

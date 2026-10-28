@@ -1,16 +1,16 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
-import { createNewSession } from "supertokens-node/recipe/session";
-import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
+import { createNewSession } from "supertokens-node/recipe/session/index.js";
+import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { User } from "../../../types";
+import type { User } from "../../../types/index.js";
 
-import getInvitationService from "../../../lib/getInvitationService";
-import isInvitationValid from "../../../lib/isInvitationValid";
-import withGrants from "../../../lib/withGrants";
-import validateEmail from "../../../validator/email";
-import validatePassword from "../../../validator/password";
+import getInvitationService from "../../../lib/getInvitationService.js";
+import isInvitationValid from "../../../lib/isInvitationValid.js";
+import withGrants from "../../../lib/withGrants.js";
+import validateEmail from "../../../validator/email.js";
+import validatePassword from "../../../validator/password.js";
 
 interface FieldInput {
   email: string;

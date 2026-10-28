@@ -3,9 +3,9 @@ import type { ZodTypeAny } from "zod";
 
 import { QuerySqlToken, sql } from "slonik";
 
-import type { S3Options } from "../types";
+import type { S3Options } from "../types/index.js";
 
-import { TABLE_FILES } from "../constants";
+import { TABLE_FILES } from "../constants.js";
 
 // Accepts S3Options (new pattern) or a full ApiConfig (deprecated) during the
 // migration window; the ApiConfig overload will be removed in a future release.

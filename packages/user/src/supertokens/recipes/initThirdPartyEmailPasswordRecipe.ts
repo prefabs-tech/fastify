@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
+import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { SupertokensRecipes } from "../types";
+import type { SupertokensRecipes } from "../types/index.js";
 
-import getThirdPartyEmailPasswordRecipeConfig from "./config/thirdPartyEmailPasswordRecipeConfig";
+import getThirdPartyEmailPasswordRecipeConfig from "./config/thirdPartyEmailPasswordRecipeConfig.js";
 
 const init = (fastify: FastifyInstance) => {
   const thirdPartyEmailPassword: SupertokensRecipes["thirdPartyEmailPassword"] =

@@ -4,7 +4,7 @@ import type { MercuriusContext } from "mercurius";
 import { mercurius } from "mercurius";
 import { describe, expect, it, vi } from "vitest";
 
-import userDeviceResolver from "../model/userDevice/graphql/resolver";
+import userDeviceResolver from "../model/userDevice/graphql/resolver.js";
 
 const mockCreate = vi
   .fn()
@@ -16,7 +16,7 @@ const mockRemoveByDeviceToken = vi
   .fn()
   .mockResolvedValue({ deviceToken: "token-abc", id: 1, userId: "user-1" });
 
-vi.mock("../model/userDevice/service", () => ({
+vi.mock("../model/userDevice/service.js", () => ({
   default: vi.fn().mockImplementation(function () {
     return {
       create: mockCreate,

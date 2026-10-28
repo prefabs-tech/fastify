@@ -7,9 +7,9 @@ import type {
 import humps from "humps";
 import { sql } from "slonik";
 
-import type { FilterInput, SortInput } from "./types";
+import type { FilterInput, SortInput } from "./types/index.js";
 
-import { applyFiltersToQuery, buildFilterFragment } from "./filters";
+import { applyFiltersToQuery, buildFilterFragment } from "./filters.js";
 
 const createFilterFragment = (
   filters: FilterInput | undefined,

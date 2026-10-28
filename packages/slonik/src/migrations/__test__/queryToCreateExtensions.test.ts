@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import queryToCreateExtension from "../queryToCreateExtensions";
+import queryToCreateExtension from "../queryToCreateExtensions.js";
 
 describe("queryToCreateExtension", () => {
   it("returns an object with a sql string", () => {

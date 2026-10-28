@@ -2,9 +2,9 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { File } from "../types/file";
+import type { File } from "../types/file.js";
 
-import { ERROR_CODES } from "../constants";
+import { ERROR_CODES } from "../constants.js";
 
 // ── Hoisted mocks ─────────────────────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ const { mockS3 } = vi.hoisted(() => ({
   },
 }));
 
-vi.mock("../utils/s3Client", () => ({
+vi.mock("../utils/s3Client.js", () => ({
   default: vi.fn(function () {
     return mockS3;
   }),
@@ -99,7 +99,7 @@ const makePayload = (overrides: Record<string, unknown> = {}) => ({
 // ── filename getter ───────────────────────────────────────────────────────────
 
 describe("FileService — filename getter", async () => {
-  const { default: FileService } = await import("../model/files/service");
+  const { default: FileService } = await import("../model/files/service.js");
 
   it("generates a UUID filename when none is set", () => {
     const service = new FileService(buildConfig(), {});
@@ -127,7 +127,7 @@ describe("FileService — filename getter", async () => {
 // ── key getter ────────────────────────────────────────────────────────────────
 
 describe("FileService — key getter", async () => {
-  const { default: FileService } = await import("../model/files/service");
+  const { default: FileService } = await import("../model/files/service.js");
 
   it("returns just the filename when no path is set", () => {
     const service = new FileService(buildConfig(), {});
@@ -156,7 +156,7 @@ describe("FileService — key getter", async () => {
 // ── upload ────────────────────────────────────────────────────────────────────
 
 describe("FileService — upload", async () => {
-  const { default: FileService } = await import("../model/files/service");
+  const { default: FileService } = await import("../model/files/service.js");
 
   let service: InstanceType<typeof FileService>;
 
@@ -253,7 +253,7 @@ describe("FileService — upload", async () => {
 // ── download ──────────────────────────────────────────────────────────────────
 
 describe("FileService — download", async () => {
-  const { default: FileService } = await import("../model/files/service");
+  const { default: FileService } = await import("../model/files/service.js");
 
   let service: InstanceType<typeof FileService>;
 
@@ -288,7 +288,7 @@ describe("FileService — download", async () => {
 // ── presignedUrl ──────────────────────────────────────────────────────────────
 
 describe("FileService — presignedUrl", async () => {
-  const { default: FileService } = await import("../model/files/service");
+  const { default: FileService } = await import("../model/files/service.js");
 
   let service: InstanceType<typeof FileService>;
 
@@ -321,7 +321,7 @@ describe("FileService — presignedUrl", async () => {
 // ── deleteFile ────────────────────────────────────────────────────────────────
 
 describe("FileService — deleteFile", async () => {
-  const { default: FileService } = await import("../model/files/service");
+  const { default: FileService } = await import("../model/files/service.js");
 
   let service: InstanceType<typeof FileService>;
 

@@ -2,7 +2,7 @@ import type { S3ClientConfig } from "@aws-sdk/client-s3";
 
 import { ReadStream } from "node:fs";
 
-import type { FileCreateInput } from "./file";
+import type { FileCreateInput } from "./file.js";
 
 import {
   ADD_SUFFIX,
@@ -10,7 +10,7 @@ import {
   BUCKET_FROM_OPTIONS,
   ERROR,
   OVERWRITE,
-} from "../constants";
+} from "../constants.js";
 
 interface BaseOption {
   bucket?: string;
@@ -72,4 +72,4 @@ export type {
   S3Options,
 };
 
-export type * from "./file";
+export type * from "./file.js";

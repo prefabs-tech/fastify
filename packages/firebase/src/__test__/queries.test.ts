@@ -3,8 +3,8 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 /* istanbul ignore file */
 import { describe, expect, it } from "vitest";
 
-import { TABLE_USER_DEVICES } from "../constants";
-import { createUserDevicesTableQuery } from "../migrations/queries";
+import { TABLE_USER_DEVICES } from "../constants.js";
+import { createUserDevicesTableQuery } from "../migrations/queries.js";
 
 const makeConfig = (tableName?: string): ApiConfig =>
   ({

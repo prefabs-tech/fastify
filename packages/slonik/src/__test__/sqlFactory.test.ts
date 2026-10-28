@@ -3,11 +3,11 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import { newDb } from "pg-mem";
 import { describe, expect, it } from "vitest";
 
-import type { Database } from "../types";
+import type { Database } from "../types/index.js";
 
-import DefaultSqlFactory from "../sqlFactory";
-import createConfig from "./helpers/createConfig";
-import createDatabase from "./helpers/createDatabase";
+import DefaultSqlFactory from "../sqlFactory.js";
+import createConfig from "./helpers/createConfig.js";
+import createDatabase from "./helpers/createDatabase.js";
 
 class HardDeleteFactory extends DefaultSqlFactory {
   static readonly TABLE = "test";

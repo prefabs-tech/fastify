@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
-import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify";
-import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import { plugin as supertokensPlugin } from "supertokens-node/framework/fastify/index.js";
+import { verifySession } from "supertokens-node/recipe/session/framework/fastify/index.js";
 
-import { errorHandler } from "./errorHandler";
-import init from "./init";
+import { errorHandler } from "./errorHandler.js";
+import init from "./init.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log } = fastify;

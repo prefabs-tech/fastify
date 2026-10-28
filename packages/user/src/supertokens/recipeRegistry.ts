@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type { SupertokensRecipeFactory } from "./types";
+import type { SupertokensRecipeFactory } from "./types/index.js";
 
 // SuperTokens allows exactly one global init(), which happens while
 // @prefabs.tech/fastify-user is being registered. Plugins that contribute a

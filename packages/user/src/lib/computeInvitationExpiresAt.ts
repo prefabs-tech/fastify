@@ -2,7 +2,7 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 
-import { INVITATION_EXPIRE_AFTER_IN_DAYS } from "../constants";
+import { INVITATION_EXPIRE_AFTER_IN_DAYS } from "../constants.js";
 
 const computeInvitationExpiresAt = (config: ApiConfig, expireTime?: string) => {
   return (

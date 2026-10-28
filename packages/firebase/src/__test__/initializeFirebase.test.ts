@@ -47,7 +47,7 @@ const makeFastify = () =>
   }) as unknown as FastifyInstance;
 
 describe("firebaseAdmin", async () => {
-  const { firebaseAdmin } = await import("../lib/initializeFirebase");
+  const { firebaseAdmin } = await import("../lib/initializeFirebase.js");
   const { default: admin } = await import("firebase-admin");
 
   it("re-exports the same firebase-admin instance the module initializes", () => {
@@ -57,7 +57,7 @@ describe("firebaseAdmin", async () => {
 
 describe("initializeFirebase", async () => {
   const { default: initializeFirebase } =
-    await import("../lib/initializeFirebase");
+    await import("../lib/initializeFirebase.js");
 
   beforeEach(() => {
     vi.clearAllMocks();

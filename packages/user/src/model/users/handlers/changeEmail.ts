@@ -1,18 +1,18 @@
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
 import { FastifyReply } from "fastify";
 import EmailVerification, {
   EmailVerificationClaim,
   isEmailVerified,
-} from "supertokens-node/recipe/emailverification";
-import { getUsersByEmail } from "supertokens-node/recipe/thirdpartyemailpassword";
+} from "supertokens-node/recipe/emailverification/index.js";
+import { getUsersByEmail } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { ChangeEmailInput } from "../../../types";
+import type { ChangeEmailInput } from "../../../types/index.js";
 
-import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
-import validateEmail from "../../../validator/email";
+import getUserService from "../../../lib/getUserService.js";
+import createUserContext from "../../../supertokens/utils/createUserContext.js";
+import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim.js";
+import validateEmail from "../../../validator/email.js";
 
 const changeEmail = async (request: SessionRequest, reply: FastifyReply) => {
   const { body, config, server, session, slonik, user } = request;

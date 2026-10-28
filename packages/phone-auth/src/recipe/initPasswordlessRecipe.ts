@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
-import Passwordless from "supertokens-node/recipe/passwordless";
+import Passwordless from "supertokens-node/recipe/passwordless/index.js";
 
-import getPasswordlessRecipeConfig from "./config";
+import getPasswordlessRecipeConfig from "./config.js";
 
 const initPasswordlessRecipe = (fastify: FastifyInstance) => {
   const recipe = fastify.config.phoneAuth?.recipe;

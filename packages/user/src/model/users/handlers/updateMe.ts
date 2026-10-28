@@ -1,18 +1,18 @@
 import type { File } from "@prefabs.tech/fastify-s3";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification/index.js";
+import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { UserUpdateInput } from "../../../types";
+import type { UserUpdateInput } from "../../../types/index.js";
 
-import { ERROR_CODES } from "../../../constants";
-import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
-import filterUserUpdateInput from "../filterUserUpdateInput";
+import { ERROR_CODES } from "../../../constants.js";
+import getUserService from "../../../lib/getUserService.js";
+import createUserContext from "../../../supertokens/utils/createUserContext.js";
+import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim.js";
+import filterUserUpdateInput from "../filterUserUpdateInput.js";
 
 const updateMe = async (request: SessionRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, server, slonik, user } =

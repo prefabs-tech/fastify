@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_USER } from "../../constants";
-import seedRoles from "../seedRoles";
+import { ROLE_ADMIN, ROLE_SUPERADMIN, ROLE_USER } from "../../constants.js";
+import seedRoles from "../seedRoles.js";
 
-vi.mock("supertokens-node/recipe/userroles", () => ({
+vi.mock("supertokens-node/recipe/userroles/index.js", () => ({
   default: {
     createNewRoleOrAddPermissions: vi.fn().mockResolvedValue({ status: "OK" }),
   },
 }));
 
-import UserRoles from "supertokens-node/recipe/userroles";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
 const mockCreate = vi.mocked(UserRoles.createNewRoleOrAddPermissions);
 

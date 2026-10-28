@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { SlonikOptions } from "../types";
+import type { SlonikOptions } from "../types/index.js";
 
 const runMigrationsMock = vi.fn().mockResolvedValue();
 const stringifyDsnMock = vi
@@ -13,7 +13,7 @@ const createClientConfigMock = vi.fn().mockReturnValue({ interceptors: [] });
 
 // fastifySlonik must be wrapped with fastify-plugin so its decorations escape
 // the child scope and reach the parent fastify instance.
-vi.mock("../slonik", async () => {
+vi.mock("../slonik.js", async () => {
   const { default: FastifyPlugin } = await import("fastify-plugin");
 
   const fakeSlonik = {
@@ -34,7 +34,7 @@ vi.mock("../slonik", async () => {
   };
 });
 
-vi.mock("../migrations/runMigrations", () => ({
+vi.mock("../migrations/runMigrations.js", () => ({
   default: runMigrationsMock,
 }));
 
@@ -47,7 +47,7 @@ vi.mock("slonik", async (importOriginal) => {
   };
 });
 
-vi.mock("../factories/createClientConfig", () => ({
+vi.mock("../factories/createClientConfig.js", () => ({
   default: createClientConfigMock,
 }));
 
@@ -61,7 +61,7 @@ const baseOptions: SlonikOptions = {
 };
 
 describe("slonikPlugin — registration", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 
@@ -148,7 +148,7 @@ describe("slonikPlugin — registration", async () => {
 });
 
 describe("slonikPlugin — legacy config fallback", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 

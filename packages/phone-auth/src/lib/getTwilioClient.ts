@@ -1,6 +1,6 @@
 import twilio from "twilio";
 
-import type { TwilioConfig } from "../types";
+import type { TwilioConfig } from "../types.js";
 
 const getTwilioClient = (config: TwilioConfig | undefined) => {
   if (!config) {

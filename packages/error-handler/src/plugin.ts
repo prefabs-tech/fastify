@@ -3,10 +3,10 @@ import type { FastifyInstance } from "fastify";
 import fastifySensible from "@fastify/sensible";
 import FastifyPlugin from "fastify-plugin";
 
-import type { ErrorHandlerOptions } from "./types";
+import type { ErrorHandlerOptions } from "./types.js";
 
-import { errorHandler } from "./errorHandler";
-import { errorSchema } from "./utils/errorSchema";
+import { errorHandler } from "./errorHandler.js";
+import { errorSchema } from "./utils/errorSchema.js";
 
 const DOMAIN_STATUS_MIN = 400;
 const DOMAIN_STATUS_MAX = 599;

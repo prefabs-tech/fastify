@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
+import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types.js";
 import type {
   APIInterface,
   RecipeInterface,
   TypeEmailVerificationEmailDeliveryInput,
-} from "supertokens-node/recipe/emailverification/types";
+} from "supertokens-node/recipe/emailverification/types/index.js";
 
-import EmailVerification from "supertokens-node/recipe/emailverification";
+import EmailVerification from "supertokens-node/recipe/emailverification/index.js";
 
 type APIInterfaceWrapper = {
   [key in keyof APIInterface]?: (

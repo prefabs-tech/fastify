@@ -1,6 +1,6 @@
 import humps from "humps";
 
-import type { UserUpdateInput } from "../../types";
+import type { UserUpdateInput } from "../../types/index.js";
 
 const ignoredUpdateKeys = new Set([
   "disable",

@@ -1,7 +1,7 @@
 import type { Transporter } from "nodemailer";
 import type { IPluginOptions } from "nodemailer-mjml";
-import type { Options } from "nodemailer/lib/mailer/";
-import type { Options as SMTPOptions } from "nodemailer/lib/smtp-transport";
+import type { Options } from "nodemailer/lib/mailer/index.js";
+import type { Options as SMTPOptions } from "nodemailer/lib/smtp-transport/index.js";
 
 type FastifyMailer = FastifyMailerNamedInstance & Transporter;
 

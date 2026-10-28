@@ -1,6 +1,6 @@
 import { mercurius, MercuriusContext } from "mercurius";
 
-import Service from "../service";
+import Service from "../service.js";
 
 const Mutation = {
   addUserDevice: async (

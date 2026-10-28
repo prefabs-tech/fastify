@@ -1,7 +1,7 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 /* istanbul ignore file */
-import type { SlonikOptions } from "../../types";
+import type { SlonikOptions } from "../../types/index.js";
 
 const createConfig = (slonikOptions?: SlonikOptions) => {
   const config: ApiConfig = {

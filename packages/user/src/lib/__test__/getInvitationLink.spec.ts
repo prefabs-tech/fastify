@@ -2,10 +2,10 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import { describe, expect, it } from "vitest";
 
-import type { Invitation } from "../../types/invitation";
+import type { Invitation } from "../../types/invitation.js";
 
-import { INVITATION_ACCEPT_LINK_PATH } from "../../constants";
-import getInvitationLink from "../getInvitationLink";
+import { INVITATION_ACCEPT_LINK_PATH } from "../../constants.js";
+import getInvitationLink from "../getInvitationLink.js";
 
 const baseInvitation: Invitation = {
   createdAt: Date.now(),

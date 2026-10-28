@@ -3,13 +3,13 @@ import type { FastifyInstance } from "fastify";
 import fastifyPlugin from "fastify-plugin";
 import { processRequest } from "graphql-upload-minimal";
 
-import type { GraphqlUploadsConfig } from "../types";
+import type { GraphqlUploadsConfig } from "../types.js";
 
 import {
   DEFAULT_GRAPHQL_PATH,
   UPLOAD_TRANSPORT_PLUGIN_NAME,
-} from "../constants";
-import { processMultipartFormData } from "./processMultipartFormData";
+} from "../constants.js";
+import { processMultipartFormData } from "./processMultipartFormData.js";
 
 type UploadTransportOptions = GraphqlUploadsConfig & {
   path?: string;

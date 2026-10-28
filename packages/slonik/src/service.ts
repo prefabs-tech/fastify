@@ -6,10 +6,10 @@ import type {
   Service,
   SortInput,
   SqlFactory,
-} from "./types";
-import type { PaginatedList } from "./types/service";
+} from "./types/index.js";
+import type { PaginatedList } from "./types/service.js";
 
-import DefaultSqlFactory from "./sqlFactory";
+import DefaultSqlFactory from "./sqlFactory.js";
 
 abstract class BaseService<
   T,

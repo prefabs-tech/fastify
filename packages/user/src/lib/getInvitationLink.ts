@@ -1,8 +1,8 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-import type { Invitation } from "../types/invitation";
+import type { Invitation } from "../types/invitation.js";
 
-import { INVITATION_ACCEPT_LINK_PATH } from "../constants";
+import { INVITATION_ACCEPT_LINK_PATH } from "../constants.js";
 
 const getInvitationLink = (
   config: ApiConfig,

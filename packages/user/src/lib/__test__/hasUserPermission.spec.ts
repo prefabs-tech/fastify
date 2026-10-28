@@ -2,19 +2,19 @@ import type { FastifyInstance } from "fastify";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ROLE_SUPERADMIN } from "../../constants";
-import hasUserPermission from "../hasUserPermission";
+import { ROLE_SUPERADMIN } from "../../constants.js";
+import hasUserPermission from "../hasUserPermission.js";
 
 // Mock supertokens UserRoles so we can control what roles/permissions come back
 // without needing a running SuperTokens server.
-vi.mock("supertokens-node/recipe/userroles", () => ({
+vi.mock("supertokens-node/recipe/userroles/index.js", () => ({
   default: {
     getPermissionsForRole: vi.fn(),
     getRolesForUser: vi.fn(),
   },
 }));
 
-import UserRoles from "supertokens-node/recipe/userroles";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
 const mockGetRolesForUser = vi.mocked(UserRoles.getRolesForUser);
 const mockGetPermissionsForRole = vi.mocked(UserRoles.getPermissionsForRole);

@@ -1,7 +1,7 @@
 import Ajv from "ajv";
 import { describe, expect, it } from "vitest";
 
-import plugin from "../ajvFile";
+import plugin from "../ajvFile.js";
 
 describe("ajvFile plugin", () => {
   it("should register the isFile keyword and validate file schemas correctly", () => {

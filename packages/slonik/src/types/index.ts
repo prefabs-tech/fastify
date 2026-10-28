@@ -1,4 +1,4 @@
-export type { SlonikConfig, SlonikOptions } from "./config";
+export type { SlonikConfig, SlonikOptions } from "./config.js";
 
 export type {
   BaseFilterInput,
@@ -6,8 +6,8 @@ export type {
   FilterInput,
   SortDirection,
   SortInput,
-} from "./database";
+} from "./database.js";
 
-export type { PaginatedList, Service } from "./service";
+export type { PaginatedList, Service } from "./service.js";
 
-export type { SqlFactory } from "./sqlFactory";
+export type { SqlFactory } from "./sqlFactory.js";

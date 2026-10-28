@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
 
-import { ROUTE_SEND_NOTIFICATION } from "../../constants";
-import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
-import handlers from "./handlers";
-import { sendNotificationSchema } from "./schema";
+import { ROUTE_SEND_NOTIFICATION } from "../../constants.js";
+import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled.js";
+import handlers from "./handlers/index.js";
+import { sendNotificationSchema } from "./schema.js";
 
 /**
  * Registers an authenticated test endpoint to send a push notification to a user’s

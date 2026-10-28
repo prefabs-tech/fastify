@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { testEmailSchema } from "../schema";
+import { testEmailSchema } from "../schema.js";
 
 describe("testEmailSchema", () => {
   it("tags the test email route for OpenAPI tools", () => {

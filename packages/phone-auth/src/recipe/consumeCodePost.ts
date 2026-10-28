@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
-import type { APIInterface } from "supertokens-node/recipe/passwordless/types";
+import type { APIInterface } from "supertokens-node/recipe/passwordless/types/index.js";
 
 import { ROLE_USER } from "@prefabs.tech/fastify-user";
-import Passwordless from "supertokens-node/recipe/passwordless";
+import Passwordless from "supertokens-node/recipe/passwordless/index.js";
 
-import { TWILIO_VERIFY_PLACEHOLDER_CODE } from "../constants";
-import getTwilioClient from "../lib/getTwilioClient";
+import { TWILIO_VERIFY_PLACEHOLDER_CODE } from "../constants.js";
+import getTwilioClient from "../lib/getTwilioClient.js";
 
 const enrichResult = (
   result: Awaited<ReturnType<NonNullable<APIInterface["consumeCodePOST"]>>>,

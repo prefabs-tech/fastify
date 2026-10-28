@@ -12,6 +12,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/prefabs-tech-fastify-phone-auth.js",
       "require": "./dist/prefabs-tech-fastify-phone-auth.cjs"
     }

@@ -4,7 +4,7 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import graphqlPlugin from "../plugin";
+import graphqlPlugin from "../plugin.js";
 
 const schema = `
   type Query {

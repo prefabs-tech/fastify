@@ -3,9 +3,9 @@ import type { ClientConfigurationInput } from "slonik";
 import { createTypeParserPreset } from "slonik";
 import { createQueryLoggingInterceptor } from "slonik-interceptor-query-logging";
 
-import fieldNameCaseConverter from "../interceptors/fieldNameCaseConverter";
-import resultParser from "../interceptors/resultParser";
-import { createBigintTypeParser } from "../typeParsers/createBigintTypeParser";
+import fieldNameCaseConverter from "../interceptors/fieldNameCaseConverter.js";
+import resultParser from "../interceptors/resultParser.js";
+import { createBigintTypeParser } from "../typeParsers/createBigintTypeParser.js";
 
 const createClientConfig = (
   config?: ClientConfigurationInput,

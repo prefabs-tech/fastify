@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import getInvitationService from "../../../lib/getInvitationService";
+import getInvitationService from "../../../lib/getInvitationService.js";
 
 const getInvitationByToken = async (
   request: FastifyRequest,

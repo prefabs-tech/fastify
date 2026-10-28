@@ -3,7 +3,7 @@ import type { FastifyInstance } from "fastify";
 /* istanbul ignore file */
 import { describe, expect, it, vi } from "vitest";
 
-import isFirebaseEnabled from "../middlewares/isFirebaseEnabled";
+import isFirebaseEnabled from "../middlewares/isFirebaseEnabled.js";
 
 const makeFastify = (enabled?: boolean) =>
   ({

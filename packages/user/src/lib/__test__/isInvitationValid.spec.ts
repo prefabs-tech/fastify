@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import type { Invitation } from "../../types/invitation";
+import type { Invitation } from "../../types/invitation.js";
 
-import isInvitationValid from "../isInvitationValid";
+import isInvitationValid from "../isInvitationValid.js";
 
 const baseInvitation: Invitation = {
   createdAt: Date.now(),

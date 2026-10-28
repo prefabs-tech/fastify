@@ -3,18 +3,18 @@ import type { FastifyPluginAsync, FastifyRequest } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 
-import hasUserPermission from "./lib/hasUserPermission";
-import seedRoles from "./lib/seedRoles";
-import mercuriusAuthPlugin from "./mercurius-auth/plugin";
-import hasPermission from "./middlewares/hasPermission";
-import runMigrations from "./migrations/runMigrations";
-import invitationsRoutes from "./model/invitations/controller";
-import permissionsRoutes from "./model/permissions/controller";
-import profileFieldsRoutes from "./model/profileFields/controller";
-import rolesRoutes from "./model/roles/controller";
-import usersRoutes from "./model/users/controller";
-import supertokensPlugin from "./supertokens";
-import userContext from "./userContext";
+import hasUserPermission from "./lib/hasUserPermission.js";
+import seedRoles from "./lib/seedRoles.js";
+import mercuriusAuthPlugin from "./mercurius-auth/plugin.js";
+import hasPermission from "./middlewares/hasPermission.js";
+import runMigrations from "./migrations/runMigrations.js";
+import invitationsRoutes from "./model/invitations/controller.js";
+import permissionsRoutes from "./model/permissions/controller.js";
+import profileFieldsRoutes from "./model/profileFields/controller.js";
+import rolesRoutes from "./model/roles/controller.js";
+import usersRoutes from "./model/users/controller.js";
+import supertokensPlugin from "./supertokens/index.js";
+import userContext from "./userContext.js";
 
 const checkRequestPermission = async (
   request: FastifyRequest,

@@ -1,7 +1,7 @@
 import Fastify, { type FastifyInstance } from "fastify";
 import { afterEach, describe, expect, it } from "vitest";
 
-import swaggerPlugin from "../plugin";
+import swaggerPlugin from "../plugin.js";
 
 describe("swagger plugin", () => {
   let fastify: FastifyInstance;

@@ -4,9 +4,9 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import plugin from "../plugin";
+import plugin from "../plugin.js";
 
-vi.mock("../migrations/runMigrations", () => ({
+vi.mock("../migrations/runMigrations.js", () => ({
   default: vi.fn(),
 }));
 

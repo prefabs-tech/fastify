@@ -39,12 +39,12 @@ export type {
   Resolver,
 };
 
-export type { EmailVerificationRecipe } from "../supertokens/types/emailVerificationRecipe";
-export type { SessionRecipe } from "../supertokens/types/sessionRecipe";
-export type { ThirdPartyEmailPasswordRecipe } from "../supertokens/types/thirdPartyEmailPasswordRecipe";
-export * from "./config";
-export * from "./invitation";
+export type { EmailVerificationRecipe } from "../supertokens/types/emailVerificationRecipe.js";
+export type { SessionRecipe } from "../supertokens/types/sessionRecipe.js";
+export type { ThirdPartyEmailPasswordRecipe } from "../supertokens/types/thirdPartyEmailPasswordRecipe.js";
+export * from "./config.js";
+export * from "./invitation.js";
 
-export * from "./isEmailOptions";
-export * from "./strongPasswordOptions";
-export * from "./user";
+export * from "./isEmailOptions.js";
+export * from "./strongPasswordOptions.js";
+export * from "./user.js";

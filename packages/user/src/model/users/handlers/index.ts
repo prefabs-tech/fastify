@@ -1,16 +1,16 @@
-import adminSignUp from "./adminSignUp";
-import canAdminSignUp from "./canAdminSignUp";
-import changeEmail from "./changeEmail";
-import changePassword from "./changePassword";
-import deleteMe from "./deleteMe";
-import disable from "./disable";
-import enable from "./enable";
-import me from "./me";
-import removePhoto from "./removePhoto";
-import updateMe from "./updateMe";
-import uploadPhoto from "./uploadPhoto";
-import user from "./user";
-import users from "./users";
+import adminSignUp from "./adminSignUp.js";
+import canAdminSignUp from "./canAdminSignUp.js";
+import changeEmail from "./changeEmail.js";
+import changePassword from "./changePassword.js";
+import deleteMe from "./deleteMe.js";
+import disable from "./disable.js";
+import enable from "./enable.js";
+import me from "./me.js";
+import removePhoto from "./removePhoto.js";
+import updateMe from "./updateMe.js";
+import uploadPhoto from "./uploadPhoto.js";
+import user from "./user.js";
+import users from "./users.js";
 
 export default {
   adminSignUp,

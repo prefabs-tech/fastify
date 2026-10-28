@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/session/types";
+import type { RecipeInterface } from "supertokens-node/recipe/session/types/index.js";
 
-import getUserService from "../../../../lib/getUserService";
+import getUserService from "../../../../lib/getUserService.js";
 
 const getSession = (
   originalImplementation: RecipeInterface,

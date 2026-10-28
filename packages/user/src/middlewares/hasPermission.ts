@@ -1,7 +1,7 @@
 import type { FastifyRequest } from "fastify";
 
-import { Error as STError } from "supertokens-node/recipe/session";
-import UserRoles from "supertokens-node/recipe/userroles";
+import { Error as STError } from "supertokens-node/recipe/session/index.js";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
 interface HasPermissionOptions {
   context?: (

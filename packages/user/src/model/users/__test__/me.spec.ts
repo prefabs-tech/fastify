@@ -1,13 +1,13 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
 import { describe, expect, it, vi } from "vitest";
 
-vi.mock("supertokens-node/recipe/thirdpartyemailpassword", () => ({
+vi.mock("supertokens-node/recipe/thirdpartyemailpassword/index.js", () => ({
   getUserById: vi.fn().mockResolvedValue({ thirdParty: undefined }),
 }));
 
-import me from "../handlers/me";
+import me from "../handlers/me.js";
 
 const user = {
   disabled: false,

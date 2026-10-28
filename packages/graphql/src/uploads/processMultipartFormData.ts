@@ -4,7 +4,7 @@ import Busboy, { FileInfo } from "busboy";
 import { IncomingMessage } from "node:http";
 import { Readable } from "node:stream";
 
-import type { MultipartFile } from "../types";
+import type { MultipartFile } from "../types.js";
 
 const processMultipartFormData = (
   req: FastifyRequest,

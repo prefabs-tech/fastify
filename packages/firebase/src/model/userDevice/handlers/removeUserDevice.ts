@@ -1,6 +1,6 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import Service from "../service";
+import Service from "../service.js";
 
 const removeUserDevice = async (
   request: FastifyRequest,

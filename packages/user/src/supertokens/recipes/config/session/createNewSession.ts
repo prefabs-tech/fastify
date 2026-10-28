@@ -1,10 +1,10 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/session/types";
+import type { RecipeInterface } from "supertokens-node/recipe/session/types/index.js";
 
 import { getRequestFromUserContext } from "supertokens-node";
 
-import getUserService from "../../../../lib/getUserService";
-import ProfileValidationClaim from "../../../utils/profileValidationClaim";
+import getUserService from "../../../../lib/getUserService.js";
+import ProfileValidationClaim from "../../../utils/profileValidationClaim.js";
 
 const createNewSession = (
   originalImplementation: RecipeInterface,

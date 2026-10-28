@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
-import { buildFastify, FastifyInstance } from "./helpers";
+import { buildFastify, FastifyInstance } from "./helpers.js";
 
 describe("errorHandlerPlugin — HTTP error methods", () => {
   let fastify: FastifyInstance;

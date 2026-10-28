@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { describe, expect, it, vi } from "vitest";
 
-import { buildFastify } from "./helpers";
+import { buildFastify } from "./helpers.js";
 
 describe("errorHandlerPlugin — preErrorHandler", () => {
   it("is called before the default error handler", async () => {

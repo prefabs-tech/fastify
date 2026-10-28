@@ -3,13 +3,13 @@ import type { IdentifierSqlToken } from "slonik";
 import { sql } from "slonik";
 import { describe, expect, it } from "vitest";
 
-import type { BaseFilterInput, FilterInput } from "../types";
+import type { BaseFilterInput, FilterInput } from "../types/index.js";
 
 import {
   applyFilter,
   applyFiltersToQuery,
   buildFilterFragment,
-} from "../filters";
+} from "../filters.js";
 
 // Comprehensive dataset of filter combinations for testing
 const getFilterDataset = (): Array<{

@@ -14,11 +14,19 @@
     ".": {
       "import": "./dist/prefabs-tech-fastify-user.js",
       "require": "./dist/prefabs-tech-fastify-user.cjs"
+    },
+    "./access-control-provider": {
+      "types": "./dist/types/types/accessControl.d.ts"
     }
   },
   "main": "./dist/prefabs-tech-fastify-user.cjs",
   "module": "./dist/prefabs-tech-fastify-user.js",
   "types": "./dist/types/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "access-control-provider": ["./dist/types/types/accessControl.d.ts"]
+    }
+  },
   "files": ["dist"],
   "scripts": {
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",

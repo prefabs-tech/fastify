@@ -202,19 +202,21 @@ const allowed = await hasUserPermission(fastify, userId, "posts:create");
 
 ### `config.user.accessControl` — the app's access-control library
 
-Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups three optional functions:
+Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups optional members, each described below:
 
 ```typescript
 user: {
   accessControl: {
+    admin: libraryAdmin, // an AccessControlAdmin
     getGrants: (user, fastify) => fastify.accessControl.getEffectiveGrants(user.id, { user }),
     hasPermission: (request, permission, context) => request.checkPermission(permission, context),
     mapPermissionName: (permission) => permission.replaceAll(":", "."),
+    roleMap: { ADMIN: ["user-admin"], SUPERADMIN: ["superadmin"] },
   },
 },
 ```
 
-Unset (the default), responses and checks are unchanged.
+Unset (the default), responses, checks and sign-up are unchanged.
 
 #### `getGrants` — grants with the signed-in user
 
@@ -239,6 +241,32 @@ For a library that names permissions differently, such as with dots, so a seeded
 - `hasPermission` gets the mapped name; the 403 response still names the permission the route asked for.
 - It is ignored without `hasPermission`: the SuperTokens check allows any name missing from `config.user.permissions`, so a renamed one would pass.
 - If it throws, the request fails.
+
+#### `admin` — a user's roles in the library
+
+An object implementing the exported `AccessControlAdmin` type, so fastify-user can give the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one. A library implementing it imports the types from `@prefabs.tech/fastify-user/access-control-provider` (see Type Exports).
+
+- `getUserRoles(request, userId)` returns the names of the user's roles; `setUserRoles(request, userId, roles)` replaces them and returns the names it saved.
+- Every method takes the request, so the library can work in the request's database schema.
+- Only `roleMap` calls it.
+
+#### `roleMap` — the library's roles at sign-up
+
+Maps each SuperTokens role fastify-user gives to the library's roles to give as well. SuperTokens roles still decide who may enter an app (`supportedRoles` on the front end), so they are kept; `roleMap` gives the same people their permissions in the library.
+
+```typescript
+roleMap: {
+  ADMIN: ["user-admin"],
+  SUPERADMIN: ["superadmin"],
+},
+```
+
+- It applies to email and password sign-up, third-party sign-up of a new user, admin sign-up (`POST /signup/admin`) and accepting an invitation, over REST and GraphQL. An existing user's third-party sign-in gives nothing.
+- The mapped roles are added to any the user holds, through `admin.getUserRoles` and `admin.setUserRoles`. A role the map leaves out, or maps to `[]`, gives nothing.
+- They are given before the response's `grants` are read and before `invitation.postAccept` runs, so both see them.
+- The account exists by then, so a failure is logged and the sign-up still succeeds; the user lacks only those roles. A sign-up function called without a request in its user context (`_default.request.request`) gives nothing and logs a warning.
+- Only users created after it is set get roles from it. Give existing users theirs once, by hand.
+- Registration fails when `roleMap` is set without an `admin` object, or when a role doesn't map to an array of names.
 
 ### `request.hasPermission(permission, context?)`
 
@@ -870,6 +898,10 @@ declare module "@prefabs.tech/fastify-config" {
 | `SessionRecipe`                 | SuperTokens session recipe override type            |
 | `ThirdPartyEmailPasswordRecipe` | SuperTokens TPEP recipe override type               |
 | `EmailVerificationRecipe`       | SuperTokens email verification recipe override type |
+| `AccessControlProvider`         | `config.user.accessControl`                         |
+| `AccessControlAdmin`            | A user's roles in the library, for `admin`          |
+
+`AccessControlProvider`, `AccessControlAdmin` and `User` are also exported, types only, from `@prefabs.tech/fastify-user/access-control-provider`, for an access-control library implementing them. It loads nothing else of fastify-user, so none of its augmentations of Fastify (`request.user`, `fastify.hasPermission`) reach the library's code. `typesVersions` maps it for `moduleResolution: node`.
 
 ---
 

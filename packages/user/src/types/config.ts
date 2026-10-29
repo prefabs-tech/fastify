@@ -1,8 +1,9 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
 
 import ProfileFieldService from "src/model/profileFields/service";
 
 import type { SupertokensConfig } from "../supertokens";
+import type { AccessControlProvider } from "./accessControl";
 import type { Invitation } from "./invitation";
 import type { IsEmailOptions } from "./isEmailOptions";
 import type { StrongPasswordOptions } from "./strongPasswordOptions";
@@ -13,30 +14,6 @@ import InvitationService from "../model/invitations/service";
 import userHandlers from "../model/users/handlers";
 import UserService from "../model/users/service";
 
-/** The access-control library the app uses in place of SuperTokens roles. */
-interface AccessControlProvider {
-  /**
-   * Adds `grants` to the user returned by sign-in, sign-up, accepting an
-   * invitation and `GET /me`, so the front end stores them with the user.
-   */
-  getGrants?: (user: User, fastify: FastifyInstance) => Promise<unknown[]>;
-  /**
-   * Decides every `hasPermission` check, in place of SuperTokens roles,
-   * `permissions` and the superadmin role.
-   */
-  hasPermission?: (
-    request: FastifyRequest,
-    permission: string,
-    context: Record<string, unknown>,
-  ) => Promise<boolean>;
-  /**
-   * Renames each permission before `hasPermission` checks it, such as
-   * `users:list` to `users.list`. Ignored without `hasPermission`: the
-   * SuperTokens check allows any name missing from `permissions`, so a renamed
-   * one would pass.
-   */
-  mapPermissionName?: (permission: string) => string;
-}
 interface EmailOptions {
   subject?: string;
   templateName?: string;
@@ -175,4 +152,4 @@ interface UserConfig {
   };
 }
 
-export type { AccessControlProvider, EmailOptions, UserConfig };
+export type { EmailOptions, UserConfig };

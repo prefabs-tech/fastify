@@ -242,15 +242,13 @@ For a library that names permissions differently, such as with dots, so a seeded
 - It is ignored without `hasPermission`: the SuperTokens check allows any name missing from `config.user.permissions`, so a renamed one would pass.
 - If it throws, the request fails.
 
-#### `admin` — the library's roles and grants
+#### `admin` — a user's roles in the library
 
-An object implementing the exported `AccessControlAdmin` type, so fastify-user can manage the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one. A library implementing it imports the types from `@prefabs.tech/fastify-user/access-control-provider` (see Type Exports).
+An object implementing the exported `AccessControlAdmin` type, so fastify-user can give the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one. A library implementing it imports the types from `@prefabs.tech/fastify-user/access-control-provider` (see Type Exports).
 
-- It lists the permissions and the roles with their grants, creates and deletes roles, and gets and replaces a role's grants, a user's roles and a user's direct grants.
-- Roles are identified by name. A grant is `{ permission, effect?, conditions? }`, with `effect` `"allow"` (the default) or `"deny"`.
+- `getUserRoles(request, userId)` returns the names of the user's roles; `setUserRoles(request, userId, roles)` replaces them and returns the names it saved.
 - Every method takes the request, so the library can work in the request's database schema.
-- `getCapabilities(request)` says whether the library stores deny grants, conditions and direct grants; `getUserGrants` and `setUserGrants` may be missing when it doesn't store direct grants.
-- Today only `roleMap` calls it.
+- Only `roleMap` calls it.
 
 #### `roleMap` — the library's roles at sign-up
 
@@ -901,14 +899,9 @@ declare module "@prefabs.tech/fastify-config" {
 | `ThirdPartyEmailPasswordRecipe` | SuperTokens TPEP recipe override type               |
 | `EmailVerificationRecipe`       | SuperTokens email verification recipe override type |
 | `AccessControlProvider`         | `config.user.accessControl`                         |
-| `AccessControlAdmin`            | The library's role management, for `admin`          |
-| `AccessControlCapabilities`     | What `admin` can store                              |
-| `AccessControlGrant`            | A grant as `admin` takes and returns it             |
-| `AccessControlPermission`       | A permission as `admin.listPermissions` returns it  |
-| `AccessControlRole`             | A role with its grants, as `admin` returns it       |
-| `AccessControlRoleInput`        | What `admin.createRole` takes                       |
+| `AccessControlAdmin`            | A user's roles in the library, for `admin`          |
 
-`AccessControlProvider`, the other `AccessControl…` types and `User` are also exported, types only, from `@prefabs.tech/fastify-user/access-control-provider`, for an access-control library implementing them. It loads nothing else of fastify-user, so none of its augmentations of Fastify (`request.user`, `fastify.hasPermission`) reach the library's code. `typesVersions` maps it for `moduleResolution: node`.
+`AccessControlProvider`, `AccessControlAdmin` and `User` are also exported, types only, from `@prefabs.tech/fastify-user/access-control-provider`, for an access-control library implementing them. It loads nothing else of fastify-user, so none of its augmentations of Fastify (`request.user`, `fastify.hasPermission`) reach the library's code. `typesVersions` maps it for `moduleResolution: node`.
 
 ---
 

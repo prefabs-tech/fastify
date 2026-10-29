@@ -157,7 +157,7 @@ fastify.get("/reports", handler); // session required
 - A request that matches no route isn't checked: unknown URLs stay 404, and SuperTokens' `/auth/*` endpoints, which match no route, keep working.
 - `config.user.middlewareEnabled: false` removes the hook. Routes then rely on their own `preHandler: fastify.verifySession()`.
 - `authenticateRoute`, exported, is the hook itself: with `middlewareEnabled: false`, add it to chosen routers with `router.addHook("onRequest", authenticateRoute)`.
-- Register `@fastify/cors` before this plugin. A browser's preflight `OPTIONS` request carries no session, and CORS must answer it before the hook runs.
+- A browser's preflight `OPTIONS` request carries no session. SuperTokens' `verifySession` lets `OPTIONS` through, so preflights reach `@fastify/cors` whichever order it is registered in.
 - fastify-user's own routes declare their access in config: the invitation-by-token and admin sign-up routes are `public`; each route guarded by `fastify.hasPermission` names that `permission`; the rest set `permissionMiddleware: false`, since any signed-in user may call them. An access-control library's route hook reads these two fields, so the routes keep the access they have.
 
 #### Upgrading from 0.96: every route needs a session by default

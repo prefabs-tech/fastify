@@ -8,6 +8,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_USER_PROFILE_FIELDS,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: getProfileFieldsListSchema,
     },
@@ -17,6 +18,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.patch(
     ROUTE_USER_PROFILE,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: updateUserProfileSchema,
     },

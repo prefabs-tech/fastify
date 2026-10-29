@@ -98,6 +98,12 @@ interface UserConfig {
       user: User,
     ) => Promise<void>;
   };
+  /**
+   * Requires a session on every route not marked `public`, from an onRequest
+   * hook. `false` leaves each route to its own `verifySession`.
+   * @default true
+   */
+  middlewareEnabled?: boolean;
   password?: StrongPasswordOptions;
   permissions?: string[];
   photoMaxSizeInMB?: number;

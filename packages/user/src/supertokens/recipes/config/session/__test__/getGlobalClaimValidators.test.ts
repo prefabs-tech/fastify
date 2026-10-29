@@ -109,4 +109,20 @@ describe("getGlobalClaimValidators", () => {
 
     expect(response.json()).toEqual(["other", ProfileValidationClaim.key]);
   });
+
+  it("drops the profile validation claim when profileValidated is false", async () => {
+    fastify = buildFastify({ profileValidated: false }, true);
+
+    const response = await fastify.inject({ method: "GET", url: "/test" });
+
+    expect(response.json()).toEqual([EmailVerificationClaim.key, "other"]);
+  });
+
+  it("drops both claims when verified and profileValidated are false", async () => {
+    fastify = buildFastify({ profileValidated: false, verified: false }, true);
+
+    const response = await fastify.inject({ method: "GET", url: "/test" });
+
+    expect(response.json()).toEqual(["other"]);
+  });
 });

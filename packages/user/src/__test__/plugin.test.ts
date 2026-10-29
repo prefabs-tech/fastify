@@ -549,6 +549,117 @@ describe("userPlugin — GraphQL mercurius-auth wiring", async () => {
   });
 });
 
+describe("userPlugin — the authentication hook", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  // An app route registered after the plugin, as an app's routers are.
+  const requestAppRoute = async (userConfig: Record<string, unknown>) => {
+    const fastify = buildFastify(userConfig);
+    await fastify.register(plugin);
+    fastify.get("/app-route", async () => ({ ok: true }));
+    await fastify.ready();
+    const verifySession = fastify.verifySession as unknown as ReturnType<
+      typeof vi.fn
+    >;
+    verifySession.mockClear();
+
+    await fastify.inject({ method: "GET", url: "/app-route" });
+    const calls = verifySession.mock.calls.length;
+    await fastify.close();
+
+    return calls;
+  };
+
+  beforeEach(() => vi.clearAllMocks());
+
+  it("verifies the session on every route by default", async () => {
+    expect(await requestAppRoute({})).toBe(1);
+  });
+
+  it("leaves routes to their own verifySession with middlewareEnabled false", async () => {
+    expect(await requestAppRoute({ middlewareEnabled: false })).toBe(0);
+  });
+});
+
+describe("userPlugin — each route's config", async () => {
+  const { default: plugin } = await import("../plugin");
+
+  // Each route keeps the access it had: a permission where it was guarded by
+  // hasPermission, public where it needed no session, and otherwise any
+  // signed-in user, so an access-control route hook changes nothing.
+  const expected: Record<string, Record<string, unknown>> = {
+    "DELETE /invitations/:id(^\\d+)": { permission: "invitations:delete" },
+    "DELETE /me": { permissionMiddleware: false, profileValidated: false },
+    "DELETE /me/photo": {
+      permissionMiddleware: false,
+      profileValidated: false,
+      verified: false,
+    },
+    "DELETE /roles": { permissionMiddleware: false },
+    "GET /invitations": { permission: "invitations:list" },
+    "GET /invitations/token/:token": { public: true },
+    "GET /me": {
+      permissionMiddleware: false,
+      profileValidated: false,
+      verified: false,
+    },
+    "GET /permissions": { permissionMiddleware: false },
+    "GET /profile/fields": { permissionMiddleware: false },
+    "GET /roles": { permissionMiddleware: false },
+    "GET /roles/permissions": { permissionMiddleware: false },
+    "GET /signup/admin": { public: true },
+    "GET /users": { permission: "users:list" },
+    "GET /users/:id": { permission: "users:read" },
+    "PATCH /users/profile": { permissionMiddleware: false },
+    "POST /change-email": {
+      permissionMiddleware: false,
+      profileValidated: false,
+      verified: false,
+    },
+    "POST /change_password": { permissionMiddleware: false },
+    "POST /invitations": { permission: "invitations:create" },
+    "POST /invitations/resend/:id(^\\d+)": { permission: "invitations:resend" },
+    "POST /invitations/token/:token": { public: true },
+    "POST /roles": { permissionMiddleware: false },
+    "POST /signup/admin": { public: true },
+    "PUT /invitations/revoke/:id(^\\d+)": { permission: "invitations:revoke" },
+    "PUT /me": {
+      permissionMiddleware: false,
+      profileValidated: false,
+      verified: false,
+    },
+    "PUT /me/photo": {
+      permissionMiddleware: false,
+      profileValidated: false,
+      verified: false,
+    },
+    "PUT /roles/permissions": { permissionMiddleware: false },
+    "PUT /users/:id/disable": { permission: "users:disable" },
+    "PUT /users/:id/enable": { permission: "users:enable" },
+  };
+
+  it("declares every route's access in its config", async () => {
+    const fastify = buildFastify();
+    const configs: Record<string, Record<string, unknown>> = {};
+    fastify.addHook("onRoute", (route) => {
+      const methods = [route.method].flat();
+      for (const method of methods) {
+        if (method === "HEAD") continue;
+        // Fastify adds the route's own method and url to its config
+        const config = { ...(route.config as Record<string, unknown>) };
+        delete config.method;
+        delete config.url;
+        configs[`${method} ${route.url}`] = config;
+      }
+    });
+    await fastify.register(plugin);
+    await fastify.ready();
+
+    expect(configs).toEqual(expected);
+    await fastify.close();
+  });
+});
+
 describe("userPlugin — default export", async () => {
   const { default: plugin } = await import("../plugin");
 

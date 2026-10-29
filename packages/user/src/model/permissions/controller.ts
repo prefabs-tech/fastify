@@ -8,6 +8,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_PERMISSIONS,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: getPermissionsSchema,
     },

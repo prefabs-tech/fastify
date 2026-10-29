@@ -7,6 +7,7 @@ import hasUserPermission from "./lib/hasUserPermission";
 import seedRoles from "./lib/seedRoles";
 import validateRoleMap from "./lib/validateRoleMap";
 import mercuriusAuthPlugin from "./mercurius-auth/plugin";
+import authenticateRoute from "./middlewares/authenticateRoute";
 import hasPermission from "./middlewares/hasPermission";
 import runMigrations from "./migrations/runMigrations";
 import invitationsRoutes from "./model/invitations/controller";
@@ -48,6 +49,10 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
   validateRoleMap(user.accessControl);
 
   await fastify.register(supertokensPlugin);
+
+  if (user.middlewareEnabled !== false) {
+    fastify.addHook("onRequest", authenticateRoute);
+  }
 
   fastify.addHook("onReady", async () => {
     await seedRoles(user);

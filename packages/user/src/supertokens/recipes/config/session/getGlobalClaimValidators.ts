@@ -26,7 +26,11 @@ const getGlobalClaimValidators = (
           )
         : input.claimValidatorsAddedByOtherRecipes;
 
-    if (request && request.config.user.features?.profileValidation?.enabled) {
+    if (
+      request &&
+      request.config.user.features?.profileValidation?.enabled &&
+      request.routeOptions.config.profileValidated !== false
+    ) {
       return [
         ...claimValidators,
         new ProfileValidationClaim().validators.isVerified(),

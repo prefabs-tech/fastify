@@ -1,0 +1,10 @@
+updates:
+  - cooldown:
+      default-days: 7
+      exclude:
+        - "dzangolab/*"
+    directory: "/"
+    package-ecosystem: "github-actions"
+    schedule:
+      interval: "weekly"
+version: 2

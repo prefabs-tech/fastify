@@ -50,7 +50,7 @@ const userPlugin: FastifyPluginAsync = async (fastify) => {
 
   await fastify.register(supertokensPlugin);
 
-  if (user.middlewareEnabled !== false) {
+  if (user.middlewareEnabled === true) {
     fastify.addHook("onRequest", authenticateRoute);
   }
 

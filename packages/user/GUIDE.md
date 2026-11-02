@@ -138,9 +138,15 @@ fastify.get(
 
 ### Route authentication — `config.user.middlewareEnabled`
 
-The plugin adds an `onRequest` hook that requires a session on every route, unless the route's config marks it `public`. A route needs no `preHandler` for it:
+Opt-in: with `config.user.middlewareEnabled: true`, the plugin adds an `onRequest` hook that requires a session on every route, unless the route's config marks it `public`. A route then needs no `preHandler` for it:
 
 ```typescript
+const config = {
+  user: {
+    middlewareEnabled: true,
+  },
+};
+
 fastify.get("/health", { config: { public: true } }, handler); // no session needed
 fastify.get("/reports", handler); // session required
 ```
@@ -155,13 +161,14 @@ fastify.get("/reports", handler); // session required
   | `profileValidated: false` | A user whose profile isn't complete is let in ([Profile Validation Claim](#profile-validation-claim)) |
 
 - A request that matches no route isn't checked: unknown URLs stay 404, and SuperTokens' `/auth/*` endpoints, which match no route, keep working.
-- `config.user.middlewareEnabled: false` removes the hook. Routes then rely on their own `preHandler: fastify.verifySession()`.
-- `authenticateRoute`, exported, is the hook itself: with `middlewareEnabled: false`, add it to chosen routers with `router.addHook("onRequest", authenticateRoute)`.
+- Without `middlewareEnabled: true` there is no hook, as in 0.96: routes rely on their own `preHandler: fastify.verifySession()`.
+- `authenticateRoute`, exported, is the hook itself: with the hook off app-wide, add it to chosen routers with `router.addHook("onRequest", authenticateRoute)`.
 - A browser's preflight `OPTIONS` request carries no session. SuperTokens' `verifySession` lets `OPTIONS` through, so preflights reach `@fastify/cors` whichever order it is registered in.
 - fastify-user's own routes declare their access in config: the invitation-by-token and admin sign-up routes are `public`; each route guarded by `fastify.hasPermission` names that `permission`; the rest set `permissionMiddleware: false`, since any signed-in user may call them. An access-control library's route hook reads these two fields, so the routes keep the access they have.
 
-#### Upgrading from 0.96: every route needs a session by default
+#### Turning it on
 
+- Set `config.user.middlewareEnabled: true`.
 - Mark your app's routes that need no session (health checks, webhooks, public pages) with `config: { public: true }`.
 - Routes registered by other plugins, such as `/graphql` and Swagger's `/documentation`, are marked from an `onRoute` hook added before those plugins register:
 
@@ -177,7 +184,6 @@ fastify.get("/reports", handler); // session required
 
   The GraphQL endpoint stays reachable without a session; `@auth` and `@hasPermission` still check each operation. Leave Swagger out of the list where its pages shouldn't be open.
 - A route that keeps `preHandler: fastify.verifySession()` still works; its session is verified twice until the `preHandler` is removed.
-- Or set `config.user.middlewareEnabled: false` to keep 0.96's behaviour.
 
 ### `request.user` — authenticated user profile
 

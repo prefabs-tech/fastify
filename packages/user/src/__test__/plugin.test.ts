@@ -572,8 +572,12 @@ describe("userPlugin — the authentication hook", async () => {
 
   beforeEach(() => vi.clearAllMocks());
 
-  it("verifies the session on every route by default", async () => {
-    expect(await requestAppRoute({})).toBe(1);
+  it("leaves routes to their own verifySession by default", async () => {
+    expect(await requestAppRoute({})).toBe(0);
+  });
+
+  it("verifies the session on every route with middlewareEnabled true", async () => {
+    expect(await requestAppRoute({ middlewareEnabled: true })).toBe(1);
   });
 
   it("leaves routes to their own verifySession with middlewareEnabled false", async () => {

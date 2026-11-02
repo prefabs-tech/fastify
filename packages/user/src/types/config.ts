@@ -99,9 +99,9 @@ interface UserConfig {
     ) => Promise<void>;
   };
   /**
-   * Requires a session on every route not marked `public`, from an onRequest
-   * hook. `false` leaves each route to its own `verifySession`.
-   * @default true
+   * `true` requires a session on every route not marked `public`, from an
+   * onRequest hook. Otherwise each route relies on its own `verifySession`.
+   * @default false
    */
   middlewareEnabled?: boolean;
   password?: StrongPasswordOptions;

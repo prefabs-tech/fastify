@@ -14,6 +14,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ROLES,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: deleteRoleSchema,
     },
@@ -23,6 +24,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_ROLES,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: getRolesSchema,
     },
@@ -32,6 +34,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_ROLES_PERMISSIONS,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: getRolePermissionsSchema,
     },
@@ -41,6 +44,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_ROLES,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: createRoleSchema,
     },
@@ -50,6 +54,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ROLES_PERMISSIONS,
     {
+      config: { permissionMiddleware: false },
       preHandler: [fastify.verifySession()],
       schema: updateRoleSchema,
     },

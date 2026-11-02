@@ -41,6 +41,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_USERS,
     {
+      config: { permission: PERMISSIONS_USERS_LIST },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_USERS_LIST),
@@ -53,6 +54,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_USERS_FIND_BY_ID,
     {
+      config: { permission: PERMISSIONS_USERS_READ },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_USERS_READ),
@@ -65,6 +67,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_CHANGE_PASSWORD,
     {
+      config: { permissionMiddleware: false },
       preHandler: fastify.verifySession(),
       schema: changePasswordSchema,
     },
@@ -74,6 +77,11 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_CHANGE_EMAIL,
     {
+      config: {
+        permissionMiddleware: false,
+        profileValidated: false,
+        verified: false,
+      },
       preHandler: fastify.verifySession({
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
@@ -92,6 +100,11 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_ME,
     {
+      config: {
+        permissionMiddleware: false,
+        profileValidated: false,
+        verified: false,
+      },
       preHandler: fastify.verifySession({
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
@@ -110,6 +123,11 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ME,
     {
+      config: {
+        permissionMiddleware: false,
+        profileValidated: false,
+        verified: false,
+      },
       preHandler: fastify.verifySession({
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
@@ -128,6 +146,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ME,
     {
+      config: { permissionMiddleware: false, profileValidated: false },
       preHandler: fastify.verifySession({
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
@@ -143,6 +162,11 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_ME_PHOTO,
     {
+      config: {
+        permissionMiddleware: false,
+        profileValidated: false,
+        verified: false,
+      },
       preHandler: fastify.verifySession({
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
@@ -161,6 +185,11 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_ME_PHOTO,
     {
+      config: {
+        permissionMiddleware: false,
+        profileValidated: false,
+        verified: false,
+      },
       preHandler: fastify.verifySession({
         overrideGlobalClaimValidators: async (globalValidators) =>
           globalValidators.filter(
@@ -179,6 +208,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_USERS_DISABLE,
     {
+      config: { permission: PERMISSIONS_USERS_DISABLE },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_USERS_DISABLE),
@@ -191,6 +221,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_USERS_ENABLE,
     {
+      config: { permission: PERMISSIONS_USERS_ENABLE },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_USERS_ENABLE),
@@ -203,6 +234,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_SIGNUP_ADMIN,
     {
+      config: { public: true },
       schema: adminSignUpSchema,
     },
     handlersConfig?.adminSignUp || handlers.adminSignUp,
@@ -211,6 +243,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_SIGNUP_ADMIN,
     {
+      config: { public: true },
       schema: canAdminSignUpSchema,
     },
     handlersConfig?.canAdminSignUp || handlers.canAdminSignUp,

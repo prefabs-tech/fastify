@@ -1,3 +1,13 @@
+# [0.97.0](https://github.com/prefabs-tech/fastify/compare/v0.96.0...v0.97.0) (2026-11-02)
+
+
+### Features
+
+* **user:** add an access-control interface that decouples fastify-user from the library ([#1157](https://github.com/prefabs-tech/fastify/issues/1157)) ([c2847fd](https://github.com/prefabs-tech/fastify/commit/c2847fd74a4a32799b386b250c4f5edc31c4a442))
+* **user:** make the route authentication hook opt-in ([#1162](https://github.com/prefabs-tech/fastify/issues/1162)) ([b1395c5](https://github.com/prefabs-tech/fastify/commit/b1395c545675ad9abadee32064aad3e87f165ea4))
+
+
+
 # [0.96.0](https://github.com/prefabs-tech/fastify/compare/v0.95.1...v0.96.0) (2026-10-15)
 
 

@@ -41,9 +41,9 @@
 
 15. **Email verification (opt-in)** — setting `config.user.features.signUp.emailVerification = true` adds the `EmailVerification` recipe and enforces the email-verified claim on protected routes. Default: `false`. A route opts out of the email-verified claim (only) with the Fastify route option `config: { verified: false }`; omitting it or `verified: true` keeps the claim enforced. Equivalent of `meta.verified: false` in `@prefabs.tech/vue-user`.
 
-16. **Route authentication hook** — an `onRequest` hook on the instance requires a SuperTokens session on every route not marked `config: { public: true }`, verifying it as `fastify.verifySession()` does (sets `request.user`, refuses deleted and disabled users, answers expired tokens with the refresh response). On by default; `config.user.middlewareEnabled: false` removes it. Requests that match no route are not checked, so unknown URLs stay 404 and SuperTokens' `/auth/*` endpoints work.
+16. **Route authentication hook** — an `onRequest` hook on the instance requires a SuperTokens session on every route not marked `config: { public: true }`, verifying it as `fastify.verifySession()` does (sets `request.user`, refuses deleted and disabled users, answers expired tokens with the refresh response). Opt-in: added only when `config.user.middlewareEnabled` is `true`. Requests that match no route are not checked, so unknown URLs stay 404 and SuperTokens' `/auth/*` endpoints work.
 
-17. **`authenticateRoute` export** — the hook itself, for adding to chosen routers with `router.addHook("onRequest", authenticateRoute)` when `middlewareEnabled` is `false`.
+17. **`authenticateRoute` export** — the hook itself, for adding to chosen routers with `router.addHook("onRequest", authenticateRoute)` when `middlewareEnabled` isn't `true`.
 
 18. **`profileValidated: false` route config** — lets a user whose profile isn't complete reach the route, as `verified: false` does for an unverified email; read by the hook and by `verifySession`.
 

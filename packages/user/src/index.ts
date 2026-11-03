@@ -5,6 +5,12 @@ import hasPermission from "./middlewares/hasPermission.js";
 
 declare module "fastify" {
   interface FastifyContextConfig {
+    // Read by an access-control library's route hook too; the library declares
+    // the same fields, so neither package imports the other.
+    permission?: string;
+    permissionMiddleware?: boolean;
+    profileValidated?: boolean;
+    public?: boolean;
     verified?: boolean;
   }
 
@@ -48,6 +54,7 @@ export { default as isInvitationValid } from "./lib/isInvitationValid.js";
 export { default as sendEmail } from "./lib/sendEmail.js";
 export { default as sendInvitation } from "./lib/sendInvitation.js";
 export { default as verifyEmail } from "./lib/verifyEmail.js";
+export { default as authenticateRoute } from "./middlewares/authenticateRoute.js";
 export * from "./migrations/queries.js";
 export { default as invitationRoutes } from "./model/invitations/controller.js";
 export { default as invitationResolver } from "./model/invitations/graphql/resolver.js";

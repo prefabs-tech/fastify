@@ -1,6 +1,7 @@
-import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
 
 import type { SupertokensConfig } from "../supertokens/index.js";
+import type { AccessControlProvider } from "./accessControl.js";
 import type { Invitation } from "./invitation.js";
 import type { IsEmailOptions } from "./isEmailOptions.js";
 import type { StrongPasswordOptions } from "./strongPasswordOptions.js";
@@ -12,30 +13,6 @@ import ProfileFieldService from "../model/profileFields/service.js";
 import userHandlers from "../model/users/handlers/index.js";
 import UserService from "../model/users/service.js";
 
-/** The access-control library the app uses in place of SuperTokens roles. */
-interface AccessControlProvider {
-  /**
-   * Adds `grants` to the user returned by sign-in, sign-up, accepting an
-   * invitation and `GET /me`, so the front end stores them with the user.
-   */
-  getGrants?: (user: User, fastify: FastifyInstance) => Promise<unknown[]>;
-  /**
-   * Decides every `hasPermission` check, in place of SuperTokens roles,
-   * `permissions` and the superadmin role.
-   */
-  hasPermission?: (
-    request: FastifyRequest,
-    permission: string,
-    context: Record<string, unknown>,
-  ) => Promise<boolean>;
-  /**
-   * Renames each permission before `hasPermission` checks it, such as
-   * `users:list` to `users.list`. Ignored without `hasPermission`: the
-   * SuperTokens check allows any name missing from `permissions`, so a renamed
-   * one would pass.
-   */
-  mapPermissionName?: (permission: string) => string;
-}
 interface EmailOptions {
   subject?: string;
   templateName?: string;
@@ -120,6 +97,12 @@ interface UserConfig {
       user: User,
     ) => Promise<void>;
   };
+  /**
+   * `true` requires a session on every route not marked `public`, from an
+   * onRequest hook. Otherwise each route relies on its own `verifySession`.
+   * @default false
+   */
+  middlewareEnabled?: boolean;
   password?: StrongPasswordOptions;
   permissions?: string[];
   photoMaxSizeInMB?: number;
@@ -174,4 +157,4 @@ interface UserConfig {
   };
 }
 
-export type { AccessControlProvider, EmailOptions, UserConfig };
+export type { EmailOptions, UserConfig };

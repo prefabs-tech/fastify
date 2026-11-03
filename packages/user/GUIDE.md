@@ -136,6 +136,55 @@ fastify.get(
 
 `request.session` (type: `SessionContainer` from `supertokens-node/recipe/session`) is populated after this hook runs.
 
+### Route authentication — `config.user.middlewareEnabled`
+
+Opt-in: with `config.user.middlewareEnabled: true`, the plugin adds an `onRequest` hook that requires a session on every route, unless the route's config marks it `public`. A route then needs no `preHandler` for it:
+
+```typescript
+const config = {
+  user: {
+    middlewareEnabled: true,
+  },
+};
+
+fastify.get("/health", { config: { public: true } }, handler); // no session needed
+fastify.get("/reports", handler); // session required
+```
+
+- The hook verifies the session as `fastify.verifySession()` does: `request.user` is set, deleted and disabled users are refused (401), and an expired access token gets SuperTokens' refresh response.
+- Route config fields:
+
+  | Field | Effect |
+  | ----- | ------ |
+  | `public: true` | No session needed; the hook doesn't read one |
+  | `verified: false` | A user whose email isn't verified is let in ([Email verification](#email-verification-opt-in)) |
+  | `profileValidated: false` | A user whose profile isn't complete is let in ([Profile Validation Claim](#profile-validation-claim)) |
+
+- A request that matches no route isn't checked: unknown URLs stay 404, and SuperTokens' `/auth/*` endpoints, which match no route, keep working.
+- Without `middlewareEnabled: true` there is no hook, as in 0.96: routes rely on their own `preHandler: fastify.verifySession()`.
+- `authenticateRoute`, exported, is the hook itself: with the hook off app-wide, add it to chosen routers with `router.addHook("onRequest", authenticateRoute)`.
+- A browser's preflight `OPTIONS` request carries no session. SuperTokens' `verifySession` lets `OPTIONS` through, so preflights reach `@fastify/cors` whichever order it is registered in.
+- fastify-user's own routes declare their access in config: the invitation-by-token and admin sign-up routes are `public`; each route guarded by `fastify.hasPermission` names that `permission`; the rest set `permissionMiddleware: false`, since any signed-in user may call them. An access-control library's route hook reads these two fields, so the routes keep the access they have.
+
+#### Turning it on
+
+- Set `config.user.middlewareEnabled: true`.
+- Mark your app's routes that need no session (health checks, webhooks, public pages) with `config: { public: true }`.
+- Routes registered by other plugins, such as `/graphql` and Swagger's `/documentation`, are marked from an `onRoute` hook added before those plugins register:
+
+  ```typescript
+  const publicPaths = ["/graphql", "/documentation"];
+
+  api.addHook("onRoute", (route) => {
+    if (publicPaths.some((path) => route.url === path || route.url.startsWith(`${path}/`))) {
+      route.config = { ...route.config, public: true };
+    }
+  });
+  ```
+
+  The GraphQL endpoint stays reachable without a session; `@auth` and `@hasPermission` still check each operation. Leave Swagger out of the list where its pages shouldn't be open.
+- A route that keeps `preHandler: fastify.verifySession()` still works; its session is verified twice until the `preHandler` is removed.
+
 ### `request.user` — authenticated user profile
 
 After `verifySession` runs, `request.user` is populated with the full `User` object from the database:
@@ -202,19 +251,21 @@ const allowed = await hasUserPermission(fastify, userId, "posts:create");
 
 ### `config.user.accessControl` — the app's access-control library
 
-Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups three optional functions:
+Set `accessControl` to use another access-control library instead of SuperTokens roles. It groups optional members, each described below:
 
 ```typescript
 user: {
   accessControl: {
+    admin: libraryAdmin, // an AccessControlAdmin
     getGrants: (user, fastify) => fastify.accessControl.getEffectiveGrants(user.id, { user }),
     hasPermission: (request, permission, context) => request.checkPermission(permission, context),
     mapPermissionName: (permission) => permission.replaceAll(":", "."),
+    roleMap: { ADMIN: ["user-admin"], SUPERADMIN: ["superadmin"] },
   },
 },
 ```
 
-Unset (the default), responses and checks are unchanged.
+Unset (the default), responses, checks and sign-up are unchanged.
 
 #### `getGrants` — grants with the signed-in user
 
@@ -239,6 +290,32 @@ For a library that names permissions differently, such as with dots, so a seeded
 - `hasPermission` gets the mapped name; the 403 response still names the permission the route asked for.
 - It is ignored without `hasPermission`: the SuperTokens check allows any name missing from `config.user.permissions`, so a renamed one would pass.
 - If it throws, the request fails.
+
+#### `admin` — a user's roles in the library
+
+An object implementing the exported `AccessControlAdmin` type, so fastify-user can give the library's roles without depending on it. `@prefabs.tech/access-control-fastify` ships one. A library implementing it imports the types from `@prefabs.tech/fastify-user/access-control-provider` (see Type Exports).
+
+- `getUserRoles(request, userId)` returns the names of the user's roles; `setUserRoles(request, userId, roles)` replaces them and returns the names it saved.
+- Every method takes the request, so the library can work in the request's database schema.
+- Only `roleMap` calls it.
+
+#### `roleMap` — the library's roles at sign-up
+
+Maps each SuperTokens role fastify-user gives to the library's roles to give as well. SuperTokens roles still decide who may enter an app (`supportedRoles` on the front end), so they are kept; `roleMap` gives the same people their permissions in the library.
+
+```typescript
+roleMap: {
+  ADMIN: ["user-admin"],
+  SUPERADMIN: ["superadmin"],
+},
+```
+
+- It applies to email and password sign-up, third-party sign-up of a new user, admin sign-up (`POST /signup/admin`) and accepting an invitation, over REST and GraphQL. An existing user's third-party sign-in gives nothing.
+- The mapped roles are added to any the user holds, through `admin.getUserRoles` and `admin.setUserRoles`. A role the map leaves out, or maps to `[]`, gives nothing.
+- They are given before the response's `grants` are read and before `invitation.postAccept` runs, so both see them.
+- The account exists by then, so a failure is logged and the sign-up still succeeds; the user lacks only those roles. A sign-up function called without a request in its user context (`_default.request.request`) gives nothing and logs a warning.
+- Only users created after it is set get roles from it. Give existing users theirs once, by hand.
+- Registration fails when `roleMap` is set without an `admin` object, or when a role doesn't map to an array of names.
 
 ### `request.hasPermission(permission, context?)`
 
@@ -375,15 +452,10 @@ user: {
 To let unverified users reach one of your own routes, set `verified: false` in the route's `config` (the backend equivalent of `meta.verified: false` in `@prefabs.tech/vue-user`):
 
 ```typescript
-fastify.get(
-  "/options",
-  {
-    config: { verified: false },
-    preHandler: fastify.verifySession(),
-  },
-  handler,
-);
+fastify.get("/options", { config: { verified: false } }, handler);
 ```
+
+The [route authentication hook](#route-authentication--configusermiddlewareenabled) reads it, as does a route's own `preHandler: fastify.verifySession()`.
 
 The session is still required and every other claim (including profile validation) is still enforced. Omitting `verified` or setting it to `true` keeps the email-verification claim.
 
@@ -403,7 +475,13 @@ user: {
 }
 ```
 
-After the grace period expires, requests to protected routes return `403` with `invalid claim` until the fields are filled. To skip the check on a specific route:
+After the grace period expires, requests to protected routes return `403` with `invalid claim` until the fields are filled. To skip the check on a specific route, set `profileValidated: false` in its config:
+
+```typescript
+fastify.get("/onboarding", { config: { profileValidated: false } }, handler);
+```
+
+A route's own `verifySession` can drop the claim too:
 
 ```typescript
 fastify.get(
@@ -870,6 +948,10 @@ declare module "@prefabs.tech/fastify-config" {
 | `SessionRecipe`                 | SuperTokens session recipe override type            |
 | `ThirdPartyEmailPasswordRecipe` | SuperTokens TPEP recipe override type               |
 | `EmailVerificationRecipe`       | SuperTokens email verification recipe override type |
+| `AccessControlProvider`         | `config.user.accessControl`                         |
+| `AccessControlAdmin`            | A user's roles in the library, for `admin`          |
+
+`AccessControlProvider`, `AccessControlAdmin` and `User` are also exported, types only, from `@prefabs.tech/fastify-user/access-control-provider`, for an access-control library implementing them. It loads nothing else of fastify-user, so none of its augmentations of Fastify (`request.user`, `fastify.hasPermission`) reach the library's code. `typesVersions` maps it for `moduleResolution: node`.
 
 ---
 

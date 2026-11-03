@@ -42,6 +42,7 @@ export type {
 export type { EmailVerificationRecipe } from "../supertokens/types/emailVerificationRecipe.js";
 export type { SessionRecipe } from "../supertokens/types/sessionRecipe.js";
 export type { ThirdPartyEmailPasswordRecipe } from "../supertokens/types/thirdPartyEmailPasswordRecipe.js";
+export * from "./accessControl.js";
 export * from "./config.js";
 export * from "./invitation.js";
 

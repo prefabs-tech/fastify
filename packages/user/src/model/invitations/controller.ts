@@ -31,6 +31,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_INVITATIONS,
     {
+      config: { permission: PERMISSIONS_INVITATIONS_LIST },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_INVITATIONS_LIST),
@@ -43,6 +44,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_INVITATIONS_CREATE,
     {
+      config: { permission: PERMISSIONS_INVITATIONS_CREATE },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_INVITATIONS_CREATE),
@@ -55,6 +57,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.get(
     ROUTE_INVITATIONS_GET_BY_TOKEN,
     {
+      config: { public: true },
       schema: getInvitationByTokenSchema,
     },
     handlersConfig?.getByToken || handlers.getInvitationByToken,
@@ -63,6 +66,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_INVITATIONS_ACCEPT,
     {
+      config: { public: true },
       schema: acceptInvitationSchema,
     },
     handlersConfig?.accept || handlers.acceptInvitation,
@@ -71,6 +75,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.put(
     ROUTE_INVITATIONS_REVOKE,
     {
+      config: { permission: PERMISSIONS_INVITATIONS_REVOKE },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_INVITATIONS_REVOKE),
@@ -83,6 +88,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.post(
     ROUTE_INVITATIONS_RESEND,
     {
+      config: { permission: PERMISSIONS_INVITATIONS_RESEND },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_INVITATIONS_RESEND),
@@ -95,6 +101,7 @@ const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(
     ROUTE_INVITATIONS_DELETE,
     {
+      config: { permission: PERMISSIONS_INVITATIONS_DELETE },
       preHandler: [
         fastify.verifySession(),
         fastify.hasPermission(PERMISSIONS_INVITATIONS_DELETE),

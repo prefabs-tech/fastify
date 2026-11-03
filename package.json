@@ -7,6 +7,7 @@
     "url": "git+https://github.com/prefabs-tech/fastify.git"
   },
   "scripts": {
+    "attw": "turbo run attw",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",

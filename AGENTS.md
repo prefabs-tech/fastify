@@ -14,7 +14,8 @@ Run from the repo root unless stated otherwise.
 | Build everything | `pnpm build` (turbo, dependency-ordered, cached) |
 | One package | `pnpm --filter @prefabs.tech/fastify-slonik build` (same for `test`, `lint`, `typecheck`) |
 | One test file | `pnpm --filter @prefabs.tech/fastify-slonik exec vitest run src/__test__/service.test.ts` |
-| Full gate before finishing | `pnpm lint && pnpm typecheck && pnpm build && pnpm test` |
+| Check published types (attw, on packed tarballs) | `pnpm attw` (builds first) |
+| Full gate before finishing | `pnpm lint && pnpm typecheck && pnpm build && pnpm attw && pnpm test` |
 | Lint autofix (sorting rules!) | `pnpm lint:fix` |
 
 - `test` = `vitest run --coverage` per package. Never use watch mode; never run bare `vitest` at the root.
@@ -145,7 +146,7 @@ Any PR that changes public behavior updates GUIDE.md and FEATURES.md in the same
 ## Quality bar per deliverable (all boxes checked = done; any unchecked = not done)
 
 **Every change, no exceptions**
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test` all pass from the root
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm attw`, `pnpm test` all pass from the root
 - [ ] No diffs in `version` fields, `CHANGELOG.md`, `dist/`, or hand-edited `pnpm-lock.yaml`
 - [ ] Commit message passes commitlint format with correct package scope
 - [ ] If any public export/type/config shape changed: `index.ts`, `GUIDE.md`, `FEATURES.md` updated in the same change

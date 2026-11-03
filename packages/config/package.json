@@ -24,6 +24,7 @@
     "dist"
   ],
   "scripts": {
+    "attw": "attw --pack . --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -32,6 +33,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/tsconfig": "0.8.7",
     "@types/node": "24.13.3",

@@ -24,6 +24,7 @@
     "dist"
   ],
   "scripts": {
+    "attw": "attw --pack . --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -36,6 +37,7 @@
     "@fastify/swagger-ui": "6.1.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/tsconfig": "0.8.7",
     "@types/node": "24.13.3",

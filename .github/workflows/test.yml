@@ -23,5 +23,7 @@ jobs:
               args: [--frozen-lockfile, --strict-peer-dependencies]
       - name: Build packages
         run: pnpm build
+      - name: Check published types
+        run: pnpm attw
       - name: Run tests
         run: pnpm test

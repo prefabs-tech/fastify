@@ -1,6 +1,10 @@
 default:
     @just --list
 
+attw:
+    @printf "\033[0;32m>>> Check published types\033[0m\n"
+    pnpm attw
+
 build:
     @printf "\033[0;32m>>> Build packages\033[0m\n"
     pnpm build

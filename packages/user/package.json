@@ -25,11 +25,16 @@
   "types": "./dist/types/index.d.ts",
   "typesVersions": {
     "*": {
-      "access-control-provider": ["./dist/types/types/accessControl.d.ts"]
+      "access-control-provider": [
+        "./dist/types/types/accessControl.d.ts"
+      ]
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "attw": "attw --pack . --exclude-entrypoints ./access-control-provider --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -42,6 +47,7 @@
     "validator": "13.15.35"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/fastify-config": "0.97.0",
     "@prefabs.tech/fastify-error-handler": "0.97.0",

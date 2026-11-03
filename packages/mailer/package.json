@@ -20,8 +20,11 @@
   "main": "./dist/prefabs-tech-fastify-mailer.cjs",
   "module": "./dist/prefabs-tech-fastify-mailer.js",
   "types": "./dist/types/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "attw": "attw --pack . --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -37,6 +40,7 @@
     "nodemailer-mjml": "1.6.0"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/fastify-config": "0.97.0",
     "@prefabs.tech/tsconfig": "0.8.7",

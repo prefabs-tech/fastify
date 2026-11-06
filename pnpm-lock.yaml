@@ -207,8 +207,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1)(supports-color@7.2.0))(prettier@3.9.5)(supports-color@7.2.0)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -256,8 +256,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1)(supports-color@7.2.0))(prettier@3.9.5)(supports-color@7.2.0)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -317,8 +317,8 @@ importers:
         specifier: 0.97.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -390,8 +390,8 @@ importers:
         specifier: 0.97.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -460,8 +460,8 @@ importers:
         specifier: 0.97.0
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/mjml':
         specifier: 5.0.0
         version: 5.0.0
@@ -527,8 +527,8 @@ importers:
         specifier: 0.97.0
         version: link:../user
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -603,8 +603,8 @@ importers:
         specifier: 0.97.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -667,8 +667,8 @@ importers:
         specifier: 0.97.0
         version: link:../config
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@slonik/driver':
         specifier: 46.8.0
         version: 46.8.0(zod@3.25.76)
@@ -731,8 +731,8 @@ importers:
         specifier: 0.8.7
         version: 0.8.7(@typescript-eslint/parser@8.58.0(eslint@10.7.0(jiti@2.6.1)(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@10.7.0(jiti@2.6.1)(supports-color@7.2.0))(prettier@3.9.5)(supports-color@7.2.0)(typescript@5.9.3)
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
@@ -795,8 +795,8 @@ importers:
         specifier: 0.97.0
         version: link:../slonik
       '@prefabs.tech/tsconfig':
-        specifier: 0.8.7
-        version: 0.8.7
+        specifier: 0.10.0
+        version: 0.10.0
       '@types/humps':
         specifier: 2.0.6
         version: 2.0.6
@@ -1894,8 +1894,9 @@ packages:
     engines: {node: '>10.17.0'}
     hasBin: true
 
-  '@prefabs.tech/tsconfig@0.8.7':
-    resolution: {integrity: sha512-Klhzz5I/GP2yQWp+rVg3OBVpg/0UZ47nOwj77m+QukRqCH99z/Bj4VrmvUKasuRcjqjR/Hz2YNSJjNGFPbd9Gw==}
+  '@prefabs.tech/tsconfig@0.10.0':
+    resolution: {integrity: sha512-d+QmfzXKSTf1hA2xjdmgeXat8nDmKuJE6Op94InKkO7oF7QBPio6LAH7sJ9jrMx1KlHJIg63KK54LP8l8LUP1A==}
+    engines: {node: '>=22'}
 
   '@protobufjs/aspromise@1.1.2':
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
@@ -8238,7 +8239,7 @@ snapshots:
     transitivePeerDependencies:
       - pg-native
 
-  '@prefabs.tech/tsconfig@0.8.7': {}
+  '@prefabs.tech/tsconfig@0.10.0': {}
 
   '@protobufjs/aspromise@1.1.2':
     optional: true
@@ -12531,7 +12532,7 @@ snapshots:
 
   parse-json@5.2.0:
     dependencies:
-      '@babel/code-frame': 7.29.0
+      '@babel/code-frame': 7.29.7
       error-ex: 1.3.4
       json-parse-even-better-errors: 2.3.1
       lines-and-columns: 1.2.4

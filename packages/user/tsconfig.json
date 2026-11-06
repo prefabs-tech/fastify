@@ -3,8 +3,6 @@
   "exclude": ["src/**/__test__/**/*"],
   "compilerOptions": {
     "baseUrl": "./",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "outDir": "./dist"
   },
   "include": ["src/**/*.ts"]

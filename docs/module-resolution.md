@@ -29,8 +29,7 @@ Under `nodenext`, each file's format decides the rules for its imports:
 
 ## How this repo uses it
 
-- The shared base config (`@prefabs.tech/tsconfig/tsconfig.json`) sets `module: ES2022` with `moduleResolution: Node`, which is `node10`. That setting is lenient: it ignores `exports` and allows extensionless imports.
-- Each package overrides both settings to `NodeNext`. For example, `packages/user/tsconfig.json` sets `"module": "NodeNext", "moduleResolution": "NodeNext"`. That is why every relative import in `src/` ends in `.js` or `/index.js`.
+- Every package's `tsconfig.json` extends `@prefabs.tech/tsconfig/fastify.json`, the preset for fastify libraries. Since `@prefabs.tech/tsconfig` 0.10.0 it sets `module` and `moduleResolution` to `NodeNext`, in place of the shared base config's `module: ES2022` with `moduleResolution: Bundler`. The packages don't override either setting. That is why every relative import in `src/` ends in `.js` or `/index.js`. To see what a package actually gets, run `npx tsc --showConfig` in its directory.
 - Vite builds the JavaScript, and `tsc` only emits `.d.ts` files (`--emitDeclarationOnly`). So `moduleResolution` here mainly controls two things:
   1. **Type-checking against how Node really loads `dist/`.** Code that passes `nodenext` won't throw `ERR_UNSUPPORTED_DIR_IMPORT` at runtime. `src/__test__/esm.test.ts` checks this by loading the bundle in real Node.
   2. **The specifiers written into the published `.d.ts` files.** Consumers resolve those with their own `moduleResolution`, which may be `nodenext`, `bundler` or `node10`. Code written for `nodenext` works for all three, but code written for `bundler` breaks for `nodenext` consumers. `pnpm attw` checks the packed tarballs under each mode.

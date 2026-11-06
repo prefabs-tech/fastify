@@ -38,7 +38,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
-    "@prefabs.tech/tsconfig": "0.8.7",
+    "@prefabs.tech/tsconfig": "0.10.0",
     "@types/node": "24.13.3",
     "@types/stack-trace": "0.0.33",
     "@vitest/coverage-istanbul": "4.1.10",

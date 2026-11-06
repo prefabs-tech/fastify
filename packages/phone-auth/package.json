@@ -42,7 +42,7 @@
     "@prefabs.tech/fastify-error-handler": "0.97.0",
     "@prefabs.tech/fastify-slonik": "0.97.0",
     "@prefabs.tech/fastify-user": "0.97.0",
-    "@prefabs.tech/tsconfig": "0.8.7",
+    "@prefabs.tech/tsconfig": "0.10.0",
     "@types/node": "24.13.3",
     "@vitest/coverage-istanbul": "3.2.7",
     "eslint": "10.7.0",

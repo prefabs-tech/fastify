@@ -43,7 +43,7 @@
     "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
     "@prefabs.tech/fastify-config": "0.97.0",
-    "@prefabs.tech/tsconfig": "0.8.7",
+    "@prefabs.tech/tsconfig": "0.10.0",
     "@types/mjml": "5.0.0",
     "@types/node": "24.13.3",
     "@types/nodemailer": "8.0.1",

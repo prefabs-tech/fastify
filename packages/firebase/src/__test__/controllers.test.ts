@@ -8,7 +8,7 @@ import {
   ROUTE_SEND_NOTIFICATION,
   ROUTE_USER_DEVICE_ADD,
   ROUTE_USER_DEVICE_REMOVE,
-} from "../constants";
+} from "../constants.js";
 
 // The route schemas reference "ErrorResponse#" which is registered by the error-handler plugin.
 // We add it directly here so the test instance can resolve the $ref.
@@ -49,7 +49,7 @@ const buildFastify = (firebaseConfig: Record<string, unknown> = {}) => {
 
 describe("notification controller — custom handler overrides", async () => {
   const { default: controller } =
-    await import("../model/notification/controller");
+    await import("../model/notification/controller.js");
 
   let fastify: FastifyInstance;
 
@@ -82,7 +82,7 @@ describe("notification controller — custom handler overrides", async () => {
 
 describe("userDevice controller — custom handler overrides", async () => {
   const { default: controller } =
-    await import("../model/userDevice/controller");
+    await import("../model/userDevice/controller.js");
 
   let fastify: FastifyInstance;
 

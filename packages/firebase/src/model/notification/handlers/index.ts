@@ -1,4 +1,4 @@
-import sendNotification from "./sendNotification";
+import sendNotification from "./sendNotification.js";
 
 export default {
   sendNotification,

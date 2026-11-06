@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
-import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword";
+import { getUserById } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import sendEmail from "../../../../lib/sendEmail";
+import sendEmail from "../../../../lib/sendEmail.js";
 
 const resetPasswordUsingToken = (
   originalImplementation: RecipeInterface,

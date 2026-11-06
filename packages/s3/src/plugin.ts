@@ -3,9 +3,9 @@ import type { FastifyInstance } from "fastify";
 import fastifyMultiPart from "@fastify/multipart";
 import FastifyPlugin from "fastify-plugin";
 
-import type { S3Options } from "./types";
+import type { S3Options } from "./types/index.js";
 
-import runMigrations from "./migrations/runMigrations";
+import runMigrations from "./migrations/runMigrations.js";
 
 // Partial so the deprecated no-options registration still compiles; the
 // parameter becomes a required S3Options once the fastify.config fallback is

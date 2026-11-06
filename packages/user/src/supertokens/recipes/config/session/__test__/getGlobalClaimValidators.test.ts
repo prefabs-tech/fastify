@@ -1,15 +1,15 @@
 import type { FastifyContextConfig, FastifyInstance } from "fastify";
-import type { SessionClaimValidator } from "supertokens-node/recipe/session";
-import type { RecipeInterface } from "supertokens-node/recipe/session/types";
+import type { SessionClaimValidator } from "supertokens-node/recipe/session/index.js";
+import type { RecipeInterface } from "supertokens-node/recipe/session/types/index.js";
 
 import Fastify from "fastify";
 import SuperTokens from "supertokens-node";
-import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification";
-import Session from "supertokens-node/recipe/session";
+import { EmailVerificationClaim } from "supertokens-node/recipe/emailverification/index.js";
+import Session from "supertokens-node/recipe/session/index.js";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
-import ProfileValidationClaim from "../../../../utils/profileValidationClaim";
-import getGlobalClaimValidators from "../getGlobalClaimValidators";
+import ProfileValidationClaim from "../../../../utils/profileValidationClaim.js";
+import getGlobalClaimValidators from "../getGlobalClaimValidators.js";
 
 const emailVerificationValidator = {
   id: EmailVerificationClaim.key,

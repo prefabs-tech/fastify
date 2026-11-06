@@ -3,16 +3,16 @@ import type {
   APIInterface,
   TypeInput as EmailVerificationRecipeConfig,
   RecipeInterface,
-} from "supertokens-node/recipe/emailverification/types";
+} from "supertokens-node/recipe/emailverification/types/index.js";
 
 import type {
   EmailVerificationRecipe,
   SendEmailWrapper,
-} from "../../types/emailVerificationRecipe";
+} from "../../types/emailVerificationRecipe.js";
 
-import { EMAIL_VERIFICATION_MODE } from "../../../constants";
-import getUserService from "../../../lib/getUserService";
-import sendEmailVerificationEmail from "./email-verification/sendEmailVerificationEmail";
+import { EMAIL_VERIFICATION_MODE } from "../../../constants.js";
+import getUserService from "../../../lib/getUserService.js";
+import sendEmailVerificationEmail from "./email-verification/sendEmailVerificationEmail.js";
 
 const getEmailVerificationRecipeConfig = (
   fastify: FastifyInstance,

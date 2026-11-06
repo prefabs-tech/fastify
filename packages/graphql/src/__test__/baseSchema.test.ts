@@ -1,7 +1,7 @@
 import { print } from "graphql";
 import { describe, expect, it } from "vitest";
 
-import baseSchema from "../baseSchema";
+import baseSchema from "../baseSchema.js";
 
 describe("baseSchema", () => {
   it("includes documented directives, scalars, inputs, enum, and types", () => {

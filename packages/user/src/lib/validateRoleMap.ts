@@ -1,4 +1,4 @@
-import type { AccessControlProvider } from "../types";
+import type { AccessControlProvider } from "../types/index.js";
 
 /** Stops registration when `roleMap` couldn't be applied at sign-up. */
 const validateRoleMap = (accessControl?: AccessControlProvider): void => {

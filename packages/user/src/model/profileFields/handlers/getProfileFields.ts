@@ -1,7 +1,7 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
-import getProfileFieldService from "../../../lib/getProfileFieldService";
+import getProfileFieldService from "../../../lib/getProfileFieldService.js";
 
 const getProfileFields = async (
   request: SessionRequest,

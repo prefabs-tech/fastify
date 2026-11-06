@@ -6,7 +6,7 @@ import {
   createInvitationsTableQuery,
   createProfileFieldsTablesQueries,
   createUsersTableQuery,
-} from "./queries";
+} from "./queries.js";
 
 const runMigrations = async (config: ApiConfig, database: Database) => {
   await database.connect(async (connection) => {

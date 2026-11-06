@@ -8,9 +8,9 @@ import {
   ROUTE_SEND_NOTIFICATION,
   ROUTE_USER_DEVICE_ADD,
   ROUTE_USER_DEVICE_REMOVE,
-} from "../constants";
-import notificationController from "../model/notification/controller";
-import userDeviceController from "../model/userDevice/controller";
+} from "../constants.js";
+import notificationController from "../model/notification/controller.js";
+import userDeviceController from "../model/userDevice/controller.js";
 
 const {
   mockCreate,
@@ -24,7 +24,7 @@ const {
   sendPushNotificationMock: vi.fn(),
 }));
 
-vi.mock("../model/userDevice/service", () => ({
+vi.mock("../model/userDevice/service.js", () => ({
   default: vi.fn().mockImplementation(function () {
     return {
       create: mockCreate,
@@ -34,7 +34,7 @@ vi.mock("../model/userDevice/service", () => ({
   }),
 }));
 
-vi.mock("../lib/sendPushNotification", () => ({
+vi.mock("../lib/sendPushNotification.js", () => ({
   default: sendPushNotificationMock,
 }));
 

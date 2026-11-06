@@ -1,8 +1,8 @@
 import type { Database } from "@prefabs.tech/fastify-slonik";
 
-import type { S3Options } from "../types";
+import type { S3Options } from "../types/index.js";
 
-import { createFilesTableQuery } from "./queries";
+import { createFilesTableQuery } from "./queries.js";
 
 const runMigrations = async (
   database: Database,

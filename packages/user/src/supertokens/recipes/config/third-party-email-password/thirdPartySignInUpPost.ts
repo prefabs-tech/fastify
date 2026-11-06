@@ -1,9 +1,9 @@
 import type { FastifyInstance } from "fastify";
-import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
-import { ROLE_USER } from "../../../../constants";
-import getUserService from "../../../../lib/getUserService";
-import withGrants from "../../../../lib/withGrants";
+import { ROLE_USER } from "../../../../constants.js";
+import getUserService from "../../../../lib/getUserService.js";
+import withGrants from "../../../../lib/withGrants.js";
 
 const thirdPartySignInUpPOST = (
   originalImplementation: APIInterface,

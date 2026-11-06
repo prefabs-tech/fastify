@@ -4,11 +4,11 @@ import type { QueryResultRow } from "slonik";
 import { newDb } from "pg-mem";
 import { describe, expect, it } from "vitest";
 
-import type { PaginatedList } from "../types";
+import type { PaginatedList } from "../types/index.js";
 
-import createConfig from "./helpers/createConfig";
-import createDatabase from "./helpers/createDatabase";
-import TestService from "./helpers/testService";
+import createConfig from "./helpers/createConfig.js";
+import createDatabase from "./helpers/createDatabase.js";
+import TestService from "./helpers/testService.js";
 
 // Test service with hooks implementation
 class TestServiceWithHooks<

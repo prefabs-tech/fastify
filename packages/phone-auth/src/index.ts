@@ -1,4 +1,4 @@
-import type { PhoneAuthConfig } from "./types";
+import type { PhoneAuthConfig } from "./types.js";
 
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
@@ -12,13 +12,13 @@ declare module "@prefabs.tech/fastify-user" {
   }
 }
 
-export * from "./constants";
+export * from "./constants.js";
 
-export { default as getTwilioClient } from "./lib/getTwilioClient";
-export { default } from "./plugin";
-export { default as getPasswordlessRecipeConfig } from "./recipe/config";
-export { default as consumeCode } from "./recipe/consumeCode";
-export { default as consumeCodePOST } from "./recipe/consumeCodePost";
-export { default as initPasswordlessRecipe } from "./recipe/initPasswordlessRecipe";
+export { default as getTwilioClient } from "./lib/getTwilioClient.js";
+export { default } from "./plugin.js";
+export { default as getPasswordlessRecipeConfig } from "./recipe/config.js";
+export { default as consumeCode } from "./recipe/consumeCode.js";
+export { default as consumeCodePOST } from "./recipe/consumeCodePost.js";
+export { default as initPasswordlessRecipe } from "./recipe/initPasswordlessRecipe.js";
 
-export type * from "./types";
+export type * from "./types.js";

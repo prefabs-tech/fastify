@@ -1,4 +1,4 @@
-import type { ApiConfig } from "./types";
+import type { ApiConfig } from "./types.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -11,6 +11,6 @@ declare module "fastify" {
   }
 }
 
-export { default } from "./plugin";
+export { default } from "./plugin.js";
 
-export type { ApiConfig, AppConfig } from "./types";
+export type { ApiConfig, AppConfig } from "./types.js";

@@ -1,10 +1,10 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
+import type { MulticastMessage } from "firebase-admin/messaging";
 
-import type { TestNotificationInput } from "../../../types";
+import type { TestNotificationInput } from "../../../types.js";
 
-import { sendPushNotification } from "../../../lib";
-import DeviceService from "../../userDevice/service";
+import { sendPushNotification } from "../../../lib/index.js";
+import DeviceService from "../../userDevice/service.js";
 
 const testPushNotification = async (
   request: FastifyRequest,

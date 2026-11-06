@@ -3,9 +3,9 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { STATUS_CODES } from "node:http";
 import StackTracey from "stacktracey";
 
-import type { ErrorHandlerOptions, ErrorResponse } from "./types";
+import type { ErrorHandlerOptions, ErrorResponse } from "./types.js";
 
-import { CustomError } from "./utils/error";
+import { CustomError } from "./utils/error.js";
 
 const getHttpStatusText = (statusCode: number): string =>
   STATUS_CODES[statusCode] ?? "Internal Server Error";

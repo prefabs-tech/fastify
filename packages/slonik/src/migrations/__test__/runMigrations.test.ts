@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { Database, SlonikOptions } from "../../types";
+import type { Database, SlonikOptions } from "../../types/index.js";
 
-import { EXTENSIONS } from "../../constants";
-import runMigrations from "../runMigrations";
+import { EXTENSIONS } from "../../constants.js";
+import runMigrations from "../runMigrations.js";
 
 const makeDatabase = () => {
   const queryMock = vi.fn().mockResolvedValue({ rows: [] });

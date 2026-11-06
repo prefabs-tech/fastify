@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
-import type { Invitation } from "../types/invitation";
+import type { Invitation } from "../types/invitation.js";
 
-import getInvitationLink from "./getInvitationLink";
-import getOrigin from "./getOrigin";
-import sendEmail from "./sendEmail";
+import getInvitationLink from "./getInvitationLink.js";
+import getOrigin from "./getOrigin.js";
+import sendEmail from "./sendEmail.js";
 
 const sendInvitation = async (
   fastify: FastifyInstance,

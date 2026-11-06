@@ -4,7 +4,7 @@ import Fastify from "fastify";
 import FastifyPlugin from "fastify-plugin";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import authenticateRoute from "../authenticateRoute";
+import authenticateRoute from "../authenticateRoute.js";
 
 // Stands in for SuperTokens' verifySession: a bearer token is the session.
 const verifyToken = async (request: FastifyRequest) => {

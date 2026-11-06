@@ -1,8 +1,8 @@
-import createRole from "./createRole";
-import deleteRole from "./deleteRole";
-import getPermissions from "./getPermissions";
-import getRoles from "./getRoles";
-import updatePermissions from "./updatePermissions";
+import createRole from "./createRole.js";
+import deleteRole from "./deleteRole.js";
+import getPermissions from "./getPermissions.js";
+import getRoles from "./getRoles.js";
+import updatePermissions from "./updatePermissions.js";
 
 export default {
   createRole,

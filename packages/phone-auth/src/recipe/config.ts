@@ -3,18 +3,18 @@ import type {
   APIInterface,
   TypeInput as PasswordlessRecipeConfig,
   RecipeInterface,
-} from "supertokens-node/recipe/passwordless/types";
+} from "supertokens-node/recipe/passwordless/types/index.js";
 
-import type { PhoneAuthConfig } from "../types";
+import type { PhoneAuthConfig } from "../types.js";
 
 import {
   DEFAULT_CONTACT_METHOD,
   DEFAULT_FLOW_TYPE,
   TWILIO_VERIFY_PLACEHOLDER_CODE,
-} from "../constants";
-import getTwilioClient from "../lib/getTwilioClient";
-import consumeCode from "./consumeCode";
-import consumeCodePOST from "./consumeCodePost";
+} from "../constants.js";
+import getTwilioClient from "../lib/getTwilioClient.js";
+import consumeCode from "./consumeCode.js";
+import consumeCodePOST from "./consumeCodePost.js";
 
 // SuperTokens has no first-class support for the Twilio Verify API, so both
 // consumeCodePOST and consumeCode are overridden to bridge the two.

@@ -1,4 +1,4 @@
-import { userSchema } from "../users/schema";
+import { userSchema } from "../users/schema.js";
 
 const profileFieldI18nSchema = {
   properties: {

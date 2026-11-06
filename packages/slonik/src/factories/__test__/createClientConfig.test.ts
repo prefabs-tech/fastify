@@ -4,10 +4,10 @@ import type { Query, QueryContext } from "slonik";
 import { createTypeParserPreset } from "slonik";
 import { describe, expect, it } from "vitest";
 
-import fieldNameCaseConverter from "../../interceptors/fieldNameCaseConverter";
-import resultParser from "../../interceptors/resultParser";
-import { createBigintTypeParser } from "../../typeParsers/createBigintTypeParser";
-import createClientConfig from "../createClientConfig";
+import fieldNameCaseConverter from "../../interceptors/fieldNameCaseConverter.js";
+import resultParser from "../../interceptors/resultParser.js";
+import { createBigintTypeParser } from "../../typeParsers/createBigintTypeParser.js";
+import createClientConfig from "../createClientConfig.js";
 
 describe("createClientConfiguration helper", () => {
   const defaultConfig = {

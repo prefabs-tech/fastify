@@ -2,22 +2,22 @@ import type { FastifyInstance } from "fastify";
 import type {
   APIInterface,
   RecipeInterface,
-} from "supertokens-node/recipe/thirdpartyemailpassword/types";
+} from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("../../../../../lib/getUserService", () => ({ default: vi.fn() }));
-vi.mock("../../../../utils/areRolesExist", () => ({
+vi.mock("../../../../../lib/getUserService.js", () => ({ default: vi.fn() }));
+vi.mock("../../../../utils/areRolesExist.js", () => ({
   default: vi.fn().mockResolvedValue(true),
 }));
-vi.mock("supertokens-node/recipe/userroles", () => ({
+vi.mock("supertokens-node/recipe/userroles/index.js", () => ({
   default: { addRoleToUser: vi.fn().mockResolvedValue({ status: "OK" }) },
 }));
 
-import getUserService from "../../../../../lib/getUserService";
-import emailPasswordSignIn from "../emailPasswordSignIn";
-import emailPasswordSignUp from "../emailPasswordSignUp";
-import thirdPartySignInUpPOST from "../thirdPartySignInUpPost";
+import getUserService from "../../../../../lib/getUserService.js";
+import emailPasswordSignIn from "../emailPasswordSignIn.js";
+import emailPasswordSignUp from "../emailPasswordSignUp.js";
+import thirdPartySignInUpPOST from "../thirdPartySignInUpPost.js";
 
 const supertokensUser = {
   email: "user@example.com",

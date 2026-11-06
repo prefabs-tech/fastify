@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import ProfileValidationClaim from "../profileValidationClaim";
+import ProfileValidationClaim from "../profileValidationClaim.js";
 
 const FIXED_NOW = new Date("2024-06-15T12:00:00.000Z").getTime();
 

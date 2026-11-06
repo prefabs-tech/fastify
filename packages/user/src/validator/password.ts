@@ -1,9 +1,9 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-import type { StrongPasswordOptions } from "../types";
+import type { StrongPasswordOptions } from "../types/index.js";
 
-import { passwordSchema } from "../schemas";
-import { defaultOptions } from "../schemas/password";
+import { passwordSchema } from "../schemas/index.js";
+import { defaultOptions } from "../schemas/password.js";
 
 const getErrorMessage = (options: StrongPasswordOptions): string => {
   let errorMessage = "Password is too weak";

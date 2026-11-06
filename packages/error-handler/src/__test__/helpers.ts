@@ -1,9 +1,9 @@
 import Fastify from "fastify";
 import { MockInstance, vi } from "vitest";
 
-import type { ErrorHandlerOptions } from "../index";
+import type { ErrorHandlerOptions } from "../index.js";
 
-import errorHandlerPlugin from "../index";
+import errorHandlerPlugin from "../index.js";
 
 export type FastifyInstance = ReturnType<typeof Fastify>;
 

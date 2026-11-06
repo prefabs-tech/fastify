@@ -18,7 +18,7 @@
 
 6. **`fastify.verifySession()` decorator** — added to the Fastify instance; use it as a `preHandler` to require a valid SuperTokens session on any route.
 
-7. **`req.session` request property** — `FastifyRequest` is augmented with an optional `session` property (populated by SuperTokens after `verifySession` runs).
+7. **`req.session` request property** — `FastifyRequest` is augmented with an optional `session: SessionContainer` property (populated by SuperTokens after `verifySession` runs).
 
 8. **`req.user` request property** — `FastifyRequest` is augmented with an optional `user: User` property, populated from the database on every verified session.
 

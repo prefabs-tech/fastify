@@ -3,7 +3,7 @@ import type { MercuriusContext } from "mercurius";
 
 import FastifyPlugin from "fastify-plugin";
 
-import type { GraphqlEnabledPlugin } from "../../types";
+import type { GraphqlEnabledPlugin } from "../../types.js";
 
 declare module "mercurius" {
   interface MercuriusContext {

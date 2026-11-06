@@ -1,8 +1,8 @@
 import type { FastifyInstance } from "fastify";
 
-import { ROUTE_PERMISSIONS } from "../../constants";
-import handlers from "./handlers";
-import { getPermissionsSchema } from "./schema";
+import { ROUTE_PERMISSIONS } from "../../constants.js";
+import handlers from "./handlers/index.js";
+import { getPermissionsSchema } from "./schema.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   fastify.get(

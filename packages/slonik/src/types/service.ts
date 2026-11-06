@@ -1,6 +1,6 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
-import type { Database, FilterInput, SortInput } from "./database";
+import type { Database, FilterInput, SortInput } from "./database.js";
 
 type PaginatedList<T> = {
   data: readonly T[];

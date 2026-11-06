@@ -5,7 +5,7 @@ import type {
   QuerySqlToken,
 } from "slonik";
 
-import type { Database, FilterInput, SortInput } from "../types";
+import type { Database, FilterInput, SortInput } from "../types/index.js";
 
 interface SqlFactory {
   config: ApiConfig;

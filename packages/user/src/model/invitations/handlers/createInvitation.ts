@@ -1,13 +1,13 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
 import type {
   Invitation,
   InvitationCreateInput,
-} from "../../../types/invitation";
+} from "../../../types/invitation.js";
 
-import getInvitationService from "../../../lib/getInvitationService";
-import sendInvitation from "../../../lib/sendInvitation";
+import getInvitationService from "../../../lib/getInvitationService.js";
+import sendInvitation from "../../../lib/sendInvitation.js";
 
 const createInvitation = async (
   request: SessionRequest,

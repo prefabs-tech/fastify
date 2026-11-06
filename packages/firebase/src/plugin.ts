@@ -2,10 +2,10 @@ import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 
-import { initializeFirebase } from "./lib";
-import runMigrations from "./migrations/runMigrations";
-import notificationRoutes from "./model/notification/controller";
-import userDevicesRoutes from "./model/userDevice/controller";
+import { initializeFirebase } from "./lib/index.js";
+import runMigrations from "./migrations/runMigrations.js";
+import notificationRoutes from "./model/notification/controller.js";
+import userDevicesRoutes from "./model/userDevice/controller.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   const { config, log, slonik } = fastify;

@@ -1,15 +1,15 @@
 import type { FastifyInstance } from "fastify";
-import type { MailOptions } from "nodemailer/lib/sendmail-transport";
+import type { MailOptions } from "nodemailer/lib/sendmail-transport/index.js";
+import type SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 
 import FastifyPlugin from "fastify-plugin";
 import { createTransport } from "nodemailer";
 import { htmlToText } from "nodemailer-html-to-text";
 import { nodemailerMjmlPlugin } from "nodemailer-mjml";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 
-import type { FastifyMailer, MailerOptions } from "./types";
+import type { FastifyMailer, MailerOptions } from "./types.js";
 
-import router from "./router";
+import router from "./router.js";
 
 const plugin = async (fastify: FastifyInstance, options: MailerOptions) => {
   fastify.log.info("Registering fastify-mailer plugin");

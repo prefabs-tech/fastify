@@ -1,12 +1,12 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
-import type { TypeEmailVerificationEmailDeliveryInput } from "supertokens-node/recipe/emailverification/types";
+import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types.js";
+import type { TypeEmailVerificationEmailDeliveryInput } from "supertokens-node/recipe/emailverification/types/index.js";
 
-import emailVerification from "supertokens-node/recipe/emailverification";
+import emailVerification from "supertokens-node/recipe/emailverification/index.js";
 
-import { EMAIL_VERIFICATION_PATH } from "../../../../constants";
-import getOrigin from "../../../../lib/getOrigin";
-import sendEmail from "../../../../lib/sendEmail";
+import { EMAIL_VERIFICATION_PATH } from "../../../../constants.js";
+import getOrigin from "../../../../lib/getOrigin.js";
+import sendEmail from "../../../../lib/sendEmail.js";
 
 const sendEmailVerificationEmail = (
   originalImplementation: EmailDeliveryInterface<TypeEmailVerificationEmailDeliveryInput>,

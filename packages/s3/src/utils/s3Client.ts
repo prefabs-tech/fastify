@@ -18,7 +18,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { ReadStream } from "node:fs";
 import { Readable } from "node:stream";
 
-import { convertStreamToBuffer } from ".";
+import { convertStreamToBuffer } from "./index.js";
 
 class s3Client {
   get bucket() {

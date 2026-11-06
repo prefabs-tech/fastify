@@ -14,7 +14,8 @@ Run from the repo root unless stated otherwise.
 | Build everything | `pnpm build` (turbo, dependency-ordered, cached) |
 | One package | `pnpm --filter @prefabs.tech/fastify-slonik build` (same for `test`, `lint`, `typecheck`) |
 | One test file | `pnpm --filter @prefabs.tech/fastify-slonik exec vitest run src/__test__/service.test.ts` |
-| Full gate before finishing | `pnpm lint && pnpm typecheck && pnpm build && pnpm test` |
+| Check published types (attw, on packed tarballs) | `pnpm attw` (builds first) |
+| Full gate before finishing | `pnpm lint && pnpm typecheck && pnpm build && pnpm attw && pnpm test` |
 | Lint autofix (sorting rules!) | `pnpm lint:fix` |
 
 - `test` = `vitest run --coverage` per package. Never use watch mode; never run bare `vitest` at the root.
@@ -139,11 +140,13 @@ Any PR that changes public behavior updates GUIDE.md and FEATURES.md in the same
 | 20 | "Fixing" tests by changing source, or vice versa, without deciding which is wrong | Tests document behavior: if a test fails after your change, first decide whether the *behavior change* is intended; if unintended, fix the source |
 | 21 | Trusting lint/test results from a stale checkout | `pnpm -r install` FIRST in any fresh session. Symptoms of stale node_modules: `lint:fix` moves `import type` groups AFTER value imports (backwards — revert by reinstalling and re-running `lint:fix`); vitest fails with "Failed to load url <pkg>" for a declared devDependency |
 | 22 | Typing a plugin's options with required fields while bare `register(plugin)` must still compile (config-fallback deprecation window) | Plugin parameter is `Partial<XOptions>` during the window ("Type 'FastifyPluginOptions' is not assignable" otherwise); tighten to required `XOptions` only when the `fastify.config` fallback is removed |
+| 23 | Extensionless imports: relative (`"./types"`) or deep into a package without an `exports` map (`"supertokens-node/recipe/session"`) | Packages build with NodeNext: relative imports end in `.js`/`/index.js`; deep imports name the file (`.../recipe/session/index.js`) or use the package's public subpath (`firebase-admin/messaging`). vitest resolves these anyway, but Node ESM throws `ERR_UNSUPPORTED_DIR_IMPORT` on `dist/` — `src/__test__/esm.test.ts` loads the bundle in real Node |
+| 24 | Default-importing a type from a CJS `.d.ts` with `export default` (`sessionClass`, `mercurius-auth`) | Under NodeNext it is the `module.exports` namespace (TS2709 "Cannot use namespace as a type", "No overload matches") and no spelling works for both NodeNext and Bundler consumers of our `.d.ts`: use a named export (`SessionContainer`), or a type-only cast for an internal value |
 
 ## Quality bar per deliverable (all boxes checked = done; any unchecked = not done)
 
 **Every change, no exceptions**
-- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test` all pass from the root
+- [ ] `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm attw`, `pnpm test` all pass from the root
 - [ ] No diffs in `version` fields, `CHANGELOG.md`, `dist/`, or hand-edited `pnpm-lock.yaml`
 - [ ] Commit message passes commitlint format with correct package scope
 - [ ] If any public export/type/config shape changed: `index.ts`, `GUIDE.md`, `FEATURES.md` updated in the same change

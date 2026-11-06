@@ -1,5 +1,5 @@
 import type { Multipart } from "@prefabs.tech/fastify-s3";
-import type { User as SupertokensUser } from "supertokens-node/recipe/thirdpartyemailpassword";
+import type { User as SupertokensUser } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
 interface AuthUser extends SupertokensUser, User {}
 

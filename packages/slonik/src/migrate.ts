@@ -3,7 +3,7 @@ import type { ClientConfig } from "pg";
 import { migrate as runMigrations } from "@prefabs.tech/postgres-migrations";
 import * as pg from "pg";
 
-import type { SlonikOptions } from "./types";
+import type { SlonikOptions } from "./types/index.js";
 
 const migrate = async (slonikOptions: SlonikOptions) => {
   const defaultMigrationsPath = "migrations";

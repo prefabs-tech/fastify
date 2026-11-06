@@ -10,7 +10,7 @@ import {
   createWhereFragment,
   createWhereIdFragment,
   isValueExpression,
-} from "../sql";
+} from "../sql.js";
 
 describe("isValueExpression", () => {
   it("should return true for valid ValueExpression types", () => {

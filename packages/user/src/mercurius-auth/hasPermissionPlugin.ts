@@ -2,7 +2,11 @@ import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
-import mercuriusAuth from "mercurius-auth";
+import mercuriusAuthModule from "mercurius-auth";
+
+// mercurius-auth is CommonJS (`module.exports = plugin`) but its typings declare `export default`
+const mercuriusAuth =
+  mercuriusAuthModule as unknown as typeof mercuriusAuthModule.default;
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   await fastify.register(mercuriusAuth, {

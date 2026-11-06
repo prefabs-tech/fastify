@@ -1,10 +1,10 @@
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ErrorHandlerOptions } from "../types";
+import type { ErrorHandlerOptions } from "../types.js";
 
-import errorHandlerPlugin, { CustomError } from "../index";
-import { FastifyInstance, makeLogSpy } from "./helpers";
+import errorHandlerPlugin, { CustomError } from "../index.js";
+import { FastifyInstance, makeLogSpy } from "./helpers.js";
 
 describe("errorHandlerPlugin — domainErrorStatusMap", () => {
   let fastify: FastifyInstance;

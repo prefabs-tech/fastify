@@ -2,8 +2,8 @@ import type { FastifyInstance } from "fastify";
 
 import FastifyPlugin from "fastify-plugin";
 
-import authPlugin from "./authPlugin";
-import hasPermissionPlugin from "./hasPermissionPlugin";
+import authPlugin from "./authPlugin.js";
+import hasPermissionPlugin from "./hasPermissionPlugin.js";
 
 const plugin = FastifyPlugin(async (fastify: FastifyInstance) => {
   if (!fastify.config.graphql?.enabled) {

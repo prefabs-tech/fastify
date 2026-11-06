@@ -7,7 +7,7 @@ const { mockMercuriusAuth } = vi.hoisted(() => ({
 
 vi.mock("mercurius-auth", () => ({ default: mockMercuriusAuth }));
 
-import plugin from "../hasPermissionPlugin";
+import plugin from "../hasPermissionPlugin.js";
 
 const directive = {
   arguments: [

@@ -3,23 +3,23 @@ import type {
   APIInterface,
   RecipeInterface,
   TypeInput as ThirdPartyEmailPasswordRecipeConfig,
-} from "supertokens-node/recipe/thirdpartyemailpassword/types";
+} from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
 import type {
   SendEmailWrapper,
   ThirdPartyEmailPasswordRecipe,
-} from "../../types/thirdPartyEmailPasswordRecipe";
+} from "../../types/thirdPartyEmailPasswordRecipe.js";
 
-import appleRedirectHandlerPOST from "./third-party-email-password/appleRedirectHandlerPost";
-import emailPasswordSignIn from "./third-party-email-password/emailPasswordSignIn";
-import emailPasswordSignUp from "./third-party-email-password/emailPasswordSignUp";
-import emailPasswordSignUpPOST from "./third-party-email-password/emailPasswordSignUpPost";
-import getFormFields from "./third-party-email-password/getFormFields";
-import resetPasswordUsingToken from "./third-party-email-password/resetPasswordUsingToken";
-import sendPasswordResetEmail from "./third-party-email-password/sendPasswordResetEmail";
-import thirdPartySignInUp from "./third-party-email-password/thirdPartySignInUp";
-import thirdPartySignInUpPOST from "./third-party-email-password/thirdPartySignInUpPost";
-import getThirdPartyProviders from "./thirdPartyProviders";
+import appleRedirectHandlerPOST from "./third-party-email-password/appleRedirectHandlerPost.js";
+import emailPasswordSignIn from "./third-party-email-password/emailPasswordSignIn.js";
+import emailPasswordSignUp from "./third-party-email-password/emailPasswordSignUp.js";
+import emailPasswordSignUpPOST from "./third-party-email-password/emailPasswordSignUpPost.js";
+import getFormFields from "./third-party-email-password/getFormFields.js";
+import resetPasswordUsingToken from "./third-party-email-password/resetPasswordUsingToken.js";
+import sendPasswordResetEmail from "./third-party-email-password/sendPasswordResetEmail.js";
+import thirdPartySignInUp from "./third-party-email-password/thirdPartySignInUp.js";
+import thirdPartySignInUpPOST from "./third-party-email-password/thirdPartySignInUpPost.js";
+import getThirdPartyProviders from "./thirdPartyProviders.js";
 
 const getThirdPartyEmailPasswordRecipeConfig = (
   fastify: FastifyInstance,

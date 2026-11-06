@@ -7,24 +7,24 @@ import { mercurius } from "mercurius";
 import EmailVerification, {
   EmailVerificationClaim,
   isEmailVerified,
-} from "supertokens-node/recipe/emailverification";
-import { createNewSession } from "supertokens-node/recipe/session";
+} from "supertokens-node/recipe/emailverification/index.js";
+import { createNewSession } from "supertokens-node/recipe/session/index.js";
 import {
   emailPasswordSignUp,
   getUsersByEmail,
-} from "supertokens-node/recipe/thirdpartyemailpassword";
-import UserRoles from "supertokens-node/recipe/userroles";
+} from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import type { UserUpdateInput } from "../../../types";
+import type { UserUpdateInput } from "../../../types/index.js";
 
-import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
-import CustomApiError from "../../../customApiError";
-import getUserService from "../../../lib/getUserService";
-import createUserContext from "../../../supertokens/utils/createUserContext";
-import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim";
-import validateEmail from "../../../validator/email";
-import validatePassword from "../../../validator/password";
-import filterUserUpdateInput from "../filterUserUpdateInput";
+import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants.js";
+import CustomApiError from "../../../customApiError.js";
+import getUserService from "../../../lib/getUserService.js";
+import createUserContext from "../../../supertokens/utils/createUserContext.js";
+import ProfileValidationClaim from "../../../supertokens/utils/profileValidationClaim.js";
+import validateEmail from "../../../validator/email.js";
+import validatePassword from "../../../validator/password.js";
+import filterUserUpdateInput from "../filterUserUpdateInput.js";
 
 const Mutation = {
   adminSignUp: async (

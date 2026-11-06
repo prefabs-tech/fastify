@@ -2,8 +2,8 @@
 import Fastify from "fastify";
 import { describe, expect, it } from "vitest";
 
-import errorHandlerPlugin from "../index";
-import { buildFastify } from "./helpers";
+import errorHandlerPlugin from "../index.js";
+import { buildFastify } from "./helpers.js";
 
 describe("errorHandlerPlugin — registration", () => {
   it("registers without throwing", async () => {

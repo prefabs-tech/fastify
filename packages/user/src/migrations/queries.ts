@@ -12,7 +12,7 @@ import {
   TABLE_USER_PROFILE_FIELDS,
   TABLE_USER_PROFILE_FIELDS_I18N,
   TABLE_USERS,
-} from "../constants";
+} from "../constants.js";
 
 const addProfileInUsersTableQuery = (
   config: ApiConfig,

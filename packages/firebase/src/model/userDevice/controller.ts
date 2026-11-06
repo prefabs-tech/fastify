@@ -3,10 +3,10 @@ import type { FastifyInstance } from "fastify";
 import {
   ROUTE_USER_DEVICE_ADD,
   ROUTE_USER_DEVICE_REMOVE,
-} from "../../constants";
-import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled";
-import handlers from "./handlers";
-import { deleteUserDeviceSchema, postUserDeviceSchema } from "./schema";
+} from "../../constants.js";
+import isFirebaseEnabled from "../../middlewares/isFirebaseEnabled.js";
+import handlers from "./handlers/index.js";
+import { deleteUserDeviceSchema, postUserDeviceSchema } from "./schema.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   const handlersConfig = fastify.config.firebase.handlers?.userDevice;

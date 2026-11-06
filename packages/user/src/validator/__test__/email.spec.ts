@@ -2,7 +2,7 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import { beforeEach, describe, expect, it } from "vitest";
 
-import validateEmail from "../email";
+import validateEmail from "../email.js";
 
 describe("validateEmail", () => {
   let config = {} as unknown as ApiConfig;

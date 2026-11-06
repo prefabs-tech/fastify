@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import type { AccessControlProvider } from "../../types";
+import type { AccessControlProvider } from "../../types/index.js";
 
-import validateRoleMap from "../validateRoleMap";
+import validateRoleMap from "../validateRoleMap.js";
 
 const admin = {} as AccessControlProvider["admin"];
 

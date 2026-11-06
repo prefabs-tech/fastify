@@ -2,9 +2,9 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import { describe, expect, it } from "vitest";
 
-import type { S3Options } from "../types";
+import type { S3Options } from "../types/index.js";
 
-import { createFilesTableQuery } from "../migrations/queries";
+import { createFilesTableQuery } from "../migrations/queries.js";
 
 describe("createFilesTableQuery", () => {
   it("uses the table name from S3Options (new pattern)", () => {

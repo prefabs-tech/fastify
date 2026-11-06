@@ -3,8 +3,8 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import "../index";
-import createMailerConfig from "./helpers/createMailerConfig";
+import "../index.js";
+import createMailerConfig from "./helpers/createMailerConfig.js";
 
 const { createTransportMock, sendMailMock } = vi.hoisted(() => {
   const useMock = vi.fn();
@@ -29,7 +29,7 @@ vi.mock("nodemailer-html-to-text", () => ({
 }));
 
 describe("mailerPlugin — test route › conditional registration", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance | undefined;
 
@@ -84,7 +84,7 @@ describe("mailerPlugin — test route › conditional registration", async () =>
 });
 
 describe("mailerPlugin — test route › HTTP response", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
   const testConfig = createMailerConfig();

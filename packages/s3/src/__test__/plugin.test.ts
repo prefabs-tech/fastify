@@ -9,7 +9,9 @@ const { runMigrationsMock } = vi.hoisted(() => ({
   runMigrationsMock: vi.fn().mockResolvedValue(),
 }));
 
-vi.mock("../migrations/runMigrations", () => ({ default: runMigrationsMock }));
+vi.mock("../migrations/runMigrations.js", () => ({
+  default: runMigrationsMock,
+}));
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -51,7 +53,7 @@ const buildMultipartFileBody = (
 // ── Tests ────────────────────────────────────────────────────────────────────
 
 describe("s3 plugin — initialization", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 
@@ -113,7 +115,7 @@ describe("s3 plugin — initialization", async () => {
 });
 
 describe("s3 plugin — options passed directly (new pattern)", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 
@@ -163,7 +165,7 @@ describe("s3 plugin — options passed directly (new pattern)", async () => {
 });
 
 describe("s3 plugin — REST multipart registration", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 

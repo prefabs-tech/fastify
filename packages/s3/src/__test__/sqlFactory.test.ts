@@ -3,7 +3,7 @@ import type { Database } from "@prefabs.tech/fastify-slonik";
 
 import { describe, expect, it, vi } from "vitest";
 
-import { createFilesTableQuery } from "../migrations/queries";
+import { createFilesTableQuery } from "../migrations/queries.js";
 
 vi.mock("@prefabs.tech/fastify-slonik", () => {
   class MockDefaultSqlFactory {
@@ -21,7 +21,8 @@ vi.mock("@prefabs.tech/fastify-slonik", () => {
 // ── FileSqlFactory ────────────────────────────────────────────────────────────
 
 describe("FileSqlFactory — table name", async () => {
-  const { default: FileSqlFactory } = await import("../model/files/sqlFactory");
+  const { default: FileSqlFactory } =
+    await import("../model/files/sqlFactory.js");
 
   it("uses config.s3.table.name when set", () => {
     const factory = new FileSqlFactory({
@@ -47,7 +48,7 @@ describe("FileSqlFactory — table name", async () => {
 
 describe("runMigrations", async () => {
   const { default: runMigrations } =
-    await import("../migrations/runMigrations");
+    await import("../migrations/runMigrations.js");
 
   it("calls database.connect once on startup", async () => {
     const mockConnection = { query: vi.fn().mockResolvedValue() };

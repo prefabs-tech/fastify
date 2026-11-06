@@ -1,19 +1,19 @@
 import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { deleteUser } from "supertokens-node";
-import EmailVerification from "supertokens-node/recipe/emailverification";
-import UserRoles from "supertokens-node/recipe/userroles";
+import EmailVerification from "supertokens-node/recipe/emailverification/index.js";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import type { User } from "../../../../types";
+import type { User } from "../../../../types/index.js";
 
-import getUserService from "../../../../lib/getUserService";
-import giveProviderRoles from "../../../../lib/giveProviderRoles";
-import sendEmail from "../../../../lib/sendEmail";
-import verifyEmail from "../../../../lib/verifyEmail";
-import withGrants from "../../../../lib/withGrants";
-import areRolesExist from "../../../utils/areRolesExist";
+import getUserService from "../../../../lib/getUserService.js";
+import giveProviderRoles from "../../../../lib/giveProviderRoles.js";
+import sendEmail from "../../../../lib/sendEmail.js";
+import verifyEmail from "../../../../lib/verifyEmail.js";
+import withGrants from "../../../../lib/withGrants.js";
+import areRolesExist from "../../../utils/areRolesExist.js";
 
 const emailPasswordSignUp = (
   originalImplementation: RecipeInterface,

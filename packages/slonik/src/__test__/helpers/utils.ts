@@ -1,4 +1,4 @@
-import type { FilterInput, SortInput } from "../../types";
+import type { FilterInput, SortInput } from "../../types/index.js";
 
 const getFilterDataset = (): FilterInput[] => {
   return [

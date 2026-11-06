@@ -3,7 +3,7 @@ import fastifySensible from "@fastify/sensible";
 import Fastify, { type FastifyInstance } from "fastify";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { errorHandler } from "../index";
+import { errorHandler } from "../index.js";
 
 describe("errorHandler — standalone export", () => {
   let fastify: FastifyInstance;

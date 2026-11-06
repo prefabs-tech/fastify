@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
-import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+import type { APIInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
-import { ROLE_USER } from "../../../../constants";
+import { ROLE_USER } from "../../../../constants.js";
 
 const emailPasswordSignUpPOST = (
   originalImplementation: APIInterface,

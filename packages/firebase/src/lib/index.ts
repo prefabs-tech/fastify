@@ -1,5 +1,5 @@
 export {
   firebaseAdmin,
   default as initializeFirebase,
-} from "./initializeFirebase";
-export { default as sendPushNotification } from "./sendPushNotification";
+} from "./initializeFirebase.js";
+export { default as sendPushNotification } from "./sendPushNotification.js";

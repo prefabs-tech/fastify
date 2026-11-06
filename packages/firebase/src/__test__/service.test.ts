@@ -2,9 +2,9 @@
 import { newDb } from "pg-mem";
 import { describe, expect, it } from "vitest";
 
-import UserDeviceService from "../model/userDevice/service";
-import createConfig from "./helpers/createConfig";
-import createDatabase from "./helpers/createDatabase";
+import UserDeviceService from "../model/userDevice/service.js";
+import createConfig from "./helpers/createConfig.js";
+import createDatabase from "./helpers/createDatabase.js";
 
 const CREATE_TABLE_SQL = `
   CREATE TABLE user_devices (

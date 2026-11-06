@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { SlonikOptions } from "../types";
+import type { SlonikOptions } from "../types/index.js";
 
 const pgClientConstructorMock = vi.fn();
 const pgClientConnectMock = vi.fn().mockResolvedValue();
@@ -31,7 +31,7 @@ const baseOptions: SlonikOptions = {
 };
 
 describe("migrate — default migration path", async () => {
-  const { default: migrate } = await import("../migrate");
+  const { default: migrate } = await import("../migrate.js");
   const { migrate: runMigrationsMock } =
     await import("@prefabs.tech/postgres-migrations");
 

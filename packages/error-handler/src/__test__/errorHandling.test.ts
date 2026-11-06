@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 import { describe, expect, it } from "vitest";
 
-import { CustomError } from "../index";
-import { buildFastify } from "./helpers";
+import { CustomError } from "../index.js";
+import { buildFastify } from "./helpers.js";
 
 describe("errorHandlerPlugin — CustomError handling", () => {
   it("responds with 500 for CustomError, as default if nothing handles the error", async () => {

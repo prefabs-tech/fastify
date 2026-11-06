@@ -15,7 +15,7 @@ import type {
   SortDirection,
   SortInput,
   SqlFactory,
-} from "./types";
+} from "./types/index.js";
 
 import {
   createFilterFragment,
@@ -25,7 +25,7 @@ import {
   createTableIdentifier,
   createWhereFragment,
   isValueExpression,
-} from "./sql";
+} from "./sql.js";
 
 class DefaultSqlFactory implements SqlFactory {
   static readonly LIMIT_DEFAULT: number = 20;

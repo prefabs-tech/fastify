@@ -3,8 +3,8 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import "../index";
-import createMailerConfig from "./helpers/createMailerConfig";
+import "../index.js";
+import createMailerConfig from "./helpers/createMailerConfig.js";
 
 const { createTransportMock, sendMailMock } = vi.hoisted(() => {
   const useMock = vi.fn();
@@ -37,7 +37,7 @@ const baseMailOptions = {
 };
 
 describe("mailerPlugin — recipient override", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   let fastify: FastifyInstance;
 

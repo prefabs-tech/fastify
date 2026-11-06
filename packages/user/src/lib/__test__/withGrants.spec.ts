@@ -2,9 +2,9 @@ import type { FastifyInstance } from "fastify";
 
 import { describe, expect, it, vi } from "vitest";
 
-import type { User } from "../../types";
+import type { User } from "../../types/index.js";
 
-import withGrants from "../withGrants";
+import withGrants from "../withGrants.js";
 
 const user: User = {
   disabled: false,

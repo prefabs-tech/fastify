@@ -38,7 +38,7 @@ import {
   SUPERTOKENS_CORS_HEADERS,
   TABLE_INVITATIONS,
   TABLE_USERS,
-} from "../constants";
+} from "../constants.js";
 
 describe("role constants", () => {
   it("ROLE_ADMIN is 'ADMIN'", () => {

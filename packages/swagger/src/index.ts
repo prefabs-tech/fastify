@@ -5,6 +5,6 @@ declare module "fastify" {
   }
 }
 
-export { default } from "./plugin";
+export { default } from "./plugin.js";
 
-export type * from "./types";
+export type * from "./types.js";

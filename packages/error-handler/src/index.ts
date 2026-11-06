@@ -6,13 +6,13 @@ declare module "fastify" {
   }
 }
 
-export { errorHandler } from "./errorHandler";
+export { errorHandler } from "./errorHandler.js";
 
-export { default } from "./plugin";
+export { default } from "./plugin.js";
 
-export type * from "./types";
+export type * from "./types.js";
 
-export { CustomError } from "./utils/error";
+export { CustomError } from "./utils/error.js";
 
 export type { HttpErrors } from "@fastify/sensible";
 

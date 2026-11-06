@@ -12,6 +12,7 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/types/index.d.ts",
       "import": "./dist/prefabs-tech-fastify-config.js",
       "require": "./dist/prefabs-tech-fastify-config.cjs"
     }
@@ -23,6 +24,7 @@
     "dist"
   ],
   "scripts": {
+    "attw": "attw --pack . --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -31,8 +33,9 @@
     "typecheck": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
-    "@prefabs.tech/tsconfig": "0.8.7",
+    "@prefabs.tech/tsconfig": "0.10.0",
     "@types/node": "24.13.3",
     "@vitest/coverage-istanbul": "4.1.10",
     "eslint": "10.7.0",

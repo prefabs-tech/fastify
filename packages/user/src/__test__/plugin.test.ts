@@ -9,7 +9,7 @@ import {
   ROUTE_PERMISSIONS,
   ROUTE_ROLES,
   ROUTE_USERS,
-} from "../constants";
+} from "../constants.js";
 
 // ── Mocks ─────────────────────────────────────────────────────────────────────
 
@@ -18,18 +18,20 @@ const mockSeedRoles = vi.fn().mockResolvedValue();
 const mockMercuriusAuthPlugin = vi.fn().mockResolvedValue();
 const mockHasUserPermission = vi.fn();
 
-vi.mock("../migrations/runMigrations", () => ({ default: mockRunMigrations }));
-vi.mock("../lib/seedRoles", () => ({ default: mockSeedRoles }));
-vi.mock("../lib/hasUserPermission", () => ({
+vi.mock("../migrations/runMigrations.js", () => ({
+  default: mockRunMigrations,
+}));
+vi.mock("../lib/seedRoles.js", () => ({ default: mockSeedRoles }));
+vi.mock("../lib/hasUserPermission.js", () => ({
   default: mockHasUserPermission,
 }));
-vi.mock("../mercurius-auth/plugin", () => ({
+vi.mock("../mercurius-auth/plugin.js", () => ({
   default: mockMercuriusAuthPlugin,
 }));
 
 // Mock the supertokens plugin as a noop so it doesn't try to connect to a
 // real SuperTokens server. verifySession is pre-decorated in buildFastify below.
-vi.mock("../supertokens", () => ({
+vi.mock("../supertokens/index.js", () => ({
   default: async () => {},
 }));
 
@@ -98,7 +100,7 @@ const buildFastify = (
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("userPlugin — decorators", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -133,7 +135,7 @@ describe("userPlugin — decorators", async () => {
 });
 
 describe("userPlugin — config.user.accessControl.roleMap", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   beforeEach(() => vi.clearAllMocks());
 
@@ -163,7 +165,7 @@ describe("userPlugin — config.user.accessControl.roleMap", async () => {
 });
 
 describe("userPlugin — request.hasPermission", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   // Asks request.hasPermission from a route, as an app's handler would.
   const check = async (
@@ -327,7 +329,7 @@ describe("userPlugin — request.hasPermission", async () => {
 });
 
 describe("userPlugin — invitations routes", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -356,7 +358,7 @@ describe("userPlugin — invitations routes", async () => {
 });
 
 describe("userPlugin — permissions routes", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -385,7 +387,7 @@ describe("userPlugin — permissions routes", async () => {
 });
 
 describe("userPlugin — roles routes", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -410,7 +412,7 @@ describe("userPlugin — roles routes", async () => {
 });
 
 describe("userPlugin — users routes", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -444,7 +446,7 @@ describe("userPlugin — users routes", async () => {
 });
 
 describe("userPlugin — routePrefix", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -475,7 +477,7 @@ describe("userPlugin — routePrefix", async () => {
 });
 
 describe("userPlugin — seedRoles receives user config", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -494,7 +496,7 @@ describe("userPlugin — seedRoles receives user config", async () => {
 });
 
 describe("userPlugin — runMigrations wiring", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -511,7 +513,7 @@ describe("userPlugin — runMigrations wiring", async () => {
 });
 
 describe("userPlugin — GraphQL mercurius-auth wiring", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
   let fastify: FastifyInstance;
 
   beforeEach(() => vi.clearAllMocks());
@@ -550,7 +552,7 @@ describe("userPlugin — GraphQL mercurius-auth wiring", async () => {
 });
 
 describe("userPlugin — the authentication hook", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   // An app route registered after the plugin, as an app's routers are.
   const requestAppRoute = async (userConfig: Record<string, unknown>) => {
@@ -586,7 +588,7 @@ describe("userPlugin — the authentication hook", async () => {
 });
 
 describe("userPlugin — each route's config", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   // Each route keeps the access it had: a permission where it was guarded by
   // hasPermission, public where it needed no session, and otherwise any
@@ -665,7 +667,7 @@ describe("userPlugin — each route's config", async () => {
 });
 
 describe("userPlugin — default export", async () => {
-  const { default: plugin } = await import("../plugin");
+  const { default: plugin } = await import("../plugin.js");
 
   it("exposes updateContext for Mercurius context wiring", () => {
     expect(plugin.updateContext).toBeDefined();

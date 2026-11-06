@@ -1,13 +1,13 @@
 import type { FastifyInstance } from "fastify";
-import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types";
-import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types";
+import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types.js";
+import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertokens-node/lib/build/recipe/emailpassword/types.js";
 import type {
   APIInterface,
   RecipeInterface,
   TypeInputSignUp,
-} from "supertokens-node/recipe/thirdpartyemailpassword/types";
+} from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
-import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword";
+import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
 type APIInterfaceWrapper = {
   [key in keyof APIInterface]?: (

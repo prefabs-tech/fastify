@@ -1,10 +1,10 @@
-import type { MulticastMessage } from "firebase-admin/lib/messaging/messaging-api";
+import type { MulticastMessage } from "firebase-admin/messaging";
 import type { MercuriusContext } from "mercurius";
 
 import { mercurius } from "mercurius";
 
-import { sendPushNotification } from "../../../lib";
-import UserDeviceService from "../../userDevice/service";
+import { sendPushNotification } from "../../../lib/index.js";
+import UserDeviceService from "../../userDevice/service.js";
 
 const Mutation = {
   sendNotification: async (

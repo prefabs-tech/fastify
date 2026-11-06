@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 
-import type { User } from "../types";
+import type { User } from "../types/index.js";
 
 const withGrants = async <T extends User>(
   user: T,

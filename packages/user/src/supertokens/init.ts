@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 
 import supertokens from "supertokens-node";
 
-import getRecipeList from "./recipes";
+import getRecipeList from "./recipes/index.js";
 
 const init = (fastify: FastifyInstance) => {
   const { config } = fastify;

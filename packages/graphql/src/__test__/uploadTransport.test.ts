@@ -3,9 +3,9 @@ import type { FastifyInstance } from "fastify";
 import Fastify from "fastify";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { UPLOAD_TRANSPORT_PLUGIN_NAME } from "../constants";
-import graphqlPlugin from "../plugin";
-import transport from "../uploads/transport";
+import { UPLOAD_TRANSPORT_PLUGIN_NAME } from "../constants.js";
+import graphqlPlugin from "../plugin.js";
+import transport from "../uploads/transport.js";
 
 const schema = `
   type Query {

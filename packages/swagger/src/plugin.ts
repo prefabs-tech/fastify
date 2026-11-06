@@ -4,7 +4,7 @@ import fastifySwagger from "@fastify/swagger";
 import swaggerUi from "@fastify/swagger-ui";
 import FastifyPlugin from "fastify-plugin";
 
-import type { SwaggerOptions } from "./types";
+import type { SwaggerOptions } from "./types.js";
 
 const plugin = async (fastify: FastifyInstance, options: SwaggerOptions) => {
   const { fastifySwaggerOptions, uiOptions } = options;

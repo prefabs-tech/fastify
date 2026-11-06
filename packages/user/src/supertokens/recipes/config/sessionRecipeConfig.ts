@@ -3,14 +3,14 @@ import type {
   APIInterface,
   RecipeInterface,
   TypeInput as SessionRecipeConfig,
-} from "supertokens-node/recipe/session/types";
+} from "supertokens-node/recipe/session/types/index.js";
 
-import type { SessionRecipe } from "../../types/sessionRecipe";
+import type { SessionRecipe } from "../../types/sessionRecipe.js";
 
-import createNewSession from "./session/createNewSession";
-import getGlobalClaimValidators from "./session/getGlobalClaimValidators";
-import getSession from "./session/getSession";
-import verifySession from "./session/verifySession";
+import createNewSession from "./session/createNewSession.js";
+import getGlobalClaimValidators from "./session/getGlobalClaimValidators.js";
+import getSession from "./session/getSession.js";
+import verifySession from "./session/verifySession.js";
 
 const getSessionRecipeConfig = (
   fastify: FastifyInstance,

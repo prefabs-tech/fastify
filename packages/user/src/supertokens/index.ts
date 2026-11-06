@@ -1,5 +1,6 @@
-import Session from "supertokens-node/lib/build/recipe/session/sessionClass";
-import { verifySession } from "supertokens-node/recipe/session/framework/fastify";
+import type { SessionContainer } from "supertokens-node/recipe/session/index.js";
+
+import { verifySession } from "supertokens-node/recipe/session/framework/fastify/index.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -7,10 +8,10 @@ declare module "fastify" {
   }
 
   interface FastifyRequest {
-    session?: Session;
+    session?: SessionContainer;
   }
 }
 
-export { default } from "./plugin";
+export { default } from "./plugin.js";
 
-export type { SupertokensConfig } from "./types";
+export type { SupertokensConfig } from "./types/index.js";

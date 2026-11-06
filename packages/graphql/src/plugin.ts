@@ -3,11 +3,11 @@ import type { FastifyInstance } from "fastify";
 import FastifyPlugin from "fastify-plugin";
 import { mercurius } from "mercurius";
 
-import type { GraphqlOptions } from "./types";
+import type { GraphqlOptions } from "./types.js";
 
-import buildContext from "./buildContext";
-import { UPLOAD_TRANSPORT_PLUGIN_NAME } from "./constants";
-import graphqlUploadTransport from "./uploads/transport";
+import buildContext from "./buildContext.js";
+import { UPLOAD_TRANSPORT_PLUGIN_NAME } from "./constants.js";
+import graphqlUploadTransport from "./uploads/transport.js";
 
 const plugin = async (fastify: FastifyInstance, options: GraphqlOptions) => {
   fastify.log.info("Registering fastify-graphql plugin");

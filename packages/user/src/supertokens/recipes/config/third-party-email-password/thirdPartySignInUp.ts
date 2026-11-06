@@ -1,17 +1,17 @@
 import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { deleteUser } from "supertokens-node";
-import { getUserByThirdPartyInfo } from "supertokens-node/recipe/thirdpartyemailpassword";
-import UserRoles from "supertokens-node/recipe/userroles";
+import { getUserByThirdPartyInfo } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import type { User } from "../../../../types";
+import type { User } from "../../../../types/index.js";
 
-import getUserService from "../../../../lib/getUserService";
-import giveProviderRoles from "../../../../lib/giveProviderRoles";
-import areRolesExist from "../../../utils/areRolesExist";
+import getUserService from "../../../../lib/getUserService.js";
+import giveProviderRoles from "../../../../lib/giveProviderRoles.js";
+import areRolesExist from "../../../utils/areRolesExist.js";
 
 const thirdPartySignInUp = (
   originalImplementation: RecipeInterface,

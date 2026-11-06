@@ -1,9 +1,9 @@
 import type { FastifyRequest } from "fastify";
 
-import { Error as STError } from "supertokens-node/recipe/session";
+import { Error as STError } from "supertokens-node/recipe/session/index.js";
 import { describe, expect, it, vi } from "vitest";
 
-import hasPermission from "../hasPermission";
+import hasPermission from "../hasPermission.js";
 
 const USER = { id: "user-1" };
 

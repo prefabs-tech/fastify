@@ -1,7 +1,7 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { Database } from "@prefabs.tech/fastify-slonik";
 
-import { createUserDevicesTableQuery } from "./queries";
+import { createUserDevicesTableQuery } from "./queries.js";
 
 const runMigrations = async (database: Database, config: ApiConfig) => {
   await database.connect(async (connection) => {

@@ -5,13 +5,13 @@ import humps from "humps";
 import { FragmentSqlToken, QuerySqlToken, sql } from "slonik";
 import { z } from "zod";
 
-import { TABLE_USERS } from "../../constants";
-import { ChangeEmailInput, UserUpdateInput } from "../../types";
+import { TABLE_USERS } from "../../constants.js";
+import { ChangeEmailInput, UserUpdateInput } from "../../types/index.js";
 import {
   createRoleSortFragment,
   createUserFilterFragment,
   createUserSortFragment,
-} from "./sql";
+} from "./sql.js";
 
 class UserSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_USERS;

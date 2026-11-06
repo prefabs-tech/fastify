@@ -35,7 +35,7 @@ vi.mock("@aws-sdk/lib-storage", () => ({
 // ── Tests ─────────────────────────────────────────────────────────────────────
 
 describe("S3Client — isFileExists", async () => {
-  const { default: S3ClientWrapper } = await import("../utils/s3Client");
+  const { default: S3ClientWrapper } = await import("../utils/s3Client.js");
 
   let client: InstanceType<typeof S3ClientWrapper>;
 
@@ -77,7 +77,7 @@ describe("S3Client — isFileExists", async () => {
 });
 
 describe("S3Client — generatePresignedUrl", async () => {
-  const { default: S3ClientWrapper } = await import("../utils/s3Client");
+  const { default: S3ClientWrapper } = await import("../utils/s3Client.js");
 
   let client: InstanceType<typeof S3ClientWrapper>;
 
@@ -127,7 +127,7 @@ describe("S3Client — generatePresignedUrl", async () => {
 });
 
 describe("S3Client — object operations", async () => {
-  const { default: S3ClientWrapper } = await import("../utils/s3Client");
+  const { default: S3ClientWrapper } = await import("../utils/s3Client.js");
 
   let client: InstanceType<typeof S3ClientWrapper>;
 

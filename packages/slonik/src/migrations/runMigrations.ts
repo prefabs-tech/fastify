@@ -1,7 +1,7 @@
-import type { Database, SlonikOptions } from "../types";
+import type { Database, SlonikOptions } from "../types/index.js";
 
-import { EXTENSIONS } from "../constants";
-import queryToCreateExtension from "./queryToCreateExtensions";
+import { EXTENSIONS } from "../constants.js";
+import queryToCreateExtension from "./queryToCreateExtensions.js";
 
 const runMigrations = async (database: Database, options: SlonikOptions) => {
   const extensions = [

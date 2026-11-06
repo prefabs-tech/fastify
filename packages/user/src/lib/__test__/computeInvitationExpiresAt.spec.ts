@@ -2,8 +2,8 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { INVITATION_EXPIRE_AFTER_IN_DAYS } from "../../constants";
-import computeInvitationExpiresAt from "../computeInvitationExpiresAt";
+import { INVITATION_EXPIRE_AFTER_IN_DAYS } from "../../constants.js";
+import computeInvitationExpiresAt from "../computeInvitationExpiresAt.js";
 
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 

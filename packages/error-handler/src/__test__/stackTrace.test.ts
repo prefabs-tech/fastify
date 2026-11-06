@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { describe, expect, it } from "vitest";
 
-import { buildFastify } from "./helpers";
+import { buildFastify } from "./helpers.js";
 
 describe("errorHandlerPlugin — stack trace option", () => {
   it("omits stack from response when stackTrace: false", async () => {

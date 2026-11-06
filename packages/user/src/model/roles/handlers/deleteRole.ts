@@ -1,10 +1,10 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
 import { CustomError } from "@prefabs.tech/fastify-error-handler";
 
-import { ERROR_CODES } from "../../../constants";
-import RoleService from "../service";
+import { ERROR_CODES } from "../../../constants.js";
+import RoleService from "../service.js";
 
 const deleteRole = async (request: SessionRequest, reply: FastifyReply) => {
   const { query } = request;

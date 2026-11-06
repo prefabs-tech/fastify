@@ -1,4 +1,4 @@
-import getPermissions from "./getPermissions";
+import getPermissions from "./getPermissions.js";
 
 export default {
   getPermissions,

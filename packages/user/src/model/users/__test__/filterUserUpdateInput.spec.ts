@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 import { describe, expect, it } from "vitest";
 
-import type { UserUpdateInput } from "../../../types";
+import type { UserUpdateInput } from "../../../types/index.js";
 
-import filterUserUpdateInput from "../filterUserUpdateInput";
+import filterUserUpdateInput from "../filterUserUpdateInput.js";
 
 describe("filterUserUpdateInput", () => {
   it("does not remove a valid mutable input key", () => {

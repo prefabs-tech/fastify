@@ -2,7 +2,7 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { MercuriusContext } from "mercurius";
 
 /* istanbul ignore file */
-import type { GraphqlEnabledPlugin } from "../../types";
+import type { GraphqlEnabledPlugin } from "../../types.js";
 
 const schema = `
   type Query {

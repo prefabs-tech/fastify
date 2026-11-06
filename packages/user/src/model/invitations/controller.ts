@@ -13,8 +13,8 @@ import {
   ROUTE_INVITATIONS_GET_BY_TOKEN,
   ROUTE_INVITATIONS_RESEND,
   ROUTE_INVITATIONS_REVOKE,
-} from "../../constants";
-import handlers from "./handlers";
+} from "../../constants.js";
+import handlers from "./handlers/index.js";
 import {
   acceptInvitationSchema,
   createInvitationSchema,
@@ -23,7 +23,7 @@ import {
   getInvitationsListSchema,
   resendInvitationSchema,
   revokeInvitationSchema,
-} from "./schema";
+} from "./schema.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   const handlersConfig = fastify.config.user.handlers?.invitation;

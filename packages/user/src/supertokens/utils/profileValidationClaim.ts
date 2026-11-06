@@ -4,11 +4,11 @@
 
 // reference https://github.com/supertokens/supertokens-node/blob/master/lib/ts/recipe/session/claimBaseClasses/primitiveArrayClaim.ts
 
-import type { SessionRequest } from "supertokens-node/framework/fastify";
-import type { SessionClaimValidator } from "supertokens-node/recipe/session";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
+import type { SessionClaimValidator } from "supertokens-node/recipe/session/index.js";
 
 import { getRequestFromUserContext } from "supertokens-node";
-import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims";
+import { SessionClaim } from "supertokens-node/lib/build/recipe/session/claims.js";
 
 interface Response {
   gracePeriodEndsAt?: number;

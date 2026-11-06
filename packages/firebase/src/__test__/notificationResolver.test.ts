@@ -4,18 +4,18 @@ import type { MercuriusContext } from "mercurius";
 import { mercurius } from "mercurius";
 import { describe, expect, it, vi } from "vitest";
 
-import notificationResolver from "../model/notification/graphql/resolver";
+import notificationResolver from "../model/notification/graphql/resolver.js";
 
 // vi.hoisted ensures these are available inside the vi.mock factory (which is hoisted)
 const { sendPushNotificationMock } = vi.hoisted(() => ({
   sendPushNotificationMock: vi.fn().mockImplementation(async () => {}),
 }));
 
-vi.mock("../lib/sendPushNotification", () => ({
+vi.mock("../lib/sendPushNotification.js", () => ({
   default: sendPushNotificationMock,
 }));
 
-vi.mock("../model/userDevice/service", () => ({
+vi.mock("../model/userDevice/service.js", () => ({
   default: vi.fn().mockImplementation(function () {
     return {
       getByUserId: vi
@@ -90,7 +90,7 @@ describe("notificationResolver.sendNotification", () => {
 
   it("returns 404 ErrorWithProps when receiver has no registered devices", async () => {
     const { default: UserDeviceService } =
-      await import("../model/userDevice/service");
+      await import("../model/userDevice/service.js");
     vi.mocked(UserDeviceService).mockImplementationOnce(function () {
       return {
         getByUserId: vi.fn().mockResolvedValue([]),

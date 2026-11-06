@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import formatDate from "../formatDate";
+import formatDate from "../formatDate.js";
 
 describe.concurrent("formatDate", () => {
   it.each([

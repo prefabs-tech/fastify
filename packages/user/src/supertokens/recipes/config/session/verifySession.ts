@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import type { APIInterface } from "supertokens-node/recipe/session/types";
+import type { APIInterface } from "supertokens-node/recipe/session/types/index.js";
 
 const verifySession = (
   originalImplementation: APIInterface,

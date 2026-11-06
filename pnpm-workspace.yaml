@@ -19,3 +19,5 @@ allowBuilds:
   esbuild: true
   protobufjs: false
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@prefabs.tech/tsconfig@0.10.0'

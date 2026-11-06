@@ -2,8 +2,8 @@
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import errorHandlerPlugin, { CustomError } from "../index";
-import { buildFastify, FastifyInstance, makeLogSpy } from "./helpers";
+import errorHandlerPlugin, { CustomError } from "../index.js";
+import { buildFastify, FastifyInstance, makeLogSpy } from "./helpers.js";
 
 describe("errorHandlerPlugin — exact masked messages (stackTrace: false)", () => {
   it("plain Error message is replaced with generic safe message", async () => {

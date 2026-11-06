@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
 
-import EmailVerification from "supertokens-node/recipe/emailverification";
+import EmailVerification from "supertokens-node/recipe/emailverification/index.js";
 
-import type { SupertokensRecipes } from "../types";
+import type { SupertokensRecipes } from "../types/index.js";
 
-import getEmailVerificationRecipeConfig from "./config/emailVerificationRecipeConfig";
+import getEmailVerificationRecipeConfig from "./config/emailVerificationRecipeConfig.js";
 
 const init = (fastify: FastifyInstance) => {
   const emailVerification: SupertokensRecipes["emailVerification"] =

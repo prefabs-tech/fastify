@@ -7,7 +7,7 @@ import {
 import Fastify from "fastify";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import multipartParserPlugin from "../plugins/deprecatedMultipartParser";
+import multipartParserPlugin from "../plugins/deprecatedMultipartParser.js";
 
 describe("multipartParserPlugin (deprecated compat wrapper)", () => {
   let fastify: FastifyInstance;

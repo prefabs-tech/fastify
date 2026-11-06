@@ -4,7 +4,7 @@ import type { FragmentSqlToken, IdentifierSqlToken } from "slonik";
 import humps from "humps";
 import { sql } from "slonik";
 
-import { applyFiltersToQuery } from "./dbFilters";
+import { applyFiltersToQuery } from "./dbFilters.js";
 
 const createRoleSortFragment = (
   identifier: IdentifierSqlToken,

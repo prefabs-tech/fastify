@@ -1,5 +1,5 @@
-import getProfileFields from "./getProfileFields";
-import updateUserProfile from "./updateUserProfile";
+import getProfileFields from "./getProfileFields.js";
+import updateUserProfile from "./updateUserProfile.js";
 
 export default {
   getProfileFields,

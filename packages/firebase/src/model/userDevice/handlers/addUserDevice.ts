@@ -1,8 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import type { UserDeviceCreateInput } from "../../../types";
+import type { UserDeviceCreateInput } from "../../../types.js";
 
-import Service from "../service";
+import Service from "../service.js";
 
 const addUserDevice = async (request: FastifyRequest, reply: FastifyReply) => {
   const { body, config, dbSchema, slonik, user } = request;

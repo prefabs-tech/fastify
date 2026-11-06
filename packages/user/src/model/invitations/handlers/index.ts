@@ -1,10 +1,10 @@
-import acceptInvitation from "./acceptInvitation";
-import createInvitation from "./createInvitation";
-import deleteInvitation from "./deleteInvitation";
-import getInvitationByToken from "./getInvitationByToken";
-import listInvitation from "./listInvitation";
-import resendInvitation from "./resendInvitation";
-import revokeInvitation from "./revokeInvitation";
+import acceptInvitation from "./acceptInvitation.js";
+import createInvitation from "./createInvitation.js";
+import deleteInvitation from "./deleteInvitation.js";
+import getInvitationByToken from "./getInvitationByToken.js";
+import listInvitation from "./listInvitation.js";
+import resendInvitation from "./resendInvitation.js";
+import revokeInvitation from "./revokeInvitation.js";
 
 export default {
   acceptInvitation,

@@ -3,20 +3,20 @@ import type { MercuriusContext } from "mercurius";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 import { mercurius } from "mercurius";
-import { createNewSession } from "supertokens-node/recipe/session";
-import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
+import { createNewSession } from "supertokens-node/recipe/session/index.js";
+import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
-import type { User } from "../../../types";
+import type { User } from "../../../types/index.js";
 import type {
   Invitation,
   InvitationCreateInput,
-} from "../../../types/invitation";
+} from "../../../types/invitation.js";
 
-import getInvitationService from "../../../lib/getInvitationService";
-import isInvitationValid from "../../../lib/isInvitationValid";
-import sendInvitation from "../../../lib/sendInvitation";
-import validateEmail from "../../../validator/email";
-import validatePassword from "../../../validator/password";
+import getInvitationService from "../../../lib/getInvitationService.js";
+import isInvitationValid from "../../../lib/isInvitationValid.js";
+import sendInvitation from "../../../lib/sendInvitation.js";
+import validateEmail from "../../../validator/email.js";
+import validatePassword from "../../../validator/password.js";
 
 const Mutation = {
   acceptInvitation: async (

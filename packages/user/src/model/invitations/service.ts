@@ -7,14 +7,14 @@ import type {
   Invitation,
   InvitationCreateInput,
   InvitationUpdateInput,
-} from "../../types";
+} from "../../types/index.js";
 
-import { ERROR_CODES } from "../../constants";
-import computeInvitationExpiresAt from "../../lib/computeInvitationExpiresAt";
-import getUserService from "../../lib/getUserService";
-import areRolesExist from "../../supertokens/utils/areRolesExist";
-import validateEmail from "../../validator/email";
-import InvitationSqlFactory from "./sqlFactory";
+import { ERROR_CODES } from "../../constants.js";
+import computeInvitationExpiresAt from "../../lib/computeInvitationExpiresAt.js";
+import getUserService from "../../lib/getUserService.js";
+import areRolesExist from "../../supertokens/utils/areRolesExist.js";
+import validateEmail from "../../validator/email.js";
+import InvitationSqlFactory from "./sqlFactory.js";
 
 class InvitationService extends BaseService<
   Invitation,

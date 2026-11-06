@@ -1,9 +1,9 @@
 import type { FastifyReply } from "fastify";
 
-import type { User } from "./types";
+import type { User } from "./types.js";
 
-import notificationHandlers from "./model/notification/handlers";
-import deviceHandlers from "./model/userDevice/handlers";
+import notificationHandlers from "./model/notification/handlers/index.js";
+import deviceHandlers from "./model/userDevice/handlers/index.js";
 
 declare module "fastify" {
   interface FastifyInstance {
@@ -69,18 +69,18 @@ declare module "@prefabs.tech/fastify-config" {
   }
 }
 
-export * from "./constants";
+export * from "./constants.js";
 
-export { default as firebaseSchema } from "./graphql/schema";
-export * from "./lib";
+export { default as firebaseSchema } from "./graphql/schema.js";
+export * from "./lib/index.js";
 
-export { default as verifyFirebaseAppCheck } from "./middlewares/verifyFirebaseAppCheck";
-export * from "./migrations/queries";
-export { default as notificationRoutes } from "./model/notification/controller";
-export { default as notificationResolver } from "./model/notification/graphql/resolver";
-export { default as userDeviceRoutes } from "./model/userDevice/controller";
+export { default as verifyFirebaseAppCheck } from "./middlewares/verifyFirebaseAppCheck.js";
+export * from "./migrations/queries.js";
+export { default as notificationRoutes } from "./model/notification/controller.js";
+export { default as notificationResolver } from "./model/notification/graphql/resolver.js";
+export { default as userDeviceRoutes } from "./model/userDevice/controller.js";
 
-export { default as userDeviceResolver } from "./model/userDevice/graphql/resolver";
-export { default as UserDeviceService } from "./model/userDevice/service";
-export { default } from "./plugin";
+export { default as userDeviceResolver } from "./model/userDevice/graphql/resolver.js";
+export { default as UserDeviceService } from "./model/userDevice/service.js";
+export { default } from "./plugin.js";
 export { getAppCheck } from "firebase-admin/app-check";

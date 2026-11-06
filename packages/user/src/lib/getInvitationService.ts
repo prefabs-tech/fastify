@@ -1,7 +1,7 @@
 import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { Database } from "@prefabs.tech/fastify-slonik";
 
-import InvitationService from "../model/invitations/service";
+import InvitationService from "../model/invitations/service.js";
 
 const getInvitationService = (
   config: ApiConfig,

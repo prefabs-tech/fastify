@@ -2,8 +2,8 @@
 import Fastify from "fastify";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import errorHandlerPlugin from "../index";
-import { FastifyInstance, makeLogSpy } from "./helpers";
+import errorHandlerPlugin from "../index.js";
+import { FastifyInstance, makeLogSpy } from "./helpers.js";
 
 describe("errorHandlerPlugin — error logging", () => {
   let fastify: FastifyInstance;

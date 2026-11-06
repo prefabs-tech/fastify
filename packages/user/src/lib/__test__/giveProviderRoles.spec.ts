@@ -2,9 +2,9 @@ import type { FastifyInstance, FastifyRequest } from "fastify";
 
 import { describe, expect, it, vi } from "vitest";
 
-import type { AccessControlAdmin } from "../../types";
+import type { AccessControlAdmin } from "../../types/index.js";
 
-import giveProviderRoles from "../giveProviderRoles";
+import giveProviderRoles from "../giveProviderRoles.js";
 
 const request = { id: "request-1" } as unknown as FastifyRequest;
 

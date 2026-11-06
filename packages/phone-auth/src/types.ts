@@ -1,10 +1,10 @@
 import type { FastifyInstance } from "fastify";
-import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio";
+import type { TwilioServiceConfig } from "supertokens-node/lib/build/ingredients/smsdelivery/services/twilio.js";
 import type {
   APIInterface,
   TypeInput as PasswordlessRecipeConfig,
   RecipeInterface,
-} from "supertokens-node/recipe/passwordless/types";
+} from "supertokens-node/recipe/passwordless/types/index.js";
 
 type APIInterfaceWrapper = {
   [key in keyof APIInterface]?: (

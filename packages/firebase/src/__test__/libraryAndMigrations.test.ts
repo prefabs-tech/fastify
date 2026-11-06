@@ -13,7 +13,7 @@ const {
   sendEachForMulticastMock: vi.fn(),
 }));
 
-vi.mock("../migrations/queries", () => ({
+vi.mock("../migrations/queries.js", () => ({
   createUserDevicesTableQuery: createUserDevicesTableQueryMock,
 }));
 
@@ -25,7 +25,7 @@ vi.mock("firebase-admin", () => ({
 
 describe("runMigrations", async () => {
   const { default: runMigrations } =
-    await import("../migrations/runMigrations");
+    await import("../migrations/runMigrations.js");
 
   it("executes createUserDevicesTableQuery inside a database connection", async () => {
     createUserDevicesTableQueryMock.mockReturnValue(mockQueryToken);
@@ -55,7 +55,7 @@ describe("runMigrations", async () => {
 
 describe("sendPushNotification", async () => {
   const { default: sendPushNotification } =
-    await import("../lib/sendPushNotification");
+    await import("../lib/sendPushNotification.js");
 
   it("forwards multicast messages to firebase-admin messaging", async () => {
     sendEachForMulticastMock.mockResolvedValue();

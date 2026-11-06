@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
-import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types";
+import type { RecipeInterface } from "supertokens-node/recipe/thirdpartyemailpassword/types/index.js";
 
 import { formatDate } from "@prefabs.tech/fastify-slonik";
 
-import type { AuthUser } from "../../../../types";
+import type { AuthUser } from "../../../../types/index.js";
 
-import getUserService from "../../../../lib/getUserService";
-import withGrants from "../../../../lib/withGrants";
+import getUserService from "../../../../lib/getUserService.js";
+import withGrants from "../../../../lib/withGrants.js";
 
 const emailPasswordSignIn = (
   originalImplementation: RecipeInterface,

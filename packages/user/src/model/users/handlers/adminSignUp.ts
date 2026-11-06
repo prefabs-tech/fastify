@@ -1,12 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { createNewSession } from "supertokens-node/recipe/session";
-import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword";
-import UserRoles from "supertokens-node/recipe/userroles";
+import { createNewSession } from "supertokens-node/recipe/session/index.js";
+import { emailPasswordSignUp } from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
+import UserRoles from "supertokens-node/recipe/userroles/index.js";
 
-import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants";
-import validateEmail from "../../../validator/email";
-import validatePassword from "../../../validator/password";
+import { ROLE_ADMIN, ROLE_SUPERADMIN } from "../../../constants.js";
+import validateEmail from "../../../validator/email.js";
+import validatePassword from "../../../validator/password.js";
 
 interface FieldInput {
   email: string;

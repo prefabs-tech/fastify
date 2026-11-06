@@ -1,6 +1,6 @@
 import { DefaultSqlFactory } from "@prefabs.tech/fastify-slonik";
 
-import { TABLE_FILES } from "../../constants";
+import { TABLE_FILES } from "../../constants.js";
 
 class FileSqlFactory extends DefaultSqlFactory {
   static readonly TABLE = TABLE_FILES;

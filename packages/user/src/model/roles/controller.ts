@@ -1,14 +1,14 @@
 import type { FastifyInstance } from "fastify";
 
-import { ROUTE_ROLES, ROUTE_ROLES_PERMISSIONS } from "../../constants";
-import handlers from "./handlers";
+import { ROUTE_ROLES, ROUTE_ROLES_PERMISSIONS } from "../../constants.js";
+import handlers from "./handlers/index.js";
 import {
   createRoleSchema,
   deleteRoleSchema,
   getRolePermissionsSchema,
   getRolesSchema,
   updateRoleSchema,
-} from "./schema";
+} from "./schema.js";
 
 const plugin = async (fastify: FastifyInstance) => {
   fastify.delete(

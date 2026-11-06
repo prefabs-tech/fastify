@@ -1,8 +1,8 @@
 import type { FastifyReply } from "fastify";
-import type { SessionRequest } from "supertokens-node/framework/fastify";
+import type { SessionRequest } from "supertokens-node/framework/fastify/index.js";
 
-import getUserService from "../../../lib/getUserService";
-import { User } from "../../../types";
+import getUserService from "../../../lib/getUserService.js";
+import { User } from "../../../types/index.js";
 
 const updateUserProfile = async (
   request: SessionRequest,

@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 
-import type { User } from "./user";
+import type { User } from "./user.js";
 
 /** Gives the access-control library's roles, by name, for `roleMap`. */
 interface AccessControlAdmin {
@@ -49,4 +49,4 @@ interface AccessControlProvider {
 export type { AccessControlAdmin, AccessControlProvider };
 
 // getGrants is handed a User, so an implementation's declarations name it from here.
-export type { User } from "./user";
+export type { User } from "./user.js";

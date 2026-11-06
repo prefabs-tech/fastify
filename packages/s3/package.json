@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-s3",
-  "version": "0.97.0",
+  "version": "0.98.0",
   "description": "Fastify S3 plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/s3#readme",
   "repository": {
@@ -20,9 +20,7 @@
   "main": "./dist/prefabs-tech-fastify-s3.cjs",
   "module": "./dist/prefabs-tech-fastify-s3.js",
   "types": "./dist/types/index.d.ts",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "attw": "attw --pack . --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
@@ -43,10 +41,10 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
-    "@prefabs.tech/fastify-config": "0.97.0",
-    "@prefabs.tech/fastify-error-handler": "0.97.0",
-    "@prefabs.tech/fastify-graphql": "0.97.0",
-    "@prefabs.tech/fastify-slonik": "0.97.0",
+    "@prefabs.tech/fastify-config": "0.98.0",
+    "@prefabs.tech/fastify-error-handler": "0.98.0",
+    "@prefabs.tech/fastify-graphql": "0.98.0",
+    "@prefabs.tech/fastify-slonik": "0.98.0",
     "@prefabs.tech/tsconfig": "0.10.0",
     "@types/node": "24.13.3",
     "@vitest/coverage-istanbul": "4.1.10",
@@ -62,10 +60,10 @@
     "zod": "3.25.76"
   },
   "peerDependencies": {
-    "@prefabs.tech/fastify-config": "0.97.0",
-    "@prefabs.tech/fastify-error-handler": "0.97.0",
-    "@prefabs.tech/fastify-graphql": "0.97.0",
-    "@prefabs.tech/fastify-slonik": "0.97.0",
+    "@prefabs.tech/fastify-config": "0.98.0",
+    "@prefabs.tech/fastify-error-handler": "0.98.0",
+    "@prefabs.tech/fastify-graphql": "0.98.0",
+    "@prefabs.tech/fastify-slonik": "0.98.0",
     "fastify": ">=5.10.0",
     "fastify-plugin": ">=5.1.0",
     "slonik": ">=46.8.0",

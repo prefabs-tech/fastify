@@ -1,6 +1,6 @@
 {
   "name": "@prefabs.tech/fastify-user",
-  "version": "0.97.0",
+  "version": "0.98.0",
   "description": "Fastify user plugin",
   "homepage": "https://github.com/prefabs-tech/fastify/tree/main/packages/user#readme",
   "repository": {
@@ -25,14 +25,10 @@
   "types": "./dist/types/index.d.ts",
   "typesVersions": {
     "*": {
-      "access-control-provider": [
-        "./dist/types/types/accessControl.d.ts"
-      ]
+      "access-control-provider": ["./dist/types/types/accessControl.d.ts"]
     }
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "scripts": {
     "attw": "attw --pack . --exclude-entrypoints ./access-control-provider --ignore-rules false-esm",
     "build": "vite build && tsc --emitDeclarationOnly && mv dist/src dist/types",
@@ -49,12 +45,12 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "0.18.5",
     "@prefabs.tech/eslint-config": "0.8.7",
-    "@prefabs.tech/fastify-config": "0.97.0",
-    "@prefabs.tech/fastify-error-handler": "0.97.0",
-    "@prefabs.tech/fastify-graphql": "0.97.0",
-    "@prefabs.tech/fastify-mailer": "0.97.0",
-    "@prefabs.tech/fastify-s3": "0.97.0",
-    "@prefabs.tech/fastify-slonik": "0.97.0",
+    "@prefabs.tech/fastify-config": "0.98.0",
+    "@prefabs.tech/fastify-error-handler": "0.98.0",
+    "@prefabs.tech/fastify-graphql": "0.98.0",
+    "@prefabs.tech/fastify-mailer": "0.98.0",
+    "@prefabs.tech/fastify-s3": "0.98.0",
+    "@prefabs.tech/fastify-slonik": "0.98.0",
     "@prefabs.tech/tsconfig": "0.10.0",
     "@types/humps": "2.0.6",
     "@types/node": "24.13.3",
@@ -77,12 +73,12 @@
   "peerDependencies": {
     "@fastify/cors": ">=11.3.0",
     "@fastify/formbody": ">=8.0.2",
-    "@prefabs.tech/fastify-config": "0.97.0",
-    "@prefabs.tech/fastify-error-handler": "0.97.0",
-    "@prefabs.tech/fastify-graphql": "0.97.0",
-    "@prefabs.tech/fastify-mailer": "0.97.0",
-    "@prefabs.tech/fastify-s3": "0.97.0",
-    "@prefabs.tech/fastify-slonik": "0.97.0",
+    "@prefabs.tech/fastify-config": "0.98.0",
+    "@prefabs.tech/fastify-error-handler": "0.98.0",
+    "@prefabs.tech/fastify-graphql": "0.98.0",
+    "@prefabs.tech/fastify-mailer": "0.98.0",
+    "@prefabs.tech/fastify-s3": "0.98.0",
+    "@prefabs.tech/fastify-slonik": "0.98.0",
     "fastify": ">=5.10.0",
     "fastify-plugin": ">=5.1.0",
     "mercurius": ">=16.10.0",

@@ -742,10 +742,11 @@ apps: [
 | Path | Used by | Fallback |
 | ---- | ------- | -------- |
 | `invitationAccept` | Invitation email, for an invitation whose `appId` is this app's `id` | `user.invitation.acceptLinkPath`, then `/signup/token/:token` |
+| `resetPassword` | Reset-password email, for a request with `?appId=<id>` | `user.supertokens.resetPasswordPath`, then `/reset-password` |
 | `emailVerification` | Email-verification email, for a request with `?appId=<id>` (sign-up, resend, change email) | `user.supertokens.emailVerificationPath`, then `/verify-email` |
 
 - The token is appended to `invitationAccept` as the last path segment: the path takes no `:token` placeholder, and all its trailing `/` are trimmed.
-- SuperTokens' query string (`?token=…&rid=…`) is kept after the email-verification path, e.g. `https://app.example.com/#/verify-email?token=…&rid=…`.
+- SuperTokens' query string (`?token=…&rid=…`) is kept after the reset-password and email-verification paths, e.g. `https://app.example.com/#/reset-password?token=…&rid=…`.
 - With `?appId=<id>` of a known app, the email-verification link also takes that app's `origin`; otherwise its origin comes from the request's `referer` or `origin` header, else `appOrigin[0]`.
 - A path without a leading `/` gets one; an empty path counts as not set.
 - An app not found in `apps`, or without the path, falls back as in the table.

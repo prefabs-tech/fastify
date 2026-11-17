@@ -13,6 +13,18 @@ import ProfileFieldService from "../model/profileFields/service.js";
 import userHandlers from "../model/users/handlers/index.js";
 import UserService from "../model/users/service.js";
 
+/**
+ * Per-app paths of the links sent by email, under `ApiConfig.apps[].paths`.
+ * A path is appended to the app's origin; a missing or empty one falls back
+ * to the global option, then to the built-in default.
+ */
+interface AppLinkPaths {
+  emailVerification?: string;
+  /** The token is appended as the last path segment; no placeholder. */
+  invitationAccept?: string;
+  resetPassword?: string;
+}
+
 interface EmailOptions {
   subject?: string;
   templateName?: string;
@@ -86,7 +98,6 @@ interface UserConfig {
   };
   invitation?: {
     acceptLinkPath?: string;
-    acceptLinkPaths?: { [key: number]: string };
     /**
      * Number of days in which invitation expire.
      * @default 30
@@ -158,4 +169,4 @@ interface UserConfig {
   };
 }
 
-export type { EmailOptions, UserConfig };
+export type { AppLinkPaths, EmailOptions, UserConfig };

@@ -1,5 +1,5 @@
 import type { SupertokensRecipeFactory } from "./supertokens/types/index.js";
-import type { User, UserConfig } from "./types/index.js";
+import type { AppLinkPaths, User, UserConfig } from "./types/index.js";
 
 import hasPermission from "./middlewares/hasPermission.js";
 
@@ -39,6 +39,10 @@ declare module "mercurius" {
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     user: UserConfig;
+  }
+
+  interface AppConfig {
+    paths?: AppLinkPaths;
   }
 }
 

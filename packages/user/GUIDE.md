@@ -617,6 +617,8 @@ user: {
 }
 ```
 
+An invitation for an app whose `paths.invitationAccept` is set uses that path instead of `acceptLinkPath`: see [Per-app link paths](#per-app-link-paths).
+
 ### Invitation utilities
 
 ```typescript
@@ -718,6 +720,34 @@ user: {
 ```
 
 Overridable emails: `invitation`, `resetPassword`, `resetPasswordNotification`, `emailVerification`, `duplicateEmail`.
+
+### Per-app link paths
+
+Each app in `ApiConfig.apps` can set its own paths for the links sent by email, under `paths` (added to `AppConfig` by this package). This lets an app with hash routing, such as a Flutter web app, receive `/#/…` links while the other apps keep the usual ones:
+
+```typescript
+apps: [
+  {
+    id: 2,
+    name: "flutter-web",
+    origin: "https://app.example.com",
+    supportedRoles: ["USER"],
+    paths: {
+      invitationAccept: "/#/signup/token", // → https://app.example.com/#/signup/token/<token>
+    },
+  },
+],
+```
+
+| Path | Used by | Fallback |
+| ---- | ------- | -------- |
+| `invitationAccept` | Invitation email, for an invitation whose `appId` is this app's `id` | `user.invitation.acceptLinkPath`, then `/signup/token/:token` |
+
+- The token is appended to `invitationAccept` as the last path segment: the path takes no `:token` placeholder, and all its trailing `/` are trimmed.
+- A path without a leading `/` gets one; an empty path counts as not set.
+- An app not found in `apps`, or without the path, falls back as in the table.
+
+`paths.invitationAccept` replaces `user.invitation.acceptLinkPaths` (v0.99.0), which is removed: move each `acceptLinkPaths[<id>]` entry to the `paths.invitationAccept` of the app with that `id`, without its `/:token`.
 
 ### `sendEmail` utility
 
@@ -917,12 +947,16 @@ const resolvers = {
 
 ## ApiConfig Extension
 
-This package extends `ApiConfig` (from `@prefabs.tech/fastify-config`) with a `user` field. TypeScript picks this up automatically via module augmentation — no extra setup needed:
+This package extends `ApiConfig` (from `@prefabs.tech/fastify-config`) with a `user` field, and `AppConfig` with a `paths` field ([Per-app link paths](#per-app-link-paths)). TypeScript picks this up automatically via module augmentation — no extra setup needed:
 
 ```typescript
 declare module "@prefabs.tech/fastify-config" {
   interface ApiConfig {
     user: UserConfig; // added by this package
+  }
+
+  interface AppConfig {
+    paths?: AppLinkPaths; // added by this package
   }
 }
 ```
@@ -934,6 +968,7 @@ declare module "@prefabs.tech/fastify-config" {
 | Type                            | Description                                         |
 | ------------------------------- | --------------------------------------------------- |
 | `UserConfig`                    | Full plugin configuration shape                     |
+| `AppLinkPaths`                  | `AppConfig.paths`: per-app paths of email links     |
 | `SupertokensConfig`             | SuperTokens sub-configuration                       |
 | `User`                          | User database record                                |
 | `AuthUser`                      | Combined SuperTokens + database user                |

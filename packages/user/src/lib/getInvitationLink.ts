@@ -3,23 +3,27 @@ import type { ApiConfig } from "@prefabs.tech/fastify-config";
 import type { Invitation } from "../types/invitation.js";
 
 import { INVITATION_ACCEPT_LINK_PATH } from "../constants.js";
+import getAppLinkPath from "./getAppLinkPath.js";
 
 const getInvitationLink = (
   config: ApiConfig,
   invitation: Invitation,
   origin: string,
 ): string => {
-  const { token } = invitation;
+  const { appId, token } = invitation;
 
-  let invitationAcceptPath =
-    invitation?.appId && config.user.invitation?.acceptLinkPaths
-      ? config.user.invitation?.acceptLinkPaths[invitation?.appId]
-      : config.user.invitation?.acceptLinkPath || INVITATION_ACCEPT_LINK_PATH;
+  const app =
+    appId === undefined
+      ? undefined
+      : config.apps?.find((app) => app.id === appId);
 
-  invitationAcceptPath = invitationAcceptPath.replaceAll(
-    /:token(?!\w)/g,
-    token,
-  );
+  const appPath = getAppLinkPath(app, "invitationAccept");
+
+  const invitationAcceptPath = appPath
+    ? `${appPath.replace(/\/+$/, "")}/${token}`
+    : (
+        config.user.invitation?.acceptLinkPath || INVITATION_ACCEPT_LINK_PATH
+      ).replaceAll(/:token(?!\w)/g, token);
 
   const url = new URL(invitationAcceptPath, origin);
 

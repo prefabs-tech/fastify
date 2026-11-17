@@ -1,3 +1,4 @@
+import type { AppConfig } from "@prefabs.tech/fastify-config";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import type { EmailDeliveryInterface } from "supertokens-node/lib/build/ingredients/emaildelivery/types.js";
 import type { TypeEmailVerificationEmailDeliveryInput } from "supertokens-node/recipe/emailverification/types/index.js";
@@ -5,6 +6,7 @@ import type { TypeEmailVerificationEmailDeliveryInput } from "supertokens-node/r
 import emailVerification from "supertokens-node/recipe/emailverification/index.js";
 
 import { EMAIL_VERIFICATION_PATH } from "../../../../constants.js";
+import getAppLinkPath from "../../../../lib/getAppLinkPath.js";
 import getOrigin from "../../../../lib/getOrigin.js";
 import sendEmail from "../../../../lib/sendEmail.js";
 
@@ -15,14 +17,25 @@ const sendEmailVerificationEmail = (
   const websiteDomain = fastify.config.appOrigin[0] as string;
 
   return async (input) => {
+    let app: AppConfig | undefined;
     let origin: string;
 
     try {
-      const request: FastifyRequest =
-        input.userContext._default.request.request;
+      const request: FastifyRequest<{
+        Querystring: { appId: string | undefined };
+      }> = input.userContext._default.request.request;
+
+      if (request.query?.appId) {
+        const appId = Number(request.query.appId);
+
+        app = fastify.config.apps?.find((app) => app.id === appId);
+      }
 
       const url =
-        request.headers.referer || request.headers.origin || request.hostname;
+        app?.origin ||
+        request.headers.referer ||
+        request.headers.origin ||
+        request.hostname;
 
       origin = getOrigin(url) || websiteDomain;
     } catch {
@@ -32,7 +45,8 @@ const sendEmailVerificationEmail = (
     const emailVerifyLink = input.emailVerifyLink.replace(
       websiteDomain + "/auth/verify-email",
       origin +
-        (fastify.config.user.supertokens.emailVerificationPath ||
+        (getAppLinkPath(app, "emailVerification") ||
+          fastify.config.user.supertokens.emailVerificationPath ||
           EMAIL_VERIFICATION_PATH),
     );
 

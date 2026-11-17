@@ -86,6 +86,7 @@ interface UserConfig {
   };
   invitation?: {
     acceptLinkPath?: string;
+    acceptLinkPaths?: { [key: number]: string };
     /**
      * Number of days in which invitation expire.
      * @default 30

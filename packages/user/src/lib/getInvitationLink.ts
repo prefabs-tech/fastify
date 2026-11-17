@@ -12,7 +12,9 @@ const getInvitationLink = (
   const { token } = invitation;
 
   let invitationAcceptPath =
-    config.user.invitation?.acceptLinkPath || INVITATION_ACCEPT_LINK_PATH;
+    (invitation?.appId && config.user.invitation?.acceptLinkPaths)
+      ? config.user.invitation?.acceptLinkPaths[invitation?.appId]
+      : config.user.invitation?.acceptLinkPath || INVITATION_ACCEPT_LINK_PATH;
 
   invitationAcceptPath = invitationAcceptPath.replaceAll(
     /:token(?!\w)/g,

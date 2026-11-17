@@ -73,6 +73,12 @@ export default defineConfig(({ mode }) => {
         provider: "istanbul",
         reporter: ["text", "json", "html"],
       },
+      // tsconfig.json excludes the tests; the type tests need their own.
+      typecheck: {
+        enabled: true,
+        include: ["src/**/__test__/*.test-d.ts"],
+        tsconfig: "./tsconfig.test.json",
+      },
     },
   };
 });

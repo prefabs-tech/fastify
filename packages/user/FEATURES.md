@@ -143,7 +143,7 @@
 
 56. **Configurable invitation expiry** — `config.user.invitation.expireAfterInDays` sets how long an invitation is valid (default: `30`).
 
-57. **Configurable accept link path** — `config.user.invitation.acceptLinkPath` sets the front-end path embedded in the invitation email (default: `"/signup/token/:token"`). The `:token` placeholder is replaced with the actual token.
+57. **Configurable accept link path** — `config.user.invitation.acceptLinkPath` sets the front-end path embedded in the invitation email (default: `"/signup/token/:token"`). The `:token` placeholder is replaced with the actual token. An app's `paths.invitationAccept` takes precedence (see 89).
 
 58. **`GET /invitations/token/:token`** — public endpoint returning the invitation record for UI display before acceptance.
 
@@ -216,3 +216,7 @@
 87. **`userSchema` merged schema export** — the complete SDL string combining all user, invitation, role, and permission type definitions; ready to pass to `mergeTypeDefs`.
 
 88. **Resolver exports** — `userResolver`, `invitationResolver`, `roleResolver`, `permissionResolver` are exported individually for spreading into a larger resolver map.
+
+## Per-app email links
+
+89. **Per-app invitation link path** — this package augments `AppConfig` (`@prefabs.tech/fastify-config`) with an optional `paths` key (`AppLinkPaths`). An invitation whose `appId` matches an app with a non-empty `paths.invitationAccept` gets the link `<origin><path>/<token>`: a leading `/` is added when missing, all trailing `/` are trimmed, and no placeholder is replaced. Otherwise the link uses `config.user.invitation.acceptLinkPath`, else `"/signup/token/:token"`. `config.user.invitation.acceptLinkPaths` is removed.

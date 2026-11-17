@@ -220,3 +220,5 @@
 ## Per-app email links
 
 89. **Per-app invitation link path** — this package augments `AppConfig` (`@prefabs.tech/fastify-config`) with an optional `paths` key (`AppLinkPaths`). An invitation whose `appId` matches an app with a non-empty `paths.invitationAccept` gets the link `<origin><path>/<token>`: a leading `/` is added when missing, all trailing `/` are trimmed, and no placeholder is replaced. Otherwise the link uses `config.user.invitation.acceptLinkPath`, else `"/signup/token/:token"`. `config.user.invitation.acceptLinkPaths` is removed.
+
+91. **Per-app email-verification link** — an email-verification email triggered by a request with `?appId=<id>` of a known app takes that app's `origin` and, when its `paths.emailVerification` is non-empty, that path (leading `/` added when missing), followed by SuperTokens' `?token=…&rid=…`. Otherwise the origin comes from the request's `referer` or `origin` header, else `appOrigin[0]`, and the path is `config.user.supertokens.emailVerificationPath`, else `"/verify-email"`.

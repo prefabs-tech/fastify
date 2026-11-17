@@ -6,6 +6,7 @@ import type { TypeEmailPasswordPasswordResetEmailDeliveryInput } from "supertoke
 import ThirdPartyEmailPassword from "supertokens-node/recipe/thirdpartyemailpassword/index.js";
 
 import { RESET_PASSWORD_PATH } from "../../../../constants.js";
+import getAppLinkPath from "../../../../lib/getAppLinkPath.js";
 import getOrigin from "../../../../lib/getOrigin.js";
 import sendEmail from "../../../../lib/sendEmail.js";
 
@@ -39,7 +40,8 @@ const sendPasswordResetEmail = (
     const passwordResetLink = input.passwordResetLink.replace(
       websiteDomain + "/auth/reset-password",
       origin +
-        (fastify.config.user.supertokens.resetPasswordPath ||
+        (getAppLinkPath(app, "resetPassword") ||
+          fastify.config.user.supertokens.resetPasswordPath ||
           RESET_PASSWORD_PATH),
     );
 

@@ -1,3 +1,12 @@
+# [0.99.0](https://github.com/prefabs-tech/fastify/compare/v0.98.0...v0.99.0) (2026-11-17)
+
+
+### Features
+
+* **invitation:** add support for app-specific invitation link path ([#1168](https://github.com/prefabs-tech/fastify/issues/1168)) ([d684465](https://github.com/prefabs-tech/fastify/commit/d684465a3bc7c604c29523d7f9cfe714dc65281d))
+
+
+
 # [0.98.0](https://github.com/prefabs-tech/fastify/compare/v0.97.0...v0.98.0) (2026-11-06)
 
 

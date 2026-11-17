@@ -53,6 +53,7 @@
       error?: string;             // HTTP status text (HttpErrors and mapped domain errors)
       message: string;            // error message (masked for unmapped non-HttpErrors when stackTrace: false; mapped errors use the thrown message)
       name: string;               // error class name (masked for unmapped non-HttpErrors when stackTrace: false; mapped errors use the thrown name)
+      requestId: string;          // fastify request id (request.id), so a failure response can be correlated with its log entries
       stack?: StackTracey.Entry[] // parsed stack frames (only when stackTrace: true)
       statusCode: number;         // HTTP status code
     }

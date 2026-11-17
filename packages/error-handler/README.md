@@ -25,6 +25,7 @@ All options from [@fastify/sensible](https://www.npmjs.com/package/@fastify/sens
 - **`CustomError` base class** — extend it to create domain errors with a custom `code` field; subclasses are handled safely
 - **`stackTrace` option** — controls whether parsed stack frames are included in error responses
 - **`ErrorResponse` JSON schema** — registered as `$id: "ErrorResponse"` for use in route response schemas via `$ref: "ErrorResponse#"`
+- **Request-id correlation** — every error response includes `requestId` (fastify's `request.id`), so a client-reported failure can be matched to its request-scoped log entries
 - **Severity-aware logging** — 4xx errors log at `info`, 5xx at `error`; non-Error thrown values are normalized and logged safely
 - **`domainErrorStatusMap`** — optional app-provided `Map<string, number>` from `error.name` to an HTTP status integer **`400`–`599`** (invalid entries fail at registration); the plugin stores a validated copy. Mapped errors return that status with message/name (and `CustomError` `code`) in the body—only **unmapped** non-`HttpError` errors use generic masking when `stackTrace` is false
 

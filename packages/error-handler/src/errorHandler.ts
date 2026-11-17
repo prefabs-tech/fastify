@@ -15,6 +15,7 @@ function canSendDomainMappedError(
   domainErrorStatusMap: ReadonlyMap<string, number> | undefined,
   reply: FastifyReply,
   logger: FastifyRequest["log"],
+  requestId: string,
   isStackTraceEnabled: boolean,
   stack: StackTracey,
 ): boolean {
@@ -37,6 +38,7 @@ function canSendDomainMappedError(
     error: getHttpStatusText(mappedStatusCode),
     message: error.message,
     name: error.name,
+    requestId,
     statusCode: mappedStatusCode,
   };
 
@@ -82,6 +84,7 @@ export const errorHandler = (
       error: error.error || getHttpStatusText(statusCode),
       message: error.message,
       name: error.name,
+      requestId: request.id,
       statusCode,
     };
 
@@ -100,6 +103,7 @@ export const errorHandler = (
       options.domainErrorStatusMap,
       reply,
       logger,
+      request.id,
       isStackTraceEnabled,
       stack,
     )
@@ -119,6 +123,7 @@ export const errorHandler = (
     code: isStackTraceEnabled ? code : "INTERNAL_SERVER_ERROR",
     message: isStackTraceEnabled ? error.message : message,
     name: isStackTraceEnabled ? error.name : "Error",
+    requestId: request.id,
     statusCode: 500,
   };
 

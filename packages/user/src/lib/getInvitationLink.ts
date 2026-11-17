@@ -12,7 +12,7 @@ const getInvitationLink = (
   const { token } = invitation;
 
   let invitationAcceptPath =
-    (invitation?.appId && config.user.invitation?.acceptLinkPaths)
+    invitation?.appId && config.user.invitation?.acceptLinkPaths
       ? config.user.invitation?.acceptLinkPaths[invitation?.appId]
       : config.user.invitation?.acceptLinkPath || INVITATION_ACCEPT_LINK_PATH;
 

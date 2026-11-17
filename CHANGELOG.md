@@ -1,3 +1,23 @@
+# [0.100.0](https://github.com/prefabs-tech/fastify/compare/v0.99.0...v0.100.0) (2026-11-17)
+
+
+* feat(user)!: add per-app invitation link paths (#1171) ([baf4bd5](https://github.com/prefabs-tech/fastify/commit/baf4bd5c9fe9375b00e9106c2bcd5bfcf02be7dd)), closes [#1171](https://github.com/prefabs-tech/fastify/issues/1171)
+
+
+### Features
+
+* **user:** add per-app email-verification link paths ([#1173](https://github.com/prefabs-tech/fastify/issues/1173)) ([19b1fc1](https://github.com/prefabs-tech/fastify/commit/19b1fc179922913901718392fcbdb568b5baeb92))
+* **user:** add per-app reset-password link paths ([#1172](https://github.com/prefabs-tech/fastify/issues/1172)) ([5fc793a](https://github.com/prefabs-tech/fastify/commit/5fc793a7858eabe11390288c9e22ccfc4df708eb))
+
+
+### BREAKING CHANGES
+
+* user.invitation.acceptLinkPaths is removed. Move each acceptLinkPaths[<id>] entry to the paths.invitationAccept of the app with that id, without its "/:token".
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+
+
+
 # [0.99.0](https://github.com/prefabs-tech/fastify/compare/v0.98.0...v0.99.0) (2026-11-17)
 
 

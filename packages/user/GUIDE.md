@@ -742,8 +742,10 @@ apps: [
 | Path | Used by | Fallback |
 | ---- | ------- | -------- |
 | `invitationAccept` | Invitation email, for an invitation whose `appId` is this app's `id` | `user.invitation.acceptLinkPath`, then `/signup/token/:token` |
+| `resetPassword` | Reset-password email, for a request with `?appId=<id>` | `user.supertokens.resetPasswordPath`, then `/reset-password` |
 
 - The token is appended to `invitationAccept` as the last path segment: the path takes no `:token` placeholder, and all its trailing `/` are trimmed.
+- SuperTokens' query string (`?token=…&rid=…`) is kept after the other paths, e.g. `https://app.example.com/#/reset-password?token=…&rid=…`.
 - A path without a leading `/` gets one; an empty path counts as not set.
 - An app not found in `apps`, or without the path, falls back as in the table.
 
